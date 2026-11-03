@@ -25,6 +25,7 @@ import com.atsuishio.superbwarfare.tools.BoneScreenPoint
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.sighs.apricityui.element.Input
 import com.sighs.apricityui.element.Select
@@ -35,8 +36,7 @@ import com.sighs.apricityui.init.Document
 import com.sighs.apricityui.init.Element
 import com.sighs.apricityui.layout.Position
 import com.sighs.apricityui.parser.Color
-import com.sighs.apricityui.render.Base
-import com.sighs.apricityui.render.FontDrawer
+import com.sighs.apricityui.render.*
 import com.sighs.apricityui.screen.ApricityScreen
 import com.sighs.apricityui.style.Text
 import net.minecraft.ChatFormatting
@@ -60,6 +60,8 @@ import org.lwjgl.glfw.GLFW
 import java.util.*
 import kotlin.math.*
 import com.sighs.apricityui.element.Item as AuiItem
+import com.sighs.apricityui.layout.Box as AuiBox
+import com.sighs.apricityui.resource.Font as AuiFont
 
 /**
  * 改装界面：骨骼挂点附近显示圆点，悬停时显示槽位名，已安装的挂点标为青色。
@@ -744,10 +746,11 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             """<div id="$id" class="mount"></div>"""
         ))
         doc.getElementById(id)?.addEventListener("click") { action() }
-        doc.getElementById("mount-layer")?.appendChild(doc.createHTML(
-            """<div id="label-$id" class="mount-label"></div>"""
-        ))
-        doc.getElementById("label-$id")?.textContent = name
+        doc.getElementById("mount-layer")?.appendChild(MountLabel(doc).apply {
+            setAttribute("id", "label-$id")
+            setAttribute("class", "mount-label")
+            textContent = name
+        })
     }
 
     private fun wireItemHover(element: Element) {
@@ -2112,6 +2115,39 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     }.getOrNull()?.takeIf { it.isNotBlank() } ?: "dev"
 
     private fun label(key: String) = Component.translatable("screen.superbwarfare.weapon_edit.$key").string
+
+    /** Preserve the editor's old thin outline without AUI 1.3's integer-only CSS stroke parser. */
+    private class MountLabel(document: Document) : Element(document, "DIV"), BodyRenderNodeProvider {
+        override fun createBodyRenderNodes(): List<RenderNode> = listOf(RenderNode.ElementContentNode(this))
+
+        fun labelText(): Text {
+            val source = Text.of(this)
+            return Text().apply {
+                content = textContent
+                fontFamily = source.fontFamily
+                fontSize = source.fontSize
+                fontWeight = source.fontWeight
+                oblique = source.oblique
+                color = source.color
+                lineHeight = source.lineHeight
+                letterSpacing = source.letterSpacing
+                // 1.2.7 drew a 1px outline on a 48px glyph, then scaled it to the label's font size.
+                strokeWidth = fontSize / AuiFont.getBaseFontSize()
+                strokeColor = Color("#000000")
+            }
+        }
+
+        override fun drawContentOnly(pose: PoseStack) {
+            val text = labelText()
+            if (text.content.isEmpty()) return
+            val position = Rect.of(this).contentPosition
+            val size = AuiBox.of(this).innerSize()
+            FontDrawer.drawFont(pose, text, Position(
+                position.x + (size.width() - Text.measureLine(text, text.content)) / 2,
+                position.y + (size.height() - text.lineHeight) / 2
+            ))
+        }
+    }
 
     companion object {
         private const val DOCUMENT_PATH = "superbwarfare/weapon_edit.html"

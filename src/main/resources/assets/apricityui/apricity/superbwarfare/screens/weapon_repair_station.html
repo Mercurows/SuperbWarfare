@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="aui-preload" content="true">
     <meta name="aui-viewport" content="mode=browser,width=1280,zoom=1,min-zoom=1,max-zoom=1,user-scalable=false">
     <!-- Native container input must receive mouse down/up for pickup, dragging and quick move. -->
     <meta name="aui-mouse-events" content="passthrough">
@@ -70,7 +71,13 @@
                 <slot slot-index="0" size="36"></slot><slot slot-index="1" size="36"></slot><slot slot-index="2" size="36"></slot><slot slot-index="3" size="36"></slot><slot slot-index="4" size="36"></slot><slot slot-index="5" size="36"></slot><slot slot-index="6" size="36"></slot><slot slot-index="7" size="36"></slot><slot slot-index="8" size="36"></slot>
             </div>
         </container>
-        <div class="inventory-side"><span class="cross">+</span></div>
+            <container id="equipment" bind="entity" size="5">
+                <div class="equipment-cell equipment-left head"><slot slot-index="0" size="36"></slot><translation>container.superbwarfare.weapon_repair_station.head</translation></div>
+                <div class="equipment-cell equipment-left chest"><slot slot-index="1" size="36"></slot><translation>container.superbwarfare.weapon_repair_station.chest</translation></div>
+                <div class="equipment-cell equipment-right legs"><slot slot-index="2" size="36"></slot><translation>container.superbwarfare.weapon_repair_station.legs</translation></div>
+                <div class="equipment-cell equipment-right feet"><slot slot-index="3" size="36"></slot><translation>container.superbwarfare.weapon_repair_station.feet</translation></div>
+                <div class="equipment-cell equipment-left offhand"><slot slot-index="4" size="36"></slot><translation>container.superbwarfare.weapon_repair_station.offhand</translation></div>
+            </container>
     </div>
 </div>
 </div>

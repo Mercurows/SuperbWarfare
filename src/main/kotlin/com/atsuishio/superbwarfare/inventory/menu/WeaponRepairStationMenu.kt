@@ -10,12 +10,14 @@ import com.sighs.apricityui.screen.ApricityContainerMenu
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.Container
 import net.minecraft.world.SimpleContainer
+import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.ContainerData
 import net.minecraft.world.inventory.SimpleContainerData
 import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.enchantment.EnchantmentHelper
 import java.util.function.Supplier
 
 open class WeaponRepairStationMenu(
@@ -26,7 +28,7 @@ open class WeaponRepairStationMenu(
     id,
     inventory,
     LAYOUT,
-    mapOf("station" to source(station)),
+    mapOf("station" to source(station), "equipment" to equipmentSource(inventory)),
     emptyMap(),
     inventory.player as? ServerPlayer
 ) {
@@ -56,14 +58,15 @@ open class WeaponRepairStationMenu(
 
     override fun quickMoveStack(player: Player, index: Int): ItemStack {
         val slot = slots.getOrNull(index) ?: return ItemStack.EMPTY
-        if (!slot.hasItem()) return ItemStack.EMPTY
+        if (!slot.hasItem() || !slot.mayPickup(player)) return ItemStack.EMPTY
         val stack = slot.item
         val original = stack.copy()
         val moved = when {
-            index == 0 -> moveItemStackTo(stack, 1, 37, true)
+            index == 0 -> moveItemStackTo(stack, INVENTORY_START, INVENTORY_END, true)
             WeaponRepairStationBlockEntity.isRepairTarget(stack) -> moveItemStackTo(stack, 0, 1, false)
-            index < 28 -> moveItemStackTo(stack, 28, 37, false)
-            else -> moveItemStackTo(stack, 1, 28, false)
+            index < INVENTORY_START -> moveItemStackTo(stack, INVENTORY_START, INVENTORY_END, false)
+            index < HOTBAR_START -> moveItemStackTo(stack, HOTBAR_START, INVENTORY_END, false)
+            else -> moveItemStackTo(stack, INVENTORY_START, HOTBAR_START, false)
         }
         if (!moved) return ItemStack.EMPTY
         if (stack.isEmpty) slot.setByPlayer(ItemStack.EMPTY) else slot.setChanged()
@@ -75,12 +78,42 @@ open class WeaponRepairStationMenu(
     companion object {
         const val DATA_COUNT = 18
         const val DOCUMENT = "superbwarfare/screens/weapon_repair_station.html"
+        private const val INVENTORY_START = 6
+        private const val HOTBAR_START = INVENTORY_START + 27
+        private const val INVENTORY_END = INVENTORY_START + 36
+        private val EQUIPMENT_SLOTS = listOf(
+            EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET, EquipmentSlot.OFFHAND
+        )
         private val LAYOUT = SlotLayout(
             DOCUMENT, listOf(
                 SlotLayout.ContainerEntry("station", ContainerBindType.BLOCK_ENTITY, 0, 1, true),
-                SlotLayout.ContainerEntry("inventory", ContainerBindType.PLAYER, 1, 36, false)
+                SlotLayout.ContainerEntry("equipment", ContainerBindType.ENTITY, 1, 5, false),
+                SlotLayout.ContainerEntry("inventory", ContainerBindType.PLAYER, INVENTORY_START, 36, false)
             )
         )
+
+        private fun equipmentSource(inventory: Inventory) = object : ContainerDataSource {
+            override fun bindType() = ContainerBindType.ENTITY
+            override fun capacity() = EQUIPMENT_SLOTS.size
+            override fun stillValid(player: ServerPlayer) = inventory.player === player
+
+            override fun createSlot(index: Int, x: Int, y: Int, filter: Supplier<FilterUtil>): Slot {
+                val equipmentSlot = EQUIPMENT_SLOTS[index]
+                val armor = equipmentSlot.type == EquipmentSlot.Type.ARMOR
+                val inventoryIndex = if (armor) 36 + equipmentSlot.index else 40
+                return object : Slot(inventory, inventoryIndex, x, y) {
+                    override fun getMaxStackSize() = if (armor) 1 else super.getMaxStackSize()
+                    override fun mayPlace(stack: ItemStack) = !armor || stack.canEquip(equipmentSlot, inventory.player)
+                    override fun mayPickup(player: Player) =
+                        (!armor || player.isCreative || !EnchantmentHelper.hasBindingCurse(item)) && super.mayPickup(player)
+
+                    override fun setByPlayer(stack: ItemStack) {
+                        inventory.player.onEquipItem(equipmentSlot, item, stack)
+                        super.setByPlayer(stack)
+                    }
+                }
+            }
+        }
 
         private fun source(container: Container) = object : ContainerDataSource {
             override fun bindType() = ContainerBindType.BLOCK_ENTITY

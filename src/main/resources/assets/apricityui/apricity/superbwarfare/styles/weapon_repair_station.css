@@ -7,7 +7,7 @@ body { background: transparent; }
 translation { display: inline; }
 button { cursor: pointer; }
 .backdrop { position: fixed; inset: 0; background: rgba(4, 11, 16, 0.93); backdrop-filter: blur(14px); }
-.repair-layout { position: absolute; width: 1280px; height: 720px; transform-origin: 0 0; }
+.repair-layout { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; transform: translate(-50%, -50%); transform-origin: 0 0; }
 .terminal { position: absolute; inset: 26px 44px 20px; }
 .terminal-header { height: 76px; border-bottom: 1px solid #375452; display: flex; align-items: center; gap: 22px; }
 .identity { flex: 1; }
@@ -57,13 +57,24 @@ slot { display: block; position: relative; flex-shrink: 0; margin: 0; padding: 0
 slot:hover { border-color: #8eefd1; background-color: #173c35; }
 slot > item { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
 #repair-slot { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 76px; height: 76px; border-color: #70c5ae; background: #10262b; z-index: 2; --aui-slot-icon-scale: 4.5; }
-.inventory-panel { position: absolute; bottom: 34px; left: 0; right: 0; height: 198px; display: flex; align-items: center; gap: 28px; border-top: 1px solid #314e49; padding: 18px 24px 0; }
-.inventory-info { flex: 1; min-width: 0; }
+.inventory-panel { position: absolute; bottom: 34px; left: 0; right: 0; height: 198px; border-top: 1px solid #314e49; }
+.inventory-info { position: absolute; left: 24px; top: 50%; width: 230px; transform: translateY(-50%); }
 .inventory-title { margin: 6px 0 12px; font-size: 20px; font-weight: normal; letter-spacing: 2px; }
 .inventory-hint { max-width: 280px; font-size: 12px; line-height: 22px; color: #799a91; }
-#inventory { display: flex; flex-direction: column; gap: 6px; position: relative; width: 372px; padding: 0; margin: 0; flex-shrink: 0; background: transparent; border: 0; }
+/* Both containers share the centered backpack origin; equipment never affects its placement. */
+#inventory, #equipment { position: absolute; left: 50%; top: 24px; width: 372px; height: 168px; transform: translateX(-50%); padding: 0; margin: 0; background: transparent; border: 0; }
+#inventory { display: flex; flex-direction: column; gap: 6px; }
+#equipment { overflow: visible; }
 .inventory-row { display: flex; gap: 6px; height: 36px; flex-shrink: 0; }
 .inventory-row.hotbar { margin-top: 6px; }
 #inventory slot { width: 36px; height: 36px; }
-.inventory-side { flex: 1; text-align: right; color: #42685d; font-size: 10px; line-height: 19px; letter-spacing: 2px; }
-.cross { display: block; font-size: 56px; line-height: 60px; color: #507c6e; margin-bottom: 8px; }
+.equipment-cell { position: absolute; width: 36px; height: 36px; font-size: 10px; line-height: 36px; color: #799a91; }
+.equipment-left { left: -60px; }
+.equipment-right { right: -60px; }
+.equipment-cell.head, .equipment-cell.legs { top: 0; }
+.equipment-cell.chest, .equipment-cell.feet { top: 84px; }
+.equipment-cell.offhand { top: 132px; }
+.equipment-cell translation { position: absolute; top: 0; width: 72px; white-space: nowrap; }
+.equipment-left translation { right: 46px; text-align: right; }
+.equipment-right translation { left: 46px; text-align: left; }
+#equipment slot { width: 36px; height: 36px; }

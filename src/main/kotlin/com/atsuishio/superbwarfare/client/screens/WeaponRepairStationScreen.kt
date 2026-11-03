@@ -2,8 +2,11 @@ package com.atsuishio.superbwarfare.client.screens
 
 import com.atsuishio.superbwarfare.inventory.menu.WeaponRepairStationMenu
 import com.sighs.apricityui.init.Document
+import com.sighs.apricityui.init.Element
 import com.sighs.apricityui.layout.Position
 import com.sighs.apricityui.render.Base
+import com.sighs.apricityui.render.Drawer
+import com.sighs.apricityui.resource.async.style.StyleAsyncHandler
 import com.sighs.apricityui.screen.ApricityContainerMenu
 import com.sighs.apricityui.screen.ApricityContainerScreen
 import com.sighs.apricityui.spi.AuiItemRenderRequest
@@ -16,7 +19,7 @@ import kotlin.math.ceil
 
 /** AUI owns real container slots and their input; only synchronized server data drives the dashboard. */
 open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inventory, title: Component) :
-    ApricityContainerScreen(menu, inventory, title) {
+    ApricityContainerScreen<ApricityContainerMenu>(menu, inventory, title) {
     private val station get() = menu as WeaponRepairStationMenu
     private var generation = -1L
     private var boundDocument: Document? = null
@@ -27,25 +30,73 @@ open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inv
     private val floatingItems = mutableListOf<FloatingItem>()
     private val texts = mutableMapOf<String, String>()
     private val styles = mutableMapOf<String, String>()
+    private val elements = mutableMapOf<String, Element>()
+    private var firstFrameReady = false
 
     override fun init() {
-        boundDocument = null
-        generation = -1L
-        texts.clear()
-        styles.clear()
-        layoutWidth = -1.0
-        layoutHeight = -1.0
         floatingItems.clear()
         super.init()
         syncDashboard()
     }
 
-    override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    override fun containerTick() {
+        super.containerTick()
         syncDashboard()
+    }
+
+    override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+        val doc = linkedDocument ?: return
+        Document.withContext(doc).use {
+            renderDocument(graphics, mouseX, mouseY, partialTick, doc)
+        }
+    }
+
+    private fun renderDocument(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float, doc: Document) {
+        if (boundDocument !== doc || !doc.isCurrentGeneration(generation)) syncDashboard()
+        syncLayout(doc)
+        if (!firstFrameReady) {
+            // Async CSS/font tasks run on the client resource queue, independently of screen rendering.
+            // Do not paint or expose native slots with fallback metrics or the unscaled initial layout.
+            if ((StyleAsyncHandler.peekHandle(doc)?.pendingCount() ?: 0) > 0) {
+                graphics.fill(0, 0, width, height, 0xF2040B10.toInt())
+                return
+            }
+            commitScreenLayout(doc)
+            firstFrameReady = true
+        }
         floatingItems.clear()
         super.render(graphics, mouseX, mouseY, partialTick)
         renderFloatingItems(graphics)
         renderStationTooltip(graphics, mouseX, mouseY)
+    }
+
+    private fun commitScreenLayout(doc: Document) {
+        Document.runWithContext(doc) {
+            // The base container's initial slot binding may have measured the root in MC GUI units.
+            // Rebuild it in the document's CSS viewport before exposing any geometry or painting.
+            doc.markDirty(Drawer.RELAYOUT or Drawer.REPAINT or Drawer.REORDER)
+            doc.commitRenderState()
+        }
+    }
+
+    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int) =
+        !firstFrameReady || inputInDocument { super.mouseClicked(mouseX, mouseY, button) }
+
+    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int) =
+        !firstFrameReady || inputInDocument { super.mouseReleased(mouseX, mouseY, button) }
+
+    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, dragX: Double, dragY: Double) =
+        !firstFrameReady || inputInDocument { super.mouseDragged(mouseX, mouseY, button, dragX, dragY) }
+
+    override fun mouseScrolled(mouseX: Double, mouseY: Double, delta: Double) =
+        !firstFrameReady || inputInDocument { super.mouseScrolled(mouseX, mouseY, delta) }
+
+    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int) =
+        inputInDocument { super.keyPressed(keyCode, scanCode, modifiers) }
+
+    private fun inputInDocument(action: () -> Boolean): Boolean {
+        val doc = linkedDocument ?: return false
+        return Document.withContext(doc).use { action() }
     }
 
     // AUI's default floating ItemNode is fixed at scale=1. Capture the native position,
@@ -102,10 +153,15 @@ open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inv
 
     private fun syncDashboard() {
         val doc = linkedDocument ?: return
+        Document.runWithContext(doc) { syncDashboard(doc) }
+    }
+
+    private fun syncDashboard(doc: Document) {
         if (boundDocument !== doc || !doc.isCurrentGeneration(generation)) {
             boundDocument = doc
             generation = doc.refreshGeneration
-            texts.clear(); styles.clear()
+            texts.clear(); styles.clear(); elements.clear()
+            firstFrameReady = false
             layoutWidth = -1.0
             layoutHeight = -1.0
             doc.getElementById("close")?.addEventListener("click") { onClose() }
@@ -113,7 +169,6 @@ open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inv
                 minecraft?.gameMode?.handleInventoryButtonClick(station.containerId, 0)
             }
         }
-        syncLayout(doc)
         val item = station.getSlot(0).item
         val damage = if (item.isDamageableItem) item.damageValue.coerceAtLeast(0) else 0
         val max = if (item.isDamageableItem) item.maxDamage else 0
@@ -147,6 +202,8 @@ open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inv
         style(doc, "status", "color: $color;")
         style(doc, "scan-line", "display: ${if (status == "repairing") "block" else "none"};")
         style(doc, "pulse-dot", "background: $color;")
+        // Batch the initial dashboard mutations with the viewport transform before committing layout.
+        syncLayout(doc)
     }
 
     private fun syncLayout(doc: Document) {
@@ -156,12 +213,12 @@ open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inv
         if (width == layoutWidth && height == layoutHeight) return
         layoutWidth = width
         layoutHeight = height
+        firstFrameReady = false
         layoutScale = minOf(width / 1280.0, height / 720.0).coerceAtLeast(0.001)
         val left = (width - 1280.0 * layoutScale) / 2.0
         val top = (height - 720.0 * layoutScale) / 2.0
         style(doc, "repair-layout", "left: ${left}px; top: ${top}px; transform: scale($layoutScale);")
-        // Commit transformed bounds before AUI synchronizes native slot positions and hover tests.
-        doc.commitRenderState()
+        // The first render commits all dashboard/viewport changes together before native slot sync.
     }
 
     private fun tr(key: String, vararg args: Any) =
@@ -169,11 +226,14 @@ open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inv
 
     private fun text(doc: Document, id: String, value: String) {
         if (texts[id] == value) return
-        doc.getElementById(id)?.let { it.textContent = value; texts[id] = value }
+        element(doc, id)?.let { it.textContent = value; texts[id] = value }
     }
 
     private fun style(doc: Document, id: String, value: String) {
         if (styles[id] == value) return
-        doc.getElementById(id)?.let { it.setAttribute("style", value); styles[id] = value }
+        element(doc, id)?.let { it.setAttribute("style", value); styles[id] = value }
     }
+
+    private fun element(doc: Document, id: String): Element? =
+        elements[id] ?: doc.getElementById(id)?.also { elements[id] = it }
 }
