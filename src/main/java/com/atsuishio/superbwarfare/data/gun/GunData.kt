@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData.Companion.BACKUP_AMMO_CACHE_
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.DATA_VERSION
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.get
-import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getDefault
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_CONSUMER
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_COST_PER_SHOOT
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AVAILABLE_FIRE_MODES
@@ -1013,6 +1012,21 @@ class GunData private constructor(
      */
     fun primaryAmmoCostPerShoot(): Int {
         return get(AMMO_COST_PER_SHOOT)
+    }
+
+    /**
+     * 一次开火实际消耗多少 FE：按 [DefaultGunData.fuelPerAmmo] 把弹药单位折算成能量。
+     *
+     * 声明了换算比例的能量武器（`devotion` 这类「电量→发数」的枪）每发值
+     * `AmmoCostPerShoot * FuelPerAmmo` 电量，与它当前是弹匣型还是背包型无关 ——
+     * `背包连弹夹` 会把 `Magazine` 改成 0 让它直接吃背包能量，但一发该扣多少电不变。
+     * 没声明比例的纯能量枪 1 弹药单位就是 1 FE。
+     */
+    fun energyPerShot(): Int {
+        val cost = primaryAmmoCostPerShoot().coerceAtLeast(1)
+        val fuel = get(FUEL_PER_AMMO)
+        if (fuel <= 0) return cost
+        return min(cost.toLong() * fuel, Int.MAX_VALUE.toLong()).toInt()
     }
 
     /**
