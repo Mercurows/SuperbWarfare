@@ -1,0 +1,62 @@
+{
+  "Slot": "Scope",
+  "Level": 1,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.36
+    }
+  ],
+  "Bone": "scope_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/scope_hanyang_88_re_standard.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/scope_hanyang_88_re_standard.png",
+  "TextShow": [
+    {
+      "Bone": "range_text",
+      "Scale": 0.04,
+      "Align": "Center",
+      "ColorMode": "Switch",
+      "Color": {
+        "Default": "FFFFFF"
+      },
+      "Shadow": false,
+      "Text": "%range%"
+    },
+    {
+      "Bone": "ammo_text",
+      "Scale": 0.04,
+      "Align": "Right",
+      "ColorMode": "Switch",
+      "Color": {
+        "Default": "FFFFFF", "0.5": "FF6127", "0.25": "FF0000"
+      },
+      "Shadow": false,
+      "Text": "%ammo_count%"
+    },
+    {
+      "Bone": "heat_text",
+      "Scale": 0.04,
+      "Align": "Left",
+      "ColorMode": "Switch",
+      "Color": {
+        "Default": "FFFFFF", "0.5": "FF6127", "0.25": "FF0000"
+      },
+      "Shadow": false,
+      "Text": "%heat_shots%"
+    }
+  ],
+  "ScopeInfo": {
+    "Type": "Scope",
+    "ZoomLengthScale": 0.3,
+    "LensEdgeWidth": 0.35,
+    "LensTint": "#70AEE8",
+    "LensTintStrength": 0.2,
+    "Zoom": {
+      "Min": 4,
+      "Max": 12,
+      "Default": 6,
+      "Step": 0.15
+    }
+  }
+}

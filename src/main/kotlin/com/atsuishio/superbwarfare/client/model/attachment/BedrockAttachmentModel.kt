@@ -272,17 +272,14 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         ammo.renderBars(ammoBarState, poseStack, bufferSource, quadType, triangleType, packedLight, true)
         ammo.restoreBars(ammoBarState)
 
-        for (entry in readout.texts) {
-            ammo.renderText(
-                entry,
-                readout.count,
-                readout.progress,
-                readout.range,
-                readout.heat,
-                readout.zoom,
-                poseStack,
-                bufferSource
-            )
+        for (text in ammo.buildTexts(
+            readout.texts, readout.count, readout.progress, readout.range, readout.heat, readout.zoom,
+            readout.heatShots, readout.heatShotsMax
+        )) {
+            // 分划（`division*`）下的文字只跟着开镜的分划/模板那一遍画；整枪这一遍画了的话，
+            // 腰射（zoomTime = 0）时它们会跟着镜身的 bone 一起糊在屏幕上
+            if (text.divisionIndex >= 0) continue
+            ammo.renderText(text, poseStack, bufferSource)
         }
 
         for (i in hiddenOculars.indices) {
@@ -312,7 +309,8 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         updateDynamicDivisionScale()
         val ammoBarState = ammo.applyBars(readout.bars, readout.progress)
         val texts = ammo.buildTexts(
-            readout.texts, readout.count, readout.progress, readout.range, readout.heat, readout.zoom
+            readout.texts, readout.count, readout.progress, readout.range, readout.heat, readout.zoom,
+            readout.heatShots, readout.heatShotsMax
         )
         val quadType = RenderType.entityTranslucent(texture)
         val triangleType = BedrockModelRenderTypes.polyMeshCutout(texture)

@@ -394,7 +394,7 @@ open class GeoGunModel @JvmOverloads constructor(
         for (entry in readout.texts) {
             ammo.renderText(
                 entry, readout.count, readout.progress, readout.range, readout.heat, readout.zoom,
-                poseStack, bufferSource
+                readout.heatShots, readout.heatShotsMax, poseStack, bufferSource
             )
         }
     }

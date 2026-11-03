@@ -2772,7 +2772,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
             gunSmithing(
                 writer,
                 ModItems.HANYANG_88_RE_BLUEPRINT.get(),
-                GunRarity.VIRTUAL,
+                GunRarity.LEGENDARY,
                 ModItems.BATTERY.get(),
                 ModItems.HANYANG_88_RE.get()
             )

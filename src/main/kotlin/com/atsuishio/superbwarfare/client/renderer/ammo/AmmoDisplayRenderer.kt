@@ -144,7 +144,9 @@ internal class AmmoDisplayRenderer(
         progress: Float,
         range: Int = AmmoTextEntry.NO_RANGE,
         heat: Int = 0,
-        zoom: Int = AmmoTextEntry.NO_ZOOM
+        zoom: Int = AmmoTextEntry.NO_ZOOM,
+        heatShots: Int = AmmoTextEntry.NO_HEAT_SHOTS,
+        heatShotsMax: Int = 0
     ): List<AmmoText> {
         if (entries.isEmpty()) return emptyList()
 
@@ -154,14 +156,19 @@ internal class AmmoDisplayRenderer(
             if (index < 0) continue
             // -1 保留、不过滤：不在 division 子树下的锚点没法跟着准星画，但仍要由剩下那一遍画出来，
             // 否则它只会在第三人称和物品栏里可见
-            texts += AmmoText(entry, count, progress, range, heat, zoom, divisionAnchorOf(index))
+            texts += AmmoText(
+                entry, count, progress, range, heat, zoom, divisionAnchorOf(index), heatShots, heatShotsMax
+            )
         }
         return texts
     }
 
     /** 在 [text] 的锚点骨骼上把它画出来 */
     fun renderText(text: AmmoText, poseStack: PoseStack, bufferSource: MultiBufferSource) {
-        renderText(text.entry, text.count, text.progress, text.range, text.heat, text.zoom, poseStack, bufferSource)
+        renderText(
+            text.entry, text.count, text.progress, text.range, text.heat, text.zoom, text.heatShots,
+            text.heatShotsMax, poseStack, bufferSource
+        )
     }
 
     /** 在锚点骨骼上画一行弹药文字，位置与朝向都由该骨骼给出 */
@@ -172,6 +179,8 @@ internal class AmmoDisplayRenderer(
         range: Int,
         heat: Int,
         zoom: Int,
+        heatShots: Int,
+        heatShotsMax: Int,
         poseStack: PoseStack,
         bufferSource: MultiBufferSource
     ) {
@@ -180,7 +189,7 @@ internal class AmmoDisplayRenderer(
         if (entry.usesZoom && zoom == AmmoTextEntry.NO_ZOOM) return
         if (!visibleInModel(index, includeSelf = true)) return
 
-        val text = entry.resolve(count, range, heat, zoom)
+        val text = entry.resolve(count, range, heat, zoom, heatShots)
         if (text.isEmpty()) return
 
         val font = Minecraft.getInstance().font
@@ -201,7 +210,7 @@ internal class AmmoDisplayRenderer(
             text,
             0f,
             0f,
-            entry.colorAt(progress, heat),
+            entry.colorAt(colorValue(entry, progress, heatShots, heatShotsMax), heat),
             entry.shadow,
             poseStack.last().pose(),
             bufferSource,
@@ -231,6 +240,18 @@ internal class AmmoDisplayRenderer(
         return true
     }
 
+    /**
+     * 这条文字该拿哪个数去查颜色档位
+     *
+     * `%heat_shots%` 量的是「还能打几发」，跟余弹一样越大越好，所以按它占满值
+     * （热量为 0 时的发数）的比例走同一套档位；热量不设上限时恒当满值
+     */
+    private fun colorValue(entry: AmmoTextEntry, progress: Float, heatShots: Int, heatShotsMax: Int): Float {
+        if (!entry.usesHeatShots) return progress
+        if (heatShots <= AmmoTextEntry.NO_HEAT_SHOTS || heatShotsMax <= 0) return 1f
+        return (heatShots.toFloat() / heatShotsMax).coerceIn(0f, 1f)
+    }
+
     /** [textBoneIndex] 所属的 division 骨骼下标，不在 `division*` 子树下时为 `-1` */
     private fun divisionAnchorOf(textBoneIndex: Int): Int {
         if (divisionBones.isEmpty()) return -1
@@ -250,7 +271,9 @@ internal class AmmoDisplayRenderer(
         val range: Int,
         val heat: Int,
         val zoom: Int,
-        val divisionIndex: Int
+        val divisionIndex: Int,
+        val heatShots: Int = AmmoTextEntry.NO_HEAT_SHOTS,
+        val heatShotsMax: Int = 0
     )
 
     /** [applyBars] 要交还的东西：它动过的骨骼、这些骨骼原来的缩放与可见性、每条解析出的颜色 */

@@ -17,6 +17,10 @@ data class AmmoReadout(
     val heat: Int = 0,
     /** `%zoom%` 展开成的当前倍率；[AmmoTextEntry.NO_ZOOM] 表示本帧没有读数 */
     val zoom: Int = AmmoTextEntry.NO_ZOOM,
+    /** `%heat_shots%` 展开成的可再射击发数；[AmmoTextEntry.NO_HEAT_SHOTS] 表示热量没有上限 */
+    val heatShots: Int = AmmoTextEntry.NO_HEAT_SHOTS,
+    /** `%heat_shots%` 的满值（热量为 0 时的可射击发数），取色按 [heatShots] 占它的比例算；`0` 表示没有上限 */
+    val heatShotsMax: Int = 0,
 ) {
     /** 模型没配任何弹药显示时为 `true` */
     val isEmpty: Boolean get() = bars.isEmpty() && texts.isEmpty()
