@@ -45,6 +45,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.M18_SMOKE_GRENADE.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.M84_STUN_GRENADE.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.DECOY_GRENADE.get(), ::BasicProjectileRenderer)
+            registerEntityRenderer(ModEntities.MOLOTOV.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.MLE_1934.get(), ::Mle1934Renderer)
             registerEntityRenderer(ModEntities.JAVELIN_MISSILE.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.ANNIHILATOR.get(), ::AnnihilatorRenderer)

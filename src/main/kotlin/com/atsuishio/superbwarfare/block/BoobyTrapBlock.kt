@@ -6,8 +6,10 @@ import com.atsuishio.superbwarfare.item.misc.DefuserItem
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.mojang.serialization.MapCodec
+import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.RandomSource
 import net.minecraft.world.InteractionHand
@@ -16,7 +18,9 @@ import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.BlockItem
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Explosion
 import net.minecraft.world.level.Level
@@ -44,12 +48,22 @@ open class BoobyTrapBlock : BaseEntityBlock(
         registerDefaultState(stateDefinition.any().setValue(CAMOUFLAGED, false).setValue(OFF, false))
     }
 
+    override fun appendHoverText(
+        stack: ItemStack,
+        context: Item.TooltipContext,
+        tooltip: MutableList<Component>,
+        flag: TooltipFlag
+    ) {
+        tooltip.add(Component.translatable("des.superbwarfare.booby_trap").withStyle(ChatFormatting.GRAY))
+    }
+
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
         builder.add(CAMOUFLAGED, OFF)
     }
 
     override fun newBlockEntity(pos: BlockPos, state: BlockState) = BoobyTrapBlockEntity(pos, state)
 
+    @Deprecated("Deprecated in Java")
     override fun getRenderShape(state: BlockState) =
         if (state.getValue(CAMOUFLAGED) && !state.getValue(OFF)) RenderShape.INVISIBLE else RenderShape.MODEL
 
@@ -58,6 +72,7 @@ open class BoobyTrapBlock : BaseEntityBlock(
         return (world.getBlockEntity(pos) as? BoobyTrapBlockEntity)?.camouflage
     }
 
+    @Deprecated("Deprecated in Java")
     override fun getLightBlock(state: BlockState, world: BlockGetter, pos: BlockPos): Int =
         lightMaterial(state, world, pos)?.getLightBlock(world, pos) ?: world.maxLightLevel
 
@@ -67,9 +82,11 @@ open class BoobyTrapBlock : BaseEntityBlock(
     override fun propagatesSkylightDown(state: BlockState, world: BlockGetter, pos: BlockPos): Boolean =
         lightMaterial(state, world, pos)?.propagatesSkylightDown(world, pos) ?: false
 
+    @Deprecated("Deprecated in Java")
     override fun getShadeBrightness(state: BlockState, world: BlockGetter, pos: BlockPos): Float =
         lightMaterial(state, world, pos)?.getShadeBrightness(world, pos) ?: 0.2f
 
+    @Deprecated("Deprecated in Java")
     override fun getOcclusionShape(state: BlockState, world: BlockGetter, pos: BlockPos): VoxelShape {
         val material = lightMaterial(state, world, pos) ?: return Shapes.block()
         return if (material.canOcclude()) material.getOcclusionShape(world, pos) else Shapes.empty()
@@ -125,6 +142,7 @@ open class BoobyTrapBlock : BaseEntityBlock(
         return ItemInteractionResult.sidedSuccess(level.isClientSide)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, moving: Boolean) {
         super.onPlace(state, level, pos, oldState, moving)
         if (oldState.block !== this && !level.isClientSide) {
@@ -144,6 +162,7 @@ open class BoobyTrapBlock : BaseEntityBlock(
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun attack(state: BlockState, level: Level, pos: BlockPos, player: Player) {
         if (!level.isClientSide && !canMineSafely(state, level, pos, player)) detonate(level, pos)
     }
@@ -162,6 +181,7 @@ open class BoobyTrapBlock : BaseEntityBlock(
         state.getValue(OFF) || player.isCreative ||
             (level.getBlockEntity(pos) as? BoobyTrapBlockEntity)?.isOwnerOrAlly(player) == true
 
+    @Deprecated("Deprecated in Java")
     override fun neighborChanged(
         state: BlockState,
         level: Level,

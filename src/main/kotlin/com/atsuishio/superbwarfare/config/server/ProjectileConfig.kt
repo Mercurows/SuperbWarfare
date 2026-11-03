@@ -125,6 +125,13 @@ object ProjectileConfig {
     }
 
     @JvmField
+    val MOLOTOV_FIRE_RADIUS = buildServerConfig {
+        push("Molotov")
+        comment("燃烧瓶火焰半径（格），设为0关闭铺火 / Molotov fire radius in blocks; set to 0 to disable fire placement")
+        defineInRange("fire_radius", 3.0, 0.0, 32.0).also { pop() }
+    }
+
+    @JvmField
     val PROJECTILE_CHUNK_AGE = buildServerConfig {
         comment("Ticks before a force-loaded projectile chunk expires without entity activity.")
         comment("投射物强制加载的区块在无实体活动后的存活tick数")
