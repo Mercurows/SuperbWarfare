@@ -1065,6 +1065,11 @@
 					"parent": "positioning",
 					"pivot": [-0.7415, 0, -16.25213],
 					"rotation": [0, -90, 0]
+				},
+				{
+					"name": "charm_pos",
+					"parent": "bone15",
+					"pivot": [65.4001, -52.2668, -0.1324]
 				}
 			]
 		}

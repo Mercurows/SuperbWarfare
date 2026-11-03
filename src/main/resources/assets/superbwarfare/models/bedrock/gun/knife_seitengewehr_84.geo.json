@@ -1158,6 +1158,11 @@
 					"parent": "positioning",
 					"pivot": [-0.4915, 8.18657, -0.25213],
 					"rotation": [-90, 45, -90]
+				},
+				{
+					"name": "charm_pos",
+					"parent": "second_root",
+					"pivot": [0, 3.0787, 3.4794]
 				}
 			],
 			"item_display_transforms": {
