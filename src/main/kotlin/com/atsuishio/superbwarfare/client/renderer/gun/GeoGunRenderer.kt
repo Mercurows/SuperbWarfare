@@ -1840,6 +1840,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         return from(stack).selectedAmmoType.get()
     }
 
+    open fun scriptFireModeIndex(stack: ItemStack): Int {
+        return from(stack).selectedFireMode.get()
+    }
+
     open fun scriptFrameDeltaSeconds(): Float {
         return Minecraft.getInstance().deltaFrameTime.coerceIn(0f, 0.8f)
     }

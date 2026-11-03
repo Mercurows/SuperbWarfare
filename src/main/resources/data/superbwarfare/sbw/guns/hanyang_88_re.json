@@ -56,7 +56,7 @@
     "Semi",
     {
       "Mode": "Semi",
-      "Name": "Laser",
+      "Name": "Semi",
       "Override": {
         "Projectile": {
           "Type": "superbwarfare:reforging_laser",

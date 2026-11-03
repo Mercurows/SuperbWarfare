@@ -14,7 +14,7 @@ function transformCustomModelPart(stack, model, transformType, partialTick, rend
     const scale = JsState.smooth(stack, "chargeBar", progress, rate, CHARGE_BAR_EPSILON)
 
     const showing = transformType.firstPerson() && progress > 0
-    const ammoType = renderer.scriptAmmoType(stack)
+    const fireMode = renderer.scriptFireModeIndex(stack)
 
     const bar = model.getBone(CHARGE_BAR_BONE)
     if (bar != null) {
@@ -24,11 +24,11 @@ function transformCustomModelPart(stack, model, transformType, partialTick, rend
 
     const lightning = model.getBone(LIGHTNING_MODE_BONE)
     if (lightning != null) {
-        lightning.visible = showing && ammoType === LIGHTNING_MODE
+        lightning.visible = showing && fireMode === LIGHTNING_MODE
     }
 
     const laser = model.getBone(LASER_MODE_BONE)
     if (laser != null) {
-        laser.visible = showing && ammoType === LASER_MODE
+        laser.visible = showing && fireMode === LASER_MODE
     }
 }
