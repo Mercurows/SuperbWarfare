@@ -6,7 +6,9 @@ import com.atsuishio.superbwarfare.compat.jei.PotionMortarShellRecipeMaker.creat
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModRecipes
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.recipe.UpgradeRecipe
 import com.atsuishio.superbwarfare.tools.NBTTool
+import com.atsuishio.superbwarfare.tools.clientLevel
 import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
 import mezz.jei.api.constants.RecipeTypes
@@ -15,7 +17,6 @@ import mezz.jei.api.ingredients.subtypes.UidContext
 import mezz.jei.api.recipe.RecipeIngredientRole
 import mezz.jei.api.registration.*
 import mezz.jei.api.runtime.IJeiRuntime
-import net.minecraft.client.Minecraft
 import net.minecraft.core.Holder
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
@@ -26,6 +27,7 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.alchemy.Potion
 import net.minecraft.world.item.alchemy.PotionContents
+import net.minecraft.world.item.crafting.RecipeType
 import java.util.*
 import java.util.function.Function
 import javax.annotation.ParametersAreNonnullByDefault
@@ -64,7 +66,7 @@ class SbwJEIPlugin : IModPlugin {
 
     // TODO 正确注册subtypes
     override fun registerRecipes(registration: IRecipeRegistration) {
-        val level = Minecraft.getInstance().level ?: return
+        val level = clientLevel ?: return
         val recipeManager = level.recipeManager
 
         val guns = BuiltInRegistries.ITEM.stream().filter { item: Item? -> item is GunItem }
@@ -96,6 +98,13 @@ class SbwJEIPlugin : IModPlugin {
         )
 
         val specialCraftingRecipes = createRecipes()
+        recipeManager.getAllRecipesFor(RecipeType.CRAFTING).map { it.value }.filterIsInstance<UpgradeRecipe>()
+            .flatMap { listOf(it.base, it.getResultItem(level.registryAccess()).item) }
+            .distinct()
+            .forEach { item ->
+                registration.addItemStackInfo(ItemStack(item), Component.translatable("jei.superbwarfare.upgrade"))
+            }
+
         registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes)
     }
 
