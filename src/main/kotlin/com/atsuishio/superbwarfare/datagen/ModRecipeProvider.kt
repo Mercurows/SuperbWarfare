@@ -356,6 +356,13 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                     has(ModItems.BAYONET_SEITENGEWEHR_84.get())
                 )
                 .save(writer, loc(getItemName(ModItems.KNIFE_SEITENGEWEHR_84.get())))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.KNIFE_HANYANG_88_RE_STANDARD.get())
+                .requires(ModItems.BAYONET_HANYANG_88_RE_STANDARD.get())
+                .unlockedBy(
+                    getHasName(ModItems.BAYONET_HANYANG_88_RE_STANDARD.get()),
+                    has(ModItems.BAYONET_HANYANG_88_RE_STANDARD.get())
+                )
+                .save(writer, loc(getItemName(ModItems.KNIFE_HANYANG_88_RE_STANDARD.get())))
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.KNIFE_M1917.get())
                 .requires(ModItems.BAYONET_M1917.get())
                 .unlockedBy(

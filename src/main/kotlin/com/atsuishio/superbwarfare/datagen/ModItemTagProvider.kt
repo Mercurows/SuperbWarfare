@@ -408,6 +408,7 @@ class ModItemTagProvider(
             ModItems.KNIFE.get(),
             ModItems.KNIFE_6KH2.get(),
             ModItems.KNIFE_SEITENGEWEHR_84.get(),
+            ModItems.KNIFE_HANYANG_88_RE_STANDARD.get(),
             ModItems.KNIFE_M1917.get(),
             ModItems.MIAODAO.get(),
             ModItems.T_BATON.get(),
@@ -622,6 +623,7 @@ class ModItemTagProvider(
             ModItems.BAYONET_M_9,
             ModItems.BAYONET_6KH2,
             ModItems.BAYONET_SEITENGEWEHR_84,
+            ModItems.BAYONET_HANYANG_88_RE_STANDARD,
             ModItems.BAYONET_M_91_30,
             ModItems.BAYONET_TRIANGULAR,
             ModItems.BAYONET_M1917

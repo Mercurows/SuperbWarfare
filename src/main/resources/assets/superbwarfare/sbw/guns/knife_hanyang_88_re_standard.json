@@ -1,0 +1,35 @@
+{
+  "SlotIcon": "superbwarfare:textures/item/knife_hanyang_88_re_standard_icon.png",
+  "UseCustomSprintAnimation": true,
+  "Animation": {
+    "Idle": "animation.knife_hanyang_88_re_standard.idle",
+    "Melee": "animation.knife_hanyang_88_re_standard.melee_1",
+    "Run": "animation.knife_hanyang_88_re_standard.sprint",
+    "Edit": "animation.knife_hanyang_88_re_standard.edit"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/knife_hanyang_88_re_standard.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/knife_hanyang_88_re_standard.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/knife_hanyang_88_re_standard.png"
+  },
+  "ItemDisplay": {
+    "firstperson_righthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "firstperson_lefthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "thirdperson_righthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "thirdperson_lefthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "ground": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "fixed": {
+      "scale": [1.0, 1.0, 1.0]
+    }
+  }
+}
