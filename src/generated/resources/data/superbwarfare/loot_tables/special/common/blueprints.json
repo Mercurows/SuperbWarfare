@@ -127,6 +127,10 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:hanyang_88_re_blueprint"
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:mk_42_blueprint"
         },
         {

@@ -212,6 +212,7 @@ class ModItemTagProvider(
             ModItems.MARLIN.get(),
             ModItems.K_98.get(),
             ModItems.HANYANG_88.get(),
+            ModItems.HANYANG_88_RE.get(),
             ModItems.M_98B.get(),
             ModItems.SENTINEL.get(),
             ModItems.HUNTING_RIFLE.get(),
@@ -269,6 +270,7 @@ class ModItemTagProvider(
             ModItems.M_98B.get(),
             ModItems.K_98.get(),
             ModItems.HANYANG_88.get(),
+            ModItems.HANYANG_88_RE.get(),
             ModItems.MOSIN_NAGANT.get(),
             ModItems.AWM.get(),
             ModItems.QL_1031.get()
@@ -340,6 +342,7 @@ class ModItemTagProvider(
             ModItems.NTW_20_BLUEPRINT.get(),
             ModItems.MINIGUN_BLUEPRINT.get(),
             ModItems.JAVELIN_BLUEPRINT.get(),
+            ModItems.HANYANG_88_RE_BLUEPRINT.get(),
             ModItems.MK_42_BLUEPRINT.get(),
             ModItems.MLE_1934_BLUEPRINT.get(),
             ModItems.ANNIHILATOR_BLUEPRINT.get(),
@@ -594,6 +597,7 @@ class ModItemTagProvider(
             ModItems.SCOPE_ELCAN_4X,
             ModItems.SCOPE_LPVO,
             ModItems.SCOPE_SNIPER,
+            ModItems.SCOPE_HANYANG_88_RE_STANDARD,
             ModItems.SCOPE_WINEFOX,
             ModItems.STEEL_PIPE_SCOPE
         ),

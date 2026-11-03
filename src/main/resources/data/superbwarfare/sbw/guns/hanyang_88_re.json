@@ -1,0 +1,229 @@
+{
+  "Spread": 8,
+  "RecoilX": 0.002,
+  "RecoilY": 0.063,
+  "Damage": 45,
+  "Headshot": 3,
+  "Velocity": 30,
+  "Magazine": 5,
+  "BoltActionTime": 26,
+  "Weight": 5,
+  "RPM": 120,
+  "HeatPerShoot": -15,
+  "MaxEnergy": 100000,
+  "MeleeDamage": 15,
+  "MeleeDuration": 16,
+  "MeleeComboReset": 15,
+  "MeleeHitbox": {
+    "Type": "Box",
+    "Range": 1.5,
+    "Width": 1.8,
+    "Height": 1.8,
+    "YOffset": -0.2,
+    "Occlusion": true
+  },
+  "MeleeSweep": {
+    "From": 0,
+    "To": 0
+  },
+  "MeleeActions": [
+    {
+      "Animation": "hit",
+      "Duration": 16,
+      "HitTime": 6,
+      "MaxTargets": 8,
+      "Falloff": 0.1,
+      "SortBy": "Angle",
+      "Knockback": 0.3,
+      "Headshot": 1.25,
+      "Legshot": 0.75
+    }
+  ],
+  "BayonetCharge": {
+    "Duration": 180,
+    "Speed": 2,
+    "Cooldown": 300,
+    "Sound": "superbwarfare:lunge_mine_growl",
+    "StrikeDuration": 18,
+    "StrikeHitTime": 1,
+    "StrikeDamage": 50
+  },
+  "DrawTime": 13,
+  "ZoomTime": 8,
+  "ZoomSpreadRate": 0.005,
+  "DefaultFireMode": "Semi",
+  "AvailableFireModes": [
+    "Semi",
+    {
+      "Mode": "Semi",
+      "Name": "Laser",
+      "Override": {
+        "Projectile": {
+          "Type": "superbwarfare:reforging_laser",
+          "Data": {
+            "Owner": "@sbw:owner"
+          }
+        },
+        "AmmoType": "FE",
+        "AmmoCostPerShoot": 2000,
+        "Magazine": 0,
+        "BoltActionTime": 0,
+        "Damage": 20,
+        "Headshot": 3,
+        "BypassesArmor": 1.0,
+        "RPM": 90,
+        "HeatPerShoot": 15,
+        "Range": 256,
+        "Velocity": 6000000000,
+        "Gravity": 0,
+        "ProjectileLife": 10,
+        "Spread": 0,
+        "RecoilX": 0.001,
+        "RecoilY": 0.033,
+        "ZoomSpreadRate": 0,
+        "ShootAnimation": "animation.hanyang_88_re.shoot_laser",
+        "SoundInfo": {
+          "Fire1P": "superbwarfare:hanyang_88_re_fire_1p_laser",
+          "Fire3P": "superbwarfare:hanyang_88_re_fire_3p_laser",
+          "Fire1PSilent": "superbwarfare:hanyang_88_re_fire_1p_laser",
+          "Fire3PSilent": "superbwarfare:hanyang_88_re_fire_3p_laser",
+          "Fire3PFar": "superbwarfare:empty",
+          "Fire3PVeryFar": "superbwarfare:empty"
+        }
+      }
+    }
+  ],
+  "GunType": "Sniper",
+  "ReloadTypes": [
+    "Clip",
+    "Iterative"
+  ],
+  "ReloadTypesWithAttachment": {
+    "Scope": [
+      "Iterative"
+    ]
+  },
+  "EmptyReloadTime": 49,
+  "PrepareTime": 18,
+  "IterativeTime": 12,
+  "FinishTime": 22,
+  "ActionSteps": [
+    {
+      "Timeline": "RELOAD_EMPTY",
+      "Progress": 0.8,
+      "Action": "CLOSE_STRIKE",
+      "Value": false
+    },
+    {
+      "Timeline": "RELOAD_FINISH",
+      "Progress": 0.52381,
+      "Action": "CLOSE_STRIKE",
+      "Value": false
+    },
+    {
+      "Timeline": "RELOAD_FINISH",
+      "Progress": 0.52381,
+      "Action": "EMPTY",
+      "Value": false
+    },
+    {
+      "Timeline": "BOLT",
+      "Progress": 0.22222,
+      "Action": "CLOSE_STRIKE",
+      "Value": false
+    }
+  ],
+  "BypassesArmor": 0.5,
+  "SoundRadius": 18,
+  "DamageReduce": {
+    "Type": "Sniper"
+  },
+  "AmmoType": "@SniperAmmo",
+  "Icon": "superbwarfare:textures/gun_icon/hanyang_88_re_icon.png",
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_raiser",
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_aimpoint_t2",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_drs_th",
+      "superbwarfare:scope_okp_7",
+      "superbwarfare:scope_pkas",
+      "superbwarfare:scope_bruiser",
+      "superbwarfare:scope_ranger",
+      "superbwarfare:scope_1p_78",
+      "superbwarfare:scope_pk_a",
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_qmk171",
+      "superbwarfare:scope_hamr",
+      "superbwarfare:scope_elcan_4x",
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper",
+      "superbwarfare:scope_hanyang_88_re_standard",
+      "superbwarfare:scope_winefox",
+      "superbwarfare:steel_pipe_scope",
+      "superbwarfare:scope_spyglass"
+    ],
+    "Muzzle": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:ru_silencer",
+      "superbwarfare:muzzle_brake_ru",
+      "superbwarfare:muzzle_brake_ar",
+      "superbwarfare:muzzle_break_birdcage",
+      "superbwarfare:muzzle_zenit_dtk_1",
+      "superbwarfare:muzzle_compensator_r_17",
+      "superbwarfare:ar_silencer",
+      "superbwarfare:loudspeaker",
+      "superbwarfare:bayonet_seitengewehr_84",
+      "superbwarfare:milencer",
+      "superbwarfare:steel_pipe_silencer"
+    ],
+    "LowerRail": [
+      "superbwarfare:lower_rail_bipod",
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
+    ],
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ]
+  },
+  "AvailablePerks": [
+    "superbwarfare:striving_for_perfection",
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:kill_clip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:magnificent_howl",
+    "superbwarfare:fair_means",
+    "superbwarfare:brain_storm",
+    "superbwarfare:battle_of_wits",
+    "superbwarfare:target_lock",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:cluster_bomb",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights",
+    "superbwarfare:triple_tap",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve",
+    "superbwarfare:stop_gap"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:hanyang_88_re_fire_1p",
+    "Fire3P": "superbwarfare:hanyang_88_re_fire_3p",
+    "Fire1PSilent": "superbwarfare:hanyang_88_re_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:hanyang_88_re_fire_3p_s",
+    "Fire3PFar": "superbwarfare:k_98_far",
+    "Fire3PVeryFar": "superbwarfare:k_98_veryfar"
+  }
+}

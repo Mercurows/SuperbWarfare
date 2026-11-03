@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "superbwarfare:item/scope_hanyang_88_re_standard"
+  }
+}

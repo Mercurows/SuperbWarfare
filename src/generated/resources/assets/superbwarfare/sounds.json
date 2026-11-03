@@ -888,6 +888,36 @@
       "superbwarfare:gun/hanyang_88/hanyang_88_fire_3p"
     ]
   },
+  "hanyang_88_re_fire_1p": {
+    "sounds": [
+      "superbwarfare:gun/hanyang_88_re/hanyang_88_re_fire_1p"
+    ]
+  },
+  "hanyang_88_re_fire_1p_laser": {
+    "sounds": [
+      "superbwarfare:gun/hanyang_88_re/hanyang_88_re_fire_1p_laser"
+    ]
+  },
+  "hanyang_88_re_fire_1p_s": {
+    "sounds": [
+      "superbwarfare:gun/hanyang_88_re/hanyang_88_re_fire_1p_s"
+    ]
+  },
+  "hanyang_88_re_fire_3p": {
+    "sounds": [
+      "superbwarfare:gun/hanyang_88_re/hanyang_88_re_fire_3p"
+    ]
+  },
+  "hanyang_88_re_fire_3p_laser": {
+    "sounds": [
+      "superbwarfare:gun/hanyang_88_re/hanyang_88_re_fire_3p_laser"
+    ]
+  },
+  "hanyang_88_re_fire_3p_s": {
+    "sounds": [
+      "superbwarfare:gun/hanyang_88_re/hanyang_88_re_fire_3p_s"
+    ]
+  },
   "happiest_ghast_door_close": {
     "sounds": [
       "superbwarfare:vehicle/happiest_ghast/happiest_ghast_door_close"

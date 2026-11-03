@@ -15,6 +15,7 @@ import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.MERGE_BLENDER
 import com.atsuishio.superbwarfare.client.renderer.laser.LaserSightCapture
 import com.atsuishio.superbwarfare.client.renderer.laser.LaserSightRenderer
+import com.atsuishio.superbwarfare.client.renderer.projectile.LaserBeamRenderer
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensShader
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
 import com.atsuishio.superbwarfare.client.screens.WeaponEditMountTracker
@@ -91,6 +92,7 @@ import org.lwjgl.opengl.GL11
 import java.lang.Math
 import java.util.*
 import kotlin.math.atan2
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -103,6 +105,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     private var handledScopeAttachment: ResourceLocation? = null
     private var gunStencilCulling = false
+    private var scopedBeamTailBone: String? = null
     private val scopeViewSmoothing = mutableMapOf<InteractionHand, ScopeViewSmoothState>()
 
     // 当前正在渲染的本地玩家第一人称手
@@ -309,6 +312,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         partialTick: Float
     ) {
         handledScopeAttachment = null
+        scopedBeamTailBone = null
         if (transformType.firstPerson()) {
             lastBoneTransforms[handForContext(transformType)]?.clear()
         }
@@ -466,6 +470,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 poseStack.popPose()
 
                 if (stencilScope.scopeMode.isScope()) {
+                    scopedBeamTailBone = AttachmentSlots.Bones.SCOPE
                     ScopeStencilRenderHelper.enableItemEntityStencilTest()
                     RenderSystem.stencilFunc(GL11.GL_EQUAL, 0, 0xFF)
                     RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
@@ -680,6 +685,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             packedOverlay,
             handForContext(transformType)
         )
+        LaserBeamRenderer.captureMuzzle(poseStack, model, transformType, scopedBeamTailBone)
     }
 
     /**
@@ -777,7 +783,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 shieldHidden = definition.shield != null && hideBrokenShield(attachmentModel, stack)
                 attachmentModel.renderToBuffer(
                     poseStack, bufferSource, texture, packedLight, packedOverlay,
-                    null, attachmentReadout(stack, definition, hand)
+                    null, attachmentReadout(stack, definition)
                 )
             } finally {
                 // 附件模型实例是全局共享的，写进去的姿态必须还原；
@@ -852,7 +858,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 packedLight,
                 packedOverlay,
                 null,
-                resolveAmmoReadout(stack, host.ammoBar, host.textShow)
+                resolveAmmoReadout(stack, host.ammoBar, host.textShow, measureRangeFor(host.textShow))
             )
             poseStack.popPose()
         }
@@ -923,7 +929,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     /** 本帧的弹药读数：弹药条要用的余弹比例，与弹药文字要用的余弹数、热量、测距距离 */
     protected open fun resolveAmmoReadout(stack: ItemStack, data: ScopeRenderData): AmmoReadout {
-        return resolveAmmoReadout(stack, data.ammoBar, data.textShow)
+        return resolveAmmoReadout(stack, data.ammoBar, data.textShow, measureRangeFor(data.textShow))
     }
 
     /** 本帧的弹药读数：弹药条要用的余弹比例，与弹药文字要用的余弹数、热量 */
@@ -939,6 +945,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         // 热量只在真的有文字要显示它时才读，温度读数与余弹一样是枪自己的状态
         val heat = if (texts.any { it.usesHeat }) gun.heat.get().roundToInt() else 0
         val zoom = if (texts.any { it.usesZoom }) gun.zoom().roundToInt() else AmmoTextEntry.NO_ZOOM
+        val heatShots = if (texts.any { it.usesHeatShots }) remainingHeatShots(gun) else AmmoTextEntry.NO_HEAT_SHOTS
+        val heatShotsMax = if (texts.any { it.usesHeatShots }) maxHeatShots(gun) else 0
 
         val consumer = gun.selectedAmmoConsumer()
         if (gun.useBackpackAmmo() && consumer.type == AmmoConsumeType.ENERGY) {
@@ -957,14 +965,16 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 stored / cost,
                 range,
                 heat,
-                zoom
+                zoom,
+                heatShots,
+                heatShotsMax
             )
         }
 
         val count = gun.ammo.get()
         val magazine = gun.get(GunProp.MAGAZINE)
         // 其余没有可用弹匣的枪（背包弹药等）保持原样：弹药条按满算，而不是除以零
-        if (magazine <= 0) return AmmoReadout(bars, texts, 1f, count, range, heat, zoom)
+        if (magazine <= 0) return AmmoReadout(bars, texts, 1f, count, range, heat, zoom, heatShots, heatShotsMax)
         return AmmoReadout(
             bars,
             texts,
@@ -972,8 +982,34 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             count,
             range,
             heat,
-            zoom
+            zoom,
+            heatShots,
+            heatShotsMax
         )
+    }
+
+    /**
+     * 按当前热量还能再打几发：**含把热量顶满的那一发**（那一发照样能打出去，打完才过热），
+     * 所以是把剩余热量预算向上取整；`0` 表示已经过热、一发都打不出去（[GunData.overHeat]）。
+     * 每发热量为 0（热量根本攒不起来）时返回 [AmmoTextEntry.NO_HEAT_SHOTS]，显示成 ∞
+     */
+    protected open fun remainingHeatShots(gun: GunData): Int {
+        val perShot = gun.get(GunProp.HEAT_PER_SHOOT)
+        if (perShot <= 0.0) return AmmoTextEntry.NO_HEAT_SHOTS
+        if (gun.overHeat.get()) return 0
+        val budget = 100.0 - gun.heat.get()
+        if (budget <= 0.0) return 0
+        return ceil(budget / perShot).toInt()
+    }
+
+    /**
+     * `%heat_shots%` 的满值：热量为 0 时的可射击发数，文字的取色档位按 [remainingHeatShots] 占它的比例算。
+     * 每发热量为 0（热量不会攒起来，读数恒为 ∞）时返回 `0`，表示没有上限
+     */
+    protected open fun maxHeatShots(gun: GunData): Int {
+        val perShot = gun.get(GunProp.HEAT_PER_SHOOT)
+        if (perShot <= 0.0) return 0
+        return ceil(100.0 / perShot).toInt()
     }
 
     /**
@@ -982,15 +1018,19 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     private fun attachmentReadout(
         stack: ItemStack,
         definition: AttachmentDefinition,
-        hand: InteractionHand,
     ): AmmoReadout {
         val texts = definition.textShow
-        val range = if (hand == localFirstPersonHand && texts.any { it.usesRange }) {
-            this.measureRange(localPlayer)
-        } else {
-            AmmoTextEntry.NO_RANGE
-        }
-        return resolveAmmoReadout(stack, definition.ammoBar, texts, range)
+        return resolveAmmoReadout(stack, definition.ammoBar, texts, measureRangeFor(texts))
+    }
+
+    /**
+     * 本帧要不要测距：只有本地玩家第一人称手里那把枪的文字才测 ——
+     * 别人手里的枪、物品栏/展示框里的模型都不该显示自己准星的距离
+     */
+    private fun measureRangeFor(texts: List<AmmoTextEntry>): Int {
+        if (localFirstPersonHand == null) return AmmoTextEntry.NO_RANGE
+        if (texts.none { it.usesRange }) return AmmoTextEntry.NO_RANGE
+        return measureRange(localPlayer)
     }
 
     /**
@@ -1015,7 +1055,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      * ammo display, so a gun with no `AmmoBar` / `TextShow` never pays for a magazine resolve.
      */
     protected open fun resolveGunAmmoReadout(stack: ItemStack, resource: DefaultGunResource): AmmoReadout {
-        return resolveAmmoReadout(stack, resource.ammoBar, resource.textShow)
+        return resolveAmmoReadout(stack, resource.ammoBar, resource.textShow, measureRangeFor(resource.textShow))
     }
 
     private fun findStencilScope(stack: ItemStack, model: GeoGunModel): ScopeRenderData? {
