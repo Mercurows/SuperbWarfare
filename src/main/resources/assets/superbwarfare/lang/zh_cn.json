@@ -1537,6 +1537,7 @@
   "des.superbwarfare.developing": "本物品还在开发中",
 
   "jei.superbwarfare.ancient_cpu": "神秘的古代科技，可以在古城找到。",
+  "jei.superbwarfare.upgrade": "升级改造配方：改造枪械前，必须卸下所有武器模组和配件。",
   "jei.superbwarfare.charging_station": "使用燃料或食物进行发电，也可以接收主动输入的FE能量。能够为相邻的方块提供FE能量，为周围一定范围内的可充能载具充能。",
   "jei.superbwarfare.gun_perks": "武器可用模组",
   "jei.superbwarfare.gun_perk_usages": "模组可装武器",

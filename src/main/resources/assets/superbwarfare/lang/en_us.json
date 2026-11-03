@@ -1537,6 +1537,7 @@
   "des.superbwarfare.developing": "This item is still under development",
 
   "jei.superbwarfare.ancient_cpu": "Mysterious ancient technology, can be found at ancient cities.",
+  "jei.superbwarfare.upgrade": "Upgrade recipes: remove all weapon perks and attachments before upgrading a gun.",
   "jei.superbwarfare.charging_station": "Generates power by consuming fuel or food, and can also accept FE energy input. This block supplies FE energy to adjacent blocks, and can also charge rechargeable vehicles within range.",
   "jei.superbwarfare.gun_perks": "Available Perks",
   "jei.superbwarfare.gun_perk_usages": "Compatible Guns",

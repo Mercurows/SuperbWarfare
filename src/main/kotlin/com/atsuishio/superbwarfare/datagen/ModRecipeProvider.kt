@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.datagen.builder.NBTShapedRecipeBuilder
 import com.atsuishio.superbwarfare.datagen.builder.ResearchingRecipeBuilder
+import com.atsuishio.superbwarfare.datagen.builder.UpgradeRecipeBuilder
 import com.atsuishio.superbwarfare.datagen.builder.VehicleAssemblingRecipeBuilder
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.init.ModItems.Materials
@@ -2743,13 +2744,13 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 ItemTags.LOGS,
                 ModItems.HANYANG_88.get()
             )
-            gunSmithing(
-                writer,
-                ModItems.HANYANG_88_RE_BLUEPRINT.get(),
-                GunRarity.LEGENDARY,
-                ModItems.BATTERY.get(),
-                ModItems.HANYANG_88_RE.get()
-            )
+            UpgradeRecipeBuilder(ModItems.HANYANG_88.get(), ModItems.HANYANG_88_RE.get())
+                .requires(ModItems.HANYANG_88_RE_BLUEPRINT.get())
+                .requires(ModItems.LEGENDARY_MATERIAL_PACK.get())
+                .requires(ModItems.LASER_UNIT.get())
+                .requires(ModItems.BATTERY.get())
+                .unlockedBy(getHasName(ModItems.HANYANG_88.get()), has(ModItems.HANYANG_88.get()))
+                .save(writer, loc("hanyang_88_re_upgrade"))
             gunSmithing(
                 writer,
                 ModItems.JAVELIN_BLUEPRINT.get(),
