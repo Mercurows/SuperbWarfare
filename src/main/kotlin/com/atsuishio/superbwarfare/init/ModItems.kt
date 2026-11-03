@@ -174,6 +174,9 @@ object ModItems {
     @JvmField val KNIFE = registerMelee("knife") { MeleeGunItem(Properties()) }
     @JvmField val KNIFE_6KH2 = registerMelee("knife_6kh2") { MeleeGunItem(Properties()) }
     @JvmField val KNIFE_SEITENGEWEHR_84 = registerMelee("knife_seitengewehr_84") { MeleeGunItem(Properties()) }
+    @JvmField val KNIFE_HANYANG_88_RE_STANDARD = registerMelee("knife_hanyang_88_re_standard") {
+        MeleeGunItem(Properties().rarity(Rarity.RARE))
+    }
     @JvmField val KNIFE_M1917 = registerMelee("knife_m1917") { MeleeGunItem(Properties()) }
     @JvmField val MIAODAO = registerMelee("miaodao") { MeleeGunItem(Properties().rarity(Rarity.RARE)) }
     @JvmField val HAMMER = registerMelee("hammer") { HammerItem(Properties()) }
@@ -777,6 +780,7 @@ object ModItems {
     @JvmField val BAYONET_M_9 = registerAttachment("bayonet_m_9")
     @JvmField val BAYONET_6KH2 = registerAttachment("bayonet_6kh2")
     @JvmField val BAYONET_SEITENGEWEHR_84 = registerAttachment("bayonet_seitengewehr_84")
+    @JvmField val BAYONET_HANYANG_88_RE_STANDARD = registerAttachment("bayonet_hanyang_88_re_standard", Rarity.RARE)
     @JvmField val BAYONET_M_91_30 = registerAttachment("bayonet_m_91_30")
     @JvmField val BAYONET_TRIANGULAR = registerAttachment("bayonet_triangular")
     @JvmField val BAYONET_M1917 = registerAttachment("bayonet_m1917")

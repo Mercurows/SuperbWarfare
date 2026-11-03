@@ -11,7 +11,7 @@
   "RPM": 120,
   "HeatPerShoot": -15,
   "MaxEnergy": 100000,
-  "MeleeDamage": 15,
+  "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,
   "MeleeHitbox": {
@@ -46,7 +46,7 @@
     "Sound": "superbwarfare:lunge_mine_growl",
     "StrikeDuration": 18,
     "StrikeHitTime": 1,
-    "StrikeDamage": 50
+    "StrikeDamage": 60
   },
   "DrawTime": 13,
   "ZoomTime": 8,
@@ -133,7 +133,7 @@
       "Value": false
     }
   ],
-  "BypassesArmor": 0.5,
+  "BypassesArmor": 0.8,
   "SoundRadius": 18,
   "DamageReduce": {
     "Type": "Sniper"
@@ -176,7 +176,7 @@
       "superbwarfare:muzzle_compensator_r_17",
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker",
-      "superbwarfare:bayonet_seitengewehr_84",
+      "superbwarfare:bayonet_hanyang_88_re_standard",
       "superbwarfare:milencer",
       "superbwarfare:steel_pipe_silencer"
     ],
