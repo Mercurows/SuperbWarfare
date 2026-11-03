@@ -1,28 +1,19 @@
 package com.atsuishio.superbwarfare.item.armor
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.init.ModAttributes
 import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.resource.model.ArmorModelReloadListener
 import com.atsuishio.superbwarfare.tiers.ModArmorMaterial
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.GeoArmorRendererV2
-import com.google.common.collect.HashMultimap
-import com.google.common.collect.Multimap
 import net.minecraft.client.model.HumanoidModel
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.ai.attributes.Attribute
-import net.minecraft.world.entity.ai.attributes.AttributeModifier
-import net.minecraft.world.item.ArmorItem
 import net.minecraft.world.item.ItemStack
 import net.minecraftforge.client.extensions.common.IClientItemExtensions
-import java.util.*
 import java.util.function.Consumer
-import kotlin.math.max
 
 @RegistryName("us_chest_iotv")
-class UsChestIotvItem : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTPLATE, Properties()) {
+class UsChestIotvItem : BulletproofArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTPLATE, 0.5) {
     companion object {
         val TEXTURE = loc("textures/bedrock/armor/us_chest_iotv.png")
         val MODEL = loc("models/bedrock/armor/us_chest_iotv.geo.json")
@@ -50,25 +41,5 @@ class UsChestIotvItem : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTP
                 return this.renderer!!
             }
         })
-    }
-
-    override fun getAttributeModifiers(
-        slot: EquipmentSlot,
-        stack: ItemStack
-    ): Multimap<Attribute, AttributeModifier> {
-        var map = super.getDefaultAttributeModifiers(slot)
-        val uuid = UUID(slot.toString().hashCode().toLong(), 0)
-        if (slot == EquipmentSlot.CHEST) {
-            map = HashMultimap.create<Attribute, AttributeModifier>(map)
-            map.put(
-                ModAttributes.BULLET_RESISTANCE.get(), AttributeModifier(
-                    uuid,
-                    Mod.ATTRIBUTE_MODIFIER,
-                    0.5 * max(0.0, 1 - stack.damageValue.toDouble() / stack.maxDamage),
-                    AttributeModifier.Operation.ADDITION
-                )
-            )
-        }
-        return map
     }
 }
