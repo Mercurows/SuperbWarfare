@@ -91,6 +91,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:hanyang_88_re_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:vector_blueprint",
           "weight": 2
         },

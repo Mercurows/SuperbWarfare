@@ -129,6 +129,7 @@ object ModItems {
     @JvmField val K_98 = registerGun("k_98") { GeoGunItem(Properties().rarity(Rarity.RARE)) }
     @JvmField val MOSIN_NAGANT = registerGun("mosin_nagant") { GeoGunItem(Properties().rarity(Rarity.RARE)) }
     @JvmField val HANYANG_88 = registerGun("hanyang_88") { GeoGunItem(Properties().rarity(Rarity.RARE)) }
+    @JvmField val HANYANG_88_RE = registerGun("hanyang_88_re") { GeoGunItem(Properties().rarity(VIRTUAL)) }
     @JvmField val SVD = registerGun("svd") { GeoGunItem(Properties().rarity(Rarity.EPIC)) }
     @JvmField val AWM = registerGun("awm") { GeoGunItem(Properties().rarity(Rarity.EPIC)) }
     @JvmField val M_98B = registerGun("m_98b") { GeoGunItem(Properties().rarity(Rarity.EPIC)) }
@@ -475,6 +476,7 @@ object ModItems {
     @JvmField val K_98_BLUEPRINT = registerBlueprint("k_98_blueprint", Rarity.RARE)
     @JvmField val MOSIN_NAGANT_BLUEPRINT = registerBlueprint("mosin_nagant_blueprint", Rarity.RARE)
     @JvmField val HANYANG_88_BLUEPRINT = registerBlueprint("hanyang_88_blueprint", Rarity.RARE)
+    @JvmField val HANYANG_88_RE_BLUEPRINT = registerBlueprint("hanyang_88_re_blueprint", VIRTUAL)
     @JvmField val IGLA_BLUEPRINT = registerBlueprint("igla_9k38_blueprint", Rarity.EPIC)
     @JvmField val JAVELIN_BLUEPRINT = registerBlueprint("javelin_blueprint", LEGENDARY)
     @JvmField val M_2_HB_BLUEPRINT = registerBlueprint("m_2_hb_blueprint", Rarity.RARE)

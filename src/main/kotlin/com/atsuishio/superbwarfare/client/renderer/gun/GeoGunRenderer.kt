@@ -15,6 +15,7 @@ import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.MERGE_BLENDER
 import com.atsuishio.superbwarfare.client.renderer.laser.LaserSightCapture
 import com.atsuishio.superbwarfare.client.renderer.laser.LaserSightRenderer
+import com.atsuishio.superbwarfare.client.renderer.projectile.LaserBeamRenderer
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensShader
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
 import com.atsuishio.superbwarfare.client.screens.WeaponEditMountTracker
@@ -680,6 +681,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             packedOverlay,
             handForContext(transformType)
         )
+        LaserBeamRenderer.captureMuzzle(poseStack, model, transformType)
     }
 
     /**

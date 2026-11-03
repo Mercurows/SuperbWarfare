@@ -271,6 +271,10 @@ object GunEventHandler {
      * 返还多余弹药
      */
     fun redrawExtraAmmo(shooter: Entity?, data: GunData) {
+        // 当前射击模式不消耗整数弹药（背包型能量武器等：弹匣上限为 0，开火只扣能量这类百分比资源）时，
+        // `ammo` 里存的是**别的模式**装填的整数弹药，按 0 发弹匣裁掉就等于凭空吞掉子弹，必须原样保留
+        if (data.useBackpackAmmo()) return
+
         val hasBulletInBarrel = data.item.hasBulletInBarrel(data)
         val ammoCount = data.ammo.get()
         val magazine = data.get(GunProp.MAGAZINE)

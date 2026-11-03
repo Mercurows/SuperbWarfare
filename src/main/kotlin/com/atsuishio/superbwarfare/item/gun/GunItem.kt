@@ -927,6 +927,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     /** Shot-aware customization, with the original hook retained for existing weapons. */
     open fun onProjectileCreated(parameters: ShootParameters, entity: Entity) {
         onProjectileCreated(parameters.data, entity)
+        if (entity is LaserBeamEntity) {
+            entity.prepareShot(parameters.data.get(GunProp.RANGE).toDouble(), parameters.power)
+        }
     }
 
     /**

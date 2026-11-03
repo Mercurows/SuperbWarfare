@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.data.StringOrObject
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeAction
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeHitbox
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeSweep
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
 import kotlinx.serialization.SerialName
@@ -135,6 +136,8 @@ data class DefaultGunData(
     val availableFireModes: SingleOrList<StringOrObject<FireModeInfo>> = SingleOrList(StringOrObject(FireModeInfo())),
     @SerialName("ReloadTypes")
     val reloadTypes: Set<ReloadType> = setOf(ReloadType.MAGAZINE),
+    @SerialName("ReloadTypesWithAttachment")
+    val reloadTypesWithAttachment: Map<AttachmentType, Set<ReloadType>> = emptyMap(),
     @SerialName("SeekType")
     val seekType: SeekType? = SeekType.NONE,
     @SerialName("GunType")
