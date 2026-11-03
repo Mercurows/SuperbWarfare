@@ -25,6 +25,8 @@ import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.MELEE_DAMAGE
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.MIN_ZOOM
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.PROJECTILE
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.PROJECTILE_AMOUNT
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.RELOAD_TYPES
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.RELOAD_TYPES_WITH_ATTACHMENT
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.SHOOT_POS
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.SHOOT_SHAKE
 import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.MobAmmoStrategy
@@ -499,12 +501,24 @@ class GunData private constructor(
 
             // 3. Attachments
             attachmentJsonPropModifier.update(null as kotlinx.serialization.json.JsonObject?)
-            for (instance in attachment.installed()) {
+            val installedAttachments = attachment.installed()
+            for (instance in installedAttachments) {
                 attachmentOption(instance.slot, instance.id)?.let { option ->
                     attachmentJsonPropModifier.update(option.override)
                     attachmentJsonPropModifier.modifyProperty(pmcInstance)
                 }
                 instance.definition.modifyProperty(pmcInstance)
+            }
+
+            // 3.5 某些槽位装上配件后，换弹方式按数据覆写（如装了瞄准镜就无法用弹夹装填）
+            val reloadTypesWithAttachment = pmcInstance[RELOAD_TYPES_WITH_ATTACHMENT]
+            if (reloadTypesWithAttachment.isNotEmpty()) {
+                for ((slot, types) in reloadTypesWithAttachment) {
+                    if (types.isEmpty()) continue
+                    if (installedAttachments.any { it.slot == slot }) {
+                        pmcInstance[RELOAD_TYPES] = types
+                    }
+                }
             }
 
             // 4. FireMode modifiers
@@ -1149,10 +1163,11 @@ class GunData private constructor(
      * @param ammoSupplier target entity receiving withdrawn ammo.
      */
     fun withdrawAmmo(ammoSupplier: Entity) {
-        // 背包弹药不进弹匣，没有可退的弹药：退弹会把整管能量原样「退回」自己/背包，成为刷能量途径
+        // 背包弹药不进弹匣，没有可退的弹药：退弹会把整管能量原样「退回」自己/背包，成为刷能量途径。
+        // `ammo` 里剩余的整数弹药是**其它射击模式**装填的（本模式不消耗发数），没有对应弹种可退，
+        // 但也不能静默删掉 —— 原样留在枪里，切回带弹匣的模式还能接着打。
         if (useBackpackAmmo()) {
             this.virtualAmmo.reset()
-            this.ammo.reset()
             return
         }
 
@@ -1182,9 +1197,9 @@ class GunData private constructor(
      * @param handler target container handler.
      */
     fun withdrawAmmo(handler: IItemHandler) {
+        // 同 [withdrawAmmo]：背包型模式下不参与发数结算，残留的整数弹药原样保留
         if (useBackpackAmmo()) {
             this.virtualAmmo.reset()
-            this.ammo.reset()
             return
         }
 

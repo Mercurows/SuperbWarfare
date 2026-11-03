@@ -1,0 +1,44 @@
+{
+  "SlotIcon": "superbwarfare:textures/item/hanyang_88_re_icon.png",
+  "Animation": {
+    "Idle": "animation.hanyang_88_re.idle",
+    "Fire": "animation.hanyang_88_re.shoot",
+    "ReloadEmpty": "animation.hanyang_88_re.reload_empty_clip",
+    "Prepare": "animation.hanyang_88_re.reload_intro",
+    "Iterative": "animation.hanyang_88_re.reload_loop",
+    "Finish": "animation.hanyang_88_re.reload_end",
+    "Bolt": "animation.hanyang_88_re.bolt",
+    "Edit": "animation.hanyang_88_re.edit",
+    "CloseStrike": "animation.hanyang_88_re.close_strike",
+    "Melee": "animation.hanyang_88_re.hit",
+    "BayonetCharge": "animation.hanyang_88_re.bayonet_charge",
+    "BayonetChargeHit": "animation.hanyang_88_re.bayonet_charge_hit"
+  },
+  "ShootRecoil": {
+    "Offset": [1.0, 1.0, 3.5],
+    "Rotation": [1.1, 0.6, 0.5],
+    "ZoomRate": 0.9,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/hanyang_88_re.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/hanyang_88_re.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/hanyang_88_re.png"
+  },
+  "FlareSize": 0.8,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.25,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  }
+}

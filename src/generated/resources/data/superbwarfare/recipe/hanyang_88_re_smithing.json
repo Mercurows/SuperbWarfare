@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "superbwarfare:battery"
+  },
+  "base": {
+    "item": "superbwarfare:virtual_material_pack"
+  },
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:hanyang_88_re"
+  },
+  "template": {
+    "item": "superbwarfare:hanyang_88_re_blueprint"
+  }
+}

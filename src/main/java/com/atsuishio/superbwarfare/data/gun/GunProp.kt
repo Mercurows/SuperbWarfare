@@ -228,6 +228,9 @@ class GunProp<T, R>(
         val RELOAD_TYPES = complexProp(DefaultGunData::reloadTypes) { it }
 
         @JvmField
+        val RELOAD_TYPES_WITH_ATTACHMENT = complexProp(DefaultGunData::reloadTypesWithAttachment) { it }
+
+        @JvmField
         val SEEK_TYPE = complexProp(DefaultGunData::seekType) { it ?: SeekType.NONE }
 
         @JvmField

@@ -410,6 +410,10 @@ object ModVillagers {
                     ItemStack(ModItems.HUNTING_RIFLE_BLUEPRINT.get()), 10, 30, 0.05f
                 ),
                 BasicItemListing(
+                    ItemStack(Items.EMERALD, 64),
+                    ItemStack(ModItems.HANYANG_88_RE_BLUEPRINT.get()), 10, 30, 0.05f
+                ),
+                BasicItemListing(
                     ItemStack(Items.EMERALD, 8),
                     ItemStack(ModItems.LARGE_SHELL_HE.get(), 1), 8, 10, 0.05f
                 ),
