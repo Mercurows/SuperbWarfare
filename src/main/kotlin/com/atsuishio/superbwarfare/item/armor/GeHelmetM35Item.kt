@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.item.armor
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.init.ModAttributes
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.resource.model.ArmorModelReloadListener
@@ -10,21 +8,15 @@ import com.atsuishio.superbwarfare.tiers.ModArmorMaterial
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.GeoArmorRendererV2
 import net.minecraft.client.model.HumanoidModel
 import net.minecraft.world.entity.EquipmentSlot
-import net.minecraft.world.entity.EquipmentSlotGroup
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.ai.attributes.AttributeModifier
-import net.minecraft.world.item.ArmorItem
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.component.ItemAttributeModifiers
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
-import kotlin.math.max
 
 @RegistryName("ge_helmet_m_35")
-class GeHelmetM35Item :
-    ArmorItem(ModArmorMaterial.STEEL, Type.HELMET, Properties().durability(Type.HELMET.getDurability(35))) {
+class GeHelmetM35Item : BulletproofArmorItem(ModArmorMaterial.STEEL, Type.HELMET, 0.1) {
     @EventBusSubscriber
     companion object {
         val TEXTURE = loc("textures/bedrock/armor/ge_helmet_m_35.png")
@@ -54,21 +46,5 @@ class GeHelmetM35Item :
                 }
             }, ModItems.GE_HELMET_M_35)
         }
-    }
-
-    override fun getDefaultAttributeModifiers(stack: ItemStack): ItemAttributeModifiers {
-        val modifiers = super.getDefaultAttributeModifiers(stack)
-        val list = ArrayList<ItemAttributeModifiers.Entry>(modifiers.modifiers())
-        list.add(
-            ItemAttributeModifiers.Entry(
-                ModAttributes.BULLET_RESISTANCE, AttributeModifier(
-                    Mod.ATTRIBUTE_MODIFIER,
-                    0.1 * max(0.0, 1 - stack.damageValue.toDouble() / stack.maxDamage),
-                    AttributeModifier.Operation.ADD_VALUE
-                ),
-                EquipmentSlotGroup.bySlot(this.type.slot)
-            )
-        )
-        return ItemAttributeModifiers(list, true)
     }
 }

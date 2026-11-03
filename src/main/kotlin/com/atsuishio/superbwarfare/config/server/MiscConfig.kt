@@ -43,6 +43,13 @@ object MiscConfig {
     }
 
     @JvmField
+    val MOD_ARMOR_UNBREAKABLE = buildServerConfig {
+        comment("Set true to keep this mod's armor from breaking; depleted armor provides no attribute bonuses")
+        comment("是否让模组内护甲在耐久耗尽后保留物品，但不再提供属性加成")
+        define("mod_armor_unbreakable", true)
+    }
+
+    @JvmField
     val DEFAULT_ARMOR_LEVEL = buildServerConfig {
         comment("The default maximum armor level for normal armors")
         comment("普通护甲能加的防弹插板数量")
