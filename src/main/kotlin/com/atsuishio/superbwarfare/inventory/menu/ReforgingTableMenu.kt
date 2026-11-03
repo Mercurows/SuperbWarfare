@@ -428,6 +428,9 @@ open class ReforgingTableMenu(
         Slot(pContainer, pSlot, pX, pY) {
         override fun mayPlace(pStack: ItemStack): Boolean {
             if (pStack.item is GunItem) {
+                val data = GunData.from(pStack)
+                if (Perk.Type.entries.any { data.perk.getInstances(it).size > 1 }) return false
+
                 val ammoPerk = this.container.getItem(AMMO_PERK_SLOT)
                 val funcPerk = this.container.getItem(FUNC_PERK_SLOT)
                 val damagePerk = this.container.getItem(DAMAGE_PERK_SLOT)
