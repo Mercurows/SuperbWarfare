@@ -13,6 +13,7 @@ object ModEntityRenderers {
     fun registerEntityRenderers(event: EntityRenderersEvent.RegisterRenderers) {
         with(event) {
             registerEntityRenderer(ModEntities.REFORGING_LASER.get(), ::ReforgingLaserRenderer)
+            registerEntityRenderer(ModEntities.HIGH_ENERGY_LASER.get(), ::HighEnergyLaserRenderer)
             registerEntityRenderer(ModEntities.REFORGING_GRAVITY_BALL.get(), ::ReforgingGravityBallRenderer)
             registerEntityRenderer(ModEntities.REFORGING_LIGHTNING_BALL.get(), ::ReforgingLightningBallRenderer)
             registerEntityRenderer(ModEntities.MORTAR.get(), ::MortarRenderer)

@@ -21,4 +21,9 @@ object HitboxHelperEventHandler {
     fun onPlayerLoggedOut(event: PlayerEvent.PlayerLoggedOutEvent) {
         HitboxHelper.onPlayerLoggedOut(event.entity)
     }
+
+    @SubscribeEvent
+    fun onPlayerChangedDimension(event: PlayerEvent.PlayerChangedDimensionEvent) {
+        HitboxHelper.onPlayerLoggedOut(event.entity)
+    }
 }

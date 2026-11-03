@@ -59,9 +59,11 @@
       "Name": "Semi",
       "Override": {
         "Projectile": {
-          "Type": "superbwarfare:reforging_laser",
+          "Type": "superbwarfare:high_energy_laser",
           "Data": {
-            "Owner": "@sbw:owner"
+            "Owner": "@sbw:owner",
+            "BeamWidth": 0.24,
+            "Color": 5619711
           }
         },
         "AmmoType": "FE",

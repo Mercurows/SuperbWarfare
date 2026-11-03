@@ -10,8 +10,6 @@ import kotlin.math.sin
 
 /** Reforging's five focusing frames, crimson coils and impact seal; beam rendering is shared. */
 class ReforgingLaserRenderer(context: EntityRendererProvider.Context) : LaserBeamRenderer<LaserBeamEntity>(context) {
-    override val beamColor = Vec3(1.0, 0.025, 0.08)
-
     override fun renderEffects(entity: LaserBeamEntity, buffer: VertexConsumer, beam: BeamFrame) {
         with(beam) {
             for (frame in 0 until 5) {
@@ -19,7 +17,7 @@ class ReforgingLaserRenderer(context: EntityRendererProvider.Context) : LaserBea
                 if (distance >= length) break
                 val size = (0.68 - frame * 0.105) * (0.55 + entity.power * 0.45)
                 square(buffer, matrix, direction.scale(distance), right, up, size,
-                    frame * PI / 7 + age * 0.12, radius * 0.13, fade)
+                    frame * PI / 7 + age * 0.12, radius * 0.13, fade, color)
             }
 
             val coilLength = minOf(10.0, length)
@@ -31,7 +29,8 @@ class ReforgingLaserRenderer(context: EntityRendererProvider.Context) : LaserBea
                     val size = radius * (1.6 + 0.8 * (1 - t))
                     val point = direction.scale(coilLength * t)
                         .add(right.scale(cos(angle) * size)).add(up.scale(sin(angle) * size))
-                    previous?.let { ribbon(buffer, matrix, it, point, radius * 0.06, 1f, 0.18f, 0.26f, fade * 0.7f) }
+                    previous?.let { ribbon(buffer, matrix, it, point, radius * 0.06,
+                        color.x.toFloat(), color.y.toFloat(), color.z.toFloat(), fade * 0.7f) }
                     previous = point
                 }
             }
@@ -40,7 +39,7 @@ class ReforgingLaserRenderer(context: EntityRendererProvider.Context) : LaserBea
                 for (ring in 0..1) {
                     square(buffer, matrix, center, right, up,
                         radius * (2.2 + progress * 5 + ring), age * 0.16 + ring * PI / 4,
-                        radius * 0.12, fade * (1f - ring * 0.3f))
+                        radius * 0.12, fade * (1f - ring * 0.3f), color)
                 }
             }
         }
