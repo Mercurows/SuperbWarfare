@@ -483,6 +483,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         evenSimplerBlockItem(ModBlocks.SUPERB_ITEM_INTERFACE)
         evenSimplerBlockItem(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE)
         evenSimplerBlockItem(ModBlocks.BIOGAS_GENERATOR)
+        getBuilder("item_display_board").parent(UncheckedModelFile(modLoc("displaysettings/item_display_board_display_settings")))
         simpleItem(ModItems.FUMO_25)
     }
 

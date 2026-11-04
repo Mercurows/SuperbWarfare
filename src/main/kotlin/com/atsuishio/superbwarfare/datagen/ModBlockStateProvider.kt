@@ -1,11 +1,14 @@
 package com.atsuishio.superbwarfare.datagen
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.block.ItemDisplayBoardBlock
 import com.atsuishio.superbwarfare.init.ModBlocks
+import net.minecraft.core.Direction
 import net.minecraft.data.PackOutput
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.block.Block
 import net.minecraftforge.client.model.generators.BlockStateProvider
+import net.minecraftforge.client.model.generators.ConfiguredModel
 import net.minecraftforge.client.model.generators.ModelFile.UncheckedModelFile
 import net.minecraftforge.common.data.ExistingFileHelper
 import net.minecraftforge.registries.ForgeRegistries
@@ -137,6 +140,23 @@ class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper
 
         simpleBlock(ModBlocks.FUMO_25.get(), UncheckedModelFile(modLoc("block/fumo_25")))
         simpleBlock(ModBlocks.TRIPOD.get(), UncheckedModelFile(modLoc("block/tripod")))
+
+        getVariantBuilder(ModBlocks.ITEM_DISPLAY_BOARD.get()).forAllStatesExcept({ state ->
+            val facing = state.getValue(ItemDisplayBoardBlock.FACING)
+            val (rotationX, rotationY) = when (facing) {
+                Direction.DOWN -> 90 to 0
+                Direction.UP -> 270 to 0
+                Direction.NORTH -> 0 to 0
+                Direction.EAST -> 0 to 90
+                Direction.SOUTH -> 0 to 180
+                Direction.WEST -> 0 to 270
+            }
+            ConfiguredModel.builder()
+                .modelFile(UncheckedModelFile(modLoc("block/item_display_board")))
+                .rotationX(rotationX)
+                .rotationY(rotationY)
+                .build()
+        }, ItemDisplayBoardBlock.ROTATION)
     }
 
     private fun name(block: Block): String {

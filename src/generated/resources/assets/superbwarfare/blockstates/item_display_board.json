@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "superbwarfare:block/item_display_board",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "superbwarfare:block/item_display_board",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "superbwarfare:block/item_display_board"
+    },
+    "facing=south": {
+      "model": "superbwarfare:block/item_display_board",
+      "y": 180
+    },
+    "facing=up": {
+      "model": "superbwarfare:block/item_display_board",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "superbwarfare:block/item_display_board",
+      "y": 270
+    }
+  }
+}

@@ -129,6 +129,14 @@ object ModBlockEntities {
     }
 
     @JvmField
+    val ITEM_DISPLAY_BOARD = registerBlockEntity("item_display_board") {
+        BlockEntityType.Builder.of(
+            { pos, state -> ItemDisplayBoardBlockEntity(pos, state) },
+            ModBlocks.ITEM_DISPLAY_BOARD.get()
+        ).build(null)
+    }
+
+    @JvmField
     val BIOGAS_GENERATOR = registerBlockEntity("biogas_generator") {
         BlockEntityType.Builder.of(
             { pos, state -> BiogasGeneratorBlockEntity(pos, state) },
