@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_hanyang_88_re_blueprint": {
+    "has_bayonet_hanyang_88_re_standard": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:hanyang_88_re_blueprint"
+              "superbwarfare:bayonet_hanyang_88_re_standard"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:hanyang_88_re_smithing"
+        "recipe": "superbwarfare:knife_hanyang_88_re_standard"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_hanyang_88_re_blueprint",
+      "has_bayonet_hanyang_88_re_standard",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:hanyang_88_re_smithing"
+      "superbwarfare:knife_hanyang_88_re_standard"
     ]
   },
   "sends_telemetry_event": false

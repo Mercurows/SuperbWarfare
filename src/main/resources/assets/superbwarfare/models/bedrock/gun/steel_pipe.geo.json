@@ -6,7 +6,7 @@
 				"identifier": "geometry.steel_pipe",
 				"texture_width": 32,
 				"texture_height": 32,
-				"visible_bounds_width": 4,
+				"visible_bounds_width": 5,
 				"visible_bounds_height": 3.5,
 				"visible_bounds_offset": [0, 1.25, 0]
 			},
@@ -122,6 +122,12 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "charm_pos",
+					"parent": "second_root",
+					"pivot": [0, 26.3628, 0.84375],
+					"rotation": [0, -90, -90]
 				},
 				{
 					"name": "righthand",

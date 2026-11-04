@@ -1,10 +1,7 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.recipe.PotionMortarShellRecipe
-import com.atsuishio.superbwarfare.recipe.ResearchingRecipe
-import com.atsuishio.superbwarfare.recipe.SmokeDyeRecipe
-import com.atsuishio.superbwarfare.recipe.VehicleResetRecipe
+import com.atsuishio.superbwarfare.recipe.*
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipeSerializer
 import net.minecraft.world.item.crafting.RecipeSerializer
@@ -39,6 +36,10 @@ object ModRecipes {
                 SmokeDyeRecipe(id, category)
             }
         }
+
+    @JvmField
+    val UPGRADE_SERIALIZER: RegistryObject<RecipeSerializer<UpgradeRecipe>> =
+        RECIPE_SERIALIZERS.register("upgrade") { UpgradeRecipe.Serializer() }
 
     @JvmField
     val VEHICLE_ASSEMBLING_SERIALIZER: RegistryObject<RecipeSerializer<VehicleAssemblingRecipe>> =

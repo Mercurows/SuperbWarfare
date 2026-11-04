@@ -1,0 +1,25 @@
+{
+  "type": "superbwarfare:upgrade",
+  "base": "superbwarfare:hanyang_88",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "superbwarfare:hanyang_88"
+    },
+    {
+      "item": "superbwarfare:hanyang_88_re_blueprint"
+    },
+    {
+      "item": "superbwarfare:legendary_material_pack"
+    },
+    {
+      "item": "superbwarfare:laser_unit"
+    },
+    {
+      "item": "superbwarfare:battery"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:hanyang_88_re"
+  }
+}

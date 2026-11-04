@@ -42,6 +42,7 @@
     "superbwarfare:niter_ore",
     "superbwarfare:deepslate_niter_ore",
     "superbwarfare:niter_block",
-    "superbwarfare:tripod"
+    "superbwarfare:tripod",
+    "superbwarfare:item_display_board"
   ]
 }

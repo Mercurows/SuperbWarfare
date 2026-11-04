@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.renderer.projectile
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
+import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.gun.GunRenderContext
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
 import com.atsuishio.superbwarfare.entity.projectile.LaserBeamEntity
@@ -12,7 +13,6 @@ import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
@@ -30,7 +30,6 @@ import kotlin.math.sin
 open class LaserBeamRenderer<T : LaserBeamEntity>(context: EntityRendererProvider.Context) : EntityRenderer<T>(context) {
     private class VisualRay(val start: Vec3, val end: Vec3)
     private val rays = WeakHashMap<T, VisualRay>()
-    protected open val beamColor = Vec3(0.2, 0.65, 1.0)
 
     override fun getTextureLocation(entity: T) = loc("textures/entity/white.png")
 
@@ -80,17 +79,25 @@ open class LaserBeamRenderer<T : LaserBeamEntity>(context: EntityRendererProvide
         val offset = origin.subtract(entity.getPosition(partialTicks))
         pose.translate(offset.x, offset.y, offset.z)
         val matrix = pose.last().pose()
-        val buffer = buffers.getBuffer(RenderType.lightning())
+        // Frames must remain visible from behind; overlapping glow must not occlude itself.
+        val buffer = buffers.getBuffer(ModRenderTypes.REFORGING_GLOW)
 
         // Constant vertex count, regardless of range; no per-block particles or persistent emitters.
-        val r = beamColor.x.toFloat()
-        val g = beamColor.y.toFloat()
-        val b = beamColor.z.toFloat()
+        val rgb = entity.getRGB()
+        val color = Vec3(rgb[0].toDouble(), rgb[1].toDouble(), rgb[2].toDouble())
+        val r = rgb[0]
+        val g = rgb[1]
+        val b = rgb[2]
         tube(buffer, matrix, direction, right, up, length, radius * 2.5, r, g, b, fade * 0.1f)
         tube(buffer, matrix, direction, right, up, length, radius, r, g, b, fade * 0.65f)
         tube(buffer, matrix, direction, right, up, length, radius * 0.3,
             0.8f + r * 0.2f, 0.8f + g * 0.2f, 0.8f + b * 0.2f, fade)
-        renderEffects(entity, buffer, BeamFrame(matrix, direction, right, up, length, radius, age, progress, fade))
+        val cameraRotation = mc.gameRenderer.mainCamera.rotation()
+        val cameraRight = Vector3f(1f, 0f, 0f).rotate(cameraRotation)
+        val cameraUp = Vector3f(0f, 1f, 0f).rotate(cameraRotation)
+        renderEffects(entity, buffer, BeamFrame(matrix, direction, right, up, length, radius, age, progress, fade, color,
+            Vec3(cameraRight.x.toDouble(), cameraRight.y.toDouble(), cameraRight.z.toDouble()),
+            Vec3(cameraUp.x.toDouble(), cameraUp.y.toDouble(), cameraUp.z.toDouble())))
         pose.popPose()
         super.render(entity, entityYaw, partialTicks, pose, buffers, packedLight)
     }
@@ -98,13 +105,15 @@ open class LaserBeamRenderer<T : LaserBeamEntity>(context: EntityRendererProvide
     protected class BeamFrame(
         val matrix: Matrix4f, val direction: Vec3, val right: Vec3, val up: Vec3,
         val length: Double, val radius: Double, val age: Double, val progress: Double, val fade: Float,
+        val color: Vec3,
+        val cameraRight: Vec3, val cameraUp: Vec3,
     )
 
     protected open fun renderEffects(entity: T, buffer: VertexConsumer, beam: BeamFrame) {}
 
     protected fun square(
         buffer: VertexConsumer, matrix: Matrix4f, center: Vec3, right: Vec3, up: Vec3,
-        size: Double, angle: Double, width: Double, alpha: Float,
+        size: Double, angle: Double, width: Double, alpha: Float, color: Vec3,
     ) {
         var previous: Vec3? = null
         for (corner in 0..4) {
@@ -112,7 +121,7 @@ open class LaserBeamRenderer<T : LaserBeamEntity>(context: EntityRendererProvide
             val point = center.add(right.scale(cos(theta) * size)).add(up.scale(sin(theta) * size))
             previous?.let {
                 ribbon(buffer, matrix, it, point, width,
-                    beamColor.x.toFloat(), beamColor.y.toFloat(), beamColor.z.toFloat(), alpha)
+                    color.x.toFloat(), color.y.toFloat(), color.z.toFloat(), alpha)
             }
             previous = point
         }
@@ -151,7 +160,7 @@ open class LaserBeamRenderer<T : LaserBeamEntity>(context: EntityRendererProvide
         }
     }
 
-    private fun vertex(buffer: VertexConsumer, matrix: Matrix4f, point: Vec3, r: Float, g: Float, b: Float, alpha: Float) {
+    protected fun vertex(buffer: VertexConsumer, matrix: Matrix4f, point: Vec3, r: Float, g: Float, b: Float, alpha: Float) {
         buffer.vertex(matrix, point.x.toFloat(), point.y.toFloat(), point.z.toFloat()).color(r, g, b, alpha).endVertex()
     }
 

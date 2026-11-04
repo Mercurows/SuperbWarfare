@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.datagen.builder.NBTShapedRecipeBuilder
 import com.atsuishio.superbwarfare.datagen.builder.ResearchingRecipeBuilder
+import com.atsuishio.superbwarfare.datagen.builder.UpgradeRecipeBuilder
 import com.atsuishio.superbwarfare.datagen.builder.VehicleAssemblingRecipeBuilder
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.init.ModItems.Materials
@@ -347,6 +348,13 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                     has(ModItems.BAYONET_SEITENGEWEHR_84.get())
                 )
                 .save(writer, loc(getItemName(ModItems.KNIFE_SEITENGEWEHR_84.get())))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.KNIFE_HANYANG_88_RE_STANDARD.get())
+                .requires(ModItems.BAYONET_HANYANG_88_RE_STANDARD.get())
+                .unlockedBy(
+                    getHasName(ModItems.BAYONET_HANYANG_88_RE_STANDARD.get()),
+                    has(ModItems.BAYONET_HANYANG_88_RE_STANDARD.get())
+                )
+                .save(writer, loc(getItemName(ModItems.KNIFE_HANYANG_88_RE_STANDARD.get())))
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.KNIFE_M1917.get())
                 .requires(ModItems.BAYONET_M1917.get())
                 .unlockedBy(
@@ -2056,6 +2064,14 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('b', Items.IRON_BARS)
                 .unlockedBy(getHasName(Items.IRON_BARS), has(Items.IRON_BARS))
                 .save(writer, loc(getItemName(ModItems.TRIPOD.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModItems.ITEM_DISPLAY_BOARD.get(), 8)
+                .pattern(" a ")
+                .pattern("aba")
+                .pattern(" a ")
+                .define('a', INGOTS_STEEL)
+                .define('b', Items.ITEM_FRAME)
+                .unlockedBy(getHasName(Items.ITEM_FRAME), has(Items.ITEM_FRAME))
+                .save(writer, loc(getItemName(ModItems.ITEM_DISPLAY_BOARD.get())))
             ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.BLUEPRINT_RESEARCH_TABLE.get())
                 .pattern("aaa")
                 .pattern("dcb")
@@ -2736,13 +2752,13 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 ItemTags.LOGS,
                 ModItems.HANYANG_88.get()
             )
-            gunSmithing(
-                writer,
-                ModItems.HANYANG_88_RE_BLUEPRINT.get(),
-                GunRarity.LEGENDARY,
-                ModItems.BATTERY.get(),
-                ModItems.HANYANG_88_RE.get()
-            )
+            UpgradeRecipeBuilder(ModItems.HANYANG_88.get(), ModItems.HANYANG_88_RE.get())
+                .requires(ModItems.HANYANG_88_RE_BLUEPRINT.get())
+                .requires(ModItems.LEGENDARY_MATERIAL_PACK.get())
+                .requires(ModItems.LASER_UNIT.get())
+                .requires(ModItems.BATTERY.get())
+                .unlockedBy(getHasName(ModItems.HANYANG_88.get()), has(ModItems.HANYANG_88.get()))
+                .save(writer, loc("hanyang_88_re_upgrade"))
             gunSmithing(
                 writer,
                 ModItems.JAVELIN_BLUEPRINT.get(),

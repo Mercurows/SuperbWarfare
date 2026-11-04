@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.screens.BlueprintResearchTableScreen
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModRecipes
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.recipe.UpgradeRecipe
 import com.atsuishio.superbwarfare.tools.clientLevel
 import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
@@ -17,6 +18,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.alchemy.PotionUtils
+import net.minecraft.world.item.crafting.RecipeType
 import net.minecraftforge.registries.ForgeRegistries
 import java.util.*
 
@@ -80,6 +82,13 @@ class SbwJEIPlugin : IModPlugin {
             ItemStack(ModItems.CHARGING_STATION.get()),
             Component.translatable("jei.superbwarfare.charging_station")
         )
+
+        recipeManager.getAllRecipesFor(RecipeType.CRAFTING).filterIsInstance<UpgradeRecipe>()
+            .flatMap { listOf(it.base, it.getResultItem(level.registryAccess()).item) }
+            .distinct()
+            .forEach { item ->
+                registration.addItemStackInfo(ItemStack(item), Component.translatable("jei.superbwarfare.upgrade"))
+            }
 
         val specialCraftingRecipes = PotionMortarShellRecipeMaker.createRecipes()
         registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes)

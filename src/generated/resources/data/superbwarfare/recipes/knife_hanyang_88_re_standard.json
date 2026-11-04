@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "superbwarfare:bayonet_hanyang_88_re_standard"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:knife_hanyang_88_re_standard"
+  }
+}

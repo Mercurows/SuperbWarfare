@@ -80,7 +80,8 @@ class ModBlockTagProvider(
             ModBlocks.NITER_ORE.get(),
             ModBlocks.DEEPSLATE_NITER_ORE.get(),
             ModBlocks.NITER_BLOCK.get(),
-            ModBlocks.TRIPOD.get()
+            ModBlocks.TRIPOD.get(),
+            ModBlocks.ITEM_DISPLAY_BOARD.get()
         )
         this.tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.SANDBAG.get())
 

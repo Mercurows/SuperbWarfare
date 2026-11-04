@@ -51,36 +51,40 @@ object EnergyAmmoStrategy : AmmoConsumeStrategy() {
             && data.get(GunProp.FUEL_PER_AMMO) > 0
 
     /**
-     * 「其他类型弹药 → 弹药」的换算比例：1 发弹匣弹药值多少 FE，至少为 1 以免除零。
+     * 「1 弹药单位值多少 FE」，没声明 [GunProp.FUEL_PER_AMMO] 就是 1（纯能量武器）。
      *
-     * 弹匣型读 [GunProp.FUEL_PER_AMMO]；背包型没有弹匣，比例退化为
-     * [GunProp.AMMO_COST_PER_SHOOT]（每发就是这么多 FE），这样两条分支共用同一套乘除。
+     * 注意它与有没有弹匣无关：`背书连弹夹` 这类词条会把 [GunProp.MAGAZINE] 改成 0 让枪直接吃背包能量，
+     * 但换算比例还在，一发仍然要按它折算出对应电量。
      */
-    private fun fuelPerAmmo(data: GunData): Int {
-        val fuel = data.get(GunProp.FUEL_PER_AMMO)
-        return if (fuel > 0) fuel else data.get(GunProp.AMMO_COST_PER_SHOOT).coerceAtLeast(1)
+    private fun fuelPerAmmo(data: GunData) = data.get(GunProp.FUEL_PER_AMMO).coerceAtLeast(0)
+
+    /** 弹药单位 → FE；夹到 `Int.MAX_VALUE`，因为发数与换算比例都可能来自数据包，相乘会溢出成负数 */
+    private fun unitsToEnergy(data: GunData, count: Int): Int {
+        val fuel = fuelPerAmmo(data)
+        if (fuel <= 0) return count
+        return min(count.toLong() * fuel, Int.MAX_VALUE.toLong()).toInt()
     }
 
-    /**
-     * 把弹药单位折算成 FE。
-     *
-     * 夹到 `Int.MAX_VALUE`：发数与换算比例都可能来自数据包，直接相乘会溢出成负数，
-     * 而负数传给 `extractEnergy` 会被当成「请求 0」而静默不扣能量。
-     */
-    private fun toEnergy(data: GunData, count: Int) =
-        min(count.toLong() * fuelPerAmmo(data), Int.MAX_VALUE.toLong()).toInt()
+    /** FE → 弹药单位；没声明换算比例时 1 FE 就是 1 单位 */
+    private fun energyToUnits(data: GunData, energy: Int): Int {
+        val fuel = fuelPerAmmo(data)
+        return if (fuel > 0) energy / fuel else energy
+    }
 
     // ---------------------------------------------------------------- 消耗
 
     override fun consume(data: GunData, source: AmmoSource, shooter: Entity?, count: Int): Int {
         if (!isMagazine(data)) {
-            // 背包型：count 就是 FE 点数
-            return data.getEnergyProvider(shooter).map { it.extractEnergy(count, false) }.orElseGet { 0 }
+            // 背包型：count 是弹药单位，声明了换算比例时一发要按它折算电量
+            val extracted = data.getEnergyProvider(shooter)
+                .map { it.extractEnergy(unitsToEnergy(data, count), false) }
+                .orElseGet { 0 }
+            return energyToUnits(data, extracted)
         }
 
         val perRound = fuelPerAmmo(data)
         val extracted = data.getEnergyProvider(shooter)
-            .map { it.extractEnergy(toEnergy(data, count), false) }
+            .map { it.extractEnergy(unitsToEnergy(data, count), false) }
             .orElseGet { 0 }
 
         // 返回实际装填的发数：不足一发时向下取整，不会出现「半发」
@@ -89,14 +93,15 @@ object EnergyAmmoStrategy : AmmoConsumeStrategy() {
 
     override fun consume(data: GunData, source: AmmoSource, handler: IItemHandler, count: Int): Int {
         if (!isMagazine(data)) {
-            return data.stack.getCapability(ForgeCapabilities.ENERGY)
-                .map { it.extractEnergy(count, false) }
+            val extracted = data.stack.getCapability(ForgeCapabilities.ENERGY)
+                .map { it.extractEnergy(unitsToEnergy(data, count), false) }
                 .orElseGet { 0 }
+            return energyToUnits(data, extracted)
         }
 
         val perRound = fuelPerAmmo(data)
         val extracted = data.stack.getCapability(ForgeCapabilities.ENERGY)
-            .map { it.extractEnergy(toEnergy(data, count), false) }
+            .map { it.extractEnergy(unitsToEnergy(data, count), false) }
             .orElseGet { 0 }
 
         return extracted / perRound
@@ -121,11 +126,13 @@ object EnergyAmmoStrategy : AmmoConsumeStrategy() {
      *
      * 弹匣型下这里报的是**能装填几发**，正好对应 `GunData.reloadAmmo` 里
      * `min(ammoNeeded, countBackupAmmo(...))` 与 `tryStartReload` 的 `hasBackupAmmo` 语义；
-     * 背包型下直接返回能量点数（换弹路径全部被 `useBackpackAmmo()` 拦截，不会走到这里）。
+     * 背包型下没有弹匣、换弹路径全部被 `useBackpackAmmo()` 拦截，但声明了换算比例时
+     * 报的仍然是「还能打几发」，与 `AmmoCostPerShoot` 的口径对齐；没声明比例的纯能量枪
+     * 则按 1 单位 = 1 FE 直接返回能量点数。
      */
     private fun toAmmoUnits(data: GunData, energy: Int): Int {
-        if (!isMagazine(data)) return energy
-        return energy / fuelPerAmmo(data)
+        if (!isMagazine(data) && fuelPerAmmo(data) <= 0) return energy
+        return energyToUnits(data, energy)
     }
 
     // ---------------------------------------------------------------- 退弹

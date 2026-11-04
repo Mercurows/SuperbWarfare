@@ -2,16 +2,16 @@
   "Spread": 8,
   "RecoilX": 0.002,
   "RecoilY": 0.063,
-  "Damage": 45,
+  "Damage": 55,
   "Headshot": 3,
   "Velocity": 30,
   "Magazine": 5,
   "BoltActionTime": 26,
   "Weight": 5,
   "RPM": 120,
-  "HeatPerShoot": -15,
+  "HeatPerShoot": -10,
   "MaxEnergy": 100000,
-  "MeleeDamage": 15,
+  "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,
   "MeleeHitbox": {
@@ -46,7 +46,7 @@
     "Sound": "superbwarfare:lunge_mine_growl",
     "StrikeDuration": 18,
     "StrikeHitTime": 1,
-    "StrikeDamage": 50
+    "StrikeDamage": 60
   },
   "DrawTime": 13,
   "ZoomTime": 8,
@@ -56,24 +56,26 @@
     "Semi",
     {
       "Mode": "Semi",
-      "Name": "Laser",
+      "Name": "Semi",
       "Override": {
         "Projectile": {
-          "Type": "superbwarfare:reforging_laser",
+          "Type": "superbwarfare:high_energy_laser",
           "Data": {
-            "Owner": "@sbw:owner"
+            "Owner": "@sbw:owner",
+            "BeamWidth": 0.24,
+            "Color": 5619711
           }
         },
         "AmmoType": "FE",
         "AmmoCostPerShoot": 2000,
         "Magazine": 0,
         "BoltActionTime": 0,
-        "Damage": 20,
+        "Damage": 40,
         "Headshot": 3,
         "BypassesArmor": 1.0,
         "RPM": 90,
-        "HeatPerShoot": 15,
-        "Range": 256,
+        "HeatPerShoot": 10,
+        "Range": 384,
         "Velocity": 6000000000,
         "Gravity": 0,
         "ProjectileLife": 10,
@@ -133,7 +135,7 @@
       "Value": false
     }
   ],
-  "BypassesArmor": 0.5,
+  "BypassesArmor": 0.8,
   "SoundRadius": 18,
   "DamageReduce": {
     "Type": "Sniper"
@@ -176,7 +178,7 @@
       "superbwarfare:muzzle_compensator_r_17",
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker",
-      "superbwarfare:bayonet_seitengewehr_84",
+      "superbwarfare:bayonet_hanyang_88_re_standard",
       "superbwarfare:milencer",
       "superbwarfare:steel_pipe_silencer"
     ],

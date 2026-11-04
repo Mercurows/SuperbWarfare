@@ -13,8 +13,6 @@ import com.atsuishio.superbwarfare.item.misc.TranscriptItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
-import com.atsuishio.superbwarfare.tools.HitboxHelper.getBoundingBox
-import com.atsuishio.superbwarfare.tools.HitboxHelper.getVelocity
 import com.atsuishio.superbwarfare.tools.OBB.Companion.vec3ToVector3d
 import com.atsuishio.superbwarfare.tools.OBB.Companion.vector3dToVec3
 import com.atsuishio.superbwarfare.world.phys.EntityResult
@@ -93,7 +91,6 @@ interface IAdvancedHitDetection {
     fun getHitResult(entity: Entity, startVec: Vec3, endVec: Vec3): EntityResult? {
         if (this !is Projectile) return null
 
-        val expandHeight = if (entity is Player && !entity.isCrouching) 0.0625 else 0.0
         var hitPos: Vec3? = null
         if (entity is OBBEntity && !entity.enableAABB()) {
             var closestDistSqr = Double.MAX_VALUE
@@ -141,37 +138,7 @@ interface IAdvancedHitDetection {
                 hitPos = collisionHitPos
             }
         } else {
-            var boundingBox = entity.boundingBox
-            var velocity = Vec3(entity.x - entity.xOld, entity.y - entity.yOld, entity.z - entity.zOld)
-
-            val shooter = this.owner
-            if (entity is ServerPlayer && shooter is ServerPlayer) {
-                val ping = Mth.floor((shooter.latency / 1000.0) * 20.0 + 0.5)
-                boundingBox = getBoundingBox(entity, ping)
-                velocity = getVelocity(entity, ping)
-            }
-            boundingBox = boundingBox.expandTowards(0.0, expandHeight, 0.0)
-            boundingBox = boundingBox.expandTowards(velocity.x, velocity.y, velocity.z)
-
-            val playerHitboxOffset = 3.0
-            if (entity is ServerPlayer) {
-                if (entity.vehicle != null) {
-                    boundingBox = boundingBox.move(
-                        velocity.multiply(
-                            playerHitboxOffset / 2,
-                            playerHitboxOffset / 2,
-                            playerHitboxOffset / 2
-                        )
-                    )
-                }
-                boundingBox =
-                    boundingBox.move(velocity.multiply(playerHitboxOffset, playerHitboxOffset, playerHitboxOffset))
-            }
-
-            if (entity.vehicle != null) {
-                boundingBox = boundingBox.move(velocity.multiply(-2.5, -2.5, -2.5))
-            }
-            boundingBox = boundingBox.move(velocity.multiply(-5.0, -5.0, -5.0))
+            var boundingBox = HitboxHelper.getCompensatedBoundingBox(entity, this.owner)
 
             hitPos = boundingBox.clip(startVec, endVec).orElse(null)
         }

@@ -2525,6 +2525,12 @@
 					]
 				},
 				{
+					"name": "charm_pos",
+					"parent": "second_root",
+					"pivot": [0.6, 2.4003, 1.9],
+					"rotation": [90, 0, 0]
+				},
+				{
 					"name": "righthand",
 					"parent": "root",
 					"pivot": [5.98125, 18, 0]

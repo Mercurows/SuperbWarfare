@@ -6,7 +6,7 @@
 				"identifier": "geometry.bayonet_6kh2",
 				"texture_width": 32,
 				"texture_height": 32,
-				"visible_bounds_width": 2,
+				"visible_bounds_width": 3,
 				"visible_bounds_height": 2.5,
 				"visible_bounds_offset": [0, 0.75, 0]
 			},
@@ -704,6 +704,12 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "charm_pos",
+					"parent": "second_root",
+					"pivot": [0, 2.94171, 3.6125],
+					"rotation": [0, -90, -90]
 				},
 				{
 					"name": "righthand",

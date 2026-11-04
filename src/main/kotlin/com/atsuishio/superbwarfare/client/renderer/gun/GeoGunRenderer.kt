@@ -956,8 +956,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             val storage = stack.getCapability(ForgeCapabilities.ENERGY).resolve().orElse(null)
             val stored = storage?.energyStored ?: 0
             val capacity = storage?.maxEnergyStored ?: 0
-            // 每发 0 FE 等于永远打不完，夹到 1 让发数退化成剩余能量点数，也避免除零
-            val cost = gun.primaryAmmoCostPerShoot().coerceAtLeast(1)
+            // 每发 0 FE 等于永远打不完，夹到 1 让发数退化成剩余能量点数，也避免除零；
+            // 声明了 `FuelPerAmmo` 的枪（如带背包连弹夹的 devotion）每发要按折算量扣电
+            val cost = gun.energyPerShot()
             return AmmoReadout(
                 bars,
                 texts,
@@ -1838,6 +1839,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun scriptAmmoType(stack: ItemStack): Int {
         return from(stack).selectedAmmoType.get()
+    }
+
+    open fun scriptFireModeIndex(stack: ItemStack): Int {
+        return from(stack).selectedFireMode.get()
     }
 
     open fun scriptFrameDeltaSeconds(): Float {

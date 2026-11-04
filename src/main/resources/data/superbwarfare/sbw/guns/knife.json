@@ -69,6 +69,9 @@
     "Semi"
   ],
   "AvailableAttachments": {
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ],
     "LowerRail": [
       "superbwarfare:lower_rail_bipod",
       "superbwarfare:peq_15",

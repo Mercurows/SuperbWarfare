@@ -37,7 +37,7 @@
       "Legshot": 0.75
     }
   ],
-  "DefaultFireMode": "Charge",
+  "DefaultFireMode": "Semi",
   "NormalReloadTime": 54,
   "EmptyReloadTime": 71,
   "BypassesArmor": 1.0,
@@ -48,16 +48,9 @@
     "Type": "Rifle"
   },
   "AvailableFireModes": [
-    "Semi"
-  ],
-  "AvailableAttachments": {
-    "Charm": [
-      "#superbwarfare:attachment/charm"
-    ]
-  },
-  "AmmoType": [
     {
-      "Ammo": "hunger",
+      "Mode": "Semi",
+      "Name": "Semi",
       "Override": {
         "Projectile": {
           "Type": "superbwarfare:reforging_gravity_ball",
@@ -69,6 +62,11 @@
             "PullStrength": 0.6
           }
         },
+        "AmmoType": [
+          {
+            "Ammo": "hunger"
+          }
+        ],
         "Headshot": 1,
         "Magazine": 0,
         "AmmoCostPerShoot": 4,
@@ -83,7 +81,14 @@
       }
     },
     {
-      "Ammo": "exp",
+      "Mode": "Charge",
+      "Name": "HoldAuto",
+      "Charge": {
+        "Duration": 20,
+        "Trigger": "AutoAtFull",
+        "PowerMode": "Full",
+        "MinPower": 1.0
+      },
       "Override": {
         "Projectile": {
           "Type": "superbwarfare:reforging_lightning_ball",
@@ -93,16 +98,9 @@
             "MaxTargets": 5
           }
         },
-        "AvailableFireModes": [
+        "AmmoType": [
           {
-            "Mode": "Charge",
-            "Name": "HoldAuto",
-            "Charge": {
-              "Duration": 20,
-              "Trigger": "AutoAtFull",
-              "PowerMode": "Full",
-              "MinPower": 1.0
-            }
+            "Ammo": "exp"
           }
         ],
         "ShootAnimation": "animation.reforging.fire_lighting",
@@ -124,7 +122,14 @@
       }
     },
     {
-      "Ammo": "health",
+      "Mode": "Charge",
+      "Name": "HoldManual",
+      "Charge": {
+        "Duration": 40,
+        "Trigger": "OnRelease",
+        "PowerMode": "Current",
+        "MinPower": 0.25
+      },
       "Override": {
         "Projectile": {
           "Type": "superbwarfare:reforging_laser",
@@ -132,6 +137,11 @@
             "Owner": "@sbw:owner"
           }
         },
+        "AmmoType": [
+          {
+            "Ammo": "health"
+          }
+        ],
         "ShootAnimation": "animation.reforging.fire_laser",
         "SoundInfo": {
           "Fire1P": "superbwarfare:reforging_fire_laser",
@@ -145,20 +155,18 @@
         "Gravity": 0,
         "ProjectileLife": 10,
         "RPM": 120,
-        "ClearHoldProgressAfterShoot": true,
-        "AvailableFireModes": [
-          {
-            "Mode": "Charge",
-            "Name": "HoldManual",
-            "Charge": {
-              "Duration": 40,
-              "Trigger": "OnRelease",
-              "PowerMode": "Current",
-              "MinPower": 0.25
-            }
-          }
-        ]
+        "ClearHoldProgressAfterShoot": true
       }
+    }
+  ],
+  "AvailableAttachments": {
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ]
+  },
+  "AmmoType": [
+    {
+      "Ammo": "hunger"
     }
   ],
   "SoundInfo": {

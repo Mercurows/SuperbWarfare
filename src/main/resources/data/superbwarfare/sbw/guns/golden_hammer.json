@@ -87,5 +87,10 @@
     "superbwarfare:intelligent_chip",
     "superbwarfare:monster_hunter",
     "superbwarfare:quickdraw"
-  ]
+  ],
+  "AvailableAttachments": {
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ]
+  }
 }
