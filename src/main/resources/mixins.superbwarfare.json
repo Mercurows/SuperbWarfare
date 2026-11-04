@@ -32,6 +32,7 @@
     "GameRendererMixin",
     "HumanoidModelMixin",
     "ItemInHandLayerMixin",
+    "InventoryMixin",
     "ItemInHandRendererMixin",
     "KeyboardInputMixin",
     "KeymappingMixin",

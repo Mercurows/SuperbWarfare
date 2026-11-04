@@ -1,4 +1,10 @@
 {
+    "controlify.binding.superbwarfare.next_weapon": "Siguiente arma / mira / aumento",
+    "controlify.binding.superbwarfare.previous_weapon": "Arma / mira / aumento anterior",
+    "controlify.binding.superbwarfare.vehicle_reload": "Recargar arma del vehículo",
+    "controlify.binding.superbwarfare.seek_or_free_camera": "Fijar blanco / cámara libre",
+    "controlify.radial.superbwarfare.vehicle": "Acciones del vehículo",
+    "controlify.radial.superbwarfare.eject": "Eyectarse",
     "attribute.superbwarfare.bullet_resistance": "Resistencia a Balas",
     "block.superbwarfare.aircraft_catapult": "Catapulta de Aeronaves",
     "block.superbwarfare.barbed_wire": "Alambre de Púas",

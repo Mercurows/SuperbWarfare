@@ -14,6 +14,13 @@ import org.lwjgl.glfw.GLFW
 object ModKeyMappings {
     const val CATEGORY = "key.categories.superbwarfare"
     private val KEYS = mutableListOf<KeyMapping>()
+    private val controllerKeys = mutableSetOf<KeyMapping>()
+
+    val keyMappings: List<KeyMapping> get() = KEYS
+
+    fun updateControllerKey(key: KeyMapping, down: Boolean): Boolean {
+        return if (down) controllerKeys.add(key) else controllerKeys.remove(key)
+    }
 
     @JvmField
     val MOVE_FORWARD = registerKey("move_forward", GLFW.GLFW_KEY_W)
@@ -146,14 +153,18 @@ object ModKeyMappings {
         modifier: KeyModifier = KeyModifier.NONE,
         type: InputConstants.Type = InputConstants.Type.KEYSYM
     ): KeyMapping {
-        val key = KeyMapping(
+        val key = object : KeyMapping(
             "key.superbwarfare.$name",
             conflictContext,
             modifier,
             type,
             code,
             CATEGORY
-        )
+        ) {
+            override fun isDown(): Boolean {
+                return super.isDown() || (this in controllerKeys && keyConflictContext.isActive)
+            }
+        }
         KEYS.add(key)
         return key
     }
