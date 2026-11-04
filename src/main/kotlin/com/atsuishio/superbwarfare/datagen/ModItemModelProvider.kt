@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.Block
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider
 import net.neoforged.neoforge.client.model.generators.ModelFile
+import net.neoforged.neoforge.client.model.generators.ModelFile.UncheckedModelFile
 import net.neoforged.neoforge.common.data.ExistingFileHelper
 import net.neoforged.neoforge.registries.DeferredHolder
 
@@ -483,6 +484,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         evenSimplerBlockItem(ModBlocks.SUPERB_ITEM_INTERFACE)
         evenSimplerBlockItem(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE)
         evenSimplerBlockItem(ModBlocks.BIOGAS_GENERATOR)
+        getBuilder("item_display_board").parent(UncheckedModelFile(modLoc("displaysettings/item_display_board_display_settings")))
         simpleItem(ModItems.FUMO_25)
     }
 
