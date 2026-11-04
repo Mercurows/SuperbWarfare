@@ -1314,6 +1314,12 @@
 					]
 				},
 				{
+					"name": "charm_pos",
+					"parent": "second_root",
+					"pivot": [2.50625, 0.00577, -0.00234],
+					"rotation": [-90, 0, 0]
+				},
+				{
 					"name": "righthand",
 					"parent": "root",
 					"pivot": [5.98125, 18, 0]
@@ -1366,11 +1372,6 @@
 					"parent": "positioning",
 					"pivot": [-0.4915, 5.18657, -0.25213],
 					"rotation": [-90, 45, -90]
-				},
-				{
-					"name": "charm_pos",
-					"parent": "second_root",
-					"pivot": [-3.125, -17.6275, 0]
 				}
 			],
 			"item_display_transforms": {

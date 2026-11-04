@@ -24,7 +24,7 @@
 				{
 					"name": "bayonet",
 					"parent": "second_root",
-					"pivot": [0, 3.95, -3.13359],
+					"pivot": [0, 6.95, -3.13359],
 					"cubes": [
 						{
 							"origin": [-0.29325, 2.68692, 0.55198],
@@ -758,7 +758,7 @@
 				{
 					"name": "edge_illuminated",
 					"parent": "bayonet",
-					"pivot": [0, 2.50511, -2.93183],
+					"pivot": [0, 5.50511, -2.93183],
 					"cubes": [
 						{
 							"origin": [-0.10557, 1.9362, -20.38319],
@@ -855,6 +855,12 @@
 					]
 				},
 				{
+					"name": "charm_pos",
+					"parent": "second_root",
+					"pivot": [0, 2.24906, 1.66484],
+					"rotation": [0, -56.75, 90]
+				},
+				{
 					"name": "righthand",
 					"parent": "root",
 					"pivot": [5.98125, 18, 0]
@@ -907,11 +913,6 @@
 					"parent": "positioning",
 					"pivot": [-0.4915, 5.18657, -0.25213],
 					"rotation": [-90, 45, -90]
-				},
-				{
-					"name": "charm_pos",
-					"parent": "second_root",
-					"pivot": [0, 2.4347, 2.308]
 				}
 			],
 			"item_display_transforms": {
