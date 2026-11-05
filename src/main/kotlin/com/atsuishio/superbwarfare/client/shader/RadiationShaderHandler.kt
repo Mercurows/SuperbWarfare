@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.shader
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.mobeffect.RadiationMobEffect
 import com.atsuishio.superbwarfare.tools.clientLevel
 import com.atsuishio.superbwarfare.tools.localPlayer
@@ -70,7 +71,7 @@ class RadiationShaderHandler : ResourceManagerReloadListener {
         private fun process(partialTick: Float) {
             if (activeDose <= 0f || localPlayer == null || clientLevel == null ||
                 mc.options.cameraType != CameraType.FIRST_PERSON ||
-                mc.gameRenderer.currentEffect() != null || ThermalShaderHandler.isActive() ||
+                mc.gameRenderer.currentEffect() != null || ClientEventHandler.activeThermalImaging ||
                 !keepsWorldVisible()
             ) {
                 return

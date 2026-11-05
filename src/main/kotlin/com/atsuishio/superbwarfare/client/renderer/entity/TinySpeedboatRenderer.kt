@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.model.entity.VehicleModelInstance
 import com.atsuishio.superbwarfare.entity.vehicle.TinySpeedboatEntity
-import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.renderer.LightTexture
@@ -58,11 +57,6 @@ class TinySpeedboatRenderer(manager: EntityRendererProvider.Context) :
         } else {
             val afloat = DyeColor.byId(id).textureDiffuseColors
             color = floatArrayOf(afloat[0], afloat[1], afloat[2])
-        }
-
-        if (ClientEventHandler.activeThermalImaging) {
-            color = floatArrayOf(1f, 1f, 1f, 1.0f)
-            packedLight = LightTexture.FULL_BRIGHT
         }
 
         instance.renderToBuffer(

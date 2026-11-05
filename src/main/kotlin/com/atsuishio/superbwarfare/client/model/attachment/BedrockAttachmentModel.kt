@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoReadout
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensPostProcessor
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensShader
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
+import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.attachment.ScopeMode
@@ -33,6 +34,7 @@ import org.joml.Matrix4f
 import org.joml.Vector3f
 import org.lwjgl.opengl.GL11
 import java.util.regex.Pattern
+import kotlin.math.pow
 
 class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
     internal val instance: TreeModelInstance = baseModel.createInstance()
@@ -295,6 +297,23 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         return index >= 0 && surfaceRadius(index) > 1.0e-4f
     }
 
+    /**
+     * 热成像瞄具没有可用实体镜片时的"镜片补偿"倍数。
+     *
+     * `LENS_ZOOM_RATIO` 会把世界缩放拆成「世界 `zoom^(1-ratio)` + 镜片补偿 `zoom^ratio`」，
+     * 普通镜片由 `rendertype_scope_lens` 在镜片着色器里补；没有实体镜片的热成像瞄具只能在
+     * 热成像面（`rendertype_scope_thermal`）里补，否则世界、热源遮罩都停在 `zoom^(1-ratio)`，
+     * 与镜内准星/视野的放大不一致，看上去就是"遮罩没跟着放大、错位"。
+     */
+    private fun thermalLensMagnification(info: ScopeMode): Float {
+        val ratio = DisplayConfig.LENS_ZOOM_RATIO.get()
+        if (ratio <= 0.0) return 1f
+        if (!hasLensSurface(info)) return 1f
+        val progress = ClientEventHandler.aimingProgress(ClientEventHandler.zoomTime)
+        val zoom = 1.0 + progress * (ClientEventHandler.customZoom.coerceAtLeast(1.0) - 1.0)
+        return zoom.pow(ratio).toFloat()
+    }
+
     fun renderWithStencil(
         poseStack: PoseStack,
         bufferSource: MultiBufferSource.BufferSource,
@@ -510,7 +529,8 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
                 RenderSystem.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF)
                 val division = divisions.getOrNull(i)
                 if (info.thermal && ScopeLensPostProcessor.deferThermalSight(
-                        i + 1, info.thermalBackgroundColor?.get(), info.thermalEntityColor?.get()
+                        i + 1, info.thermalBackgroundColor?.get(), info.thermalEntityColor?.get(),
+                        thermalLensMagnification(info)
                     ) { deferred ->
                         if (division != null) {
                             renderDivisionVertices(division, poseStack, deferred, texture, quadType, triangleType, light)
@@ -645,7 +665,8 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
                 RenderSystem.stencilFunc(GL11.GL_EQUAL, b, 0xFF)
                 if (info.thermal && lensSurface == null) {
                     if (ScopeLensPostProcessor.deferThermalSight(
-                            b, info.thermalBackgroundColor?.get(), info.thermalEntityColor?.get()
+                            b, info.thermalBackgroundColor?.get(), info.thermalEntityColor?.get(),
+                            thermalLensMagnification(info)
                         ) { deferred ->
                             if (divisionDue) {
                                 withShaderBonesHidden {
@@ -668,7 +689,9 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
                         1f
                     }
                     val tint = info.lensTint
-                    if (ShaderCompat.isShaderPackActive() || info.thermal) {
+                    // Full-screen thermal must be composited before the lens resamples the scene,
+                    // otherwise only the world is magnified and the heat mask stays unzoomed.
+                    if (ShaderCompat.isShaderPackActive() || info.thermal || ScopeThermalRenderer.isFullScreenActive()) {
                         if (ScopeLensPostProcessor.defer(
                                 b, lensSurface, info.lensEdgeWidth, magnification,
                                 tint?.get() ?: 0xFFFFFF,

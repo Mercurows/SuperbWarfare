@@ -92,7 +92,7 @@ object ScopeLensPostProcessor {
         thermalEntityColor: Int? = null
     ): Boolean {
         val shaderPack = ShaderCompat.isShaderPackActive()
-        if ((!shaderPack && !thermal) || ShaderCompat.isRenderingShadowPass() ||
+        if ((!shaderPack && !thermal && !ScopeThermalRenderer.isFullScreenActive()) || ShaderCompat.isRenderingShadowPass() ||
             (surface != null && !ScopeLensShader.isAvailable()) ||
             (thermal && !ScopeThermalRenderer.isAvailable()) || !ScopeStencilRenderHelper.hasStencilAttachment()
         ) return false
@@ -151,10 +151,13 @@ object ScopeLensPostProcessor {
     }
 
     fun deferThermalSight(
-        stencil: Int, backgroundColor: Int? = null, entityColor: Int? = null,
+        stencil: Int,
+        backgroundColor: Int? = null,
+        entityColor: Int? = null,
+        magnification: Float = 1f,
         reticle: (MultiBufferSource) -> Unit
     ): Boolean = defer(
-        stencil, Vector3f(), 0f, 1f, 0xFFFFFF, 0f, null, reticle,
+        stencil, Vector3f(), 0f, magnification, 0xFFFFFF, 0f, null, reticle,
         thermal = true, thermalBackgroundColor = backgroundColor, thermalEntityColor = entityColor
     )
 
@@ -221,7 +224,9 @@ object ScopeLensPostProcessor {
                     RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
                     val center = lens.center
                     if (lens.surface == null && lens.thermal) {
-                        ScopeThermalRenderer.drawSurface(lens.thermalBackgroundColor, lens.thermalEntityColor)
+                        ScopeThermalRenderer.drawSurface(
+                            lens.thermalBackgroundColor, lens.thermalEntityColor, lens.magnification
+                        )
                     } else if (ScopeLensShader.beginSurface(
                             center.x, center.y, center.z, lens.edgeWidth, lens.magnification,
                             lens.tint, lens.tintStrength, lens.screenScale, lens.thermal,

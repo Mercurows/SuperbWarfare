@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensPostProcessor;
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer;
+import com.atsuishio.superbwarfare.compat.shader.ShaderCompat;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -45,12 +46,14 @@ public class GameRendererMixin {
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V", ordinal = 2))
     private void superbWarfare$renderScopeLenses(float partialTicks, long finishTime, PoseStack poseStack, CallbackInfo ci) {
         ScopeThermalRenderer.captureWorldDepth();
+        if (ShaderCompat.isShaderPackActive()) ScopeThermalRenderer.renderFullScreen();
         ScopeLensPostProcessor.render();
     }
 
     // Vanilla renders hands after the world; Iris renders them before its composite.
     @Inject(method = "renderLevel", at = @At("RETURN"))
     private void superbWarfare$renderVanillaThermalScopes(float partialTicks, long finishTime, PoseStack poseStack, CallbackInfo ci) {
+        if (!ShaderCompat.isShaderPackActive()) ScopeThermalRenderer.renderFullScreen();
         ScopeLensPostProcessor.render();
     }
 

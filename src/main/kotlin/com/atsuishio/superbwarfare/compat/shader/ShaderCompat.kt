@@ -28,6 +28,7 @@ object ShaderCompat {
      * Returns `false` when Oculus is installed but no pack is selected, or
      * when Oculus is not installed at all.
      */
+    @JvmStatic
     fun isShaderPackActive(): Boolean {
         if (!isInstalled) return false
         return try {
@@ -44,6 +45,7 @@ object ShaderCompat {
      * During shadow rendering, translucent particles should typically be
      * skipped to avoid writing incorrect depth / colour into the shadow map.
      */
+    @JvmStatic
     fun isRenderingShadowPass(): Boolean {
         if (!isInstalled) return false
         return try {

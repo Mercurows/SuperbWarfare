@@ -6,6 +6,7 @@
   "uniforms": [
     {"name": "ThermalBackgroundColor", "type": "float", "count": 4, "values": [0, 0, 0, 0]},
     {"name": "ThermalEntityColor", "type": "float", "count": 4, "values": [0, 0, 0, 0]},
-    {"name": "ThermalTexelSize", "type": "float", "count": 2, "values": [0.0005, 0.0005]}
+    {"name": "ThermalTexelSize", "type": "float", "count": 2, "values": [0.0005, 0.0005]},
+    {"name": "ThermalMagnification", "type": "float", "count": 1, "values": [1.0]}
   ]
 }
