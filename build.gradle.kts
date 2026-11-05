@@ -333,11 +333,9 @@ dependencies {
     implementation("curse.maven:touhou-little-maid-355044:7510722")
 
     // 测试用mod
-    implementation("curse.maven:better-combat-by-daedelus-639842:6532547")
-    implementation("curse.maven:playeranimator-658587:6024462")
-
     implementation("curse.maven:spark-361579:6225208")
     implementation("maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge")
+    implementation("curse.maven:timeless-and-classics-zero-1028108:9623169")
 
     // 这俩是仅客户端mod
     if (!project.gradle.startParameter.taskNames.any { it.contains("runServer") }) {

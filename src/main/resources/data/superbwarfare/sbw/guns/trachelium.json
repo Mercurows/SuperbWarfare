@@ -1,5 +1,5 @@
 {
-  "Spread": 0,
+  "Spread": 2,
   "RecoilX": 0.0025,
   "RecoilY": 0.032,
   "Damage": 18,
@@ -38,7 +38,7 @@
     {
       "Mode": "Charge",
       "Charge": {
-        "Duration": 2,
+        "Duration": 3,
         "Trigger": "AutoAtFull",
         "PowerMode": "Full",
         "MinPower": 1.0
