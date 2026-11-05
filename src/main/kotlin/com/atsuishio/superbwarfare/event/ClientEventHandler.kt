@@ -21,7 +21,6 @@ import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer
 import com.atsuishio.superbwarfare.client.renderer.projectile.ReforgingGravityBallRenderer
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensPostProcessor
 import com.atsuishio.superbwarfare.client.shader.RadiationShaderHandler
-import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
@@ -873,23 +872,6 @@ object ClientEventHandler {
 
         if (!activeThermalImaging || !hasThermalImagingGoggles) {
             activeThermalImaging = false
-            turnOffThermalImaging()
-        } else if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
-            turnOnThermalImaging()
-        }
-    }
-
-    @JvmStatic
-    fun turnOnThermalImaging() {
-        ThermalShaderHandler.setActive(true)
-        mc.gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"))
-    }
-
-    @JvmStatic
-    fun turnOffThermalImaging() {
-        if (ThermalShaderHandler.isActive()) {
-            mc.gameRenderer.shutdownEffect()
-            ThermalShaderHandler.setActive(false)
         }
     }
 
@@ -3679,15 +3661,6 @@ object ClientEventHandler {
             Component.translatable("tips.superbwarfare.vehicle_reset_kit_3")
                 .withStyle(ChatFormatting.AQUA).withStyle(ChatFormatting.UNDERLINE), false
         )
-    }
-
-    @SubscribeEvent
-    fun onFogColor(event: ViewportEvent.ComputeFogColor) {
-        if (activeThermalImaging) {
-            event.red = 0.1F
-            event.green = 0.1F
-            event.blue = 0.1F
-        }
     }
 
     @SubscribeEvent

@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.model.entity.VehicleModelBoneGroups
 import com.atsuishio.superbwarfare.client.model.entity.VehicleModelInstance
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
-import com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener
 import com.atsuishio.superbwarfare.client.renderer.TextureBrightnessHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -112,9 +111,7 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             }
         }
 
-        texture = if (ClientEventHandler.activeThermalImaging) {
-            SmartTextureBrightener.getSmartBrightenedTexture(texture, 3f)
-        } else if (entity.isWreck) {
+        texture = if (entity.isWreck) {
             if ((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER || entity.vehicleType == VehicleType.AIRSHIP)) {
                 if (entity.sympatheticDetonated) {
                     TextureBrightnessHandler.getBrightenedTexture(texture, 0.3f)

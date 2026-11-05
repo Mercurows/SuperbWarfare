@@ -1,0 +1,13 @@
+{
+  "vertex": "superbwarfare:rendertype_scope_thermal",
+  "fragment": "superbwarfare:rendertype_thermal_vision",
+  "attributes": ["Position", "UV0"],
+  "samplers": [{"name": "Sampler0"}, {"name": "Sampler1"}],
+  "uniforms": [
+    {"name": "ThermalTexelSize", "type": "float", "count": 2, "values": [0.0005, 0.0005]},
+    {"name": "PixelSize", "type": "float", "count": 1, "values": [1.5]},
+    {"name": "NoiseStrength", "type": "float", "count": 1, "values": [0.09]},
+    {"name": "VignetteStrength", "type": "float", "count": 1, "values": [0.90]},
+    {"name": "NoiseFrame", "type": "int", "count": 1, "values": [0]}
+  ]
+}

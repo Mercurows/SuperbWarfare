@@ -93,7 +93,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private val installableBySlot = mutableMapOf<AttachmentType, List<ResourceLocation>>()
     private var ownedAttachments: Set<ResourceLocation> = emptySet()
     private var inventoryCheckTick = Long.MIN_VALUE
-    private var inventoryCreative = false
+    private var inventoryUnrestricted = false
     private var hoveredItem: String? = null
     private var tooltipKey: String? = null
     private var tooltipLines: List<List<TooltipRun>> = emptyList()
@@ -1670,13 +1670,13 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
 
     private data class CandidateKey(
         val dataId: String, val version: Int, val tags: Long, val free: Boolean, val fullyFree: Boolean,
-        val installed: List<ResourceLocation?>,
+        val unrestricted: Boolean, val installed: List<ResourceLocation?>,
     )
 
     private fun refreshAttachmentLists(player: Player, data: GunData) {
         val key = CandidateKey(
             data.getDefault().itemId, GunData.DATA_VERSION, AvailableAttachments.reloadGeneration,
-            GunConfig.freeAttachmentMode, GunConfig.fullyFreeAttachmentMode,
+            GunConfig.freeAttachmentMode, GunConfig.fullyFreeAttachmentMode, GunConfig.unrestrictedModification,
             AttachmentType.entries.map { data.attachment.id(it) })
         if (candidateKey != key) {
             candidateKey = key
@@ -1685,16 +1685,17 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             tooltipKey = null
         }
         // 每 tick 扫一次背包，避免依赖客户端同步不一定递增的 inventory.timesChanged。
+        val unrestricted = GunConfig.isUnrestrictedModification(player)
         val tick = player.level().gameTime
-        if (inventoryCheckTick != tick || inventoryCreative != player.isCreative) {
-            val owned = if (player.isCreative) emptySet() else
+        if (inventoryCheckTick != tick || inventoryUnrestricted != unrestricted) {
+            val owned = if (unrestricted) emptySet() else
                 (player.inventory.items.asSequence() + player.inventory.offhand.asSequence())
                     .filterNot { it.isEmpty }
                     .mapNotNull { (it.item as? AttachmentProvider)?.attachmentId?.let(ResourceLocation::tryParse) }
                     .toSet()
-            if (ownedAttachments != owned || inventoryCreative != player.isCreative) installableBySlot.clear()
+            if (ownedAttachments != owned || inventoryUnrestricted != unrestricted) installableBySlot.clear()
             ownedAttachments = owned
-            inventoryCreative = player.isCreative
+            inventoryUnrestricted = unrestricted
             inventoryCheckTick = tick
         }
     }
@@ -1710,7 +1711,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private fun installableAttachments(player: Player, data: GunData, type: AttachmentType): List<ResourceLocation> =
         installableBySlot.getOrPut(type) {
             val available = compatibleAttachments(data, type)
-            if (player.isCreative) available else available.filter { it in ownedAttachments }
+            if (GunConfig.isUnrestrictedModification(player)) available else available.filter { it in ownedAttachments }
         }
 
     private data class Box(val left: Float, val top: Float, val width: Float, val height: Float) {
