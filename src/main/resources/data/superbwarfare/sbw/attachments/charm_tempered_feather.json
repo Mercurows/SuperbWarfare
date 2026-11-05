@@ -1,0 +1,25 @@
+{
+  "Slot": "Charm",
+  "Model": "superbwarfare:models/bedrock/attachment/charm_tempered_feather.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/charm_tempered_feather.png",
+  "Charm": {
+    "LateralAngle": 15.0
+  },
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.05
+    },
+    {
+      "Prop": "Spread",
+      "Op": "Mul",
+      "Value": 0.95
+    },
+    {
+      "Prop": "ZoomSpreadRate",
+      "Op": "Mul",
+      "Value": 0.95
+    }
+  ]
+}

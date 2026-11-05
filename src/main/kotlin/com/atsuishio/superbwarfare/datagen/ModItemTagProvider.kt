@@ -669,7 +669,11 @@ class ModItemTagProvider(
             ModItems.CHARM_CHIRAM_CORE,
             ModItems.CHARM_LILY,
             ModItems.CHARM_HIRU_HEAD,
-            ModItems.CHARM_SWISS_COIL
+            ModItems.CHARM_SWISS_COIL,
+            ModItems.CHARM_INSIGNIA_OF_THE_HEART_SEEKER,
+            ModItems.CHARM_COOING_BELL,
+            ModItems.CHARM_TEMPERED_FEATHER,
+            ModItems.CHARM_RADIANT_VOW
         ),
         AttachmentType.LOWER_RAIL to listOf(
             ModItems.LOWER_RAIL_BIPOD,

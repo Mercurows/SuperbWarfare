@@ -848,6 +848,10 @@ object ModItems {
     @JvmField val CHARM_HIRU_HEAD = registerAttachment("charm_hiru_head", ModRarities.VIRTUAL)
     @JvmField val CHARM_SUI_CONTAINER = registerAttachment("charm_sui_container", ModRarities.VIRTUAL)
     @JvmField val CHARM_SWISS_COIL = registerAttachment("charm_swiss_coil", ModRarities.VIRTUAL)
+    @JvmField val CHARM_INSIGNIA_OF_THE_HEART_SEEKER = registerAttachment("charm_insignia_of_the_heart_seeker", ModRarities.VIRTUAL)
+    @JvmField val CHARM_COOING_BELL = registerAttachment("charm_cooing_bell", ModRarities.VIRTUAL)
+    @JvmField val CHARM_TEMPERED_FEATHER = registerAttachment("charm_tempered_feather", ModRarities.VIRTUAL)
+    @JvmField val CHARM_RADIANT_VOW = registerAttachment("charm_radiant_vow", ModRarities.VIRTUAL)
     // @formatter:on
 
     fun registerDispenserBehavior() {

@@ -470,6 +470,10 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.CHARM_LILY)
         simpleItem(ModItems.CHARM_HIRU_HEAD)
         simpleItem(ModItems.CHARM_SWISS_COIL)
+        simpleItem(ModItems.CHARM_INSIGNIA_OF_THE_HEART_SEEKER)
+        simpleItem(ModItems.CHARM_COOING_BELL)
+        simpleItem(ModItems.CHARM_TEMPERED_FEATHER)
+        simpleItem(ModItems.CHARM_RADIANT_VOW)
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE)
