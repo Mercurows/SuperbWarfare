@@ -40,5 +40,9 @@
     "RandomLifetime": 0.2,
     "RandomSpeed": 0.2,
     "RandomOpacity": 0.1
+  },
+  "Sponsor": {
+    "Name": "丿小年糕丿",
+    "Color": "0x7DEA79"
   }
 }

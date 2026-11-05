@@ -448,7 +448,7 @@
   "des.superbwarfare.container.fail.empty": "这个箱子是空的",
   "des.superbwarfare.container.fail.open": "没有足够的空间",
   "des.superbwarfare.container.fail.crowbar": "或许应该换个工具试试",
-  "des.superbwarfare.container.sponsor": "赞助者: %1$s",
+  "des.superbwarfare.sponsor": "赞助者: %1$s",
   "block.superbwarfare.small_container": "小型集装箱",
   "des.superbwarfare.small_container": "空的",
   "des.superbwarfare.small_container.random": "随机补给",
