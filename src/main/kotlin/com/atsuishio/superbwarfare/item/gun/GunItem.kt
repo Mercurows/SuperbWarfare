@@ -250,17 +250,20 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     ) {
         super.appendHoverText(stack, level, list, flag)
 
-        val description = GunResource.compute(stack).description
-        if (description.isEmpty()) return
-
-        list.add(Component.empty())
-        for (info in description) {
-            if (info.hidden) {
-                TooltipTool.addHideText(list, info.asComponent())
-            } else {
-                list.add(info.asComponent())
+        val resource = GunResource.compute(stack)
+        val description = resource.description
+        if (description.isNotEmpty()) {
+            list.add(Component.empty())
+            for (info in description) {
+                if (info.hidden) {
+                    TooltipTool.addHideText(list, info.asComponent())
+                } else {
+                    list.add(info.asComponent())
+                }
             }
         }
+
+        resource.sponsor?.let { list.add(it.tooltipLine()) }
     }
 
     open fun getGunIcon(stack: ItemStack) = getGunIcon(GunData.from(stack))

@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.attachment.AmmoBarEntry
 import com.atsuishio.superbwarfare.data.attachment.AmmoTextEntry
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.resource.ModelResource
+import com.atsuishio.superbwarfare.resource.SponsorInfo
 import com.atsuishio.superbwarfare.resource.gun.pojo.*
 import com.atsuishio.superbwarfare.script.GunScriptManager
 import com.atsuishio.superbwarfare.script.ScriptMath
@@ -192,6 +193,11 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     @JvmField
     @SerialName("ZoomingTranslateMultiply")
     var zoomingTranslateMultiply: Float = 0f
+
+    /** 赞助者信息；写了就在 tooltip 末尾多一行「赞助者: [名字]」，写法与载具资源一致 */
+    @JvmField
+    @SerialName("Sponsor")
+    var sponsor: SponsorInfo? = null
 
     companion object {
         private val MARKER: Marker = MarkerManager.getMarker("GunResource")

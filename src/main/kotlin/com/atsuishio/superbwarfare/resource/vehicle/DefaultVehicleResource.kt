@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.IDBasedData
 import com.atsuishio.superbwarfare.data.SingleOrList
 import com.atsuishio.superbwarfare.resource.ModelResource
+import com.atsuishio.superbwarfare.resource.SponsorInfo
 import com.atsuishio.superbwarfare.script.ScriptMath
 import com.atsuishio.superbwarfare.script.VehicleScriptManager
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation

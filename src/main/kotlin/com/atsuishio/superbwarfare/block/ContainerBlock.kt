@@ -12,7 +12,6 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.InteractionHand
@@ -176,16 +175,7 @@ open class ContainerBlock :
             }
 
             if (entity is VehicleEntity) {
-                val resource = VehicleResource.compute(entity)
-                val sponsor = resource.sponsor
-                if (sponsor != null) {
-                    tooltip.add(
-                        Component.translatable(
-                            "des.superbwarfare.container.sponsor",
-                            Component.literal("[${sponsor.name}]").withStyle(Style.EMPTY.withColor(sponsor.color.color))
-                        ).withStyle(Style.EMPTY.withColor(0x7DEA79))
-                    )
-                }
+                VehicleResource.compute(entity).sponsor?.let { tooltip.add(it.tooltipLine()) }
             }
         }
     }

@@ -448,7 +448,7 @@
   "des.superbwarfare.container.fail.empty": "This container is empty",
   "des.superbwarfare.container.fail.open": "Not enough space",
   "des.superbwarfare.container.fail.crowbar": "Maybe try another tool",
-  "des.superbwarfare.container.sponsor": "Sponsor: %1$s",
+  "des.superbwarfare.sponsor": "Sponsor: %1$s",
   "block.superbwarfare.small_container": "Small Container",
   "des.superbwarfare.small_container": "Empty",
   "des.superbwarfare.small_container.random": "Random Supplies",
