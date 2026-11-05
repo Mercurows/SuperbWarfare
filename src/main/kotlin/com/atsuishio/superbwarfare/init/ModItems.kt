@@ -185,6 +185,7 @@ object ModItems {
     @JvmField val DIAMOND_HAMMER = registerMelee("diamond_hammer") { HammerItem(Properties()) }
     @JvmField val CEMENTED_CARBIDE_HAMMER = registerMelee("cemented_carbide_hammer") { HammerItem(Properties()) }
     @JvmField val NETHERITE_HAMMER = registerMelee<NetheriteHammerItem>()
+    @JvmField val FIRE_AXE = registerMelee("fire_axe") { MeleeGunItem(Properties()) }
     @JvmField val T_BATON = registerMelee("t_baton") { MeleeGunItem(Properties()) }
     @JvmField val ELECTRIC_BATON = registerMelee("electric_baton") { MeleeGunItem(Properties()) }
     @JvmField val STEEL_PIPE = registerMelee("steel_pipe") { MeleeGunItem(Properties()) }
