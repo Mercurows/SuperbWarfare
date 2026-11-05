@@ -87,7 +87,7 @@
 					"pivot": [0.475, -0.4, 0]
 				},
 				{
-					"name": "beast",
+					"name": "beast_illuminated",
 					"parent": "charm",
 					"pivot": [0.475, -0.32823, 0],
 					"rotation": [-90, -45, -90],
