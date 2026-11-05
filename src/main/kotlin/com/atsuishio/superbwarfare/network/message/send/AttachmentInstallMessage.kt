@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send
 
+import com.atsuishio.superbwarfare.config.server.GunConfig
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.subdata.Attachment
@@ -86,8 +87,8 @@ private fun install(player: ServerPlayer, data: GunData, type: AttachmentType, i
         return
     }
     // 先扣背包再动枪：扣不出来（背包里没有 / 已经用完）就整笔取消，不留半成品状态。
-    // 创造模式可直接安装，生存模式在任何兼容配置下都需要背包中的配件。
-    if (!player.isCreative && !consumeOneAttachment(player, id)) {
+    // 创造模式（或开启了 unrestricted_modification）可直接安装，生存模式在任何兼容配置下都需要背包中的配件。
+    if (!GunConfig.isUnrestrictedModification(player) && !consumeOneAttachment(player, id)) {
         fail(player)
         return
     }
@@ -136,9 +137,9 @@ private fun isAttachment(stack: ItemStack, id: ResourceLocation): Boolean {
     return ResourceLocation.tryParse(provider.attachmentId) == id
 }
 
-/** 非创造模式返还配件物品；背包塞不下就掉在脚下。 */
+/** 非创造模式返还配件物品；背包塞不下就掉在脚下。自由改装模式下按创造模式处理，不返还。 */
 private fun returnItem(player: ServerPlayer, id: ResourceLocation) {
-    if (player.isCreative) return
+    if (GunConfig.isUnrestrictedModification(player)) return
     val item = ForgeRegistries.ITEMS.getValue(id) ?: return
     val stack = ItemStack(item)
     if (!player.addItem(stack)) {

@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.config.server
 
 import com.atsuishio.superbwarfare.config.SERVER_CONFIG
 import com.atsuishio.superbwarfare.config.buildServerConfig
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.player.Player
 import net.minecraftforge.common.ForgeConfigSpec
 
 object GunConfig {
@@ -20,6 +22,13 @@ object GunConfig {
         comment("Set true to allow every gun to use every registered attachment of every slot, ignoring its AvailableAttachments (implies free_attachment_mode)")
         comment("是否开启完全自由改装模式：任意枪械都能安装全部槽位已注册的配件，即使枪械数据里没有声明（蕴含自由改装模式）")
         define("fully_free_attachment_mode", false)
+    }
+
+    @JvmField
+    val UNRESTRICTED_MODIFICATION = buildServerConfig {
+        comment("Set true to let players in any game mode install gun ATTACHMENTS exactly like creative mode does: installing needs no matching item in the inventory")
+        comment("是否允许非创造模式玩家像创造模式一样自由装卸枪械配件：装配件不需要背包里有对应物品、卸下或替换不返还物品。")
+        define("unrestricted_modification", false)
     }
 
     @JvmField
@@ -61,6 +70,22 @@ object GunConfig {
     @JvmStatic
     val fullyFreeAttachmentMode: Boolean
         get() = configValue(FULLY_FREE_ATTACHMENT_MODE)
+
+    @JvmStatic
+    val unrestrictedModification: Boolean
+        get() = configValue(UNRESTRICTED_MODIFICATION)
+
+    /**
+     * 装卸配件时是否按「创造模式」对待：创造模式玩家本身，或开启了 [UNRESTRICTED_MODIFICATION]。
+     *
+     * 只影响配件（`AvailableAttachments` 之外的持有/消耗/返还判定），
+     * 不影响模组（perk）、开火、伤害、掉落等其它创造模式特权。
+     */
+    @JvmStatic
+    fun isUnrestrictedModification(player: Entity?): Boolean {
+        if (unrestrictedModification) return player != null
+        return player is Player && player.isCreative
+    }
 
     private fun configValue(value: ForgeConfigSpec.BooleanValue): Boolean =
         if (SERVER_CONFIG.isLoaded) value.get() else false
