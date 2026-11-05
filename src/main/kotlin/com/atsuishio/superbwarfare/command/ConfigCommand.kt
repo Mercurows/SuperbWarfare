@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.command.builder.CommandNode
 import com.atsuishio.superbwarfare.command.builder.boolArg
 import com.atsuishio.superbwarfare.command.builder.buildCommand
 import com.atsuishio.superbwarfare.config.RealisticShootModeSync
+import com.atsuishio.superbwarfare.config.UnrestrictedModificationSync
 import com.atsuishio.superbwarfare.config.server.*
 import net.minecraft.network.chat.Component
 import net.neoforged.neoforge.common.ModConfigSpec
@@ -38,6 +39,9 @@ val CONFIG_COMMAND = buildCommand("config") {
 
     booleanConfig(GunConfig::FREE_ATTACHMENT_MODE)
     booleanConfig(GunConfig::FULLY_FREE_ATTACHMENT_MODE)
+    booleanConfig(GunConfig::UNRESTRICTED_MODIFICATION) {
+        UnrestrictedModificationSync.broadcast()
+    }
     booleanConfig(GunConfig::FREE_PERK_MODE)
     booleanConfig(GunConfig::FULLY_FREE_PERK_MODE)
 
