@@ -35,6 +35,10 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_conduit"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_golden_ringo_gun_king_medal"
         }
       ],
       "rolls": 1.0

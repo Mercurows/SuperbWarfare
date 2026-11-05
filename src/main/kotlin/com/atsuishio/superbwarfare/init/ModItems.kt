@@ -837,6 +837,7 @@ object ModItems {
     @JvmField val CHARM_CRYSTAL_POPCORN = registerAttachment("charm_crystal_popcorn", ModRarities.LEGENDARY)
     @JvmField val CHARM_NETHER_STAR = registerAttachment("charm_nether_star", ModRarities.LEGENDARY)
     @JvmField val CHARM_CONDUIT = registerAttachment("charm_conduit", ModRarities.LEGENDARY)
+    @JvmField val CHARM_GOLDEN_RINGO_GUN_KING_MEDAL = registerAttachment("charm_golden_ringo_gun_king_medal", ModRarities.LEGENDARY)
     @JvmField val CHARM_SENPAI = registerAttachment("charm_senpai", ModRarities.SUPERB)
     @JvmField val CHARM_MRAHC = registerAttachment("charm_mrahc", ModRarities.SUPERB)
     @JvmField val CHARM_EXPERIENCE_BOTTLE = registerAttachment("charm_experience_bottle", ModRarities.SUPERB)
