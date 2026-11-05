@@ -477,6 +477,7 @@ class ModCustomLootProvider() : LootTableSubProvider {
                     ModItems.CHARM_CRYSTAL_POPCORN,
                     ModItems.CHARM_NETHER_STAR,
                     ModItems.CHARM_CONDUIT,
+                    ModItems.CHARM_GOLDEN_RINGO_GUN_KING_MEDAL,
                 )
             }
         }

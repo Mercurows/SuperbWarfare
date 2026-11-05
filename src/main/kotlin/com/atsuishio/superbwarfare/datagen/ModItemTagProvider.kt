@@ -711,6 +711,7 @@ class ModItemTagProvider(
             ModItems.CHARM_THE_EMPERORS_NEW_CHARM,
             ModItems.CHARM_BEAST,
             ModItems.CHARM_CRYSTAL_POPCORN,
+            ModItems.CHARM_GOLDEN_RINGO_GUN_KING_MEDAL,
             ModItems.CHARM_SENPAI,
             ModItems.CHARM_MRAHC,
             ModItems.CHARM_EXPERIENCE_BOTTLE,
