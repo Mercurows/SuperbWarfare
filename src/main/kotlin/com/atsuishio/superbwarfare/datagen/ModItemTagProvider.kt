@@ -419,7 +419,8 @@ class ModItemTagProvider(
             ModItems.STEEL_HAMMER.get(),
             ModItems.DIAMOND_HAMMER.get(),
             ModItems.CEMENTED_CARBIDE_HAMMER.get(),
-            ModItems.NETHERITE_HAMMER.get()
+            ModItems.NETHERITE_HAMMER.get(),
+            ModItems.FIRE_AXE.get()
         )
 
         this.tag(ItemTags.SWORDS).add(*swords)

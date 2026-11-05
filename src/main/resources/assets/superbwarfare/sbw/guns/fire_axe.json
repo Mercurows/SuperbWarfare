@@ -1,0 +1,59 @@
+{
+  "SlotIcon": "superbwarfare:textures/item/fire_axe_icon.png",
+  "UseCustomSprintAnimation": true,
+  "Animation": {
+    "Idle": "animation.fire_axe.idle",
+    "Melee": "animation.fire_axe.melee_1",
+    "Run": "animation.fire_axe.sprint",
+    "Edit": "animation.fire_axe.edit"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/fire_axe.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/fire_axe.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/fire_axe.png"
+  },
+  "ItemDisplay": {
+    "firstperson_righthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "firstperson_lefthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "thirdperson_righthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "thirdperson_lefthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "ground": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "fixed": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  }
+}

@@ -92,6 +92,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunItem(ModItems.DIAMOND_HAMMER)
         gunItem(ModItems.CEMENTED_CARBIDE_HAMMER)
         gunItem(ModItems.NETHERITE_HAMMER)
+        gunItem(ModItems.FIRE_AXE)
 
         simpleItem(ModItems.VEHICLE_GUN)
         withExistingParent(ModItems.EMPTY_GUN.id.path, ResourceLocation.withDefaultNamespace("item/generated"))
