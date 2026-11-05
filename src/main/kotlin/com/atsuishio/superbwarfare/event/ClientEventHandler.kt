@@ -411,6 +411,15 @@ object ClientEventHandler {
     @JvmField
     var chargeActive: Boolean = false
 
+    /**
+     * 这一次扣扳机是否还欠一发：按下扳机置位，真的打出一发后清零。
+     *
+     * 蓄力枪必须"一次扣扳机 = 一次蓄力 = 一发"，不能靠 `holdingFireKeyTicks` 的残留值
+     * 直接判定（残留的满蓄力会让后续快速点击一按就出膛，跳过击锤行程）。
+     */
+    @JvmField
+    var chargeArmed: Boolean = false
+
     @JvmField
     var chargeProgress: Double = 0.0
 
@@ -2108,12 +2117,18 @@ object ClientEventHandler {
         chargeProgress = progress
         chargePower = chargeConfig.powerForProgress(progress)
 
+        // `chargeArmed` 保证"一次扣扳机只打一发、且每一发都要重新蓄力满"：
+        // 只按下扳机时置位，打完立刻清零，残留的满蓄力不会让下一次点击直接出膛。
         if (chargeConfig.trigger == ChargeTrigger.AUTO_AT_FULL
+            && chargeArmed
             && progress >= 1.0
             && clientTimer.progress == 0L
             && fireCooldown == 0.0
             && drawTime < 0.01
         ) {
+            chargeArmed = false
+            holdingFireKeyTicks = 0
+            holdingFireKeyTicks0 = 0f
             clientTimer.start()
             shootClient(player, chargePower)
             clientTimer.stop()
@@ -3481,6 +3496,7 @@ object ClientEventHandler {
         ClickEventHandler.switchZoom = false
         burstFireAmount = 0
         chargeActive = false
+        chargeArmed = false
         chargeProgress = 0.0
         chargePower = 0.0
         noSprintTicks = 10f

@@ -17,18 +17,18 @@
 			}
 		},
 		"animation.trachelium.charge": {
-			"animation_length": 0.1,
+			"animation_length": 0.15,
 			"bones": {
 				"jichui": {
 					"rotation": {
 						"0.0": [0, 0, 0],
-						"0.1": [-50, 0, 0]
+						"0.15": [-50, 0, 0]
 					}
 				},
 				"lun": {
 					"rotation": {
 						"0.0": [0, 0, 0],
-						"0.1": [0, 0, 60]
+						"0.15": [0, 0, 60]
 					}
 				}
 			}

@@ -312,7 +312,7 @@ dependencies {
         modRuntimeOnly("curse.maven:embeddium-908741:5681725")
     }
 
-    modImplementation("curse.maven:timeless-and-classics-zero-1028108:6518539")
+    modImplementation("curse.maven:timeless-and-classics-zero-1028108:9037989")
     modImplementation("curse.maven:create-328085:7178761")
     modImplementation("curse.maven:mmmmmmmmmmmm-225738:6237015")
     modImplementation("curse.maven:selene-499980:6249659")
@@ -325,10 +325,6 @@ dependencies {
     }
     modImplementation("curse.maven:valkyrien-skies-258371:7906689")
     modImplementation("curse.maven:eureka-ships-654384:7979379")
-
-    // better combat相关
-    modImplementation("curse.maven:better-combat-by-daedelus-639842:5625757")
-    modImplementation("curse.maven:playeranimator-658587:4587214")
 }
 
 mixin {

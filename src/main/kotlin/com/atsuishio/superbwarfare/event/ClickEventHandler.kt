@@ -576,6 +576,7 @@ object ClickEventHandler {
                 if (chargeConfig != null) {
                     // 空弹或装箭期间也记住按住左键；就绪后自动开始蓄力，松手仍由 release 清除。
                     ClientEventHandler.chargeActive = item.canShoot(data, player)
+                    ClientEventHandler.chargeArmed = true
                     ClientEventHandler.chargeProgress = 0.0
                     ClientEventHandler.chargePower = 0.0
                     ClientEventHandler.holdingFireKeyTicks = 0
@@ -661,10 +662,14 @@ object ClickEventHandler {
             0.0
         }
         val chargePower = chargeConfig?.powerForProgress(releaseProgress) ?: ClientEventHandler.chargePower
+        // 本次扳机行程是否还欠这一发（下面会立刻作废，松开扳机后必须重新按下）
+        val armed = ClientEventHandler.chargeArmed
 
         sendPacketToServer(FireKeyMessage(1, chargePower, ClientEventHandler.zoom))
         ClientEventHandler.holdingFireKey = false
         ClientEventHandler.chargeActive = false
+        // 松开扳机即作废这一次蓄力：下一次开火必须重新按下扳机、重新蓄满
+        ClientEventHandler.chargeArmed = false
         ClientEventHandler.chargeProgress = 0.0
         ClientEventHandler.chargePower = 0.0
 
@@ -692,7 +697,8 @@ object ClickEventHandler {
                     ChargeTrigger.AUTO_AT_FULL -> false
                 }
                 if (releaseAllowed && chargePower >= chargeConfig.effectiveMinPower) {
-                    ClientEventHandler.shootClient(player, chargePower)
+                    // 这里消费掉本次扳机行程，避免同一次松开被重复利用
+                    if (armed) ClientEventHandler.shootClient(player, chargePower)
                 }
             }
 
