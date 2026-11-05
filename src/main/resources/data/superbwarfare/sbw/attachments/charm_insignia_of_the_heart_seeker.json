@@ -1,0 +1,25 @@
+{
+  "Slot": "Charm",
+  "Model": "superbwarfare:models/bedrock/attachment/charm_insignia_of_the_heart_seeker.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/charm_insignia_of_the_heart_seeker.png",
+  "Charm": {
+    "LateralAngle": 15.0
+  },
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.05
+    },
+    {
+      "Prop": "RPM",
+      "Op": "Mul",
+      "Value": 1.05
+    },
+    {
+      "Prop": "RpmMultiplier",
+      "Op": "Mul",
+      "Value": 1.05
+    }
+  ]
+}

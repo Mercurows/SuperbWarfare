@@ -23,6 +23,22 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_swiss_coil"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_insignia_of_the_heart_seeker"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_cooing_bell"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_tempered_feather"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_radiant_vow"
         }
       ],
       "rolls": 1.0

@@ -1,0 +1,25 @@
+{
+  "Slot": "Charm",
+  "Model": "superbwarfare:models/bedrock/attachment/charm_cooing_bell.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/charm_cooing_bell.png",
+  "Charm": {
+    "LateralAngle": 15.0
+  },
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.05
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Mul",
+      "Value": 0.95
+    },
+    {
+      "Prop": "Gravity",
+      "Op": "Mul",
+      "Value": 0.95
+    }
+  ]
+}
