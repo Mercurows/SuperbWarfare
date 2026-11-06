@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.ShaderInstance
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.item.ItemStack
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.RegisterShadersEvent
@@ -84,6 +85,18 @@ object ScopeThermalRenderer {
     /** Lenses must magnify the composited scene and heat together, never the scene alone. */
     fun isFullScreenActive(): Boolean = enabled && fullScreen
 
+
+    @JvmStatic
+    fun isAimingThermalScope(stack: ItemStack?): Boolean {
+        val mc = Minecraft.getInstance()
+        if (!mc.options.cameraType.isFirstPerson) return false
+        if (stack == null || stack.item !is GunItem) return false
+        if (ClientEventHandler.zoomTime < BedrockAttachmentModel.DIVISION_MIN_ZOOM) return false
+        val gun = GunData.from(stack)
+        return gun.attachment.scopeStack().lastOrNull()?.definition?.scopeInfo
+            ?.mode(gun.attachment.scopeMode(AttachmentType.SCOPE))?.thermal == true
+    }
+
     @JvmStatic
     fun beginFrame() {
         discardGeometry()
@@ -96,12 +109,7 @@ object ScopeThermalRenderer {
         val mc = Minecraft.getInstance()
         fullScreen = ClientEventHandler.activeThermalImaging
         val stack = mc.player?.mainHandItem
-        val scope = mc.options.cameraType.isFirstPerson && stack?.item is GunItem &&
-            ClientEventHandler.zoomTime >= BedrockAttachmentModel.DIVISION_MIN_ZOOM &&
-            GunData.from(stack).let { gun ->
-                gun.attachment.scopeStack().lastOrNull()?.definition?.scopeInfo
-                    ?.mode(gun.attachment.scopeMode(AttachmentType.SCOPE))?.thermal == true
-            }
+        val scope = ClientEventHandler.scopeThermalEnabled && isAimingThermalScope(stack)
         enabled = isAvailable() && (fullScreen || scope)
     }
 

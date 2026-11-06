@@ -1060,7 +1060,7 @@
   "key.superbwarfare.change_fire_mode_forward": "向前切换开火模式",
   "key.superbwarfare.change_fire_mode_backward": "向后切换开火模式",
   "key.superbwarfare.vehicle_seek": "载具锁定目标",
-  "key.superbwarfare.active_thermal_imaging": "开启热成像",
+  "key.superbwarfare.active_thermal_imaging": "热成像/热融合开关",
   "key.superbwarfare.loiter_config": "自动盘旋配置",
   "key.superbwarfare.toggle_tactical_map": "打开战术地图",
   "key.superbwarfare.change_seat": "切换座位(+数字)",

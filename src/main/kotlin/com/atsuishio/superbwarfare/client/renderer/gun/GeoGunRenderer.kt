@@ -911,7 +911,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val definition = top.definition ?: return null
         val scopeInfo = definition.scopeInfo ?: return null
         val scopeModeIndex = data.attachment.scopeMode(AttachmentType.SCOPE)
-        val scopeMode = scopeInfo.mode(scopeModeIndex)
+        // 热融合开关关闭时，把这一档按普通光学镜处理（只影响镜内热成像，倍率/分划等数据不变）
+        val scopeMode = scopeInfo.mode(scopeModeIndex).let {
+            if (it.thermal && !ClientEventHandler.scopeThermalEnabled) it.copy(thermal = false) else it
+        }
         val companionSightMode = if (scopeMode.isScope()) {
             scopeInfo.modes.firstOrNull { it.isSight() }
         } else {

@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.gun.GunChargeHandler
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.overlay.ammo.AmmoBarHud
+import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer
 import com.atsuishio.superbwarfare.client.screens.LoiterConfigScreen
 import com.atsuishio.superbwarfare.client.screens.MissilePosInputScreen
 import com.atsuishio.superbwarfare.client.screens.TacticalMapScreen
@@ -268,6 +269,19 @@ object ClickEventHandler {
         }
     }
 
+    @JvmStatic
+    fun handleScopeThermalKey(player: Player): Boolean {
+        if (!ScopeThermalRenderer.isAimingThermalScope(player.mainHandItem)) return false
+
+        ClientEventHandler.scopeThermalEnabled = !ClientEventHandler.scopeThermalEnabled
+        if (ClientEventHandler.scopeThermalEnabled) {
+            player.playSound(ModSounds.CANNON_ZOOM_OUT.get())
+        } else {
+            player.playSound(ModSounds.CANNON_ZOOM_OUT.get())
+        }
+        return true
+    }
+
     @SubscribeEvent
     fun onKeyPressed(event: InputEvent.Key) {
         if (notInGame) return
@@ -285,6 +299,9 @@ object ClickEventHandler {
 
         if (event.action == GLFW.GLFW_PRESS) {
             if (key == ModKeyMappings.ACTIVE_THERMAL_IMAGING.key.value) {
+                // 正在通过热融合瞄准镜瞄准时，K 开关镜内热融合效果，优先级高于护目镜/载具热成像
+                if (handleScopeThermalKey(player)) return
+
                 if (vehicle is VehicleEntity) {
                     val index = vehicle.getSeatIndex(player)
                     val seat = vehicle.computed().seats().getOrNull(index)
