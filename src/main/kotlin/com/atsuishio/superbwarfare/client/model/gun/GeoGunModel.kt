@@ -3,8 +3,8 @@ package com.atsuishio.superbwarfare.client.model.gun
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoDisplayRenderer
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoReadout
-import com.atsuishio.superbwarfare.client.renderer.block.DisplayBoardGunMesh
 import com.atsuishio.superbwarfare.client.renderer.gun.GunEmissiveTextures
+import com.atsuishio.superbwarfare.client.renderer.gun.StaticGunRenderer
 import com.atsuishio.superbwarfare.client.renderer.scope.BuiltinGunScopeRenderer
 import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.resource.model.GunLODModelReloadListener
@@ -287,6 +287,7 @@ open class GeoGunModel @JvmOverloads constructor(
         handAnchors: Map<HumanoidArm, Matrix4f> = emptyMap(),
         emissiveTexture: ResourceLocation? = null
     ) {
+        StaticGunRenderer.registerMaterials(bufferSource, texture, readout, emissiveTexture)
         renderToBuffer(
             poseStack,
             bufferSource,
@@ -296,8 +297,7 @@ open class GeoGunModel @JvmOverloads constructor(
             packedOverlay,
             readout,
             handAnchors,
-            emissiveTexture,
-            texture
+            emissiveTexture
         )
     }
 
@@ -333,8 +333,7 @@ open class GeoGunModel @JvmOverloads constructor(
         packedOverlay: Int,
         readout: AmmoReadout = AmmoReadout(),
         handAnchors: Map<HumanoidArm, Matrix4f> = emptyMap(),
-        emissiveTexture: ResourceLocation? = null,
-        staticTexture: ResourceLocation? = null
+        emissiveTexture: ResourceLocation? = null
     ) {
         hideBone(leftHandBoneIndex)
         hideBone(rightHandBoneIndex)
@@ -345,11 +344,7 @@ open class GeoGunModel @JvmOverloads constructor(
         // tint; those are drawn separately by renderBars so they can take a color.
         val ammoBarState = ammo.applyBars(readout.bars, readout.progress)
 
-        val cachedMesh = DisplayBoardGunMesh.tryRender(
-            this, staticTexture, quadRenderType, triangleRenderType, emissiveTexture,
-            poseStack, bufferSource, packedLight, packedOverlay
-        )
-        if (!cachedMesh) baseModel.renderToBuffer(
+        baseModel.renderToBuffer(
             instance,
             poseStack,
             bufferSource,
@@ -370,7 +365,7 @@ open class GeoGunModel @JvmOverloads constructor(
         // 这两遍的四种 RenderType 互不相同，于是发光层一定**后画**、盖在基础层之上
         // （`RenderType.eyes` 只写颜色、不写深度，不会把后面的东西挡掉）。
         // 手臂、弹药条、弹药文字的绘制都排在这之后，仍然压在发光层上面。
-        if (!cachedMesh && emissiveTexture != null) {
+        if (emissiveTexture != null) {
             baseModel.renderToBuffer(
                 instance,
                 poseStack,

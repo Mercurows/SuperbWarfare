@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.block
 
 import com.atsuishio.superbwarfare.block.ItemDisplayBoardBlock
 import com.atsuishio.superbwarfare.block.entity.ItemDisplayBoardBlockEntity
+import com.atsuishio.superbwarfare.client.renderer.gun.StaticGunRenderer
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
@@ -16,8 +17,11 @@ import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraft.world.phys.shapes.CollisionContext
+import java.util.WeakHashMap
 
 class ItemDisplayBoardBlockEntityRenderer : BlockEntityRenderer<ItemDisplayBoardBlockEntity> {
+    private data class Visibility(val camera: Vec3, val tick: Long, val visible: Boolean)
+    private val visibility = WeakHashMap<ItemDisplayBoardBlockEntity, Visibility>()
 
     override fun getRenderBoundingBox(blockEntity: ItemDisplayBoardBlockEntity): AABB =
         AABB(blockEntity.blockPos).inflate(0.5)
@@ -29,7 +33,13 @@ class ItemDisplayBoardBlockEntityRenderer : BlockEntityRenderer<ItemDisplayBoard
         // NeoForge 根据渲染器包围盒执行视锥剔除，无需访问 LevelRenderer 的内部视锥。
         val box = getRenderBoundingBox(blockEntity)
         if (box.contains(cameraPos)) return true
-        return hasAnyVisibleSample(blockEntity, box, cameraPos)
+        val tick = blockEntity.level?.gameTime ?: return true
+        val cached = visibility[blockEntity]
+        if (cached != null && tick >= cached.tick && tick - cached.tick < 2 &&
+            cameraPos.distanceToSqr(cached.camera) < 0.01) return cached.visible
+        val visible = hasAnyVisibleSample(blockEntity, box, cameraPos)
+        visibility[blockEntity] = Visibility(cameraPos, tick, visible)
+        return visible
     }
 
     private fun hasAnyVisibleSample(
@@ -115,7 +125,7 @@ class ItemDisplayBoardBlockEntityRenderer : BlockEntityRenderer<ItemDisplayBoard
             poseStack.mulPose(Axis.ZP.rotationDegrees(rotation * 11.25f))
             poseStack.scale(0.5f, 0.5f, 0.5f)
 
-            DisplayBoardGunMesh.renderItem {
+            StaticGunRenderer.renderItem {
                 Minecraft.getInstance().itemRenderer.renderStatic(
                     stack,
                     ItemDisplayContext.FIXED,

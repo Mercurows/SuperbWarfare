@@ -106,9 +106,10 @@ open class ItemDisplayBoardBlock(properties: Properties) : BaseEntityBlock(prope
         hand: InteractionHand,
         hitResult: BlockHitResult
     ): ItemInteractionResult {
-        if (stack.isEmpty) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
         return if (interact(state, level, pos, player, stack).consumesAction()) {
             ItemInteractionResult.sidedSuccess(level.isClientSide)
+        } else if (stack.isEmpty) {
+            ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
         } else {
             ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION
         }
@@ -142,7 +143,7 @@ open class ItemDisplayBoardBlock(properties: Properties) : BaseEntityBlock(prope
             }
         }
 
-        // 潜行 + 右键取下物品（手持物品时由 ItemDisplayBoardEventHandler 提前拦截）
+        // 空手和持物统一从这里取下；事件仅负责放行潜行时的方块交互。
         if (pPlayer.isShiftKeyDown) {
             if (!blockEntity.hasItem) return InteractionResult.PASS
 

@@ -15,6 +15,27 @@ object DisplayConfig {
     }
 
     @JvmField
+    val ENABLE_DISPLAY_BOARD_GUN_CACHE = buildClientConfig {
+        comment("Cache static guns and their attachments on display boards using SBM GPU meshes")
+        comment("使用 SBM GPU 网格缓存洞洞板上的静态枪械与配件，可关闭以对比渲染性能")
+        define("enable_display_board_gun_cache", true)
+    }
+
+    @JvmField
+    val ENABLE_STATIC_GUN_RENDERER = buildClientConfig {
+        comment("Use static GPU meshes and world material batching for FIXED/GROUND guns. Animations, scope effects and dynamic readouts are omitted in this path")
+        comment("FIXED/GROUND 枪械使用静态 GPU 网格和世界材质批处理；此路径不播放动画、瞄具特效和动态读数")
+        define("enable_static_gun_renderer", true)
+    }
+
+    @JvmField
+    val STATIC_GUN_RENDER_DIAGNOSTICS = buildClientConfig {
+        comment("Log static gun batch draws, material setups, buffer binds and geometry capture counts every five seconds")
+        comment("每五秒记录静态枪械批次的绘制、材质切换、缓冲绑定和几何捕获次数")
+        define("static_gun_render_diagnostics", false)
+    }
+
+    @JvmField
     val LENS_ZOOM_RATIO = buildClientConfig {
         comment("Share of the scope zoom handled inside the lens instead of the world FOV. 0 = all zoom from the world FOV, 1 = the world FOV stays untouched and the lens does all the work")
         comment("开镜倍率中由镜内放大承担的比例。0 = 完全由世界 FOV 放大，1 = 世界视野不变、全部由镜片放大")
