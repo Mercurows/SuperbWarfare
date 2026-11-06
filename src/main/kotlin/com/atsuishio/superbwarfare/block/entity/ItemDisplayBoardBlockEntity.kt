@@ -13,21 +13,38 @@ import net.minecraft.world.level.block.state.BlockState
 open class ItemDisplayBoardBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(ModBlockEntities.ITEM_DISPLAY_BOARD.get(), pos, state) {
 
-    var item: ItemStack = ItemStack.EMPTY
-        private set
+    private val displayItems = arrayOf(ItemStack.EMPTY, ItemStack.EMPTY)
 
-    fun setItem(stack: ItemStack) {
-        this.item = if (stack.isEmpty) ItemStack.EMPTY else stack.copyWithCount(1)
+    val itemCount: Int
+        get() = displayItems.count { !it.isEmpty }
+
+    val hasItem: Boolean
+        get() = displayItems.any { !it.isEmpty }
+
+    fun getItem(slot: Int): ItemStack = displayItems[slot]
+
+    fun firstEmptySlot(): Int = displayItems.indexOfFirst { it.isEmpty }
+
+    fun setItem(slot: Int, stack: ItemStack) {
+        displayItems[slot] = if (stack.isEmpty) ItemStack.EMPTY else stack.copyWithCount(1)
         this.markUpdated()
     }
 
-    fun clearItem(sync: Boolean = true) {
-        this.item = ItemStack.EMPTY
+    fun clearItem(slot: Int, sync: Boolean = true) {
+        displayItems[slot] = ItemStack.EMPTY
         if (sync) {
             this.markUpdated()
         } else {
             this.setChanged()
         }
+    }
+
+    fun takeLastItem(): ItemStack {
+        val slot = displayItems.indexOfLast { !it.isEmpty }
+        if (slot < 0) return ItemStack.EMPTY
+        val stack = displayItems[slot]
+        clearItem(slot)
+        return stack
     }
 
     private fun markUpdated() {
@@ -40,19 +57,22 @@ open class ItemDisplayBoardBlockEntity(pos: BlockPos, state: BlockState) :
 
     override fun loadAdditional(pTag: CompoundTag, registries: HolderLookup.Provider) {
         super.loadAdditional(pTag, registries)
-        this.item = if (pTag.contains("DisplayItem")) {
-            ItemStack.parseOptional(registries, pTag.getCompound("DisplayItem"))
-        } else {
-            ItemStack.EMPTY
+        for (slot in displayItems.indices) {
+            displayItems[slot] = ItemStack.parseOptional(registries, pTag.getCompound("DisplayItem$slot"))
+        }
+        // 兼容只有一个物品的旧展示板；更新包也会清空未携带的槽位。
+        if (!hasItem && pTag.contains("DisplayItem")) {
+            displayItems[0] = ItemStack.parseOptional(registries, pTag.getCompound("DisplayItem"))
         }
     }
 
     override fun saveAdditional(pTag: CompoundTag, registries: HolderLookup.Provider) {
         super.saveAdditional(pTag, registries)
-        if (!this.item.isEmpty) {
-            pTag.put("DisplayItem", this.item.save(registries))
-        } else {
-            pTag.remove("DisplayItem")
+        pTag.remove("DisplayItem")
+        for (slot in displayItems.indices) {
+            val stack = displayItems[slot]
+            if (stack.isEmpty) pTag.remove("DisplayItem$slot")
+            else pTag.put("DisplayItem$slot", stack.save(registries))
         }
     }
 

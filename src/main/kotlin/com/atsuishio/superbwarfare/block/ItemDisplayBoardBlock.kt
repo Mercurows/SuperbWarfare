@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.ItemInteractionResult
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.Item.TooltipContext
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
@@ -105,10 +106,11 @@ open class ItemDisplayBoardBlock(properties: Properties) : BaseEntityBlock(prope
         hand: InteractionHand,
         hitResult: BlockHitResult
     ): ItemInteractionResult {
+        if (stack.isEmpty) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
         return if (interact(state, level, pos, player, stack).consumesAction()) {
             ItemInteractionResult.sidedSuccess(level.isClientSide)
         } else {
-            ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+            ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION
         }
     }
 
@@ -127,28 +129,30 @@ open class ItemDisplayBoardBlock(properties: Properties) : BaseEntityBlock(prope
         pPlayer: Player,
         heldItem: ItemStack
     ): InteractionResult {
+        val blockEntity = pLevel.getBlockEntity(pPos) as? ItemDisplayBoardBlockEntity ?: return InteractionResult.PASS
+        val itemCount = blockEntity.itemCount
         if (pLevel.isClientSide) {
-            val blockEntity = pLevel.getBlockEntity(pPos) as? ItemDisplayBoardBlockEntity
-            val hasDisplayedItem = blockEntity != null && !blockEntity.item.isEmpty
-            return if (hasDisplayedItem || !heldItem.isEmpty) {
+            val willTake = pPlayer.isShiftKeyDown && blockEntity.hasItem
+            val willRotate = !pPlayer.isShiftKeyDown && itemCount == 1 && heldItem.isEmpty
+            val willInsert = !pPlayer.isShiftKeyDown && !heldItem.isEmpty && itemCount < 2 && !isDisplayBoardItem(heldItem)
+            return if (willTake || willRotate || willInsert) {
                 InteractionResult.SUCCESS
             } else {
                 InteractionResult.PASS
             }
         }
 
-        val blockEntity = pLevel.getBlockEntity(pPos) as? ItemDisplayBoardBlockEntity ?: return InteractionResult.PASS
-
         // 潜行 + 右键取下物品（手持物品时由 ItemDisplayBoardEventHandler 提前拦截）
         if (pPlayer.isShiftKeyDown) {
-            if (blockEntity.item.isEmpty) return InteractionResult.PASS
+            if (!blockEntity.hasItem) return InteractionResult.PASS
 
             takeDisplayedItem(pLevel, pPos, state, pPlayer)
             return InteractionResult.SUCCESS
         }
 
-        // 已有物品时右键旋转物品
-        if (!blockEntity.item.isEmpty) {
+        // 两件物品固定上下排列；只有一件物品时才可空手旋转。
+        if (itemCount >= 2) return InteractionResult.PASS
+        if (itemCount == 1 && heldItem.isEmpty) {
             pLevel.setBlock(pPos, state.cycle(ROTATION), UPDATE_ALL)
             pLevel.playSound(null, pPos, SoundEvents.ITEM_FRAME_ROTATE_ITEM, SoundSource.BLOCKS, 1.0f, 1.0f)
             pLevel.gameEvent(pPlayer, GameEvent.BLOCK_CHANGE, pPos)
@@ -156,12 +160,14 @@ open class ItemDisplayBoardBlock(properties: Properties) : BaseEntityBlock(prope
         }
 
         // 空手右键旋转（展示框为空时无操作）
-        if (heldItem.isEmpty) {
+        if (heldItem.isEmpty || isDisplayBoardItem(heldItem)) {
             return InteractionResult.PASS
         }
 
         // 右键放入物品
-        blockEntity.setItem(heldItem)
+        val slot = blockEntity.firstEmptySlot()
+        if (slot < 0) return InteractionResult.PASS
+        blockEntity.setItem(slot, heldItem)
         if (!pPlayer.abilities.instabuild) {
             heldItem.shrink(1)
         }
@@ -181,11 +187,13 @@ open class ItemDisplayBoardBlock(properties: Properties) : BaseEntityBlock(prope
         if (!pState.`is`(pNewState.block)) {
             val blockEntity = pLevel.getBlockEntity(pPos) as? ItemDisplayBoardBlockEntity
             if (blockEntity != null) {
-                val displayedItem = blockEntity.item
-                if (!displayedItem.isEmpty) {
-                    blockEntity.clearItem(sync = false)
-                    if (!pLevel.isClientSide) {
-                        popResource(pLevel, pPos, displayedItem)
+                for (slot in 0..1) {
+                    val displayedItem = blockEntity.getItem(slot)
+                    if (!displayedItem.isEmpty) {
+                        blockEntity.clearItem(slot, sync = false)
+                        if (!pLevel.isClientSide) {
+                            popResource(pLevel, pPos, displayedItem)
+                        }
                     }
                 }
             }
@@ -236,8 +244,13 @@ open class ItemDisplayBoardBlock(properties: Properties) : BaseEntityBlock(prope
 
     override fun getCloneItemStack(pLevel: LevelReader, pPos: BlockPos, pState: BlockState): ItemStack {
         val blockEntity = pLevel.getBlockEntity(pPos) as? ItemDisplayBoardBlockEntity
-        val displayedItem = blockEntity?.item
-        return if (displayedItem != null && !displayedItem.isEmpty) displayedItem.copy() else super.getCloneItemStack(pLevel, pPos, pState)
+        if (blockEntity != null) {
+            for (slot in 0..1) {
+                val displayedItem = blockEntity.getItem(slot)
+                if (!displayedItem.isEmpty) return displayedItem.copy()
+            }
+        }
+        return super.getCloneItemStack(pLevel, pPos, pState)
     }
 
     override fun hasAnalogOutputSignal(pState: BlockState): Boolean {
@@ -246,7 +259,7 @@ open class ItemDisplayBoardBlock(properties: Properties) : BaseEntityBlock(prope
 
     override fun getAnalogOutputSignal(pState: BlockState, pLevel: Level, pPos: BlockPos): Int {
         val blockEntity = pLevel.getBlockEntity(pPos) as? ItemDisplayBoardBlockEntity ?: return 0
-        return if (blockEntity.item.isEmpty) 0 else pState.getValue(ROTATION) % 8 + 1
+        return if (!blockEntity.hasItem) 0 else pState.getValue(ROTATION) / 4 + 1
     }
 
     override fun appendHoverText(
@@ -257,6 +270,12 @@ open class ItemDisplayBoardBlock(properties: Properties) : BaseEntityBlock(prope
     ) {
         pTooltip.add(Component.translatable("des.superbwarfare.item_display_board_1").withStyle(ChatFormatting.GRAY))
         pTooltip.add(Component.translatable("des.superbwarfare.item_display_board_2").withStyle(ChatFormatting.GRAY))
+        pTooltip.add(Component.translatable("des.superbwarfare.item_display_board_3").withStyle(ChatFormatting.GRAY))
+    }
+
+    private fun isDisplayBoardItem(stack: ItemStack): Boolean {
+        val item = stack.item
+        return item is BlockItem && item.block is ItemDisplayBoardBlock
     }
 
     companion object {
@@ -266,7 +285,7 @@ open class ItemDisplayBoardBlock(properties: Properties) : BaseEntityBlock(prope
         val FACING: DirectionProperty = BlockStateProperties.FACING
 
         @JvmField
-        val ROTATION: IntegerProperty = IntegerProperty.create("rotation", 0, 7)
+        val ROTATION: IntegerProperty = IntegerProperty.create("rotation", 0, 31)
 
         /**
          * 取下展示板上的物品并交给玩家。
@@ -274,10 +293,9 @@ open class ItemDisplayBoardBlock(properties: Properties) : BaseEntityBlock(prope
         @JvmStatic
         fun takeDisplayedItem(level: Level, pos: BlockPos, state: BlockState, player: Player) {
             val blockEntity = level.getBlockEntity(pos) as? ItemDisplayBoardBlockEntity ?: return
-            val displayedItem = blockEntity.item
+            val displayedItem = blockEntity.takeLastItem()
             if (displayedItem.isEmpty) return
 
-            blockEntity.clearItem()
             level.setBlock(pos, state.setValue(ROTATION, 0), UPDATE_ALL)
 
             if (!player.abilities.instabuild) {

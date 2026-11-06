@@ -1370,8 +1370,8 @@
 				{
 					"name": "fixed",
 					"parent": "positioning",
-					"pivot": [-0.4915, 5.18657, -0.25213],
-					"rotation": [-90, 45, -90]
+					"pivot": [-3.0915, -4.81343, 0],
+					"rotation": [180, 0, -135]
 				}
 			],
 			"item_display_transforms": {
