@@ -302,10 +302,10 @@ open class ItemDisplayBoardBlock : BaseEntityBlock(
         val SHAPE_SOUTH: VoxelShape = Shapes.box(0.0, 0.0, 0.0, 1.0, 1.0, PIXEL)
 
         @JvmField
-        val SHAPE_WEST: VoxelShape = Shapes.box(0.0, 0.0, 0.0, PIXEL, 1.0, 1.0)
+        val SHAPE_EAST: VoxelShape = Shapes.box(0.0, 0.0, 0.0, PIXEL, 1.0, 1.0)
 
         @JvmField
-        val SHAPE_EAST: VoxelShape = Shapes.box(15 * PIXEL, 0.0, 0.0, 1.0, 1.0, 1.0)
+        val SHAPE_WEST: VoxelShape = Shapes.box(15 * PIXEL, 0.0, 0.0, 1.0, 1.0, 1.0)
 
         @JvmField
         val SHAPE_DOWN: VoxelShape = Shapes.box(0.0, 15 * PIXEL, 0.0, 1.0, 1.0, 1.0)

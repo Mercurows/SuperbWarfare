@@ -312,7 +312,7 @@ dependencies {
         modRuntimeOnly("curse.maven:embeddium-908741:5681725")
     }
 
-    modImplementation("curse.maven:timeless-and-classics-zero-1028108:9037989")
+    modImplementation("curse.maven:timeless-and-classics-zero-1028108:9454481")
     modImplementation("curse.maven:create-328085:7178761")
     modImplementation("curse.maven:mmmmmmmmmmmm-225738:6237015")
     modImplementation("curse.maven:selene-499980:6249659")
