@@ -19,5 +19,49 @@
     "Animation": "superbwarfare:animations/bedrock/gun/reforging.animation.json",
     "Model": "superbwarfare:models/bedrock/gun/reforging.geo.json",
     "Texture": "superbwarfare:textures/bedrock/gun/reforging.png"
+  },
+  "ItemDisplay": {
+    "firstperson_righthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "firstperson_lefthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "thirdperson_righthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "thirdperson_lefthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "ground": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "fixed": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
   }
 }

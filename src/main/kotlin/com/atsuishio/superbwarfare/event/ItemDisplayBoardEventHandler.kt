@@ -28,7 +28,7 @@ object ItemDisplayBoardEventHandler {
         if (!player.isShiftKeyDown) return
 
         val blockEntity = level.getBlockEntity(pos) as? ItemDisplayBoardBlockEntity ?: return
-        if (blockEntity.item.isEmpty) return
+        if (!blockEntity.hasItem) return
 
         event.isCanceled = true
         event.setCancellationResult(InteractionResult.SUCCESS)
