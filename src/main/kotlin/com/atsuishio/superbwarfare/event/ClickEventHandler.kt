@@ -563,8 +563,9 @@ object ClickEventHandler {
         // 冲锋窗口里不许开火（近战专属枪械的左键是挥击，不算开火）
         if (GunChargeHandler.isCharging() && !GunData.from(gunStack).meleeOnly()) return
 
-        // 射击周期内的点击排到周期结束补发（松开左键也不清）
-        if (!notInGame && ClientEventHandler.clientTimer.progress != 0L) {
+        ClientEventHandler.expireBufferedFireInput()
+        // 仅在射击周期末尾的短窗口内接收 SEMI 预输入；超时后不再补发。
+        if (!notInGame && ClientEventHandler.clientTimer.started()) {
             val data = GunData.from(gunStack)
             if (data.selectedFireModeInfo().mode == FireMode.SEMI
                 && !data.meleeOnly()
@@ -572,8 +573,8 @@ object ClickEventHandler {
                 && ClientEventHandler.drawTime < 0.01
                 && ClientEventHandler.burstFireAmount == 0
                 && item.canShoot(data, player)
+                && ClientEventHandler.queueBufferedSemiFireInput(player, data)
             ) {
-                ClientEventHandler.burstFireAmount = 1
                 ClientEventHandler.noSprintTicks = 3f
                 ClientEventHandler.holdingFireKey = true
                 player.setSprinting(false)
@@ -581,7 +582,7 @@ object ClickEventHandler {
             return
         }
 
-        if (ClientEventHandler.clientTimer.progress == 0L
+        if (!ClientEventHandler.clientTimer.started()
             && !notInGame
         ) {
             val data = GunData.from(gunStack)
@@ -642,14 +643,14 @@ object ClickEventHandler {
                     if (fireMode == FireMode.BURST) {
                         if (ClientEventHandler.burstFireAmount == 0) {
                             ClientEventHandler.noSprintTicks = 8f
+                            ClientEventHandler.queueFireInput(player, data.get(GunProp.BURST_AMOUNT))
                             player.setSprinting(false)
-                            ClientEventHandler.burstFireAmount = data.get(GunProp.BURST_AMOUNT)
                         }
                     } else if (fireMode == FireMode.SEMI) {
                         if (ClientEventHandler.burstFireAmount == 0) {
                             ClientEventHandler.noSprintTicks = 3f
+                            ClientEventHandler.queueFireInput(player, 1)
                             player.setSprinting(false)
-                            ClientEventHandler.burstFireAmount = 1
                         }
                     }
 
@@ -684,6 +685,7 @@ object ClickEventHandler {
 
         sendPacketToServer(FireKeyMessage(1, chargePower, ClientEventHandler.zoom))
         ClientEventHandler.holdingFireKey = false
+        ClientEventHandler.releaseQueuedFireInput(player)
         ClientEventHandler.chargeActive = false
         // 松开扳机即作废这一次蓄力：下一次开火必须重新按下扳机、重新蓄满
         ClientEventHandler.chargeArmed = false
@@ -702,7 +704,7 @@ object ClickEventHandler {
             val fireMode = ActiveGun.dataOf(player)?.selectedFireModeInfo()?.mode
                 ?: data.selectedFireModeInfo().mode
 
-            // SEMI 的 burstFireAmount 是排着的那一发，松开左键不清
+            // 短有效期内的 SEMI 预输入与已开始的 BURST 保留；冲刺挡住的首发已在上面取消。
             if (fireMode != FireMode.BURST && fireMode != FireMode.SEMI) {
                 ClientEventHandler.burstFireAmount = 0
             }

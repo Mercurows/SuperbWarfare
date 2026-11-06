@@ -453,6 +453,95 @@ object ClientEventHandler {
     @JvmField
     var burstFireAmount: Int = 0
 
+    /** Only the first shot of a trigger request is cancellable by releasing during sprint recovery.
+     * An RPM-buffered semi click survives release until its deadline; started bursts finish normally.
+     */
+    internal class PendingFireInput {
+        companion object {
+            // 半自动预输入：射击间隔的 25%，最长 100ms；将上限改为 0 即取消预输入。
+            private const val SEMI_BUFFER_CYCLE_FRACTION = 0.25
+            private const val SEMI_BUFFER_MAX_MS = 100L
+        }
+
+        private var waitingForFirstShot = false
+        private var blockedBySprint = false
+        private var expiresAtMs: Long? = null
+
+        fun queue(sprintBlocked: Boolean) {
+            waitingForFirstShot = true
+            blockedBySprint = sprintBlocked
+            expiresAtMs = null
+        }
+
+        fun queueBuffered(
+            sprintBlocked: Boolean, rpm: Int, cycleProgressMs: Long, nowMs: Long
+        ): Boolean {
+            val cycleMs = (60000.0 / rpm.coerceAtLeast(1)).roundToLong()
+            val windowMs = (cycleMs * SEMI_BUFFER_CYCLE_FRACTION).roundToLong().coerceIn(0L, SEMI_BUFFER_MAX_MS)
+            if (windowMs == 0L || cycleMs - cycleProgressMs > windowMs) return false
+            queue(sprintBlocked)
+            expiresAtMs = nowMs + windowMs
+            return true
+        }
+
+        fun discardExpired(nowMs: Long): Boolean {
+            val deadline = expiresAtMs ?: return false
+            if (!waitingForFirstShot || nowMs < deadline) return false
+            reset()
+            return true
+        }
+
+        fun discardReleased(held: Boolean, sprintBlocked: Boolean): Boolean {
+            if (!waitingForFirstShot) return false
+            blockedBySprint = blockedBySprint || sprintBlocked
+            if (held || !blockedBySprint) return false
+            reset()
+            return true
+        }
+
+        fun reset() {
+            waitingForFirstShot = false
+            blockedBySprint = false
+            expiresAtMs = null
+        }
+    }
+
+    private val pendingFireInput = PendingFireInput()
+
+    private fun sprintBlocksFire(player: Player): Boolean = player.isSprinting || fireCooldown > 0.0 ||
+            sprintRotWeight >= GunSprintAnimation.FIRE_READY_WEIGHT
+
+    fun queueFireInput(player: Player, amount: Int) {
+        burstFireAmount = amount
+        // Read before the input handler stops sprinting; readiness may change before mouse release.
+        pendingFireInput.queue(sprintBlocksFire(player))
+    }
+
+    fun queueBufferedSemiFireInput(player: Player, data: GunData): Boolean {
+        if (!pendingFireInput.queueBuffered(
+                sprintBlocksFire(player), effectiveRpm(data), clientTimer.progress, System.nanoTime() / 1_000_000L
+            )) return false
+        burstFireAmount = 1
+        return true
+    }
+
+    fun expireBufferedFireInput() {
+        if (burstFireAmount == 0) {
+            pendingFireInput.reset()
+            return
+        }
+        if (pendingFireInput.discardExpired(System.nanoTime() / 1_000_000L)) {
+            burstFireAmount = 0
+            // SEMI also accepts holdingFireKey: clear both paths so an expired click cannot fire
+            // merely because the mouse is still down. A new press is required after expiration.
+            holdingFireKey = false
+        }
+    }
+
+    fun releaseQueuedFireInput(player: Player) {
+        if (pendingFireInput.discardReleased(false, sprintBlocksFire(player))) burstFireAmount = 0
+    }
+
     @JvmField
     var customRpm: Int = 0
 
@@ -2034,6 +2123,12 @@ object ClientEventHandler {
             burstFireAmount = 0
         }
 
+        expireBufferedFireInput()
+        // Do not retain a released click across sprint recovery, including one originally buffered
+        // during the RPM cycle that became blocked by sprinting before its first shot.
+        if (burstFireAmount == 0) pendingFireInput.reset()
+        else if (pendingFireInput.discardReleased(holdingFireKey, sprintBlocksFire(player))) burstFireAmount = 0
+
         // 开火部分
         val rpm = effectiveRpm(data)
         val rps = rpm / 60.0
@@ -2154,6 +2249,7 @@ object ClientEventHandler {
         val data = GunData.from(stack)
         if (!item.canShoot(data, player) || item.useSpecialFireProcedure(data)) return
 
+        pendingFireInput.reset()
         val mode = data.selectedFireModeInfo().mode
         if (mode != FireMode.AUTO) {
             holdingFireKey = false
@@ -3493,6 +3589,7 @@ object ClientEventHandler {
      * 只清"上一把枪残留的运行时状态"
      */
     fun resetGunTransientState() {
+        pendingFireInput.reset()
         clientTimer.stop()
         fireCooldown = 0.0
 //        holdingFireKey = false
