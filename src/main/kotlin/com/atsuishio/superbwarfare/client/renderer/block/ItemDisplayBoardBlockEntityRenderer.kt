@@ -112,16 +112,18 @@ class ItemDisplayBoardBlockEntityRenderer : BlockEntityRenderer<ItemDisplayBoard
             poseStack.mulPose(Axis.ZP.rotationDegrees(rotation * 11.25f))
             poseStack.scale(0.5f, 0.5f, 0.5f)
 
-            Minecraft.getInstance().itemRenderer.renderStatic(
-                stack,
-                ItemDisplayContext.FIXED,
-                packedLight,
-                packedOverlay,
-                poseStack,
-                buffer,
-                blockEntity.level,
-                0
-            )
+            DisplayBoardGunMesh.renderItem {
+                Minecraft.getInstance().itemRenderer.renderStatic(
+                    stack,
+                    ItemDisplayContext.FIXED,
+                    packedLight,
+                    packedOverlay,
+                    poseStack,
+                    buffer,
+                    blockEntity.level,
+                    0
+                )
+            }
 
             poseStack.popPose()
         }
