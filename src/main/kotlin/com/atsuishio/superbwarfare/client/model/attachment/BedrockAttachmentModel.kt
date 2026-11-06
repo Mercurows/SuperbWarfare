@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoDisplayRenderer
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoDisplayRenderer.AmmoBarState
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoDisplayRenderer.AmmoText
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoReadout
+import com.atsuishio.superbwarfare.client.renderer.gun.StaticGunRenderer
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensPostProcessor
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensShader
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
@@ -241,7 +242,9 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         companionSightMode: ScopeMode? = null,
         readout: AmmoReadout = AmmoReadout()
     ) {
+        if (StaticGunRenderer.renderAttachment(bufferSource, this, poseStack, texture, companionSightMode)) return
         val hiddenOculars = if (companionSightMode != null) ocularIndicesFor(companionSightMode) else emptyList()
+        StaticGunRenderer.registerMaterials(bufferSource, texture, readout)
         val originalOcularVisibility = BooleanArray(hiddenOculars.size)
         for (i in hiddenOculars.indices) {
             val bone = instance.getBone(hiddenOculars[i])

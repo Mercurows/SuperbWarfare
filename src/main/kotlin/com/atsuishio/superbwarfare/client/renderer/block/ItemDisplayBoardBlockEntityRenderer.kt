@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.block
 
 import com.atsuishio.superbwarfare.block.ItemDisplayBoardBlock
 import com.atsuishio.superbwarfare.block.entity.ItemDisplayBoardBlockEntity
+import com.atsuishio.superbwarfare.client.renderer.gun.StaticGunRenderer
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
@@ -15,8 +16,12 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
+import java.util.*
 
 class ItemDisplayBoardBlockEntityRenderer : BlockEntityRenderer<ItemDisplayBoardBlockEntity> {
+
+    private class Visibility(val camera: Vec3, val tick: Long, val visible: Boolean)
+    private val visibility = WeakHashMap<ItemDisplayBoardBlockEntity, Visibility>()
 
     override fun shouldRender(blockEntity: ItemDisplayBoardBlockEntity, cameraPos: Vec3): Boolean {
         if (!blockEntity.hasItem) return false
@@ -26,7 +31,16 @@ class ItemDisplayBoardBlockEntityRenderer : BlockEntityRenderer<ItemDisplayBoard
         val frustum = Minecraft.getInstance().levelRenderer.frustum ?: return true
         if (!frustum.isVisible(box)) return false
 
-        return hasAnyVisibleSample(blockEntity, box, cameraPos)
+        val tick = blockEntity.level?.gameTime ?: return true
+        val cached = visibility[blockEntity]
+        if (cached != null && tick >= cached.tick && tick - cached.tick < 2 &&
+            cameraPos.distanceToSqr(cached.camera) < 0.01) return cached.visible
+
+        // Visibility/frustum checks still run every frame. Only the expensive (up to nine) block
+        // raycasts are reused for <= 100 ms while the camera is nearly stationary.
+        val visible = hasAnyVisibleSample(blockEntity, box, cameraPos)
+        visibility[blockEntity] = Visibility(cameraPos, tick, visible)
+        return visible
     }
 
     private fun hasAnyVisibleSample(
@@ -112,7 +126,7 @@ class ItemDisplayBoardBlockEntityRenderer : BlockEntityRenderer<ItemDisplayBoard
             poseStack.mulPose(Axis.ZP.rotationDegrees(rotation * 11.25f))
             poseStack.scale(0.5f, 0.5f, 0.5f)
 
-            DisplayBoardGunMesh.renderItem {
+            StaticGunRenderer.renderItem {
                 Minecraft.getInstance().itemRenderer.renderStatic(
                     stack,
                     ItemDisplayContext.FIXED,
