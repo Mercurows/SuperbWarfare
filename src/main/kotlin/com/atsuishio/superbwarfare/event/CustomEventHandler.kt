@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.perk.Perk
+import com.atsuishio.superbwarfare.perk.js.JsPerk
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.level.block.BellBlock
 import net.minecraft.world.level.block.TargetBlock
@@ -49,6 +50,7 @@ object CustomEventHandler {
 
     @SubscribeEvent
     fun onProjectileHitEntity(event: ProjectileHitEvent.HitEntity) {
+        if (event.projectile.level().isClientSide) return
         val entity = event.owner
         if (entity !is LivingEntity) return
 
@@ -63,7 +65,14 @@ object CustomEventHandler {
 
         for (type in Perk.Type.entries) {
             val instance = data.perk.getInstances(type)
-            instance.forEach { it.perk.onHit(entity, data, it, event.target) }
+            instance.forEach {
+                val perk = it.perk
+                if (perk is JsPerk) {
+                    perk.onHit(entity, data, it, event.target, projectile)
+                } else {
+                    perk.onHit(entity, data, it, event.target)
+                }
+            }
         }
     }
 

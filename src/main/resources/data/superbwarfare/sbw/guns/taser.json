@@ -22,6 +22,7 @@
   },
   "Icon": "superbwarfare:textures/gun_icon/taser_icon.png",
   "AvailablePerks": [
+    "superbwarfare:chain_lightning",
     "superbwarfare:striving_for_perfection",
     "superbwarfare:longer_wire",
     "superbwarfare:regeneration",

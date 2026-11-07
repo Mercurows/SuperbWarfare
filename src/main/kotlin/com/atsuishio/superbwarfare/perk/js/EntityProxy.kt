@@ -1,24 +1,74 @@
 package com.atsuishio.superbwarfare.perk.js
 
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
+import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
-import com.atsuishio.superbwarfare.tools.CustomExplosion
-import com.atsuishio.superbwarfare.tools.InventoryTool
-import com.atsuishio.superbwarfare.tools.TraceTool
-import com.atsuishio.superbwarfare.tools.sendPacketTo
+import com.atsuishio.superbwarfare.network.message.receive.LightningArcMessage
+import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.effect.MobEffectInstance
-import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.OwnableEntity
+import net.minecraft.world.entity.*
+import net.minecraft.world.entity.monster.Creeper
 import net.minecraft.world.entity.player.Player
+import net.minecraftforge.network.PacketDistributor
 import net.minecraftforge.registries.ForgeRegistries
 
 /**
  * Proxy that exposes Entity properties and methods to JS perk scripts.
  */
+@Suppress("unused")
 class EntityProxy(val entity: Entity?) {
+    fun getId(): Int = entity?.id ?: -1
+
+    fun distanceToSqr(other: EntityProxy): Double =
+        entity?.let { e -> other.entity?.let { e.distanceToSqr(it) } } ?: Double.MAX_VALUE
+
+    fun getNearbyEnemies(attacker: EntityProxy, radius: Double): Array<EntityProxy> {
+        val e = entity ?: return emptyArray()
+        if (e.level().isClientSide || !radius.isFinite() || radius <= 0) return emptyArray()
+        val range = radius.coerceAtMost(32.0)
+        val owner = attacker.entity
+        return e.level().getEntitiesOfClass(LivingEntity::class.java, e.boundingBox.inflate(range)) {
+            it !== e && it !== owner && it.isAlive && !it.isSpectator
+                && !(it is Player && it.isCreative)
+                && !SeekTool.IS_FRIENDLY.test(owner, it)
+                && (owner == null || !owner.isPassengerOfSameVehicle(it))
+                && it.distanceToSqr(e) <= range * range && e is LivingEntity && e.hasLineOfSight(it)
+        }.sortedBy { e.distanceToSqr(it) }.take(128).map { EntityProxy(it) }.toTypedArray()
+    }
+
+    fun shock(damage: Float, duration: Int, amplifier: Int, attacker: EntityProxy) {
+        val e = entity as? LivingEntity ?: return
+        val level = e.level() as? ServerLevel ?: return
+        if (!e.isAlive || e.isSpectator || (e is Player && e.isCreative)) return
+        if (damage > 0f) {
+            e.invulnerableTime = 0
+            DamageHandler.doDamage(
+                e, ModDamageTypes.causeShockDamage(level.registryAccess(), attacker.entity), damage
+            )
+        }
+        if (e is Creeper) {
+            e.thunderHit(level, LightningBolt(EntityType.LIGHTNING_BOLT, level))
+        } else if (duration > 0) {
+            e.forceApplyEffect(
+                MobEffectInstance(ModMobEffects.SHOCK.get(), duration, amplifier.coerceAtLeast(0)), attacker.entity
+            )
+        }
+    }
+
+    fun lightningTo(target: EntityProxy) {
+        val start = entity ?: return
+        val end = target.entity ?: return
+        val level = start.level() as? ServerLevel ?: return
+        val from = start.boundingBox.center
+        val to = end.boundingBox.center
+        sendPacketTo(PacketDistributor.NEAR.with {
+            PacketDistributor.TargetPoint(from.x, from.y, from.z, 96.0, level.dimension())
+        }, LightningArcMessage(from.x, from.y, from.z, to.x, to.y, to.z, level.random.nextLong()))
+    }
 
     // ── Type checks ──
     fun isNull(): Boolean = entity == null

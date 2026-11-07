@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
+import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent
 import com.atsuishio.superbwarfare.event.ShieldHandler
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeShockDamage
 import com.atsuishio.superbwarfare.init.ModMobEffects
@@ -7,6 +8,7 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.forceApplyEffect
 import com.atsuishio.superbwarfare.tools.forceHurt
+import com.atsuishio.superbwarfare.tools.postEvent
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientGamePacketListener
@@ -68,6 +70,11 @@ open class TaserBulletEntity(type: EntityType<out TaserBulletEntity>, level: Lev
                 this.discard()
                 return
             }
+        }
+
+        if (!level().isClientSide && postEvent(ProjectileHitEvent.HitEntity(owner, this, entity, result.location))) {
+            discard()
+            return
         }
 
         if (owner is ServerPlayer) {
