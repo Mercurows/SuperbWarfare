@@ -47,6 +47,10 @@ class ProjectileProxy(private val entity: Entity) {
     }
 
     fun getDamage(): Float = taser?.damage ?: projectile?.getDamage() ?: 0f
+
+    fun setDamage(damage: Number) {
+        projectile?.setDamage(damage.toFloat())
+    }
     fun getVolt(): Int = taser?.volt ?: 0
     fun getOwner(): EntityProxy = EntityProxy((entity as? net.minecraft.world.entity.projectile.Projectile)?.owner)
 

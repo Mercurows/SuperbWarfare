@@ -251,7 +251,8 @@ data class DefaultGunData(
         "superbwarfare:vorpal_weapon",
         "!superbwarfare:micro_missile",
         "!superbwarfare:longer_wire",
-        "!superbwarfare:cupid_arrow"
+        "!superbwarfare:cupid_arrow",
+        "!superbwarfare:arrsow_discord"
     ),
     @SerialName("AvailableAttachments")
     val availableAttachments: Map<String, List<StringOrObject<AttachmentOption>>> = emptyMap(),

@@ -3,18 +3,24 @@ package com.atsuishio.superbwarfare.perk.js
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
+import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
 import com.atsuishio.superbwarfare.network.message.receive.LightningArcMessage
 import com.atsuishio.superbwarfare.tools.*
+import net.minecraft.core.Holder
+import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.sounds.SoundSource
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.monster.Creeper
 import net.minecraft.world.entity.player.Player
 import net.minecraftforge.network.PacketDistributor
 import net.minecraftforge.registries.ForgeRegistries
+import java.util.*
 
 /**
  * Proxy that exposes Entity properties and methods to JS perk scripts.
@@ -22,6 +28,40 @@ import net.minecraftforge.registries.ForgeRegistries
 @Suppress("unused")
 class EntityProxy(val entity: Entity?) {
     fun getId(): Int = entity?.id ?: -1
+
+    fun getUUID(): String = entity?.stringUUID ?: ""
+
+    /** Resolve only loaded entities in this dimension; never load chunks for a stored mark. */
+    fun findByUUID(uuid: String): EntityProxy {
+        val level = entity?.level() as? ServerLevel ?: return EntityProxy(null)
+        val id = try {
+            UUID.fromString(uuid)
+        } catch (_: IllegalArgumentException) {
+            return EntityProxy(null)
+        }
+        return EntityProxy(level.getEntity(id))
+    }
+
+    fun isAlive(): Boolean = entity?.isAlive == true
+
+    fun isMob(): Boolean = entity is Mob
+
+    /** Cosmetic confirmation for hits that deliberately bypass the damage path. */
+    fun showHitFeedback() {
+        val player = entity as? ServerPlayer ?: return
+        sendPacketTo(player, ClientboundSoundPacket(
+            Holder.direct(ModSounds.INDICATION.get()), SoundSource.PLAYERS,
+            player.x, player.y, player.z, 1f, 1f, player.level().random.nextLong()
+        ))
+        sendPacketTo(player, ClientIndicatorMessage(0, 5))
+    }
+
+    fun setAttackTarget(other: EntityProxy) {
+        val mob = entity as? Mob ?: return
+        val target = other.entity as? LivingEntity ?: return
+        if (mob.level().isClientSide || mob.level() !== target.level() || mob === target) return
+        if (mob.isAlive && target.isAlive) mob.target = target
+    }
 
     fun distanceToSqr(other: EntityProxy): Double =
         entity?.let { e -> other.entity?.let { e.distanceToSqr(it) } } ?: Double.MAX_VALUE

@@ -447,6 +447,7 @@ class ModItemTagProvider(
             perkItem(ModPerks.FROSTMOURNE),
             perkItem(ModPerks.BLADE_BULLET),
             perkItem(ModPerks.CUPID_ARROW),
+            perkItem(ModPerks.ARRSOW_DISCORD),
             perkItem(ModPerks.HE_BULLET),
             perkItem(ModPerks.MICRO_MISSILE),
             perkItem(ModPerks.AP_BULLET),

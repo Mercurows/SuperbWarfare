@@ -55,15 +55,16 @@
     "Semi"
   ],
   "AvailablePerks": [
+    "@Ammo",
     "superbwarfare:practice_makes_perfect",
     "superbwarfare:crushing_force",
-    "@Ammo",
     "superbwarfare:field_doctor",
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon",
     "superbwarfare:soul_reaver",
+    "!superbwarfare:arrsow_discord",
     "!superbwarfare:chain_lightning",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",

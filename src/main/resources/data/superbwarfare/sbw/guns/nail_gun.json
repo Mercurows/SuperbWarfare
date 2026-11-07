@@ -26,9 +26,9 @@
   "AmmoType": "minecraft:iron_nugget",
   "Icon": "superbwarfare:textures/gun_icon/nail_gun_icon.png",
   "AvailablePerks": [
+    "@Ammo",
     "superbwarfare:practice_makes_perfect",
     "superbwarfare:striving_for_perfection",
-    "@Ammo",
     "superbwarfare:heal_clip",
     "superbwarfare:field_doctor",
     "superbwarfare:fourth_times_charm",
@@ -55,6 +55,7 @@
     "superbwarfare:triple_tap",
     "superbwarfare:soul_reaver",
     "superbwarfare:steady_resolve",
+    "!superbwarfare:arrsow_discord",
     "!superbwarfare:chain_lightning",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",

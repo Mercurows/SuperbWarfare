@@ -27,9 +27,9 @@
   ],
   "Icon": "superbwarfare:textures/gun_icon/raubtier_icon.png",
   "AvailablePerks": [
+    "@Ammo",
     "superbwarfare:practice_makes_perfect",
     "superbwarfare:striving_for_perfection",
-    "@Ammo",
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
     "superbwarfare:monster_hunter",
@@ -38,6 +38,7 @@
     "superbwarfare:quickdraw",
     "superbwarfare:adrenaline_rush",
     "superbwarfare:snapshot_sights",
+    "!superbwarfare:arrsow_discord",
     "!superbwarfare:chain_lightning",
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow",
