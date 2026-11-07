@@ -14,6 +14,35 @@ import org.joml.Matrix4f
 @OnlyIn(Dist.CLIENT)
 object ShaderCompat {
 
+    /** Pipeline identity changes on pack enable/disable, replacement and shader reload. */
+    data class PipelineState(val pipeline: Any?, val revision: Int, val active: Boolean)
+
+    private class PipelineAccess {
+        private val manager = Class.forName("net.irisshaders.iris.Iris").getMethod("getPipelineManager")
+        private val type = Class.forName("net.irisshaders.iris.pipeline.PipelineManager")
+        private val pipeline = type.getMethod("getPipelineNullable")
+        private val revision = runCatching { type.getMethod("getVersionCounterForSodiumShaderReload") }.getOrNull()
+
+        fun read(active: Boolean): PipelineState {
+            val current = manager.invoke(null) ?: return PipelineState(null, 0, active)
+            return PipelineState(pipeline.invoke(current), (revision?.invoke(current) as? Int) ?: 0, active)
+        }
+    }
+
+    private val pipelineAccess by lazy { runCatching { PipelineAccess() }.getOrNull() }
+
+    fun pipelineState(): PipelineState {
+        if (!isInstalled) return PipelineState(null, 0, false)
+        val active = isShaderPackActive()
+        return try {
+            pipelineAccess?.read(active) ?: PipelineState(null, 0, active)
+        } catch (_: ReflectiveOperationException) {
+            PipelineState(null, 0, active)
+        } catch (_: LinkageError) {
+            PipelineState(null, 0, active)
+        }
+    }
+
     /** True when Oculus or Iris mod id is present in the mod list. */
     val isInstalled: Boolean by lazy {
         ModList.get().isLoaded("oculus") || ModList.get().isLoaded("iris")

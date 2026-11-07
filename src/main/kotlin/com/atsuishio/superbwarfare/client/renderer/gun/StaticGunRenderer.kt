@@ -19,7 +19,9 @@ import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockMo
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.mesh.MeshFlushStats
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.mesh.StaticMeshBufferSource
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.mesh.StaticMeshRenderer
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.mesh.cache.StaticMeshCache
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.mesh.capture.GeometryCollector
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.mesh.gpu.MeshVertexFormat
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.mesh.render.EmissiveMeshRenderTypes
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
@@ -61,6 +63,14 @@ object StaticGunRenderer : ResourceManagerReloadListener {
         private set
     private var capturedMeshes = 0L
     private var lastReport = 0L
+    private var queuedDraws = 0L
+    private var immediateDraws = 0L
+    private var pendingDraws = 0L
+    private var fallbackDraws = 0L
+    private var checkedFrame = Long.MIN_VALUE
+    private var pipelineState: ShaderCompat.PipelineState? = null
+    private var vertexFormat: VertexFormat? = null
+    private var formatCheckFrame = Long.MIN_VALUE
 
     private fun modelInstance(original: GeoGunModel): GeoGunModel =
         models.getOrPut(original) { GeoGunModel(original.baseModel, false) }
@@ -110,9 +120,14 @@ object StaticGunRenderer : ResourceManagerReloadListener {
         }
         wasEnabled = true
         if (depth > 0 && !DisplayConfig.ENABLE_DISPLAY_BOARD_GUN_CACHE.get()) return false
-        if (GunMountContext.active || buffers !is MultiBufferSource.BufferSource ||
-            ShaderCompat.isShaderPackActive() || !StaticMeshRenderer.isOwnerEnabled(owner) ||
-            !StaticMeshRenderer.supportsInstanceAttributes(light, overlay)) return false
+        if (GunMountContext.active) return false
+        updateRenderEnvironment()
+        if (!StaticMeshRenderer.isOwnerEnabled(owner) ||
+            !StaticMeshRenderer.supportsInstanceAttributes(light, overlay)) {
+            fallbackDraws++
+            reportDiagnostics()
+            return false
+        }
 
         val resource = GunResource.compute(stack)
 
@@ -138,32 +153,76 @@ object StaticGunRenderer : ResourceManagerReloadListener {
             if (previous?.key == key) appearance.unsupported = previous.unsupported
             appearances[stack] = appearance
         }
-        if (appearance.unsupported) return false
+        if (appearance.unsupported) {
+            fallbackDraws++
+            reportDiagnostics()
+            return false
+        }
         val selected = appearance
         val renderer = geometryRenderer ?: GeometryRenderer().also { geometryRenderer = it }
         val provider = com.github.mcmodderanchor.simplebedrockmodel.v2.client.mesh.capture.MeshGeometryProvider { collector ->
             capturedMeshes++
             val capture = Capture(collector)
             val available = renderer.capture(selected.stack, context, lod, capture)
-            capture.supported = capture.supported && available
             selected.unsupported = !capture.supported
-            capture.supported
+            capture.supported && available
         }
         // Enqueue entities and block entities into the SAME frame batch. Outside the world pass
         // (GUI previews etc.), use the same static renderer without deferring its draw.
-        val useBatch = worldPass && !RenderDistanceHelper.isInGui() &&
+        val useBatch = worldPass && pipelineState?.active != true && !ShaderCompat.isRenderingShadowPass() &&
                 buffers === Minecraft.getInstance().renderBuffers().bufferSource()
         if (useBatch) {
             val current = batch ?: StaticMeshRenderer.openBatch(owner, StaticMeshRenderer.BatchOrder.MATERIAL)
                 .also { batch = it }
             if (current.samePass()) {
                 val result = current.submit(selected.key, null, provider, pose, light, overlay, retention)
+                if (result.hasMesh()) queuedDraws++ else if (result.owned()) pendingDraws++ else fallbackDraws++
+                reportDiagnostics()
                 return !selected.unsupported && result.owned()
             }
         }
         val result = StaticMeshRenderer.tryDraw(owner, selected.key, null, provider, pose, light, overlay, retention)
+        if (result.drawn()) immediateDraws++ else if (result.owned()) pendingDraws++ else fallbackDraws++
+        reportDiagnostics()
         return !selected.unsupported && result.owned()
         // PENDING is owned: do not rebuild/render the high-poly gun again while an upload is queued.
+    }
+
+    private fun reportDiagnostics() {
+        val now = System.nanoTime()
+        if (DisplayConfig.STATIC_GUN_RENDER_DIAGNOSTICS.get() && now - lastReport >= 5_000_000_000L) {
+            lastReport = now
+            com.atsuishio.superbwarfare.Mod.LOGGER.info(
+                "Static guns: queued={}, immediate={}, pending={}, fallback={}, captures={}, shaders={}, batch={}",
+                queuedDraws, immediateDraws, pendingDraws, fallbackDraws, capturedMeshes, pipelineState?.active, lastBatchStats)
+        }
+    }
+
+    internal fun pipelineChanged(previous: ShaderCompat.PipelineState?, current: ShaderCompat.PipelineState): Boolean =
+        previous != null && (previous.pipeline !== current.pipeline || previous.revision != current.revision ||
+                previous.active != current.active)
+
+    private fun updateRenderEnvironment() {
+        val frame = StaticMeshCache.currentFrame()
+        if (checkedFrame == frame) return
+        checkedFrame = frame
+        val current = ShaderCompat.pipelineState()
+        val changed = pipelineChanged(pipelineState, current)
+        pipelineState = current
+        if (changed || formatCheckFrame == Long.MIN_VALUE || frame - formatCheckFrame >= 60) {
+            val format = MeshVertexFormat.probe()
+            formatCheckFrame = frame
+            val formatChanged = format != null && vertexFormat != null && vertexFormat !== format
+            vertexFormat = format
+            if (changed || formatChanged) {
+                // invalidateOwner only drops entries; it does not reset SBM's failed-owner / integer
+                // attribute state. A global vertex-layout change invalidates all immediate VBOs.
+                discardBatch()
+                StaticMeshCache.clear()
+                appearances.clear()
+                lastBatchStats = null
+            }
+        }
     }
 
     internal fun stripIdentity(item: CompoundTag) {
@@ -338,12 +397,7 @@ object StaticGunRenderer : ResourceManagerReloadListener {
                     if (current.samePass()) {
                         Minecraft.getInstance().renderBuffers().bufferSource().endBatch()
                         lastBatchStats = current.endBatch()
-                        val now = System.nanoTime()
-                        if (DisplayConfig.STATIC_GUN_RENDER_DIAGNOSTICS.get() && now - lastReport >= 5_000_000_000L) {
-                            lastReport = now
-                            com.atsuishio.superbwarfare.Mod.LOGGER.info(
-                                "Static gun batch: {}; total geometry captures={}", lastBatchStats, capturedMeshes)
-                        }
+                        reportDiagnostics()
                     }
                 }
             }
@@ -354,7 +408,10 @@ object StaticGunRenderer : ResourceManagerReloadListener {
     @JvmStatic
     @SubscribeEvent
     fun onRenderTick(event: TickEvent.RenderTickEvent) {
-        if (event.phase == TickEvent.Phase.START) discardBatch()
+        if (event.phase == TickEvent.Phase.START) {
+            discardBatch()
+            checkedFrame = Long.MIN_VALUE
+        }
     }
 
     @JvmStatic
@@ -365,6 +422,10 @@ object StaticGunRenderer : ResourceManagerReloadListener {
             appearances.clear()
             models.clear()
             geometryRenderer = null
+            pipelineState = null
+            vertexFormat = null
+            formatCheckFrame = Long.MIN_VALUE
+            checkedFrame = Long.MIN_VALUE
         }
     }
 
@@ -407,6 +468,12 @@ object StaticGunRenderer : ResourceManagerReloadListener {
         appearances.clear()
         models.clear()
         geometryRenderer = null
-        StaticMeshRenderer.invalidateOwner(owner)
+        // Resource reload may also rebuild shader programs / formats and must allow a failed path
+        // to recover. SBM's own resource listener resets its global cache too.
+        StaticMeshCache.clear()
+        pipelineState = null
+        vertexFormat = null
+        formatCheckFrame = Long.MIN_VALUE
+        checkedFrame = Long.MIN_VALUE
     }
 }
