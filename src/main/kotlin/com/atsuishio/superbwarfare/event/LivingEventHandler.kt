@@ -41,8 +41,10 @@ import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Explosion
 import net.minecraft.world.phys.Vec3
+import net.neoforged.bus.api.EventPriority
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.common.damagesource.DamageContainer
 import net.neoforged.neoforge.common.util.TriState
 import net.neoforged.neoforge.event.entity.living.*
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable
@@ -56,6 +58,25 @@ import kotlin.math.sqrt
 
 @EventBusSubscriber
 object LivingEventHandler {
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    fun onMeleeDamage(event: LivingDamageEvent.Post) {
+        val target = event.entity
+        if (target.level().isClientSide || !DamageTypeTool.isMeleeDamage(event.source)) return
+        // Post includes actual absorption consumption, even when no health damage remains.
+        val damage = event.newDamage.coerceAtLeast(0f) +
+                event.getReduction(DamageContainer.Reduction.ABSORPTION).coerceAtLeast(0f)
+        if (damage <= 0f) return
+        val attacker = event.source.entity as? LivingEntity ?: return
+        val stack = attacker.mainHandItem
+        if (stack.item !is GunItem) return
+        val data = GunData.from(stack)
+        for (type in Perk.Type.entries) {
+            data.perk.getInstances(type).forEach {
+                it.perk.onMeleeDamage(damage, data, it, target, event.source)
+            }
+        }
+    }
+
     @SubscribeEvent
     fun onLivingChangeTargetEvent(event: LivingChangeTargetEvent) {
         val entity = event.entity

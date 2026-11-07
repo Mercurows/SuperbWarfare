@@ -66,6 +66,7 @@
   "Icon": "superbwarfare:textures/gun_icon/ak_12_icon.png",
   "AmmoType": "@RifleAmmo",
   "AvailablePerks": [
+    "superbwarfare:crushing_force",
     "superbwarfare:striving_for_perfection",
     "@Ammo",
     "superbwarfare:heal_clip",

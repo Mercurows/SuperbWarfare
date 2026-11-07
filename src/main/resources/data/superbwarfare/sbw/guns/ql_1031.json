@@ -116,6 +116,7 @@
   "MaxEnergy": 100000,
   "Icon": "superbwarfare:textures/gun_icon/ql_1031_icon.png",
   "AvailablePerks": [
+    "superbwarfare:crushing_force",
     "superbwarfare:striving_for_perfection",
     "@Ammo",
     "superbwarfare:field_doctor",

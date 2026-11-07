@@ -243,6 +243,21 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
         s.callFunction("onMeleeAttack", perkTag, level, gunDataProxy, targetProxy, sourceProxy)
     }
 
+    override fun onMeleeDamage(
+        damage: Float,
+        data: GunData,
+        instance: PerkInstance,
+        target: Entity,
+        source: DamageSource,
+    ) {
+        val s = script ?: return
+        val tag = data.perk.getTag(this) ?: return
+        s.callFunction(
+            "onMeleeDamage", damage, PerkTagProxy(tag), instance.level.toInt(),
+            GunDataProxy(data), EntityProxy(target), DamageSourceProxy(source)
+        )
+    }
+
     override fun onMeleeSwing(
         data: GunData,
         instance: PerkInstance,

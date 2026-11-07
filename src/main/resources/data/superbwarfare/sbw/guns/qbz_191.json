@@ -77,6 +77,7 @@
   "AmmoType": "@RifleAmmo",
   "Icon": "superbwarfare:textures/gun_icon/qbz_191_icon.png",
   "AvailablePerks": [
+    "superbwarfare:crushing_force",
     "superbwarfare:striving_for_perfection",
     "@Ammo",
     "superbwarfare:heal_clip",
