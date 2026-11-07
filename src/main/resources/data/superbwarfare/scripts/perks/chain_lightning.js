@@ -13,7 +13,7 @@ function chainLimits(level) {
 }
 
 function onHit(attacker, level, gunData, target, perkTag, projectile) {
-    if (!projectile || !projectile.isTaserBullet() || !target.isLivingEntity() || target.isCreative()) return
+    if (!projectile || !projectile.canEmitLightning() || !target.isLivingEntity() || target.isCreative()) return
     if (attacker.isNull()) return
     var limits = chainLimits(level)
     var visited = {}
