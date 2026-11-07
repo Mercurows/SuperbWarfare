@@ -72,6 +72,7 @@ object ModPerks {
     lateinit var INCENDIARY_BULLET: PERK
     lateinit var MICRO_MISSILE: PERK
     lateinit var CUPID_ARROW: PERK
+    lateinit var ARRSOW_DISCORD: PERK
     lateinit var RIOT_BULLET: PERK
     lateinit var PHASE_PENETRATING_BULLET: PERK
     lateinit var BLADE_BULLET: PERK
@@ -225,6 +226,7 @@ object ModPerks {
             autoRegistryObjects["incendiary_bullet"] ?: registerAmmoPerk("incendiary_bullet") { IncendiaryBullet }
         MICRO_MISSILE = autoRegistryObjects["micro_missile"] ?: registerAmmoPerk("micro_missile") { MicroMissile }
         CUPID_ARROW = autoRegistryObjects["cupid_arrow"] ?: registerAmmoPerk("cupid_arrow") { CupidArrow }
+        ARRSOW_DISCORD = autoRegistryObjects.getValue("arrsow_discord")
         RIOT_BULLET = autoRegistryObjects["riot_bullet"] ?: registerAmmoPerk("riot_bullet") { RiotBullet }
         PHASE_PENETRATING_BULLET = autoRegistryObjects["phase_penetrating_bullet"]
             ?: registerAmmoPerk("phase_penetrating_bullet") { PhasePenetratingBullet }
