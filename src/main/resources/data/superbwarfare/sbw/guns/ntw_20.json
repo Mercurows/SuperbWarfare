@@ -72,16 +72,17 @@
     "superbwarfare:brain_storm",
     "superbwarfare:battle_of_wits",
     "superbwarfare:target_lock",
-    "!superbwarfare:micro_missile",
-    "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow",
-    "!superbwarfare:cluster_bomb",
     "superbwarfare:quickdraw",
     "superbwarfare:adrenaline_rush",
     "superbwarfare:snapshot_sights",
     "superbwarfare:triple_tap",
     "superbwarfare:soul_reaver",
-    "superbwarfare:steady_resolve"
+    "superbwarfare:steady_resolve",
+    "!superbwarfare:chain_lightning",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:cluster_bomb"
   ],
   "AvailableAttachments": {
     "Scope": [

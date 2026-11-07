@@ -69,12 +69,13 @@
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon",
     "superbwarfare:battle_of_wits",
-    "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow",
-    "!superbwarfare:shatter_caps",
     "superbwarfare:quickdraw",
     "superbwarfare:adrenaline_rush",
-    "superbwarfare:snapshot_sights"
+    "superbwarfare:snapshot_sights",
+    "!superbwarfare:chain_lightning",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:shatter_caps"
   ],
   "AvailableAttachments": {
     "Charm": [

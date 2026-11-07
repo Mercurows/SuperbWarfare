@@ -295,6 +295,15 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
         data: GunData,
         instance: PerkInstance,
         target: Entity
+    ) = onHit(attacker, data, instance, target, null)
+
+    /** Adds projectile context as an optional sixth JS argument; existing scripts keep their signature. */
+    fun onHit(
+        attacker: LivingEntity,
+        data: GunData,
+        instance: PerkInstance,
+        target: Entity,
+        projectile: Entity?,
     ) {
         val s = script ?: return
 
@@ -305,7 +314,9 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
         val targetProxy = EntityProxy(target)
         val level = instance.level.toInt()
 
-        s.callFunction("onHit", attackerProxy, level, gunDataProxy, targetProxy, perkTag)
+        val args = mutableListOf<Any>(attackerProxy, level, gunDataProxy, targetProxy, perkTag)
+        if (projectile != null) args.add(ProjectileProxy(projectile))
+        s.callFunction("onHit", *args.toTypedArray())
     }
 
     fun getEffectAmplifier(instance: PerkInstance): Int {

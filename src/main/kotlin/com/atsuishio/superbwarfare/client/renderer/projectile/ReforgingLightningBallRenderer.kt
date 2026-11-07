@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.renderer.projectile
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
+import com.atsuishio.superbwarfare.client.renderer.special.LightningArcRenderer.lightning
 import com.atsuishio.superbwarfare.entity.projectile.ReforgingLightningBallEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
@@ -15,7 +16,10 @@ import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.world.phys.Vec3
 import org.joml.Matrix4f
 import java.util.*
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 class ReforgingLightningBallRenderer(context: EntityRendererProvider.Context) :
     EntityRenderer<ReforgingLightningBallEntity>(context) {
@@ -150,51 +154,6 @@ class ReforgingLightningBallRenderer(context: EntityRendererProvider.Context) :
         }
         // A fourth arc bridges the charged shell and its core.
         lightning(buffer, pose, Vec3.ZERO, corners[(phase.toInt() and 7)], seed + 2000, 0.5f, 4, 0.35, tint = tint)
-    }
-
-    private fun lightning(
-        buffer: VertexConsumer, pose: Matrix4f, start: Vec3, end: Vec3, seed: Long, alpha: Float,
-        maxSegments: Int = 32, widthScale: Double = 1.0, minSegments: Int = 3, tint: Vec3 = WHITE_TINT,
-    ) {
-        val offset = end.subtract(start)
-        val length = offset.length()
-        if (length < 0.01 || alpha <= 0f) return
-        val random = arcRandom
-        random.setSeed(seed)
-        val segments = (length * 8).toInt().coerceIn(minSegments, maxSegments)
-        val jitter = (length * 0.06).coerceIn(0.08, 0.35)
-        var previous = start
-        for (i in 1..segments) {
-            val point = if (i == segments) end else start.add(offset.scale(i.toDouble() / segments)).add(
-                (random.nextDouble() - 0.5) * jitter * 2,
-                (random.nextDouble() - 0.5) * jitter * 2,
-                (random.nextDouble() - 0.5) * jitter * 2,
-            )
-            beam(buffer, pose, previous, point, 0.035 * widthScale,
-                (0.2 * tint.x).toFloat(), (0.4 * tint.y).toFloat(), tint.z.toFloat(), alpha * 0.2f)
-            beam(buffer, pose, previous, point, 0.009 * widthScale,
-                (0.65 * tint.x).toFloat(), (0.85 * tint.y).toFloat(), tint.z.toFloat(), alpha)
-            previous = point
-        }
-    }
-
-    private fun beam(
-        buffer: VertexConsumer, pose: Matrix4f, start: Vec3, end: Vec3,
-        width: Double, red: Float, green: Float, blue: Float, alpha: Float,
-    ) {
-        if (alpha <= 0f || width <= 0.0 || start.distanceToSqr(end) < 1.0E-10) return
-        val direction = end.subtract(start).normalize()
-        val reference = if (abs(direction.y) > 0.9) Vec3(1.0, 0.0, 0.0) else Vec3(0.0, 1.0, 0.0)
-        val side = direction.cross(reference).normalize().scale(width)
-        val up = direction.cross(side).normalize().scale(width)
-        val offsets = arrayOf(side.add(up), side.subtract(up), side.scale(-1.0).subtract(up), up.subtract(side))
-        for (i in offsets.indices) {
-            val next = (i + 1) % offsets.size
-            vertex(buffer, pose, start.add(offsets[i]), red, green, blue, alpha)
-            vertex(buffer, pose, end.add(offsets[i]), red, green, blue, alpha)
-            vertex(buffer, pose, end.add(offsets[next]), red, green, blue, alpha)
-            vertex(buffer, pose, start.add(offsets[next]), red, green, blue, alpha)
-        }
     }
 
     // Cache unit sphere vertices instead of rebuilding the trigonometry every frame.

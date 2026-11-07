@@ -107,12 +107,13 @@
     "superbwarfare:high_impact_reserves",
     "superbwarfare:brain_storm",
     "superbwarfare:target_lock",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve",
+    "!superbwarfare:chain_lightning",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow",
-    "!superbwarfare:cluster_bomb",
-    "superbwarfare:soul_reaver",
-    "superbwarfare:steady_resolve"
+    "!superbwarfare:cluster_bomb"
   ],
   "AvailableAttachments": {
     "Scope": [

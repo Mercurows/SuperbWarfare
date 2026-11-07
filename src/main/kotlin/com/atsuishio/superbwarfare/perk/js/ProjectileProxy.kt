@@ -5,6 +5,8 @@ import com.atsuishio.superbwarfare.entity.projectile.TaserBulletEntity
 import net.minecraft.world.entity.Entity
 
 class ProjectileProxy(private val entity: Entity) {
+    fun isTaserBullet(): Boolean = entity is TaserBulletEntity
+
     private val projectile: IBulletProperties?
         get() = entity as? IBulletProperties
 
@@ -43,6 +45,10 @@ class ProjectileProxy(private val entity: Entity) {
     fun setVolt(volt: Number) {
         taser?.volt = volt.toInt()
     }
+
+    fun getDamage(): Float = taser?.damage ?: projectile?.getDamage() ?: 0f
+    fun getVolt(): Int = taser?.volt ?: 0
+    fun getOwner(): EntityProxy = EntityProxy((entity as? net.minecraft.world.entity.projectile.Projectile)?.owner)
 
     fun isZoom(): Boolean = projectile?.isZoom() ?: false
 }

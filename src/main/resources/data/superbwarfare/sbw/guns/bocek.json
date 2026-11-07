@@ -50,14 +50,15 @@
     "superbwarfare:cupid_arrow",
     "superbwarfare:brain_storm",
     "superbwarfare:battle_of_wits",
-    "!superbwarfare:micro_missile",
-    "!superbwarfare:cluster_bomb",
     "superbwarfare:quickdraw",
     "superbwarfare:adrenaline_rush",
     "superbwarfare:snapshot_sights",
     "superbwarfare:triple_tap",
     "superbwarfare:soul_reaver",
-    "superbwarfare:steady_resolve"
+    "superbwarfare:steady_resolve",
+    "!superbwarfare:chain_lightning",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:cluster_bomb"
   ],
   "SoundInfo": {
     "Fire1P": "superbwarfare:bocek_zoom_fire_1p",
