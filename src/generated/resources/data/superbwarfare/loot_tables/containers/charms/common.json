@@ -55,6 +55,10 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_m67_grenade"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_cake"
         }
       ],
       "rolls": 1.0
