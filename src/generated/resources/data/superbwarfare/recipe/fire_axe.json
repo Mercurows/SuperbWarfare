@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "tag": "c:ingots/steel"
+    },
+    "b": {
+      "item": "minecraft:stick"
+    },
+    "c": {
+      "item": "minecraft:red_dye"
+    }
+  },
+  "pattern": [
+    "aac",
+    "ab ",
+    " b "
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:fire_axe"
+  }
+}
