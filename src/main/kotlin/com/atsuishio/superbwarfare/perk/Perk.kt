@@ -116,6 +116,18 @@ open class Perk(val descriptionId: String, val type: Type) : PropertyModifier<Gu
     open fun onMeleeAttack(data: GunData, instance: PerkInstance, target: Entity, source: DamageSource) {}
 
     /**
+     * LivingDamageEvent at LOWEST: accepted health damage plus consumed absorption hearts.
+     * Runs after armor and absorption, immediately before health is deducted.
+     */
+    open fun onMeleeDamage(
+        damage: Float,
+        data: GunData,
+        instance: PerkInstance,
+        target: Entity,
+        source: DamageSource,
+    ) {}
+
+    /**
      * 用于处理武器按下近战键的逻辑（无论是否命中实体都会触发）
      */
     open fun onMeleeSwing(data: GunData, instance: PerkInstance, entity: Entity?) {}

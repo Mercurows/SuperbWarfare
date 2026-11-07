@@ -61,6 +61,7 @@
   "AmmoType": "@HandgunAmmo",
   "Icon": "superbwarfare:textures/gun_icon/vector_icon.png",
   "AvailablePerks": [
+    "superbwarfare:crushing_force",
     "superbwarfare:striving_for_perfection",
     "@Ammo",
     "superbwarfare:heal_clip",

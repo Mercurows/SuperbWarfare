@@ -30,6 +30,7 @@ import net.minecraft.network.protocol.game.ClientboundStopSoundPacket
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
+import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.effect.MobEffectCategory
 import net.minecraft.world.entity.EquipmentSlot
@@ -45,6 +46,7 @@ import net.minecraftforge.event.entity.living.*
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.event.level.ExplosionEvent
 import net.minecraftforge.eventbus.api.Event
+import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import java.util.*
@@ -53,6 +55,37 @@ import kotlin.math.sqrt
 
 @Mod.EventBusSubscriber
 object LivingEventHandler {
+    // LivingDamageEvent runs after absorption has already been consumed. Weak keys also
+    // release snapshots whose hurt event was canceled before reaching that stage.
+    private val meleeAbsorption = WeakHashMap<LivingEntity, Pair<DamageSource, Float>>()
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    fun captureMeleeAbsorption(event: LivingHurtEvent) {
+        if (event.entity.level().isClientSide || !DamageTypeTool.isMeleeDamage(event.source)) return
+        meleeAbsorption[event.entity] = event.source to event.entity.absorptionAmount
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+    fun onMeleeDamage(event: LivingDamageEvent) {
+        val target = event.entity
+        if (target.level().isClientSide || !DamageTypeTool.isMeleeDamage(event.source)) return
+        val snapshot = meleeAbsorption.remove(target)
+        val absorbed = if (snapshot?.first === event.source) {
+            (snapshot.second - target.absorptionAmount).coerceAtLeast(0f)
+        } else 0f
+        val damage = (if (event.isCanceled) 0f else event.amount.coerceAtLeast(0f)) + absorbed
+        if (damage <= 0f) return
+        val attacker = event.source.entity as? LivingEntity ?: return
+        val stack = attacker.mainHandItem
+        if (stack.item !is GunItem) return
+        val data = GunData.from(stack)
+        for (type in Perk.Type.entries) {
+            data.perk.getInstances(type).forEach {
+                it.perk.onMeleeDamage(damage, data, it, target, event.source)
+            }
+        }
+    }
+
     @SubscribeEvent
     fun onLivingChangeTargetEvent(event: LivingChangeTargetEvent) {
         val entity = event.entity

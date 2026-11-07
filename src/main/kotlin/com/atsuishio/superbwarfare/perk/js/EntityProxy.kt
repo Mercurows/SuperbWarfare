@@ -143,6 +143,13 @@ class EntityProxy(val entity: Entity?) {
     }
 
     // ── Motion / Velocity ──
+    fun getFallDistance(): Float = entity?.fallDistance ?: 0f
+
+    fun resetFallDistance() {
+        val e = entity ?: return
+        if (!e.level().isClientSide) e.resetFallDistance()
+    }
+
     fun push(x: Double, y: Double, z: Double) {
         val e = entity ?: return
         if (e is ServerPlayer) {

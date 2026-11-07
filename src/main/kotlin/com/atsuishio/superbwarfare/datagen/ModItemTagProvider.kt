@@ -500,6 +500,7 @@ class ModItemTagProvider(
             perkItem(ModPerks.VOLT_OVERLOAD)
         )
         this.tag(ModTags.Items.RESEARCHABLE_DAMAGE_PERK_RARE).add(
+            perkItem(ModPerks.CRUSHING_FORCE),
             perkItem(ModPerks.KILLING_TALLY),
             perkItem(ModPerks.KILL_CLIP),
             perkItem(ModPerks.MONSTER_HUNTER),
