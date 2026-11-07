@@ -58,6 +58,7 @@
   "AmmoType": "@ShotgunAmmo",
   "Icon": "superbwarfare:textures/gun_icon/aa_12_icon.png",
   "AvailablePerks": [
+    "superbwarfare:practice_makes_perfect",
     "superbwarfare:crushing_force",
     "superbwarfare:striving_for_perfection",
     "@Ammo",

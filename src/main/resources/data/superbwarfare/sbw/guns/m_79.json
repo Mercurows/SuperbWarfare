@@ -61,6 +61,7 @@
   ],
   "Icon": "superbwarfare:textures/gun_icon/m_79_icon.png",
   "AvailablePerks": [
+    "superbwarfare:practice_makes_perfect",
     "superbwarfare:crushing_force",
     "superbwarfare:striving_for_perfection",
     "@Ammo",

@@ -487,6 +487,7 @@ class ModItemTagProvider(
             perkItem(ModPerks.STRIVING_FOR_PERFECTION)
         )
         this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_LEGENDARY).add(
+            perkItem(ModPerks.PRACTICE_MAKES_PERFECT),
             perkItem(ModPerks.INTELLIGENT_CHIP)
         )
 

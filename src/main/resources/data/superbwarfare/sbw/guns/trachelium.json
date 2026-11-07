@@ -111,6 +111,7 @@
     ]
   },
   "AvailablePerks": [
+    "superbwarfare:practice_makes_perfect",
     "superbwarfare:striving_for_perfection",
     "@Ammo",
     "superbwarfare:heal_clip",

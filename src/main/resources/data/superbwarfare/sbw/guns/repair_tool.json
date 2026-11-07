@@ -24,6 +24,7 @@
   "AmmoCostPerShoot": 50,
   "Icon": "superbwarfare:textures/gun_icon/repair_tool_icon.png",
   "AvailablePerks": [
+    "superbwarfare:practice_makes_perfect",
     "superbwarfare:striving_for_perfection",
     "superbwarfare:regeneration",
     "superbwarfare:powerful_cooler",

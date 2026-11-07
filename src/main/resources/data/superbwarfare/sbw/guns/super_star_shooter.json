@@ -23,6 +23,7 @@
   "AmmoType": "100 minecraft:nether_star",
   "Icon": "superbwarfare:textures/gun_icon/super_star_shooter_icon.png",
   "AvailablePerks": [
+    "superbwarfare:practice_makes_perfect",
     "superbwarfare:striving_for_perfection",
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",

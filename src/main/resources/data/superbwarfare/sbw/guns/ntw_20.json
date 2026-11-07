@@ -55,6 +55,7 @@
   "AmmoType": "@HeavyAmmo",
   "Icon": "superbwarfare:textures/gun_icon/ntw_20_icon.png",
   "AvailablePerks": [
+    "superbwarfare:practice_makes_perfect",
     "superbwarfare:crushing_force",
     "superbwarfare:striving_for_perfection",
     "@Ammo",
