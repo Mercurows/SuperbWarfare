@@ -120,6 +120,10 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     var smoke: SmokeInfo = SmokeInfo()
 
     @JvmField
+    @SerialName("MuzzleFx")
+    var muzzleFx: MuzzleFxInfo? = null
+
+    @JvmField
     @SerialName("HasSmoke")
     var hasSmoke: Boolean = false
 

@@ -1,9 +1,7 @@
 package com.atsuishio.superbwarfare.client.lighting
 
 import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties
-import net.minecraft.client.Minecraft
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.projectile.Projectile
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
@@ -38,23 +36,6 @@ object ClientLightingHandler {
      */
     @JvmStatic
     fun handleProjectileAdded(entity: Entity) {
-        val owner = (entity as? Projectile)?.owner
-        val localPlayer = Minecraft.getInstance().player
-
-        // Muzzle flash for other players' shots
-        if (owner !== localPlayer && owner is LivingEntity) {
-            val params = MuzzleFlashHelper.calculateFromOwner(owner)
-
-            if (params != null) {
-                val direction = if (entity.deltaMovement.lengthSqr() > 1e-6) {
-                    entity.deltaMovement
-                } else {
-                    owner.lookAngle
-                }
-                MuzzleFlashHelper.spawnFlashCone(entity.position(), direction, params)
-            }
-        }
-
         // Launch backblast for rockets and large shells
         val launchFlash = ProjectileLightHelper.getLaunchFlash(entity)
         if (launchFlash != null) {

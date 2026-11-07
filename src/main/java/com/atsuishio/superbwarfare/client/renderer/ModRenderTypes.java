@@ -171,6 +171,7 @@ public class ModRenderTypes extends RenderType {
                 .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader))
                 // 启用半透明混合
                 .setTransparencyState(TEST_TRANSPARENCY)
+                .setCullState(RenderStateShard.NO_CULL)
                 // 绑定贴图（替换为你的路径）
                 .setTextureState(shard)
                 // 禁用光照和覆盖颜色

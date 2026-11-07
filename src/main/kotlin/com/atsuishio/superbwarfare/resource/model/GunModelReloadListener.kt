@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.resource.model
 
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
+import com.atsuishio.superbwarfare.client.renderer.gun.MuzzleFlashRenderer
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockModelPOJO
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.TreeBedrockModel
@@ -17,6 +18,7 @@ object GunModelReloadListener : BedrockModelReloadListener<GeoGunModel>(
         resourceManager: ResourceManager,
         profiler: ProfilerFiller
     ) {
+        MuzzleFlashRenderer.clear()
         this.models.clear()
         this.animations.clear()
 

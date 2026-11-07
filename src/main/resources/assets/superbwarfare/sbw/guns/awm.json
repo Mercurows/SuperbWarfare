@@ -26,6 +26,12 @@
   "Script": "superbwarfare:scripts/guns/bipod.js",
   "FlareSize": 1.2,
   "HasSmoke": true,
+  "MuzzleFx": {
+    "Trigger": "shot",
+    "Flash": { "Length": 1.18, "Duration": 0.055 },
+    "Smoke": { "TailCount": 1 },
+    "Sparks": { "Probability": 0.2, "MaxCount": 2 }
+  },
   "Smoke": {
     "Size": 0.25,
     "Growth": 0.25,

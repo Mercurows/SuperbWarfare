@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.lighting
 
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
@@ -109,13 +110,13 @@ object MuzzleFlashHelper {
      */
     @JvmStatic
     fun calculateFromGunData(data: GunData): FlashParams {
-        val muzzleType = data.attachment.get(AttachmentType.MUZZLE)
+        val muzzle = data.attachment.id(AttachmentType.MUZZLE)?.let(AttachmentDefinition::from)
         return calculateFromStats(
             damage = data.get(GunProp.DAMAGE),
             rpm = data.get(GunProp.RPM),
             boltAction = data.get(GunProp.BOLT_ACTION_TIME),
-            isSilenced = muzzleType == 2,
-            isFlashHider = muzzleType == 1,
+            isSilenced = muzzle?.isSilenced == true,
+            isFlashHider = (muzzle?.muzzleFlashScale ?: 1f) < 1f,
             projectileAmount = data.get(GunProp.PROJECTILE_AMOUNT),
             stack = data.stack
         )
