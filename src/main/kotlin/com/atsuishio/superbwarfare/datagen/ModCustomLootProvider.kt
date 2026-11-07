@@ -423,6 +423,7 @@ class ModCustomLootProvider() : LootTableSubProvider {
                     ModItems.CHARM_DOG_TAG,
                     ModItems.CHARM_CONTAINER,
                     ModItems.CHARM_M67_GRENADE,
+                    ModItems.CHARM_CAKE,
                 )
             }
         }
@@ -442,6 +443,7 @@ class ModCustomLootProvider() : LootTableSubProvider {
                     ModItems.CHARM_WITHER_SKELETON_SKULL,
                     ModItems.CHARM_ELDER_GUARDIAN,
                     ModItems.CHARM_MK_82,
+                    ModItems.CHARM_GOLDEN_APPLE,
                 )
             }
         }
@@ -478,6 +480,7 @@ class ModCustomLootProvider() : LootTableSubProvider {
                     ModItems.CHARM_NETHER_STAR,
                     ModItems.CHARM_CONDUIT,
                     ModItems.CHARM_GOLDEN_RINGO_GUN_KING_MEDAL,
+                    ModItems.CHARM_BEACON,
                 )
             }
         }

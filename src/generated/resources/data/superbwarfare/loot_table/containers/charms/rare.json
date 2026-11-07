@@ -47,6 +47,10 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_mk_82"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_golden_apple"
         }
       ],
       "rolls": 1.0
