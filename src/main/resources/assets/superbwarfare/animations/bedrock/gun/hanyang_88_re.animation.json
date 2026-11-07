@@ -2755,12 +2755,6 @@
 						}
 					}
 				}
-			},
-			"particle_effects": {
-				"0.0": {
-					"effect": "superbwarfare:muzzle_smoke",
-					"locator": "flare"
-				}
 			}
 		},
 		"animation.hanyang_88_re.hit": {
