@@ -112,6 +112,7 @@ object ModPerks {
     lateinit var SNAPSHOT_SIGHTS: PERK
     lateinit var TRIPLE_TAP: PERK
     lateinit var STRIVING_FOR_PERFECTION: PERK
+    lateinit var PRACTICE_MAKES_PERFECT: PERK
     // @formatter:on
 
     /**
@@ -288,6 +289,8 @@ object ModPerks {
         }
         STRIVING_FOR_PERFECTION = autoRegistryObjects["striving_for_perfection"]
             ?: registerFuncPerk("striving_for_perfection") { StrivingForPerfection }
+
+        PRACTICE_MAKES_PERFECT = autoRegistryObjects.getValue("practice_makes_perfect")
 
         // Damage Perks
         KILL_CLIP = autoRegistryObjects["kill_clip"] ?: registerDamagePerk("kill_clip") { KillClip }

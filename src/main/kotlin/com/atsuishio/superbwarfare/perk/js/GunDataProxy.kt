@@ -9,6 +9,9 @@ import kotlin.math.roundToInt
  * Proxy that exposes GunData properties and methods to JS perk scripts.
  */
 class GunDataProxy(private val data: GunData) {
+    fun getLevel(): Int = data.level.get()
+
+    fun getBaseWeight(): Double = data.getDefault().weight
 
     // ── Gun Properties ──
     fun getBypassesArmor(): Double = data.get(GunProp.BYPASSES_ARMOR)

@@ -242,6 +242,7 @@ data class DefaultGunData(
     @SerialName("AvailablePerks")
     val availablePerks: SingleOrList<String> = SingleOrList(
         "@Ammo",
+        "superbwarfare:practice_makes_perfect",
         "!superbwarfare:chain_lightning",
         "superbwarfare:field_doctor",
         "superbwarfare:powerful_attraction",

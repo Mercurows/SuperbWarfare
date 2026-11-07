@@ -32,7 +32,9 @@
     }
   ],
   "ShootShake": [5.0, 5.0, 6.0],
-  "AvailablePerks": [],
+  "AvailablePerks": [
+    "superbwarfare:practice_makes_perfect"
+  ],
   "Icon": "superbwarfare:textures/gun_icon/sub_weapon_gp_25.png",
   "SoundInfo": {
     "Fire1P": "superbwarfare:gp_25_fire_1p",

@@ -62,6 +62,7 @@
   "MaxEnergy": 100000,
   "Icon": "superbwarfare:textures/gun_icon/devotion_icon.png",
   "AvailablePerks": [
+    "superbwarfare:practice_makes_perfect",
     "superbwarfare:crushing_force",
     "superbwarfare:striving_for_perfection",
     "@Ammo",

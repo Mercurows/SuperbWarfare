@@ -54,6 +54,7 @@
   "AmmoType": "@RifleAmmo",
   "Icon": "superbwarfare:textures/gun_icon/insidious_icon.png",
   "AvailablePerks": [
+    "superbwarfare:practice_makes_perfect",
     "superbwarfare:crushing_force",
     "superbwarfare:striving_for_perfection",
     "@Ammo",

@@ -84,6 +84,7 @@
   "AmmoType": "@SniperAmmo",
   "Icon": "superbwarfare:textures/gun_icon/mosin_nagant_icon.png",
   "AvailablePerks": [
+    "superbwarfare:practice_makes_perfect",
     "superbwarfare:crushing_force",
     "superbwarfare:striving_for_perfection",
     "@Ammo",
