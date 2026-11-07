@@ -371,6 +371,15 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('c', Items.STICK)
                 .unlockedBy(getHasName(ModItems.CEMENTED_CARBIDE_INGOT.get()), has(ModTags.Items.INGOTS_CEMENTED_CARBIDE))
                 .save(writer, loc(getItemName(ModItems.MIAODAO.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.FIRE_AXE.get())
+                .pattern("aac")
+                .pattern("ab ")
+                .pattern(" b ")
+                .define('a', INGOTS_STEEL)
+                .define('b', Items.STICK)
+                .define('c', Items.RED_DYE)
+                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(INGOTS_STEEL))
+                .save(writer, loc(getItemName(ModItems.FIRE_AXE.get())))
         }
 
         private fun buildArmorRecipes(writer: Consumer<FinishedRecipe>) {
