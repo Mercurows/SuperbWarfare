@@ -17,6 +17,7 @@ import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer
+import com.atsuishio.superbwarfare.client.renderer.gun.MuzzleFlashRenderer
 import com.atsuishio.superbwarfare.client.renderer.projectile.ReforgingGravityBallRenderer
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensPostProcessor
 import com.atsuishio.superbwarfare.client.shader.RadiationShaderHandler
@@ -878,6 +879,7 @@ object ClientEventHandler {
 
     @SubscribeEvent
     fun clearGravityLensing(event: ClientPlayerNetworkEvent.LoggingOut) {
+        MuzzleFlashRenderer.clear()
         resetMeleeOnDeath()
         meleePlayer = null
         meleeLevel = null
@@ -2351,6 +2353,7 @@ object ClientEventHandler {
         recoilY = (2 * Math.random() - 1).toFloat() * gunRecoilY
         noSprintTicks = 10f
 
+        MuzzleFlashRenderer.recordShot(player, stack)
         postEvent(ClientGunFireEvent(player, stack))
     }
 

@@ -31,6 +31,7 @@ import com.atsuishio.superbwarfare.item.ItemScreenProvider
 import com.atsuishio.superbwarfare.item.gun.GunItem.Companion.HANDLING_WEIGHT_SCALE
 import com.atsuishio.superbwarfare.item.gun.GunItem.Companion.resolveShootDirection
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
+import com.atsuishio.superbwarfare.network.message.receive.GunMuzzleFxMessage
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.*
@@ -790,6 +791,10 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         repeat(projectileAmount) { index ->
             if (!shootBullet(parameters.copy(shootDirection = spreadDirections[index]))) return
+        }
+
+        if (shooter is LivingEntity && parameters.ammoSupplier === shooter && shooter.mainHandItem.item is GunItem) {
+            shooter.sendPacketToTrackingThis(GunMuzzleFxMessage(shooter.id, data.id, ActiveGun.isSubWeapon(data)))
         }
 
         // n连发模式开火数据设置

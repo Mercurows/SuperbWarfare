@@ -168,9 +168,10 @@ public class ModRenderTypes extends RenderType {
         TextureStateShard shard = new RenderStateShard.TextureStateShard(location, false, false);
         RenderType.CompositeState state = RenderType.CompositeState.builder()
                 // 关键修复：使用内置的 POSITION_COLOR_TEX_SHADER（直接调用 ShaderStateShard）
-                .setShaderState(RENDERTYPE_EYES_SHADER)
+                .setShaderState(POSITION_COLOR_TEX_SHADER)
                 // 启用半透明（确保正确排序）
                 .setTransparencyState(TEST_TRANSPARENCY)
+                .setCullState(NO_CULL)
                 // 绑定贴图
                 .setTextureState(shard)
                 // 禁用光照和覆盖颜色

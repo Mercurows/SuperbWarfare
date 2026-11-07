@@ -1,0 +1,84 @@
+package com.atsuishio.superbwarfare.client.renderer.gun
+
+import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource
+import com.atsuishio.superbwarfare.tools.BedrockBoneCoordinateTool
+import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.resource.ParticleDefinitionLoader
+import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.runtime.ParticleEmitterInstance
+import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.world.WorldEmitterManager
+import net.minecraft.client.Minecraft
+import net.minecraft.client.ParticleStatus
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.phys.Vec3
+import org.joml.Matrix4f
+import org.joml.Quaternionf
+import org.joml.Vector3f
+import kotlin.math.roundToInt
+import kotlin.random.Random
+
+internal object MuzzleParticles {
+    val smoke = Mod.loc("muzzle_smoke")
+    val sparks = Mod.loc("muzzle_sparks")
+    val tail = Mod.loc("muzzle_smoke_tail")
+    const val ANCHOR = "#shot_muzzle"
+
+    fun layers(resource: DefaultGunResource, includeSmoke: Boolean, includeSparks: Boolean, distance: Double,
+               emit: (ResourceLocation) -> Unit) {
+        if (distance > 64.0) return
+        val quality = Minecraft.getInstance().options.particles().get()
+        val fx = resource.muzzleFx
+        if (includeSmoke && (fx?.smoke?.enabled ?: resource.hasSmoke)) {
+            if ((fx?.smoke?.nearCount?.toFloat() ?: resource.smoke.count) > 0) emit(smoke)
+            if (quality == ParticleStatus.ALL && distance < 32 && (fx?.smoke?.tailCount ?: 0) > 0) emit(tail)
+        }
+        if (includeSparks && distance < 32 && quality != ParticleStatus.MINIMAL && (fx?.sparks?.maxCount ?: 0) > 0) emit(sparks)
+    }
+
+    // Parameters belong to one emitter. Independent samples keep large puffs from always
+    // being the fastest, densest and longest lived ones as well.
+    fun configure(emitter: ParticleEmitterInstance, resource: DefaultGunResource, effect: ResourceLocation) {
+        val base = resource.smoke
+        fun jitter(amount: Float) = 1f + (2f * Random.nextFloat() - 1f) * amount.coerceIn(0f, 1f)
+        val residual = effect == tail
+        val fx = resource.muzzleFx
+        val quality = Minecraft.getInstance().options.particles().get()
+        val limit = when (quality) {
+            ParticleStatus.MINIMAL -> 2
+            ParticleStatus.DECREASED -> 4
+            else -> 6
+        }
+        val count = when (effect) {
+            sparks -> Random.nextInt(1, (fx?.sparks?.maxCount ?: 1).coerceIn(1, 2) + 1)
+            tail -> (fx?.smoke?.tailCount ?: 1).coerceIn(0, 2)
+            else -> ((fx?.smoke?.nearCount?.toFloat() ?: base.count) * jitter(base.randomCount)).roundToInt()
+        }
+        emitter.setVariable("smoke_count", count.coerceIn(0, limit).toFloat())
+        emitter.setVariable("smoke_size", (base.size * jitter(base.randomSize)).coerceIn(0f, 4f) * if (residual) 0.62f else 0.8f)
+        emitter.setVariable("smoke_growth", (base.growth * jitter(base.randomGrowth)).coerceIn(0f, 5f))
+        emitter.setVariable("smoke_speed", (base.speed * jitter(base.randomSpeed)).coerceIn(0f, 10f) * if (residual) 0.4f else 1.4f)
+        emitter.setVariable("smoke_lifetime", (base.lifetime * jitter(base.randomLifetime)).coerceIn(0.05f, 2f) * if (residual) 1.55f else 0.85f)
+        emitter.setVariable("smoke_opacity", (base.opacity * jitter(base.randomOpacity)).coerceIn(0f, 1f) * if (residual) 0.4f else 1f)
+        emitter.setVariable("smoke_drag", base.drag.coerceIn(0f, 30f))
+    }
+
+    fun spawnWorld(view: Matrix4f, resource: DefaultGunResource, includeSmoke: Boolean, includeSparks: Boolean) {
+        val mc = Minecraft.getInstance()
+        val level = mc.level ?: return
+        val camera = mc.gameRenderer.mainCamera
+        val origin = BedrockBoneCoordinateTool.viewPointToWorld(Vec3(view.m30().toDouble(), view.m31().toDouble(), view.m32().toDouble()), camera)
+        val axis = view.transformDirection(0f, 0f, -1f, Vector3f())
+        if (axis.lengthSquared() < 1e-10f) return
+        val direction = BedrockBoneCoordinateTool.viewPointToWorldOffset(Vec3(axis.x.toDouble(), axis.y.toDouble(), axis.z.toDouble()), camera).normalize()
+        val anchor = Matrix4f().translation(origin.x.toFloat(), origin.y.toFloat(), origin.z.toFloat())
+            .rotate(Quaternionf().rotationTo(0f, 0f, -1f, direction.x.toFloat(), direction.y.toFloat(), direction.z.toFloat()))
+        val manager = WorldEmitterManager.getInstance()
+        layers(resource, includeSmoke, includeSparks, camera.position.distanceTo(origin)) { effect ->
+            if (manager.emitterCount >= 96) return@layers
+            val definition = ParticleDefinitionLoader.getInstance().getDefinition(effect) ?: return@layers
+            // Third argument is emitter velocity, not barrel direction (SBM 2.6.0).
+            val emitter = manager.addEmitter(level, origin, Vec3.ZERO, definition) ?: return@layers
+            manager.updateEmitterAnchor(emitter, anchor)
+            configure(emitter, resource, effect)
+        }
+    }
+}

@@ -1,18 +1,31 @@
 package com.atsuishio.superbwarfare.client.renderer.gun
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
+import com.atsuishio.superbwarfare.client.renderer.gun.MuzzleFlashRenderer.MAX_VISIBLE_TIME
+import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
+import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.isBarrelSilenced
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.blaze3d.vertex.VertexConsumer
-import com.mojang.math.Axis
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
 import org.joml.Matrix4f
+import org.joml.Vector3f
+import java.util.WeakHashMap
+import kotlin.collections.ArrayDeque
+import kotlin.collections.getOrPut
+import kotlin.collections.isNotEmpty
+import kotlin.math.abs
+import kotlin.random.Random
 
 object MuzzleFlashRenderer {
 
@@ -42,10 +55,11 @@ object MuzzleFlashRenderer {
         stack: ItemStack,
         attachmentMuzzleTransform: Matrix4f? = null,
         subWeaponFlareTransform: Matrix4f? = null,
+        subWeapon: Boolean = ClientEventHandler.subWeaponFireRotTimer > 0.0,
     ): Matrix4f? {
         // 副武器开火：挂点只能是**副武器模型自己的** `flare`。解析不到就返回 `null`（调用方什么都别画），
         // 绝不退回主武器的枪口（榴弹从下挂筒里出去，枪管前端不该喷火），也不叠 `FlarePosition`
-        if (ClientEventHandler.subWeaponFireRotTimer > 0.0) {
+        if (subWeapon) {
             return subWeaponFlareTransform?.let { Matrix4f(it) }
         }
 
@@ -63,57 +77,130 @@ object MuzzleFlashRenderer {
         return transform
     }
 
-    fun render(
-        poseStack: PoseStack,
-        model: GeoGunModel,
-        stack: ItemStack,
-        bufferSource: MultiBufferSource,
-        attachmentMuzzleTransform: Matrix4f? = null,
-        muzzleFlashScale: Float = 1.0f,
-        subWeaponFlareTransform: Matrix4f? = null,
-        subWeaponFlashScale: Float = 1.0f,
-    ) {
-        val subWeapon = ClientEventHandler.subWeaponFireRotTimer > 0.0
-        if (!isFiring()) return
+    private val atlas = Mod.loc("textures/particle/muzzle/flash.png")
+    private val shots = WeakHashMap<LivingEntity, ArrayDeque<Shot>>()
 
-        // 消音器只消**它自己那根枪管**的火焰：副武器开火时枪管根本没参与
-        if (!subWeapon && GunData.from(stack).isBarrelSilenced()) return
-
-        val flareTransform = resolveFlareTransform(model, stack, attachmentMuzzleTransform, subWeaponFlareTransform)
-            ?: return
-
-        val resource = GunResource.compute(stack)
-
-        poseStack.pushPose()
-        poseStack.last().pose().mul(flareTransform)
-
-        val scaleRandom = Math.random().toFloat()
-        val rotationRandom = Math.random().toFloat()
-        val flashScale = if (subWeapon) subWeaponFlashScale else muzzleFlashScale
-        val size = resource.flareSize * (0.6f + 0.8f * scaleRandom) * flashScale.coerceAtLeast(0f)
-        poseStack.mulPose(Axis.ZP.rotation(0.5f * (rotationRandom - 0.5f)))
-        poseStack.scale(size, size, 1f)
-
-        val consumer = bufferSource.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(FLARE_TEXTURE))
-        val pose = poseStack.last().pose()
-        vertex(consumer, pose, 0f, 0f, 0, 1)
-        vertex(consumer, pose, 1f, 0f, 1, 1)
-        vertex(consumer, pose, 1f, 1f, 1, 0)
-        vertex(consumer, pose, 0f, 1f, 0, 0)
-        poseStack.popPose()
+    private class Shot(val start: Double, val host: Any, val barrel: Any, val firstPerson: Boolean) {
+        val variant = Random.nextInt(8)
+        val angle = Random.nextFloat() * 6.283185f
+        val size = 0.8f + Random.nextFloat() * 0.4f
+        val sparks = Random.nextFloat()
+        var presented = false
     }
 
-    private fun vertex(
-        consumer: VertexConsumer,
-        pose: Matrix4f,
-        x: Float,
-        y: Float,
-        u: Int,
-        v: Int
+    private fun identity(stack: ItemStack): Any = GunData.from(stack).uuid ?: stack
+
+    fun hasShot(holder: LivingEntity): Boolean {
+        val queue = shots[holder] ?: return false
+        if (holder.tickCount - queue.last().start <= 2) return true
+        shots.remove(holder)
+        return false
+    }
+
+    fun clear() = shots.clear()
+
+    fun recordShot(holder: LivingEntity, barrel: ItemStack) {
+        val mc = Minecraft.getInstance()
+        val queue = shots.getOrPut(holder) { ArrayDeque() }
+        val time = holder.tickCount.toDouble() + mc.frameTime
+        while (queue.isNotEmpty() && (time - queue.first().start > 2 || queue.size >= 8)) queue.removeFirst()
+        queue.addLast(Shot(time, identity(holder.mainHandItem), identity(barrel),
+            holder === mc.player && mc.options.cameraType.isFirstPerson))
+    }
+
+    fun remoteShot(id: Int, weapon: String, subWeapon: Boolean) {
+        val mc = Minecraft.getInstance()
+        val holder = mc.level?.getEntity(id) as? LivingEntity ?: return
+        if (holder === mc.player || mc.gameRenderer.mainCamera.position.distanceToSqr(holder.position()) > 96.0 * 96.0) return
+        val active = ActiveGun.stackOf(holder)
+        if (active.isEmpty || active.item !is GunItem) return
+        val data = GunData.from(active)
+        if (data.id != weapon || ActiveGun.isSubWeapon(data) != subWeapon) return
+        recordShot(holder, active)
+        MuzzleFlashHelper.calculateFromStack(active)?.let { MuzzleFlashHelper.spawnFlashCone(holder.eyePosition, holder.lookAngle, it) }
+    }
+
+    fun renderShot(
+        holder: LivingEntity, host: ItemStack, firstPerson: Boolean, poseStack: PoseStack,
+        buffers: MultiBufferSource, anchor: Matrix4f?, flashScale: Float, partialTick: Float,
+        emit: (DefaultGunResource, Boolean, Boolean) -> Unit,
     ) {
-        consumer.vertex(pose, x - 0.5f, y - 0.5f, 0f)
-            .color(255, 255, 255, 255)
-            .uv(u.toFloat(), v.toFloat())
-            .endVertex()
+        val queue = shots[holder] ?: return
+        if (anchor == null || ShaderCompat.isRenderingShadowPass()) return
+        val now = holder.tickCount.toDouble() + partialTick
+        while (queue.isNotEmpty() && now - queue.first().start > 2.0) queue.removeFirst()
+        if (queue.isEmpty()) {
+            shots.remove(holder)
+            return
+        }
+        val barrel = ActiveGun.stackOf(holder)
+        if (barrel.isEmpty) return
+        val hostId = identity(host)
+        val barrelId = identity(barrel)
+        val resource = GunResource.compute(barrel)
+        val fx = resource.muzzleFx
+        val duration = (fx?.flash?.duration ?: 0.045f).coerceIn(0.015f, 0.09f)
+        val silenced = GunData.from(barrel).isBarrelSilenced()
+        val matrix = Matrix4f(poseStack.last().pose()).mul(anchor)
+        for (shot in queue) {
+            if (shot.firstPerson != firstPerson || shot.host != hostId || shot.barrel != barrelId) continue
+            val age = ((now - shot.start) * 0.05).coerceAtLeast(0.0).toFloat()
+            if (age > duration && (shot.presented || age > 0.065f)) continue
+            val lateFirstFrame = !shot.presented && age >= duration
+            if (!shot.presented) {
+                shot.presented = true
+                emit(resource, !firstPerson || fx?.trigger == "shot",
+                    !silenced && shot.sparks < (fx?.sparks?.probability ?: 0f).coerceIn(0f, 1f))
+            }
+            if (silenced || fx?.flash?.enabled == false || flashScale <= 0f) continue
+            val phase = if (lateFirstFrame) 0.45f else (age / duration).coerceIn(0f, 1f)
+            drawFlash(buffers, matrix, resource, flashScale, shot, phase)
+        }
+    }
+
+    private fun drawFlash(
+        buffers: MultiBufferSource, matrix: Matrix4f, resource: DefaultGunResource,
+        flashScale: Float, shot: Shot, phase: Float,
+    ) {
+        val fx = resource.muzzleFx
+        val size = resource.flareSize * shot.size * flashScale * (1f - 0.35f * phase)
+        if (size <= 0f) return
+        val alpha = ((1f - phase) * 255).toInt()
+        val legacy = fx == null && !resource.hasSmoke
+        val consumer = buffers.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(if (legacy) FLARE_TEXTURE else atlas))
+        val index = shot.variant % (fx?.flash?.variants ?: 8).coerceIn(1, 8)
+        val u = if (legacy) 0f else index / 8f
+        val du = if (legacy) 1f else 0.125f
+        val center = matrix.getTranslation(Vector3f())
+        val radius = size * matrix.getScale(Vector3f()).x * (if (legacy) 0.5f else 0.26f)
+        val core = Matrix4f().translation(center).rotateZ(shot.angle).scale(radius)
+        fun quadPoint(m: Matrix4f, x: Float, y: Float, z: Float, tx: Float, ty: Float, opacity: Int) {
+            consumer.vertex(m, x, y, z).color(255, 255, 255, opacity).uv(tx, ty).endVertex()
+        }
+        val v = if (legacy) 1f else 0.5f
+        quadPoint(core, -1f, -1f, 0f, u, v, alpha)
+        quadPoint(core, 1f, -1f, 0f, u + du, v, alpha)
+        quadPoint(core, 1f, 1f, 0f, u + du, 0f, alpha)
+        quadPoint(core, -1f, 1f, 0f, u, 0f, alpha)
+        if (legacy) return
+        val length = size * (fx?.flash?.length ?: 0.85f).coerceIn(0f, 3f)
+        val facing = Vector3f(center).negate()
+        if (facing.lengthSquared() < 1e-8f) return
+        facing.normalize()
+        repeat(2) { i ->
+            val tongue = Matrix4f(matrix).rotateZ(shot.angle + i * 1.5707963f)
+            val side = tongue.transformDirection(1f, 0f, 0f, Vector3f())
+            val axis = tongue.transformDirection(0f, 0f, -1f, Vector3f())
+            val normal = side.cross(axis)
+            if (normal.lengthSquared() < 1e-10f) return@repeat
+            val fade = ((abs(normal.normalize().dot(facing)) - 0.08f) / 0.32f).coerceIn(0f, 1f)
+            val opacity = (alpha * fade * 0.88f).toInt()
+            if (opacity == 0) return@repeat
+            val w = size * 0.20f
+            quadPoint(tongue, -w, 0f, 0f, u, 1f, opacity)
+            quadPoint(tongue, w, 0f, 0f, u + du, 1f, opacity)
+            quadPoint(tongue, w, 0f, -length, u + du, 0.5f, opacity)
+            quadPoint(tongue, -w, 0f, -length, u, 0.5f, opacity)
+        }
     }
 }

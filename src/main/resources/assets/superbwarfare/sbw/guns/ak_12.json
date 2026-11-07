@@ -28,6 +28,12 @@
   },
   "FlareSize": 0.3,
   "HasSmoke": true,
+  "MuzzleFx": {
+    "Trigger": "shot",
+    "Flash": { "Length": 0.86, "Duration": 0.043 },
+    "Smoke": { "TailCount": 1 },
+    "Sparks": { "Probability": 0.12, "MaxCount": 2 }
+  },
   "Smoke": {
     "Size": 0.15,
     "Growth": 0.25,
