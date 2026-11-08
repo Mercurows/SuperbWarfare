@@ -1,0 +1,7 @@
+{
+  "Type": "ammo",
+  "DamageRate": 0.8,
+  "SpeedRate": 0.8,
+  "RGB": [129, 255, 26],
+  "Script": "superbwarfare:scripts/perks/homing_bullet.js"
+}

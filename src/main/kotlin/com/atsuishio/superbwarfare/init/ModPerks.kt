@@ -69,6 +69,7 @@ object ModPerks {
     lateinit var BEAST_BULLET: PERK
     lateinit var LONGER_WIRE: PERK
     lateinit var CHAIN_LIGHTNING: PERK
+    lateinit var HOMING_BULLET: PERK
     lateinit var INCENDIARY_BULLET: PERK
     lateinit var MICRO_MISSILE: PERK
     lateinit var CUPID_ARROW: PERK
@@ -222,6 +223,7 @@ object ModPerks {
         BEAST_BULLET = autoRegistryObjects["beast_bullet"] ?: registerAmmoPerk("beast_bullet") { BeastBullet }
         LONGER_WIRE = autoRegistryObjects["longer_wire"] ?: registerAmmoPerk("longer_wire") { LongerWire }
         CHAIN_LIGHTNING = autoRegistryObjects.getValue("chain_lightning")
+        HOMING_BULLET = autoRegistryObjects.getValue("homing_bullet")
         INCENDIARY_BULLET =
             autoRegistryObjects["incendiary_bullet"] ?: registerAmmoPerk("incendiary_bullet") { IncendiaryBullet }
         MICRO_MISSILE = autoRegistryObjects["micro_missile"] ?: registerAmmoPerk("micro_missile") { MicroMissile }

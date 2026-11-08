@@ -606,6 +606,8 @@
   "item.superbwarfare.invisible_blade_shapeness": "隐之刃凛",
   "item.superbwarfare.crushing_force": "千钧之势",
   "item.superbwarfare.chain_lightning": "连锁闪电",
+  "item.superbwarfare.homing_bullet": "追踪弹",
+  "des.superbwarfare.homing_bullet": "子弹自动追踪前方附近的可见敌人",
   "item.superbwarfare.practice_makes_perfect": "熟能生巧",
   "des.superbwarfare.practice_makes_perfect": "武器的部分属性会随着武器等级的提升而提升",
   "des.superbwarfare.chain_lightning": "能造成电击的投射物命中后向周围敌人弹射闪电",
