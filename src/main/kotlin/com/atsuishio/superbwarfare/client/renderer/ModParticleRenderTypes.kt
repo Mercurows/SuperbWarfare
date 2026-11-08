@@ -62,7 +62,10 @@ object ModParticleRenderTypes {
      * **not** use a hard discard threshold, so soft transparency is preserved
      * through the pack's native particle shader.
      */
-    val PARTICLE_SHEET_SOFT_TRANSLUCENT: ParticleRenderType = object : ParticleRenderType {
+    val PARTICLE_SHEET_SOFT_TRANSLUCENT: ParticleRenderType = softTranslucent(TextureAtlas.LOCATION_PARTICLES)
+
+    /** The same soft alpha pipeline for particles using a standalone texture or flipbook. */
+    fun softTranslucent(texture: ResourceLocation): ParticleRenderType = object : ParticleRenderType {
 
         override fun begin(builder: BufferBuilder, textureManager: TextureManager) {
             // Match vanilla PARTICLE_SHEET_TRANSLUCENT call order exactly —
@@ -73,7 +76,7 @@ object ModParticleRenderTypes {
             RenderSystem.enableBlend()
             RenderSystem.defaultBlendFunc()
             RenderSystem.depthMask(false)
-            RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES)
+            RenderSystem.setShaderTexture(0, texture)
             resolveShader()
             builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE)
         }

@@ -1914,6 +1914,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             if (locator == null || locator !in boneTransforms || system.emitters.size >= 64) return
             val definition = ParticleDefinitionLoader.getInstance().getDefinition(effect) ?: return
             val emitter = system.addEmitter(definition, hand)
+            MuzzleParticles.bindSmokeDelivery(emitter, effect, true)
             MuzzleParticles.configure(emitter, resource, effect)
             locators[emitter] = locator
             newEmitters += emitter
