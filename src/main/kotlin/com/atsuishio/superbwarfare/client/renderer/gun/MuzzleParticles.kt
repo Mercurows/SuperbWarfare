@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.gun
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.particle.MuzzleSmokeParticle
 import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource
 import com.atsuishio.superbwarfare.tools.BedrockBoneCoordinateTool
 import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.resource.ParticleDefinitionLoader
@@ -21,6 +22,25 @@ internal object MuzzleParticles {
     val sparks = Mod.loc("muzzle_sparks")
     val tail = Mod.loc("muzzle_smoke_tail")
     const val ANCHOR = "#shot_muzzle"
+
+    /** Override only our two smoke effects; all other SBM particles keep their own delivery path. */
+    fun bindSmokeDelivery(emitter: ParticleEmitterInstance, effect: ResourceLocation, firstPerson: Boolean) {
+        if (effect != smoke && effect != tail) return
+        val mc = Minecraft.getInstance()
+        val definition = emitter.definition
+        val delivery = ParticleEmitterInstance.ParticleSpawnCallback { particle ->
+            val level = mc.level ?: return@ParticleSpawnCallback
+            if (firstPerson) {
+                val camera = mc.gameRenderer.mainCamera.position
+                particle.x += camera.x.toFloat()
+                particle.y += camera.y.toFloat()
+                particle.z += camera.z.toFloat()
+            }
+            mc.particleEngine.add(MuzzleSmokeParticle(level, particle, definition, emitter))
+        }
+        if (firstPerson) emitter.setWorldSpaceParticleCallback(delivery)
+        else emitter.setExternalParticleManagement(delivery)
+    }
 
     fun layers(resource: DefaultGunResource, includeSmoke: Boolean, includeSparks: Boolean, distance: Double,
                emit: (ResourceLocation) -> Unit) {
@@ -77,6 +97,7 @@ internal object MuzzleParticles {
             val definition = ParticleDefinitionLoader.getInstance().getDefinition(effect) ?: return@layers
             // Third argument is emitter velocity, not barrel direction (SBM 2.6.0).
             val emitter = manager.addEmitter(level, origin, Vec3.ZERO, definition) ?: return@layers
+            bindSmokeDelivery(emitter, effect, false)
             manager.updateEmitterAnchor(emitter, anchor)
             configure(emitter, resource, effect)
         }

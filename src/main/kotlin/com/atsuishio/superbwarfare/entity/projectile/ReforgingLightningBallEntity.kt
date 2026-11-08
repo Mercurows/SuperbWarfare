@@ -161,7 +161,7 @@ open class ReforgingLightningBallEntity(type: EntityType<out ReforgingLightningB
         val root = target.multipartRoot as? LivingEntity ?: return
         currentHitDamage = damage
         try {
-            if (postEvent(ProjectileHitEvent.HitEntity(owner, this, root, target.boundingBox.center))) return
+            if (postEvent(ProjectileHitEvent.HitEntity(owner, this, root, target.boundingBox.center)).isCanceled) return
         } finally {
             currentHitDamage = null
         }
@@ -169,7 +169,7 @@ open class ReforgingLightningBallEntity(type: EntityType<out ReforgingLightningB
         target.invulnerableTime = 0
         // Preserve native part-specific damage routing, but apply the effect to the living root.
         target.forceHurt(ModDamageTypes.causeShockDamage(level().registryAccess(), this, owner), damage)
-        root.forceApplyEffect(MobEffectInstance(ModMobEffects.SHOCK.get(), 100 + volt * 30, volt), owner)
+        root.forceApplyEffect(MobEffectInstance(ModMobEffects.SHOCK, 100 + volt * 30, volt), owner)
         dischargeVisual(target)
     }
 
