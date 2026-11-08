@@ -56,25 +56,30 @@ class FlashbangEntity(type: EntityType<out FlashbangEntity>, level: Level) :
         val level = level() as? ServerLevel ?: return
         if (!isRemoved && --fuse <= 0) {
             val origin = position().add(0.0, 0.15, 0.0)
+            val radius = ProjectileConfig.FLASHBANG_RADIUS.get().toDouble()
             level.playSound(null, x, y, z, ModSounds.FLASHBANG_BURST.get(), SoundSource.PLAYERS, 2f, 1f)
             // No bright FLASH particle: the accessibility setting controls the entire visual flash.
             level.sendParticles(ParticleTypes.SMOKE, origin.x, origin.y, origin.z, 8, 0.1, 0.1, 0.1, 0.03)
-            for (target in level.getEntitiesOfClass(LivingEntity::class.java, boundingBox.inflate(16.0))) {
+            for (target in level.getEntitiesOfClass(LivingEntity::class.java, boundingBox.inflate(radius))) {
                 if (!target.isAlive || target.isSpectator || (target !is ServerPlayer && target !is Mob)) continue
                 val direction = origin.subtract(target.eyePosition)
                 val distance = direction.length()
-                if (distance >= 16.0) continue
+                if (distance >= radius) continue
+                // Preserve the previous distance falloff, scaled to the configured radius.
+                val exposure = ((radius - distance) / (radius * 13.0 / 16.0)).coerceIn(0.0, 1.0)
                 val obstruction = level.clip(ClipContext(
                     target.eyePosition, origin, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, target
                 ))
-                if (obstruction.type != HitResult.Type.MISS) continue
-                val exposure = ((16.0 - distance) / 13.0).coerceIn(0.0, 1.0)
+                val visible = obstruction.type == HitResult.Type.MISS
                 if (target is ServerPlayer) {
                     val facing = if (distance < 0.01) 1.0 else target.lookAngle.dot(direction.scale(1.0 / distance))
-                    val visual = exposure * (0.25 + 0.75 * ((facing + 0.25) / 0.75).coerceIn(0.0, 1.0))
+                    val visual = if (visible) {
+                        exposure * (0.25 + 0.75 * ((facing + 0.25) / 0.75).coerceIn(0.0, 1.0))
+                    } else 0.0
+                    // Walls and looking away do not protect hearing; send audio even with no visual exposure.
                     sendPacketTo(target, FlashbangMessage(visual.toFloat(), exposure.toFloat()))
                 }
-                if (target is Mob || ProjectileConfig.FLASHBANG_STUN_PLAYERS.get()) {
+                if (visible && (target is Mob || ProjectileConfig.FLASHBANG_STUN_PLAYERS.get())) {
                     target.forceApplyEffect(MobEffectInstance(
                         ModMobEffects.STUN.get(), (20 + 80 * exposure).roundToInt(), 0, false, false, true
                     ), owner)

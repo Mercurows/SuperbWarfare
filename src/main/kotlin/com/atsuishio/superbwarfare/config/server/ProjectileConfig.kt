@@ -34,6 +34,13 @@ object ProjectileConfig {
     }
 
     @JvmField
+    val FLASHBANG_RADIUS = buildServerConfig {
+        comment("Maximum flashbang effect radius in blocks; hearing effects depend only on distance")
+        comment("闪光弹影响半径（格）；耳鸣仅随距离衰减，闪白和震撼仍受方块遮挡影响")
+        defineInRange("flashbang_radius", 32, 1, 256)
+    }
+
+    @JvmField
     val FLASHBANG_STUN_PLAYERS = buildServerConfig {
         comment("Set true to also apply the Stunned mob effect to players affected by flashbangs")
         comment("是否也对受到闪光弹影响的玩家施加震撼效果；不影响闪白和耳鸣")
