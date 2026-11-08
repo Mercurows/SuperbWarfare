@@ -19,6 +19,8 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.neoforged.neoforge.energy.EnergyStorage
+import net.neoforged.neoforge.items.IItemHandler
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper
 import kotlin.jvm.optionals.getOrDefault
 
 open class WeaponRepairStationBlockEntity(pos: BlockPos, state: BlockState) :
@@ -65,6 +67,11 @@ open class WeaponRepairStationBlockEntity(pos: BlockPos, state: BlockState) :
         private set
     var enabled = true
         private set
+
+    private val itemHandlers = Direction.entries.associateWith { SidedInvWrapper(this, it) }
+
+    fun getItemHandler(side: Direction?): IItemHandler? =
+        if (isRemoved || side == null) null else itemHandlers[side]
 
     // Vanilla data slots transmit signed shorts. Split each field, including configurable values.
     val data = object : ContainerData {
@@ -161,6 +168,7 @@ open class WeaponRepairStationBlockEntity(pos: BlockPos, state: BlockState) :
     }
 
     override fun getContainerSize() = 1
+    override fun getMaxStackSize() = 1
     override fun isEmpty() = items.all { it.isEmpty }
     override fun getItem(slot: Int): ItemStack = items[slot]
     override fun removeItem(slot: Int, amount: Int): ItemStack = ContainerHelper.removeItem(items, slot, amount).also {
@@ -185,13 +193,13 @@ open class WeaponRepairStationBlockEntity(pos: BlockPos, state: BlockState) :
     }
 
     override fun stillValid(player: Player) = Container.stillValidBlockEntity(this, player)
-    override fun canPlaceItem(slot: Int, stack: ItemStack) = slot == REPAIR_SLOT && isRepairTarget(stack)
+    override fun canPlaceItem(slot: Int, stack: ItemStack) = slot == REPAIR_SLOT && !stack.isEmpty
     override fun getSlotsForFace(side: Direction): IntArray = intArrayOf(REPAIR_SLOT)
-    override fun canPlaceItemThroughFace(slot: Int, stack: ItemStack, side: Direction?) =
-        side != Direction.DOWN && canPlaceItem(slot, stack)
+    override fun canPlaceItemThroughFace(slot: Int, stack: ItemStack, side: Direction?): Boolean =
+        slot == REPAIR_SLOT && side != null && side.axis != Direction.Axis.Y && !stack.isEmpty
 
     override fun canTakeItemThroughFace(slot: Int, stack: ItemStack, side: Direction) =
-        side == Direction.DOWN && slot == REPAIR_SLOT && !stack.isDamaged
+        side == Direction.DOWN && slot == REPAIR_SLOT && isRepairComplete(stack)
 
     override fun getDisplayName(): Component = Component.translatable("block.superbwarfare.weapon_repair_station")
     override fun createMenu(id: Int, inventory: Inventory, player: Player) =
@@ -207,7 +215,15 @@ open class WeaponRepairStationBlockEntity(pos: BlockPos, state: BlockState) :
 
         fun isRepairTarget(stack: ItemStack) = !stack.isEmpty && stack.count == 1 && stack.isDamageableItem
 
-        fun canRepair(stack: ItemStack) = isRepairTarget(stack) && stack.isDamaged
+        fun canRepair(stack: ItemStack): Boolean {
+            if (stack.isEmpty || stack.count != 1) return false
+            return stack.maxDamage > 0 && stack.damageValue > 0
+        }
+
+        fun isRepairComplete(stack: ItemStack): Boolean {
+            if (stack.isEmpty) return false
+            return stack.maxDamage <= 0 || stack.damageValue <= 0
+        }
 
         fun serverTick(level: Level, pos: BlockPos, state: BlockState, station: WeaponRepairStationBlockEntity) {
             if (!level.isClientSide) station.tickRepair()
