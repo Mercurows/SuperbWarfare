@@ -13,6 +13,8 @@ object ModSounds {
 
     // @formatter:off
     @JvmField val SHOCK = register("shock")
+    @JvmField val FLASHBANG_BURST = register("flashbang_burst")
+    @JvmField val FLASHBANG_RINGING = register("flashbang_ringing")
     @JvmField val ELECTRIC = register("electric")
     @JvmField val MELEE_HIT = register("melee_hit")
 

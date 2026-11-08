@@ -26,6 +26,7 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
     SoundDefinitionsProvider(output, Mod.MODID, existingFileHelper) {
 
     override fun registerSounds() {
+        root("flashbang_burst", "flashbang_ringing")
         // ==================== 杂项 ====================
         // -------------------- sounds 根目录 --------------------
         root(

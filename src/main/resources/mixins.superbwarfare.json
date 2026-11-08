@@ -44,7 +44,8 @@
     "MultiPlayerGameModeMixin",
     "PlayerHandThermalMixin",
     "PlayerItemInHandLayerMixin",
-    "PostPassMixin"
+    "PostPassMixin",
+    "SoundEngineMixin"
   ],
   "minVersion": "0.8",
   "injectors": {

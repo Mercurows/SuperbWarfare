@@ -204,6 +204,13 @@ object DisplayConfig {
     }
 
     @JvmField
+    val FLASHBANG_DARK_MODE = buildClientConfig {
+        comment("Replace flashbang whiteout with blackout, with the same duration and fade")
+        comment("防光敏性癫痫：将闪光弹的闪白替换为黑色，保持相同的持续时间和渐退效果")
+        define("flashbang_dark_mode", false)
+    }
+
+    @JvmField
     val ENABLE_VERSION_CHECK_WARNING = buildClientConfig {
         comment("Set true to enable version check warning when version of this mod has been changed")
         comment("是否启用版本检查警告")

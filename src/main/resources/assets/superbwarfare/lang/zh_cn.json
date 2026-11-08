@@ -401,6 +401,7 @@
   "des.superbwarfare.towline.hint": "右键载具选择牵引目标，Shift+右键清除连接",
   "des.superbwarfare.towline.target_selected": "已选择牵引目标",
   "item.superbwarfare.type_88_cluster_grenades": "88式集束手雷",
+  "item.superbwarfare.flashbang": "闪光弹",
 
   "item.superbwarfare.tow_bar": "牵引杆",
   "des.superbwarfare.tow_bar.hint": "右键弹射器滑块选择拖拽目标，Shift+右键清除连接",
@@ -1037,6 +1038,7 @@
   "entity.superbwarfare.ac_130h": "AC-130H 空中炮艇",
   "entity.superbwarfare.air_sheep": "飞羊羊",
   "entity.superbwarfare.fh_77bw": "FH-77BW “弓箭手”自行火炮",
+  "entity.superbwarfare.flashbang": "闪光弹",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.move_forward": "前进/提升油门",
@@ -1079,6 +1081,7 @@
   "key.superbwarfare.change_seat": "切换座位(+数字)",
 
   "effect.superbwarfare.shock": "电击",
+  "effect.superbwarfare.stun": "震撼",
   "effect.superbwarfare.burn": "点燃",
   "effect.superbwarfare.strike_protection": "撞击保护",
   "effect.superbwarfare.trauma": "创伤",
@@ -1541,6 +1544,8 @@
   "config.superbwarfare.client.display.melee_debug_log.des": "是否输出近战挥击/命中/动作锁拒绝的日志；开启后按 F3+B 还会显示近战判定体线框",
   "config.superbwarfare.client.display.melee_hitbox_render": "近战判定体外框",
   "config.superbwarfare.client.display.melee_hitbox_render.des": "常显近战判定体外框（按 F3+B 也能显示）",
+  "config.superbwarfare.client.display.flashbang_dark_mode": "防光敏性癫痫（闪光弹黑屏）",
+  "config.superbwarfare.client.display.flashbang_dark_mode.des": "将闪光弹的白色遮蔽改为黑色，持续时间和渐退效果不变。默认关闭。",
   "config.superbwarfare.client.control": "控制配置",
   "config.superbwarfare.client.control.invert_aircraft_control": "飞行器鼠标反转",
   "config.superbwarfare.client.control.invert_aircraft_control.des": "开启飞行器鼠标反转",

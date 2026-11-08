@@ -401,6 +401,7 @@
   "des.superbwarfare.towline.hint": "Right-click a vehicle to select towing target. Shift+Right-click to unlink",
   "des.superbwarfare.towline.target_selected": "Towing target selected",
   "item.superbwarfare.type_88_cluster_grenades": "Type 88 Cluster Grenades",
+  "item.superbwarfare.flashbang": "Flashbang",
 
   "item.superbwarfare.tow_bar": "Tow Bar",
   "des.superbwarfare.tow_bar.hint": "Right-click a catapult shuttle to select towing target. Shift+Right-click to unlink",
@@ -1037,6 +1038,7 @@
   "entity.superbwarfare.ac_130h": "AC-130H",
   "entity.superbwarfare.air_sheep": "Air Sheep",
   "entity.superbwarfare.fh_77bw": "FH-77BW Archer Self-Propelled Artillery",
+  "entity.superbwarfare.flashbang": "Flashbang",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.move_forward": "Forward / Throttle Up",
@@ -1079,6 +1081,7 @@
   "key.superbwarfare.change_seat": "Change Seat (+Index)",
 
   "effect.superbwarfare.shock": "Shock",
+  "effect.superbwarfare.stun": "Stunned",
   "effect.superbwarfare.burn": "Burn",
   "effect.superbwarfare.strike_protection": "Strike Protection",
   "effect.superbwarfare.trauma": "Trauma",
@@ -1541,6 +1544,8 @@
   "config.superbwarfare.client.display.melee_debug_log.des": "Log melee swing/hit details and action-lock rejections; also enables the melee hitbox wireframe while F3+B is on",
   "config.superbwarfare.client.display.melee_hitbox_render": "Melee Hitbox Wireframe",
   "config.superbwarfare.client.display.melee_hitbox_render.des": "Always draw the melee hitbox wireframe (F3+B also works)",
+  "config.superbwarfare.client.display.flashbang_dark_mode": "Photosensitivity: Flashbang Blackout",
+  "config.superbwarfare.client.display.flashbang_dark_mode.des": "Replace flashbang whiteout with blackout, preserving duration and fade. Disabled by default.",
   "config.superbwarfare.client.control": "Control Config",
   "config.superbwarfare.client.control.invert_aircraft_control": "Invert Aircraft Control",
   "config.superbwarfare.client.control.invert_aircraft_control.des": "Set TRUE to invert aircraft control",

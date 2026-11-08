@@ -1,4 +1,10 @@
 {
+  "flashbang_burst": {
+    "sounds": ["superbwarfare:flashbang_burst"]
+  },
+  "flashbang_ringing": {
+    "sounds": ["superbwarfare:flashbang_ringing"]
+  },
   "a_10a_engine": {
     "sounds": [
       {
