@@ -456,6 +456,7 @@ class ModItemTagProvider(
             perkItem(ModPerks.ACID_BULLET)
         )
         this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_EPIC).add(
+            perkItem(ModPerks.HOMING_BULLET),
             perkItem(ModPerks.CHAIN_LIGHTNING),
             perkItem(ModPerks.PHASE_PENETRATING_BULLET),
             perkItem(ModPerks.PHOSPHORUS_FLAME_BULLET),

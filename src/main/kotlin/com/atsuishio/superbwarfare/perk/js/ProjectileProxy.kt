@@ -1,11 +1,16 @@
 package com.atsuishio.superbwarfare.perk.js
 
 import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties
+import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
 import com.atsuishio.superbwarfare.entity.projectile.ReforgingLightningBallEntity
 import com.atsuishio.superbwarfare.entity.projectile.TaserBulletEntity
 import net.minecraft.world.entity.Entity
 
 class ProjectileProxy(private val entity: Entity) {
+    fun setHoming(range: Number, turnDegrees: Number, coneDegrees: Number) {
+        (entity as? ProjectileEntity)?.setHoming(range.toDouble(), turnDegrees.toDouble(), coneDegrees.toDouble())
+    }
+
     fun canEmitLightning(): Boolean = entity is TaserBulletEntity || entity is ReforgingLightningBallEntity
 
     private val projectile: IBulletProperties?

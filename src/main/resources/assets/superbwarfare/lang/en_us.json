@@ -606,6 +606,8 @@
   "item.superbwarfare.invisible_blade_shapeness": "Invisible Blade Shapeness",
   "item.superbwarfare.crushing_force": "Crushing Force",
   "item.superbwarfare.chain_lightning": "Chain Lightning",
+  "item.superbwarfare.homing_bullet": "Homing Bullet",
+  "des.superbwarfare.homing_bullet": "Bullets home toward nearby visible enemies ahead.",
   "item.superbwarfare.practice_makes_perfect": "Practice Makes Perfect",
   "des.superbwarfare.practice_makes_perfect": "Some weapon stats improve as the weapon's level increases.",
   "des.superbwarfare.chain_lightning": "Projectiles that inflict shock chain lightning to nearby enemies on hit.",

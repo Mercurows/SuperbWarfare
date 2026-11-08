@@ -40,6 +40,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.BlockParticleOption
 import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
@@ -68,8 +69,7 @@ import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.entity.PartEntity
 import java.util.function.Predicate
-import kotlin.math.PI
-import kotlin.math.max
+import kotlin.math.*
 
 @Suppress("unused")
 open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level: Level) : Projectile(entityType, level),
@@ -201,6 +201,80 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     // 上次在枪盾上溅火花的 gameTime
     private var lastShieldSpark = 0L
 
+    private var homingRange = 0.0
+    private var homingTurn = 0.0
+    private var homingCone = 0.0
+    private var homingTarget: Entity? = null
+    val homingTrail: java.util.ArrayDeque<Vec3> by lazy { java.util.ArrayDeque<Vec3>() }
+
+    fun hasHoming(): Boolean = entityData.get(HOMING)
+
+    /** JS configures the projectile once; guidance stays with the bullet after weapon switches. */
+    fun setHoming(range: Double, turnDegrees: Double, coneDegrees: Double) {
+        if (!range.isFinite() || !turnDegrees.isFinite() || !coneDegrees.isFinite()) return
+        homingRange = range.coerceIn(0.0, 128.0)
+        homingTurn = Math.toRadians(turnDegrees.coerceIn(0.0, 45.0))
+        homingCone = Math.toRadians(coneDegrees.coerceIn(0.0, 85.0))
+        entityData.set(HOMING, homingRange > 0.0 && homingTurn > 0.0)
+        homingTarget = null
+    }
+
+    private fun guideHoming() {
+        if (!hasHoming() || level().isClientSide) return
+        val shooter = owner ?: return
+        val speed = deltaMovement.length()
+        if (speed < 1.0e-5) return
+        val direction = deltaMovement.scale(1.0 / speed)
+        fun valid(target: Entity, acquiring: Boolean): Boolean {
+            if (target === shooter || target.isRemoved || target.level() !== level()) return false
+            if (target !is LivingEntity && target !is VehicleEntity) return false
+            if (!target.isPickable || !SeekTool.BASIC_FILTER.test(target) || SeekTool.IS_INVULNERABLE.test(target)) return false
+            if (SeekTool.IS_FRIENDLY.test(shooter, target) || SeekTool.IS_OWNER.test(shooter, target)
+                || shooter.isPassengerOfSameVehicle(target)) return false
+            if (shooter is Player && target is Player && !shooter.canHarmPlayer(target)) return false
+            val offset = target.boundingBox.center.subtract(position())
+            val range = if (acquiring) homingRange else homingRange * 1.5
+            if (offset.lengthSqr() > range * range || offset.lengthSqr() < 1.0e-8) return false
+            val minDot = if (acquiring) cos(homingCone) else 0.0
+            if (direction.dot(offset.normalize()) < minDot) return false
+            return level().clip(ClipContext(position(), target.boundingBox.center,
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).type == HitResult.Type.MISS
+        }
+        if (homingTarget?.let { valid(it, false) } != true) homingTarget = null
+        if (homingTarget == null && tickCount % 2 == 1) {
+            // Prefer the target closest to the current flight direction; distance breaks ties.
+            homingTarget = level().getEntities(this, boundingBox.inflate(homingRange)) { valid(it, true) }
+                .minWithOrNull(compareBy<Entity> {
+                    -direction.dot(it.boundingBox.center.subtract(position()).normalize())
+                }.thenBy { distanceToSqr(it) })
+        }
+        val target = homingTarget ?: return
+        // Same lead calculation as guided missiles, without their acceleration or chunk loading.
+        val desired = RangeTool.calculateFiringSolution(position(), target.boundingBox.center,
+            target.deltaMovement, speed, gravity.toDouble()).normalize()
+        if (!desired.x.isFinite() || !desired.y.isFinite() || !desired.z.isFinite()) return
+        val angle = acos(direction.dot(desired).coerceIn(-1.0, 1.0))
+        if (angle < 1.0e-6) return
+        val step = minOf(angle, homingTurn)
+        val tangent = desired.subtract(direction.scale(direction.dot(desired))).normalize()
+        if (tangent.lengthSqr() < 1.0e-8) return
+        deltaMovement = direction.scale(cos(step)).add(tangent.scale(sin(step))).normalize().scale(speed)
+    }
+
+    override fun addAdditionalSaveData(tag: CompoundTag) {
+        super.addAdditionalSaveData(tag)
+        if (hasHoming()) {
+            tag.putDouble("HomingRange", homingRange)
+            tag.putDouble("HomingTurn", Math.toDegrees(homingTurn))
+            tag.putDouble("HomingCone", Math.toDegrees(homingCone))
+        }
+    }
+
+    override fun readAdditionalSaveData(tag: CompoundTag) {
+        super.readAdditionalSaveData(tag)
+        setHoming(tag.getDouble("HomingRange"), tag.getDouble("HomingTurn"), tag.getDouble("HomingCone"))
+    }
+
     init {
         this.noCulling = true
     }
@@ -293,6 +367,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         this.entityData.define(COLOR_R, DEFAULT_R)
         this.entityData.define(COLOR_G, DEFAULT_G)
         this.entityData.define(COLOR_B, DEFAULT_B)
+        this.entityData.define(HOMING, false)
         // Synced to client so onRemovedFromWorld() can read the correct radius
         // for the explosion flash — without this the client always sees 0f
         this.entityData.define(EXPLOSION_RADIUS, 0f)
@@ -300,6 +375,11 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
     override fun tick() {
         super.tick()
+        guideHoming()
+        if (level().isClientSide && hasHoming()) {
+            homingTrail.addFirst(position())
+            while (homingTrail.size > 6) homingTrail.removeLast()
+        }
         this.updateHeading()
 
         val vec = this.deltaMovement
@@ -942,6 +1022,9 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     }
 
     companion object {
+        private val HOMING: EntityDataAccessor<Boolean> =
+            SynchedEntityData.defineId(ProjectileEntity::class.java, EntityDataSerializers.BOOLEAN)
+
         val MODEL = loc("models/bedrock/projectile/projectile.geo.json")
 
         /** 枪盾火花的节流间隔（tick） */
