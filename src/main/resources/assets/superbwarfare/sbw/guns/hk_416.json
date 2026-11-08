@@ -29,7 +29,7 @@
     "LODModel": "superbwarfare:models/bedrock/gun_lod/hk_416.geo.json",
     "LODTexture": "superbwarfare:textures/bedrock/gun_lod/hk_416.png"
   },
-  "FlareSize": 0.3,
+  "FlareSize": 2,
   "HasSmoke": true,
   "MuzzleFx": {
     "Trigger": "shot",
@@ -39,17 +39,17 @@
   },
   "Smoke": {
     "Size": 0.15,
-    "Growth": 0.25,
-    "Lifetime": 0.3,
-    "Speed": 0.4,
+    "Growth": 3,
+    "Lifetime": 0.5,
+    "Speed": 0.2,
     "Count": 2,
-    "Opacity": 0.9,
-    "Drag": 2,
-    "RandomSize": 0.05,
+    "Opacity": 0.5,
+    "Drag": 5,
+    "RandomSize": 0.2,
     "RandomGrowth": 0.2,
-    "RandomLifetime": 0.2,
+    "RandomLifetime": 0.05,
     "RandomSpeed": 0.2,
-    "RandomOpacity": 0.1
+    "RandomOpacity": 0.05
   },
   "EjectShell": true,
   "ShellEject": {
