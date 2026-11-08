@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "minecraft:tripwire_hook"
+    },
+    "b": {
+      "tag": "forge:nuggets/iron"
+    },
+    "c": {
+      "item": "minecraft:glowstone_dust"
+    },
+    "d": {
+      "item": "minecraft:gunpowder"
+    }
+  },
+  "pattern": [
+    " a ",
+    "bcb",
+    "bdb"
+  ],
+  "result": {
+    "count": 2,
+    "item": "superbwarfare:m84_stun_grenade"
+  },
+  "show_notification": true
+}

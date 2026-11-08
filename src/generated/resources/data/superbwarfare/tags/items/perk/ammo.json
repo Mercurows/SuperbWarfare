@@ -1,6 +1,5 @@
 {
   "values": [
-    "superbwarfare:homing_bullet",
     "superbwarfare:acid_bullet",
     "superbwarfare:ap_bullet",
     "superbwarfare:aqua_bullet",
@@ -12,6 +11,7 @@
     "superbwarfare:flame_blade",
     "superbwarfare:frostmourne",
     "superbwarfare:he_bullet",
+    "superbwarfare:homing_bullet",
     "superbwarfare:incendiary_bullet",
     "superbwarfare:irradiation_bullet",
     "superbwarfare:jhp_bullet",

@@ -134,7 +134,9 @@
         "Projectile": {
           "Type": "superbwarfare:reforging_laser",
           "Data": {
-            "Owner": "@sbw:owner"
+            "Owner": "@sbw:owner",
+            "BeamWidth": 0.5,
+            "Color": 16713236
           }
         },
         "AmmoType": [

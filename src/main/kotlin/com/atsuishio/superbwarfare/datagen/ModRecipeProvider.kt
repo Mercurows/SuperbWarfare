@@ -1051,6 +1051,16 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                     has(ModItems.HIGH_ENERGY_EXPLOSIVES.get())
                 )
                 .save(writer, loc(getItemName(ModItems.TYPE_88_CLUSTER_GRENADES.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.M84_STUN_GRENADE.get(), 2)
+                .pattern(" a ")
+                .pattern("bcb")
+                .pattern("bdb")
+                .define('a', Items.TRIPWIRE_HOOK)
+                .define('b', Tags.Items.NUGGETS_IRON)
+                .define('c', Items.GLOWSTONE_DUST)
+                .define('d', Items.GUNPOWDER)
+                .unlockedBy(getHasName(Items.TRIPWIRE_HOOK), has(Items.TRIPWIRE_HOOK))
+                .save(writer, loc(getItemName(ModItems.M84_STUN_GRENADE.get())))
         }
 
         private fun buildMaterialRecipes(writer: Consumer<FinishedRecipe>) {

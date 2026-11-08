@@ -1,10 +1,4 @@
 {
-  "flashbang_burst": {
-    "sounds": ["superbwarfare:flashbang_burst"]
-  },
-  "flashbang_ringing": {
-    "sounds": ["superbwarfare:flashbang_ringing"]
-  },
   "a_10a_engine": {
     "sounds": [
       {
@@ -783,6 +777,16 @@
   "firerate": {
     "sounds": [
       "superbwarfare:firerate"
+    ]
+  },
+  "flashbang_burst": {
+    "sounds": [
+      "superbwarfare:flashbang_burst"
+    ]
+  },
+  "flashbang_ringing": {
+    "sounds": [
+      "superbwarfare:flashbang_ringing"
     ]
   },
   "glock_17_far": {
