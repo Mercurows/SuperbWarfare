@@ -1,11 +1,13 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig
+import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.FlashbangMessage
 import com.atsuishio.superbwarfare.tools.forceApplyEffect
+import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleTypes
@@ -22,20 +24,26 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
+import java.util.*
 import kotlin.math.roundToInt
 
-class FlashbangEntity(type: EntityType<out FlashbangEntity>, level: Level) :
+class M84StunGrenadeEntity(type: EntityType<out M84StunGrenadeEntity>, level: Level) :
     BounceProjectile(type, level), BasicGeoProjectileEntity {
     private var fuse = 40
+    private val hitTargets = mutableSetOf<UUID>()
 
-    override fun getDefaultItem() = ModItems.FLASHBANG.get()
+    override fun getDefaultItem() = ModItems.M84_STUN_GRENADE.get()
     override fun canPassThroughFluid() = true
     override fun isFastMoving() = false
     override fun getCustomGravity() = 0.05f
 
-    // Bypass the damage path entirely, including shield and hit-effect callbacks.
     override fun onHitEntity(result: EntityHitResult) {
-        if (result.entity === owner) return
+        val target = result.entity
+        if (target === owner) return
+        val damage = ProjectileConfig.FLASHBANG_HIT_DAMAGE.get().toFloat()
+        if (!level().isClientSide && damage > 0f && hitTargets.add(target.uuid)) {
+            target.forceHurt(ModDamageTypes.causeProjectileHitDamage(level().registryAccess(), this, owner), damage)
+        }
         bounce(Direction.getNearest(deltaMovement.x, deltaMovement.y, deltaMovement.z).opposite)
     }
 
@@ -57,20 +65,27 @@ class FlashbangEntity(type: EntityType<out FlashbangEntity>, level: Level) :
         if (!isRemoved && --fuse <= 0) {
             val origin = position().add(0.0, 0.15, 0.0)
             val radius = ProjectileConfig.FLASHBANG_RADIUS.get().toDouble()
+            val coreRadius = ProjectileConfig.FLASHBANG_CORE_RADIUS.get()
+            val explosionDamage = ProjectileConfig.FLASHBANG_EXPLOSION_DAMAGE.get().toFloat()
             level.playSound(null, x, y, z, ModSounds.FLASHBANG_BURST.get(), SoundSource.PLAYERS, 2f, 1f)
             // No bright FLASH particle: the accessibility setting controls the entire visual flash.
             level.sendParticles(ParticleTypes.SMOKE, origin.x, origin.y, origin.z, 8, 0.1, 0.1, 0.1, 0.03)
-            for (target in level.getEntitiesOfClass(LivingEntity::class.java, boundingBox.inflate(radius))) {
+            for (target in level.getEntitiesOfClass(LivingEntity::class.java, boundingBox.inflate(maxOf(radius, coreRadius)))) {
                 if (!target.isAlive || target.isSpectator || (target !is ServerPlayer && target !is Mob)) continue
                 val direction = origin.subtract(target.eyePosition)
                 val distance = direction.length()
-                if (distance >= radius) continue
+                if (distance >= maxOf(radius, coreRadius)) continue
                 // Preserve the previous distance falloff, scaled to the configured radius.
                 val exposure = ((radius - distance) / (radius * 13.0 / 16.0)).coerceIn(0.0, 1.0)
                 val obstruction = level.clip(ClipContext(
                     target.eyePosition, origin, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, target
                 ))
                 val visible = obstruction.type == HitResult.Type.MISS
+                if (visible && explosionDamage > 0f && distance < coreRadius) {
+                    target.forceHurt(ModDamageTypes.causeProjectileExplosionDamage(level.registryAccess(), this, owner),
+                        explosionDamage)
+                }
+                if (distance >= radius) continue
                 if (target is ServerPlayer) {
                     val facing = if (distance < 0.01) 1.0 else target.lookAngle.dot(direction.scale(1.0 / distance))
                     val visual = if (visible) {
