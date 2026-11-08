@@ -34,6 +34,13 @@ object ProjectileConfig {
     }
 
     @JvmField
+    val FLASHBANG_STUN_PLAYERS = buildServerConfig {
+        comment("Set true to also apply the Stunned mob effect to players affected by flashbangs")
+        comment("是否也对受到闪光弹影响的玩家施加震撼效果；不影响闪白和耳鸣")
+        define("flashbang_stun_players", false)
+    }
+
+    @JvmField
     val PROJECTILE_CHUNK_AGE = buildServerConfig {
         comment("Ticks before a force-loaded projectile chunk expires without entity activity.")
         comment("投射物强制加载的区块在无实体活动后的存活tick数")

@@ -779,6 +779,16 @@
       "superbwarfare:firerate"
     ]
   },
+  "flashbang_burst": {
+    "sounds": [
+      "superbwarfare:flashbang_burst"
+    ]
+  },
+  "flashbang_ringing": {
+    "sounds": [
+      "superbwarfare:flashbang_ringing"
+    ]
+  },
   "glock_17_far": {
     "sounds": [
       "superbwarfare:gun/glock_17/glock_17_far"

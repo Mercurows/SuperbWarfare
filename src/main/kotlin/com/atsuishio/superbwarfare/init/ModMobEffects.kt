@@ -16,6 +16,7 @@ object ModMobEffects {
 
     // @formatter:off
     @JvmField val SHOCK = register("shock", ShockMobEffect)
+    @JvmField val STUN = register("stun", StunMobEffect())
     @JvmField val BURN = register("burn", BurnMobEffect)
 
     @JvmField val STRIKE_PROTECTION = register("strike_protection", StrikeProtectionMobEffect)
