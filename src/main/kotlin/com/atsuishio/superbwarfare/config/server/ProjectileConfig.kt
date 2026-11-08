@@ -35,16 +35,38 @@ object ProjectileConfig {
 
     @JvmField
     val FLASHBANG_RADIUS = buildServerConfig {
+        push("Flashbang")
         comment("Maximum flashbang effect radius in blocks; hearing effects depend only on distance")
         comment("闪光弹影响半径（格）；耳鸣仅随距离衰减，闪白和震撼仍受方块遮挡影响")
         defineInRange("flashbang_radius", 32, 1, 256)
     }
 
     @JvmField
+    val FLASHBANG_CORE_RADIUS = buildServerConfig {
+        comment("Flashbang core explosion damage radius in blocks")
+        comment("闪光弹核心爆炸伤害半径（格）")
+        defineInRange("flashbang_core_radius", 3.0, 0.0, 256.0)
+    }
+
+    @JvmField
+    val FLASHBANG_EXPLOSION_DAMAGE = buildServerConfig {
+        comment("Damage dealt to living targets in the visible core; set to 0 to disable")
+        comment("闪光弹对无遮挡核心范围内生物造成的爆炸伤害，设为0关闭")
+        defineInRange("flashbang_explosion_damage", 1.0, 0.0, 10000000.0)
+    }
+
+    @JvmField
+    val FLASHBANG_HIT_DAMAGE = buildServerConfig {
+        comment("Projectile damage on direct impact, once per target per grenade; set to 0 to disable")
+        comment("闪光弹直接命中伤害，每枚弹对同一目标最多触发一次，设为0关闭")
+        defineInRange("flashbang_hit_damage", 1.0, 0.0, 10000000.0)
+    }
+
+    @JvmField
     val FLASHBANG_STUN_PLAYERS = buildServerConfig {
         comment("Set true to also apply the Stunned mob effect to players affected by flashbangs")
         comment("是否也对受到闪光弹影响的玩家施加震撼效果；不影响闪白和耳鸣")
-        define("flashbang_stun_players", false)
+        define("flashbang_stun_players", false).also { pop() }
     }
 
     @JvmField

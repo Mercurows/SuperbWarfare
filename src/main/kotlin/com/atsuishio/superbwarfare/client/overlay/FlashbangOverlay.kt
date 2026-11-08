@@ -59,8 +59,7 @@ object FlashbangOverlay {
         if (!player.isAlive || player.isSpectator || !visual.isFinite() || !audio.isFinite()) return
         if (world !== client.level) clear()
         world = client.level
-        effect.apply(visual, audio)
-        if (visual > 0f) capturePending = true
+        if (effect.apply(visual, audio)) capturePending = true
         refreshSoundVolumes()
         if (effect.audioTicks > 0 && ringing == null) {
             ringing = RingingSound().also { client.soundManager.play(it) }
@@ -232,7 +231,8 @@ object FlashbangOverlay {
     @JvmStatic
     fun finishWorldFrame(partialTick: Float) {
         if (client.player?.isAlive != true || client.level !== world) return
-        if (capturePending) captureAfterimage()
+        if (capturePending && effect.visualTicks > 0) captureAfterimage()
+        else if (capturePending) discardAfterimage() // Never latch a new scene after visual recovery.
         else if (afterimage != null && (captureWidth != client.mainRenderTarget.width
                     || captureHeight != client.mainRenderTarget.height)) discardAfterimage()
         if (!client.options.hideGui || client.screen != null
@@ -292,9 +292,11 @@ internal class FlashbangEffect {
     private var audioStrength = 0f
     private var afterimageOpacity = 0f
 
-    fun apply(visual: Float, audio: Float) {
-        if (!visual.isFinite() || !audio.isFinite()) return
+    /** Returns true only for the first visual hit of a flash/recovery episode. */
+    fun apply(visual: Float, audio: Float): Boolean {
+        if (!visual.isFinite() || !audio.isFinite()) return false
         val strength = visual.coerceIn(0f, 1f)
+        val capture = strength > 0f && visualTicks == 0 && afterimageTicks == 0
         if (strength > 0f) {
             afterimageTicks = 20
             afterimageOpacity = max(afterimageOpacity, (0.5f + 0.5f * strength) * 0.18f)
@@ -306,6 +308,7 @@ internal class FlashbangEffect {
         audioStrength = max(ringVolume(), audio.coerceIn(0f, 1f))
         audioTicks = max(audioTicks, (160 * audio.coerceIn(0f, 1f)).toInt())
         audioDuration = audioTicks.coerceAtLeast(1)
+        return capture
     }
 
     fun tick() {
@@ -334,6 +337,9 @@ internal class FlashbangEffect {
 
     fun afterimageAlpha(partialTick: Float): Float {
         val remaining = if (visualTicks > 0) 1f else ((afterimageTicks - partialTick) / 20f).coerceIn(0f, 1f)
-        return afterimageOpacity * remaining * (1f - alpha(partialTick))
+        val flash = alpha(partialTick)
+        // Reveal the already-frozen frame through the white/black mask, then fade it over the live scene.
+        return if (visualTicks > 0 && afterimageTicks > 0) flash + afterimageOpacity * (1f - flash)
+        else afterimageOpacity * remaining
     }
 }
