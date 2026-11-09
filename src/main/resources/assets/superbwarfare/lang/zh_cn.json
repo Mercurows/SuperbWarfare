@@ -407,6 +407,7 @@
   "des.superbwarfare.sea_mine.bottom": "沉底型",
   "des.superbwarfare.sea_mine.moored": "铁链型",
   "des.superbwarfare.sea_mine.chain": "铁链长度：%s米",
+  "item.superbwarfare.decoy_grenade": "诱饵弹",
 
   "item.superbwarfare.tow_bar": "牵引杆",
   "des.superbwarfare.tow_bar.hint": "右键弹射器滑块选择拖拽目标，Shift+右键清除连接",
@@ -1045,6 +1046,7 @@
   "entity.superbwarfare.fh_77bw": "FH-77BW “弓箭手”自行火炮",
   "entity.superbwarfare.m84_stun_grenade": "M84震爆弹",
   "entity.superbwarfare.sea_mine": "水雷",
+  "entity.superbwarfare.decoy_grenade": "诱饵弹",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.move_forward": "前进/提升油门",

@@ -217,6 +217,9 @@ object ModEntities {
     val M84_STUN_GRENADE = register("m84_stun_grenade", fastProjectile(::M84StunGrenadeEntity, true).sized(0.3f, 0.3f))
 
     @JvmField
+    val DECOY_GRENADE = register("decoy_grenade", fastProjectile(::DecoyGrenadeEntity, true).sized(0.25f, 0.25f))
+
+    @JvmField
     val SMOKE_GUN_GRENADE =
         register("smoke_gun_grenade", fastProjectile(::SmokeGunGrenadeEntity, true).sized(0.5f, 0.5f))
 

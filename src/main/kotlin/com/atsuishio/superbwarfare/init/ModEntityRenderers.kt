@@ -43,6 +43,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.SPLIT_TYPE_88_GRENADE.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.M18_SMOKE_GRENADE.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.M84_STUN_GRENADE.get(), ::BasicProjectileRenderer)
+            registerEntityRenderer(ModEntities.DECOY_GRENADE.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.MLE_1934.get(), ::Mle1934Renderer)
             registerEntityRenderer(ModEntities.JAVELIN_MISSILE.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.ANNIHILATOR.get(), ::AnnihilatorRenderer)

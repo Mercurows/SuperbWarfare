@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.entity.goal
+package com.atsuishio.superbwarfare.entity.ai.goal
 
 import com.atsuishio.superbwarfare.data.gun.FireMode
 import com.atsuishio.superbwarfare.data.gun.GunData
@@ -9,12 +9,13 @@ import net.minecraft.world.entity.Mob
 import net.minecraft.world.entity.ai.goal.Goal
 import java.util.*
 import kotlin.math.min
+import kotlin.math.roundToLong
 
 /**
  * 生物持枪射击的 goal。
  *
  * - 瞄准时间 / 射程 / 散布等 AI 参数来自生成时抽中的配置（`MobGunData.selection`）；
- * - 枪械状态一律取**当前手持物品**对应的 [GunData]（`MobGunData.gunData()`），
+ * - 枪械状态一律取**当前手持物品**对应的 [com.atsuishio.superbwarfare.data.gun.GunData]（`MobGunData.gunData()`），
  *   不再像以前那样另外缓存一份，避免生物换枪后拿旧参数打新枪；
  * - 注册时占用 MOVE/LOOK 控制位，与原版近战 / 远程 goal 互斥，不会被"举着枪贴脸砍"。
  */
@@ -27,7 +28,7 @@ class GunShootGoal<T : Mob>(
     private val shootTimer = MillisTimer()
 
     init {
-        setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK))
+        flags = EnumSet.of(Flag.MOVE, Flag.LOOK)
     }
 
     private fun gunData(): GunData? {
@@ -75,12 +76,12 @@ class GunShootGoal<T : Mob>(
 
         val distance = mob.distanceToSqr(target.x, target.y, target.z)
 
-        if (mob.sensing.hasLineOfSight(target)) {
-            aimTime = min(mobGun.aimTime, aimTime + 1)
+        aimTime = if (mob.sensing.hasLineOfSight(target)) {
+            min(mobGun.aimTime, aimTime + 1)
         } else if (mobGun.clearAimTimeWhenLostSight) {
-            aimTime = 0
+            0
         } else {
-            aimTime = (aimTime - 1).coerceAtLeast(0)
+            (aimTime - 1).coerceAtLeast(0)
         }
 
         mob.lookAt(target, 30f, 30f)
@@ -106,7 +107,7 @@ class GunShootGoal<T : Mob>(
             val rps = data.get(GunProp.RPM) * data.get(GunProp.RPM_MULTIPLIER) / 60.0
 
             // cooldown in ms
-            var cooldown = Math.round(1000 / rps)
+            var cooldown = (1000 / rps).roundToLong()
 
             val fireMode = data.selectedFireModeInfo().mode
             // 半自动或连发开火时，添加额外的开火冷却时间

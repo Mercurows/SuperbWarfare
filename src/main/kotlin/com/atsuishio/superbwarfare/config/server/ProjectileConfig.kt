@@ -70,6 +70,61 @@ object ProjectileConfig {
     }
 
     @JvmField
+    val DECOY_GRENADE_RADIUS = buildServerConfig {
+        push("DecoyGrenade")
+        comment("诱饵弹吸引生物的半径（格） / Mob attraction radius in blocks")
+        defineInRange("radius", 32, 1, 256)
+    }
+
+    @JvmField
+    val DECOY_GRENADE_DURATION = buildServerConfig {
+        comment("诱饵弹播放枪声的持续时间（tick） / Gunshot playback duration in ticks")
+        defineInRange("duration", 300, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val DECOY_GRENADE_LIFETIME = buildServerConfig {
+        comment("诱饵弹总寿命上限（tick） / Maximum total lifetime in ticks")
+        defineInRange("lifetime", 1200, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val DECOY_GRENADE_ACTIVATION_DELAY = buildServerConfig {
+        comment("诱饵弹停稳后开始播放枪声的延迟（tick） / Delay after settling in ticks")
+        defineInRange("activation_delay", 40, 0, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val DECOY_GRENADE_STOP_SPEED = buildServerConfig {
+        comment("诱饵弹接触地面后固定位置的速度阈值 / Grounded settling speed threshold")
+        defineInRange("stop_speed", 0.05, 0.001, 1.0)
+    }
+
+    @JvmField
+    val DECOY_GRENADE_HIT_DAMAGE = buildServerConfig {
+        comment("诱饵弹投掷命中伤害 / Direct impact damage")
+        defineInRange("hit_damage", 1.0, 0.0, 10000000.0)
+    }
+
+    @JvmField
+    val DECOY_GRENADE_EXPLOSION_DAMAGE = buildServerConfig {
+        comment("诱饵弹播放结束后的爆炸伤害 / Explosion damage after playback")
+        defineInRange("explosion_damage", 1.0, 0.0, 10000000.0)
+    }
+
+    @JvmField
+    val DECOY_GRENADE_EXPLOSION_RADIUS = buildServerConfig {
+        comment("诱饵弹爆炸半径（格） / Explosion radius in blocks")
+        defineInRange("explosion_radius", 3.0, 0.0, 256.0)
+    }
+
+    @JvmField
+    val DECOY_GRENADE_ATTRACT_MOBS = buildServerConfig {
+        comment("诱饵弹是否吸引生物 / Whether decoy grenades attract mobs")
+        define("attract_mobs", true).also { pop() }
+    }
+
+    @JvmField
     val PROJECTILE_CHUNK_AGE = buildServerConfig {
         comment("Ticks before a force-loaded projectile chunk expires without entity activity.")
         comment("投射物强制加载的区块在无实体活动后的存活tick数")
