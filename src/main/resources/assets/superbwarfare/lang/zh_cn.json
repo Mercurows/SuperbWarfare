@@ -402,6 +402,11 @@
   "des.superbwarfare.towline.target_selected": "已选择牵引目标",
   "item.superbwarfare.type_88_cluster_grenades": "88式集束手雷",
   "item.superbwarfare.m84_stun_grenade": "M84震爆弹",
+  "item.superbwarfare.sea_mine": "水雷",
+  "des.superbwarfare.sea_mine.floating": "漂浮型",
+  "des.superbwarfare.sea_mine.bottom": "沉底型",
+  "des.superbwarfare.sea_mine.moored": "铁链型",
+  "des.superbwarfare.sea_mine.chain": "铁链长度：%s米",
 
   "item.superbwarfare.tow_bar": "牵引杆",
   "des.superbwarfare.tow_bar.hint": "右键弹射器滑块选择拖拽目标，Shift+右键清除连接",
@@ -1039,6 +1044,7 @@
   "entity.superbwarfare.air_sheep": "飞羊羊",
   "entity.superbwarfare.fh_77bw": "FH-77BW “弓箭手”自行火炮",
   "entity.superbwarfare.m84_stun_grenade": "M84震爆弹",
+  "entity.superbwarfare.sea_mine": "水雷",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.move_forward": "前进/提升油门",

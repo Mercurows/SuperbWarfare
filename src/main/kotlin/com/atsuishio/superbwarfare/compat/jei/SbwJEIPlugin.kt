@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.compat.jei.PotionMortarShellRecipeMaker.creat
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModRecipes
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.item.projectile.SeaMineItem
 import com.atsuishio.superbwarfare.recipe.UpgradeRecipe
 import com.atsuishio.superbwarfare.tools.NBTTool
 import com.atsuishio.superbwarfare.tools.clientLevel
@@ -18,6 +19,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole
 import mezz.jei.api.registration.*
 import mezz.jei.api.runtime.IJeiRuntime
 import net.minecraft.core.Holder
+import net.minecraft.core.NonNullList
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
@@ -25,9 +27,12 @@ import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 import net.minecraft.world.item.alchemy.Potion
 import net.minecraft.world.item.alchemy.PotionContents
-import net.minecraft.world.item.crafting.RecipeType
+import net.minecraft.world.item.crafting.*
+import net.neoforged.neoforge.common.Tags
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient
 import java.util.*
 import java.util.function.Function
 import javax.annotation.ParametersAreNonnullByDefault
@@ -106,9 +111,47 @@ class SbwJEIPlugin : IModPlugin {
             }
 
         registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes)
+        registration.addRecipes(RecipeTypes.CRAFTING, createSeaMineRecipes())
+    }
+
+    private fun createSeaMineRecipes(): List<RecipeHolder<CraftingRecipe>> = buildList {
+        val group = "superbwarfare.sea_mine"
+        val iron = Ingredient.of(Tags.Items.INGOTS_IRON)
+        fun mine(length: Int = 0) = DataComponentIngredient.of(true, SeaMineItem.makeInstance(chainLength = length))
+        add(RecipeHolder(loc("jei/sea_mine/ballast"), ShapedRecipe(
+            group, CraftingBookCategory.MISC,
+            ShapedRecipePattern(3, 3, NonNullList.of(Ingredient.EMPTY,
+                Ingredient.EMPTY, iron, Ingredient.EMPTY,
+                iron, mine(), iron,
+                Ingredient.EMPTY, iron, Ingredient.EMPTY), Optional.empty()),
+            SeaMineItem.makeInstance(ballast = true)
+        )))
+        for (length in 1..8) {
+            val ingredients = NonNullList.create<Ingredient>().apply {
+                add(mine())
+                repeat(length) { add(Ingredient.of(Items.CHAIN)) }
+            }
+            add(RecipeHolder(loc("jei/sea_mine/chain_$length"), ShapelessRecipe(
+                group, CraftingBookCategory.MISC, SeaMineItem.makeInstance(chainLength = length), ingredients
+            )))
+        }
+        for (length in 1 until SeaMineItem.MAX_CHAIN_LENGTH) {
+            add(RecipeHolder(loc("jei/sea_mine/extend_$length"), ShapelessRecipe(
+                group, CraftingBookCategory.MISC, SeaMineItem.makeInstance(chainLength = length + 1),
+                NonNullList.of(Ingredient.EMPTY, mine(length), Ingredient.of(Items.CHAIN))
+            )))
+        }
     }
 
     override fun registerItemSubtypes(registration: ISubtypeRegistration) {
+        registration.registerSubtypeInterpreter(ModItems.SEA_MINE.get(), object : ISubtypeInterpreter<ItemStack> {
+            override fun getSubtypeData(ingredient: ItemStack, context: UidContext): Any =
+                "${SeaMineItem.hasBallast(ingredient)};${SeaMineItem.chainLength(ingredient)}"
+
+            @Deprecated("Deprecated in Java")
+            override fun getLegacyStringSubtypeInfo(ingredient: ItemStack, context: UidContext): String =
+                getSubtypeData(ingredient, context).toString()
+        })
         registration.registerSubtypeInterpreter(ModItems.CONTAINER.get(), object : ISubtypeInterpreter<ItemStack> {
             override fun getSubtypeData(ingredient: ItemStack, context: UidContext): Any {
                 val data = ingredient.get(DataComponents.BLOCK_ENTITY_DATA)

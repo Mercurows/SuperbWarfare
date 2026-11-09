@@ -402,6 +402,11 @@
   "des.superbwarfare.towline.target_selected": "Towing target selected",
   "item.superbwarfare.type_88_cluster_grenades": "Type 88 Cluster Grenades",
   "item.superbwarfare.m84_stun_grenade": "M84 Stun Grenade",
+  "item.superbwarfare.sea_mine": "Sea Mine",
+  "des.superbwarfare.sea_mine.floating": "Floating",
+  "des.superbwarfare.sea_mine.bottom": "Bottom",
+  "des.superbwarfare.sea_mine.moored": "Moored",
+  "des.superbwarfare.sea_mine.chain": "Chain length: %s m",
 
   "item.superbwarfare.tow_bar": "Tow Bar",
   "des.superbwarfare.tow_bar.hint": "Right-click a catapult shuttle to select towing target. Shift+Right-click to unlink",
@@ -1039,6 +1044,7 @@
   "entity.superbwarfare.air_sheep": "Air Sheep",
   "entity.superbwarfare.fh_77bw": "FH-77BW Archer Self-Propelled Artillery",
   "entity.superbwarfare.m84_stun_grenade": "M84 Stun Grenade",
+  "entity.superbwarfare.sea_mine": "Sea Mine",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.move_forward": "Forward / Throttle Up",
