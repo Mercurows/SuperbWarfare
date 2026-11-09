@@ -27,7 +27,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
 
 @RegistryName("decoy_grenade")
-class DecoyGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON).stacksTo(16)), DispenserLaunchable {
+class DecoyGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable {
     @EventBusSubscriber(value = [Dist.CLIENT])
     companion object {
         @SubscribeEvent

@@ -218,7 +218,7 @@ object ExplosionConfig {
         push("SeaMine")
         comment("Sea mine explosion damage")
         comment("水雷爆炸伤害")
-        defineInRange("sea_mine_explosion_damage", 120, 0, 10000000)
+        defineInRange("sea_mine_explosion_damage", 500, 0, 10000000)
     }
 
     @JvmField
