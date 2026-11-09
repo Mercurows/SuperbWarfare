@@ -73,6 +73,13 @@ internal object MuzzleParticles {
             else -> ((fx?.smoke?.nearCount?.toFloat() ?: base.count) * jitter(base.randomCount)).roundToInt()
         }
         emitter.setVariable("smoke_count", count.coerceIn(0, limit).toFloat())
+        // 火星定义只读 smoke_count。下面这些 smoke_* 会被粒子定义「每 tick 重新求值」
+        //（尺寸公式 / 颜色 alpha / 阻尼），而第一人称整套 FirstPersonParticleSystem 共用
+        // 同一个 ParticleMolangEnvironment：后 tick 的发射器会把自己的 override 写进同一份存储，
+        // 屏幕上还活着的旧烟团下一 tick 就会读到它的值 —— 一发火星就能把在场所有烟团的大小、
+        // 透明度整批换掉（火星是否触发还带概率，观感上就是随机抽动）。所以火星到此为止。
+        // 动画时间轴里的其它粒子（如 ql_1031 的 cherry_blossom）仍按原来的参数配置。
+        if (effect == sparks) return
         emitter.setVariable("smoke_size", (base.size * jitter(base.randomSize)).coerceIn(0f, 4f) * if (residual) 0.62f else 0.8f)
         emitter.setVariable("smoke_growth", (base.growth * jitter(base.randomGrowth)).coerceIn(0f, 5f))
         emitter.setVariable("smoke_speed", (base.speed * jitter(base.randomSpeed)).coerceIn(0f, 10f) * if (residual) 0.4f else 1.4f)
