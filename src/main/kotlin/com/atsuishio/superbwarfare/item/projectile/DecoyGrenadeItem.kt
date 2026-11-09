@@ -24,7 +24,7 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions
 import java.util.function.Consumer
 
 @RegistryName("decoy_grenade")
-class DecoyGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON).stacksTo(16)), DispenserLaunchable {
+class DecoyGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable {
     override fun initializeClient(consumer: Consumer<IClientItemExtensions>) {
         consumer.accept(object : IClientItemExtensions {
             private val renderer by lazy { DecoyGrenadeItemRenderer(mc.blockEntityRenderDispatcher, mc.entityModels) }
