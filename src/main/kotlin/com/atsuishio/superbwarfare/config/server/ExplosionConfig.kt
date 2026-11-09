@@ -214,6 +214,21 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val SEA_MINE_EXPLOSION_DAMAGE = buildServerConfig {
+        push("SeaMine")
+        comment("Sea mine explosion damage")
+        comment("水雷爆炸伤害")
+        defineInRange("sea_mine_explosion_damage", 120, 0, 10000000)
+    }
+
+    @JvmField
+    val SEA_MINE_EXPLOSION_RADIUS = buildServerConfig {
+        comment("Sea mine explosion radius in blocks")
+        comment("水雷爆炸半径（格）")
+        defineInRange("sea_mine_explosion_radius", 6, 1, 256).also { pop() }
+    }
+
+    @JvmField
     val PTKM_1R_EXPLOSION_DAMAGE = buildServerConfig {
         push("Ptkm 1r")
 

@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.item.container.SmallContainerBlockItem
 import com.atsuishio.superbwarfare.item.material.BatteryItem
 import com.atsuishio.superbwarfare.item.misc.ArmorPlateItem
 import com.atsuishio.superbwarfare.item.projectile.C4BombItem
+import com.atsuishio.superbwarfare.item.projectile.SeaMineItem
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
@@ -99,7 +100,11 @@ object ModTabs {
             .withTabsBefore(PERK_TAB.getKey())
             .displayItems { param: CreativeModeTab.ItemDisplayParameters, output: CreativeModeTab.Output ->
                 ModItems.AMMO.getEntries().forEach {
-                    if (it.get() !== ModItems.POTION_MORTAR_SHELL.get()) {
+                    if (it.get() === ModItems.SEA_MINE.get()) {
+                        output.accept(SeaMineItem.makeInstance())
+                        output.accept(SeaMineItem.makeInstance(ballast = true))
+                        output.accept(SeaMineItem.makeInstance(ballast = true, chainLength = 32))
+                    } else if (it.get() !== ModItems.POTION_MORTAR_SHELL.get()) {
                         output.accept(it.get())
 
                         if (it.get() === ModItems.C4_BOMB.get()) {

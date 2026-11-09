@@ -20,6 +20,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.SENPAI.get(), ::SenpaiRenderer)
             registerEntityRenderer(ModEntities.CREEPING_SENPAI.get(), ::CreepingSenpaiRenderer)
             registerEntityRenderer(ModEntities.CLAYMORE.get(), ::ClaymoreRenderer)
+            registerEntityRenderer(ModEntities.SEA_MINE.get(), ::SeaMineRenderer)
             registerEntityRenderer(ModEntities.C4.get(), ::C4Renderer)
             registerEntityRenderer(ModEntities.TASER_BULLET.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.GUN_GRENADE.get(), ::BasicProjectileRenderer)

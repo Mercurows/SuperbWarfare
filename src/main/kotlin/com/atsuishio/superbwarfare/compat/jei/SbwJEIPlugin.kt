@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.screens.BlueprintResearchTableScreen
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModRecipes
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.item.projectile.SeaMineItem
 import com.atsuishio.superbwarfare.recipe.UpgradeRecipe
 import com.atsuishio.superbwarfare.tools.clientLevel
 import mezz.jei.api.IModPlugin
@@ -14,11 +15,15 @@ import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter
 import mezz.jei.api.recipe.RecipeIngredientRole
 import mezz.jei.api.registration.*
 import mezz.jei.api.runtime.IJeiRuntime
+import net.minecraft.core.NonNullList
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 import net.minecraft.world.item.alchemy.PotionUtils
-import net.minecraft.world.item.crafting.RecipeType
+import net.minecraft.world.item.crafting.*
+import net.minecraftforge.common.Tags
+import net.minecraftforge.common.crafting.StrictNBTIngredient
 import net.minecraftforge.registries.ForgeRegistries
 import java.util.*
 
@@ -92,9 +97,45 @@ class SbwJEIPlugin : IModPlugin {
 
         val specialCraftingRecipes = PotionMortarShellRecipeMaker.createRecipes()
         registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes)
+        registration.addRecipes(RecipeTypes.CRAFTING, createSeaMineRecipes())
+    }
+
+    private fun createSeaMineRecipes(): List<CraftingRecipe> = buildList {
+        val group = "superbwarfare.sea_mine"
+        val iron = Ingredient.of(Tags.Items.INGOTS_IRON)
+        add(ShapedRecipe(
+            loc("jei/sea_mine/ballast"), group, CraftingBookCategory.MISC,
+            3, 3,
+            NonNullList.of(Ingredient.EMPTY,
+                Ingredient.EMPTY, iron, Ingredient.EMPTY,
+                iron, StrictNBTIngredient.of(SeaMineItem.makeInstance()), iron,
+                Ingredient.EMPTY, iron, Ingredient.EMPTY),
+            SeaMineItem.makeInstance(ballast = true)
+        ))
+        // A crafting table has eight free slots beside the floating mine.
+        for (length in 1..8) {
+            val ingredients = NonNullList.create<Ingredient>()
+            ingredients.add(StrictNBTIngredient.of(SeaMineItem.makeInstance()))
+            repeat(length) { ingredients.add(Ingredient.of(Items.CHAIN)) }
+            add(ShapelessRecipe(
+                loc("jei/sea_mine/chain_$length"), group, CraftingBookCategory.MISC,
+                SeaMineItem.makeInstance(chainLength = length), ingredients
+            ))
+        }
+        for (length in 1 until SeaMineItem.MAX_CHAIN_LENGTH) {
+            add(ShapelessRecipe(
+                loc("jei/sea_mine/extend_$length"), group, CraftingBookCategory.MISC,
+                SeaMineItem.makeInstance(chainLength = length + 1),
+                NonNullList.of(Ingredient.EMPTY,
+                    StrictNBTIngredient.of(SeaMineItem.makeInstance(chainLength = length)), Ingredient.of(Items.CHAIN))
+            ))
+        }
     }
 
     override fun registerItemSubtypes(registration: ISubtypeRegistration) {
+        registration.registerSubtypeInterpreter(ModItems.SEA_MINE.get()) { stack, _ ->
+            "${SeaMineItem.hasBallast(stack)};${SeaMineItem.chainLength(stack)}"
+        }
         registration.registerSubtypeInterpreter(ModItems.CONTAINER.get()) { ingredient, _ ->
             if (ingredient.tag == null) return@registerSubtypeInterpreter IIngredientSubtypeInterpreter.NONE
             ingredient.tag!!.getCompound("BlockEntityTag").getString("EntityType")
