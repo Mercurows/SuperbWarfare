@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.gun.MuzzleFlashRenderer.MAX_VISIBLE_TIME
+import com.atsuishio.superbwarfare.compat.acceleratedrendering.AcceleratedRenderingCompat
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
 import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData
@@ -15,7 +16,9 @@ import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
 import org.joml.Matrix4f
@@ -154,7 +157,14 @@ object MuzzleFlashRenderer {
             }
             if (silenced || fx?.flash?.enabled == false || flashScale <= 0f) continue
             val phase = if (lateFirstFrame) 0.45f else (age / duration).coerceIn(0f, 1f)
-            drawFlash(buffers, matrix, resource, flashScale, shot, phase)
+            // Entity-format effects must stay in the current hand/stencil pass with AR too.
+            val vanillaAcceleration = AcceleratedRenderingCompat.shouldAccelerate
+            if (vanillaAcceleration) AcceleratedRenderingCompat.beginVanillaAcceleration()
+            try {
+                drawFlash(buffers, matrix, resource, flashScale, shot, phase)
+            } finally {
+                if (vanillaAcceleration) AcceleratedRenderingCompat.endVanillaAcceleration()
+            }
         }
     }
 
@@ -174,8 +184,11 @@ object MuzzleFlashRenderer {
         val center = matrix.getTranslation(Vector3f())
         val radius = size * matrix.getScale(Vector3f()).x * (if (legacy) 0.5f else 0.26f)
         val core = Matrix4f().translation(center).rotateZ(shot.angle).scale(radius)
-        fun quadPoint(m: Matrix4f, x: Float, y: Float, z: Float, tx: Float, ty: Float, opacity: Int) {
-            consumer.vertex(m, x, y, z).color(255, 255, 255, opacity).uv(tx, ty).endVertex()
+        fun quadPoint(m: Matrix4f, x: Float, y: Float, z: Float, tx: Float, ty: Float, opacity: Int,
+                      nx: Float = 0f, ny: Float = 0f, nz: Float = 1f) {
+            consumer.vertex(m, x, y, z).color(255, 255, 255, opacity).uv(tx, ty)
+                .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT)
+                .normal(nx, ny, nz).endVertex()
         }
         val v = if (legacy) 1f else 0.5f
         quadPoint(core, -1f, -1f, 0f, u, v, alpha)
@@ -197,10 +210,10 @@ object MuzzleFlashRenderer {
             val opacity = (alpha * fade * 0.88f).toInt()
             if (opacity == 0) return@repeat
             val w = size * 0.20f
-            quadPoint(tongue, -w, 0f, 0f, u, 1f, opacity)
-            quadPoint(tongue, w, 0f, 0f, u + du, 1f, opacity)
-            quadPoint(tongue, w, 0f, -length, u + du, 0.5f, opacity)
-            quadPoint(tongue, -w, 0f, -length, u, 0.5f, opacity)
+            quadPoint(tongue, -w, 0f, 0f, u, 1f, opacity, normal.x, normal.y, normal.z)
+            quadPoint(tongue, w, 0f, 0f, u + du, 1f, opacity, normal.x, normal.y, normal.z)
+            quadPoint(tongue, w, 0f, -length, u + du, 0.5f, opacity, normal.x, normal.y, normal.z)
+            quadPoint(tongue, -w, 0f, -length, u, 0.5f, opacity, normal.x, normal.y, normal.z)
         }
     }
 }
