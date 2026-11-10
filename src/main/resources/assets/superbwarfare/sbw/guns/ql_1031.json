@@ -7,21 +7,27 @@
       "Italic": true
     }
   ],
+  "FlareSize": 2,
   "HasSmoke": true,
+  "MuzzleFx": {
+    "Trigger": "shot",
+    "Flash": { "Length": 0.85, "Duration": 0.041 },
+    "Smoke": { "TailCount": 1 },
+    "Sparks": { "Probability": 0.1, "MaxCount": 2 }
+  },
   "Smoke": {
-    "Size": 0.10,
-    "Growth": 0.0,
-    "Lifetime": 1.0,
-    "Speed": 5.0,
-    "Count": 1,
-    "Opacity": 1.0,
-    "Drag": 0.6,
-    "RandomSize": 0.0,
-    "RandomGrowth": 0.0,
-    "RandomLifetime": 0.2,
-    "RandomSpeed": 0.7,
-    "RandomCount": 0.0,
-    "RandomOpacity": 0.0
+    "Size": 0.01,
+    "Growth": 1.5,
+    "Lifetime": 0.2,
+    "Speed": 5,
+    "Count": 2,
+    "Opacity": 0.35,
+    "Drag": 10,
+    "RandomSize": 0.2,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.05,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.05
   },
   "Animation": {
     "Idle": "animation.ql_1031.idle",
@@ -56,7 +62,6 @@
     }
   ],
   "Script": "superbwarfare:scripts/guns/ql_1031.js",
-  "FlareSize": 0.45,
   "ChargeSound": "superbwarfare:ql_1031_charge",
   "DischargeSound": "superbwarfare:ql_1031_discharge"
 }

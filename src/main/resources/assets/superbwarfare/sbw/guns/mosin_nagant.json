@@ -26,20 +26,26 @@
     "LODModel": "superbwarfare:models/bedrock/gun_lod/mosin_nagant.geo.json",
     "LODTexture": "superbwarfare:textures/bedrock/gun_lod/mosin_nagant.png"
   },
-  "FlareSize": 0.8,
+  "FlareSize": 3,
   "HasSmoke": true,
+  "MuzzleFx": {
+    "Trigger": "shot",
+    "Flash": { "Length": 0.85, "Duration": 0.041 },
+    "Smoke": { "TailCount": 1 },
+    "Sparks": { "Probability": 0.1, "MaxCount": 2 }
+  },
   "Smoke": {
-    "Size": 0.25,
-    "Growth": 0.25,
-    "Lifetime": 0.3,
-    "Speed": 0.4,
+    "Size": 0.01,
+    "Growth": 1.5,
+    "Lifetime": 0.2,
+    "Speed": 5,
     "Count": 2,
-    "Opacity": 0.9,
-    "Drag": 2,
-    "RandomSize": 0.05,
+    "Opacity": 0.35,
+    "Drag": 10,
+    "RandomSize": 0.2,
     "RandomGrowth": 0.2,
-    "RandomLifetime": 0.2,
+    "RandomLifetime": 0.05,
     "RandomSpeed": 0.2,
-    "RandomOpacity": 0.1
+    "RandomOpacity": 0.05
   }
 }
