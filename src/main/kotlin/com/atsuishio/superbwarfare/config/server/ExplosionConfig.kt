@@ -229,6 +229,21 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val BOOBY_TRAP_EXPLOSION_DAMAGE = buildServerConfig {
+        push("BoobyTrap")
+        comment("伪装诡雷爆炸伤害")
+        comment("Booby trap explosion damage")
+        defineInRange("booby_trap_explosion_damage", 100.0, 0.0, 10000000.0)
+    }
+
+    @JvmField
+    val BOOBY_TRAP_EXPLOSION_RADIUS = buildServerConfig {
+        comment("伪装诡雷爆炸半径（格）")
+        comment("Booby trap explosion radius in blocks")
+        defineInRange("booby_trap_explosion_radius", 4.0, 0.0, 256.0).also { pop() }
+    }
+
+    @JvmField
     val PTKM_1R_EXPLOSION_DAMAGE = buildServerConfig {
         push("Ptkm 1r")
 

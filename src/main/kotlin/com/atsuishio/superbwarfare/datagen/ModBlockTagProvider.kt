@@ -53,6 +53,7 @@ class ModBlockTagProvider(
             ModBlocks.DEEPSLATE_SILVER_ORE.get(),
             ModBlocks.SILVER_BLOCK.get(),
             ModBlocks.JUMP_PAD.get(),
+            ModBlocks.BOOBY_TRAP.get(),
             ModBlocks.CONTAINER.get(),
             ModBlocks.CHARGING_STATION.get(),
             ModBlocks.WEAPON_REPAIR_STATION.get(),
