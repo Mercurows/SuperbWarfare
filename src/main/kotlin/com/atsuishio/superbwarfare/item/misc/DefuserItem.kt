@@ -17,7 +17,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 
 @RegistryName("defuser")
-open class DefuserItem : Item(Properties().durability(8)) {
+open class DefuserItem : Item(Properties().durability(32)) {
     override fun use(pLevel: Level, pPlayer: Player, pUsedHand: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = pPlayer.getItemInHand(pUsedHand)
         if (findBombInSight(pPlayer) != null) {

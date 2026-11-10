@@ -1,7 +1,16 @@
 {
   "variants": {
-    "": {
+    "camouflaged=false,off=false": {
       "model": "superbwarfare:block/booby_trap"
+    },
+    "camouflaged=false,off=true": {
+      "model": "superbwarfare:block/booby_trap_off"
+    },
+    "camouflaged=true,off=false": {
+      "model": "superbwarfare:block/booby_trap"
+    },
+    "camouflaged=true,off=true": {
+      "model": "superbwarfare:block/booby_trap_off"
     }
   }
 }

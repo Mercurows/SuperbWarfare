@@ -240,7 +240,7 @@ object ExplosionConfig {
     val BOOBY_TRAP_EXPLOSION_RADIUS = buildServerConfig {
         comment("伪装诡雷爆炸半径（格）")
         comment("Booby trap explosion radius in blocks")
-        defineInRange("booby_trap_explosion_radius", 4.0, 0.0, 256.0).also { pop() }
+        defineInRange("booby_trap_explosion_radius", 10.0, 0.0, 256.0).also { pop() }
     }
 
     @JvmField
