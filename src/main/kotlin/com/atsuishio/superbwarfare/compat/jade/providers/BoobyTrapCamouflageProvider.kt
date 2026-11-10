@@ -17,7 +17,10 @@ class BoobyTrapCamouflageProvider(private val registration: IWailaClientRegistra
         originalAccessor: Accessor<*>?
     ): Accessor<*>? {
         val block = accessor as? BlockAccessor ?: return accessor
-        if (block.block !is BoobyTrapBlock || !block.blockState.getValue(BoobyTrapBlock.CAMOUFLAGED)) return accessor
+        if (block.block !is BoobyTrapBlock
+            || !block.blockState.getValue(BoobyTrapBlock.CAMOUFLAGED)
+            || block.blockState.getValue(BoobyTrapBlock.OFF)
+        ) return accessor
         val material = (block.blockEntity as? BoobyTrapBlockEntity)?.camouflage ?: return accessor
         return registration.blockAccessor().from(block)
             .blockState(material)

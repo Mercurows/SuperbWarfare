@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.datagen
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.block.BoobyTrapBlock
 import com.atsuishio.superbwarfare.block.ItemDisplayBoardBlock
 import com.atsuishio.superbwarfare.init.ModBlocks
 import net.minecraft.core.Direction
@@ -18,7 +19,11 @@ class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper
     BlockStateProvider(output, Mod.MODID, exFileHelper) {
     override fun registerStatesAndModels() {
         horizontalBlock(ModBlocks.BARBED_WIRE.get(), UncheckedModelFile(modLoc("block/barbed_wire")))
-        simpleBlock(ModBlocks.BOOBY_TRAP.get())
+        val boobyTrapOn = models().cubeAll("booby_trap", modLoc("block/booby_trap"))
+        val boobyTrapOff = models().cubeAll("booby_trap_off", modLoc("block/booby_trap_off"))
+        getVariantBuilder(ModBlocks.BOOBY_TRAP.get()).forAllStates { state ->
+            ConfiguredModel.builder().modelFile(if (state.getValue(BoobyTrapBlock.OFF)) boobyTrapOff else boobyTrapOn).build()
+        }
         horizontalBlock(ModBlocks.JUMP_PAD.get(), UncheckedModelFile(modLoc("block/jump_pad")))
         horizontalBlock(ModBlocks.REFORGING_TABLE.get(), UncheckedModelFile(modLoc("block/reforging_table")))
         horizontalBlock(ModBlocks.WEAPON_REPAIR_STATION.get(), UncheckedModelFile(modLoc("block/weapon_repair_station")))

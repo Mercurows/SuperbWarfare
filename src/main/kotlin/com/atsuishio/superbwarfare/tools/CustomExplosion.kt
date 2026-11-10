@@ -71,6 +71,7 @@ open class CustomExplosion(
     private var fireTime = 0
     private var beast = false
     private var excludeDirectSource = true
+    private var sphericalBlockDestruction = false
 
     init {
         this.damageSource = source ?: level.damageSources().explosion(this)
@@ -147,6 +148,12 @@ open class CustomExplosion(
         return this
     }
 
+    /** Use the same block destruction reach vertically and horizontally instead of a flattened crater. */
+    fun setSphericalBlockDestruction(flag: Boolean): CustomExplosion {
+        this.sphericalBlockDestruction = flag
+        return this
+    }
+
     override fun explode() {
         this.level.gameEvent(this.entity, GameEvent.EXPLODE, Vec3(this.x, this.y, this.z))
         if (ExplosionConfig.EXPLOSION_DESTROY.get() && this.interactsWithBlocks()) {
@@ -164,6 +171,8 @@ open class CustomExplosion(
     open fun explodeBlocks() {
         val center = Vec3(this.x, this.y, this.z)
         val random = level.random
+        val verticalScale = if (sphericalBlockDestruction) 1.0f else 3.0f
+        val verticalExtent = if (sphericalBlockDestruction) 0.6 else 0.3
 
         // ================================================================
         // Pre-compute decreasing tier boundaries to keep block count per
@@ -188,10 +197,10 @@ open class CustomExplosion(
         // ================================================================
         val aabb = AABB(
             x - 0.6 * radius,
-            y - 0.3 * radius,
+            y - verticalExtent * radius,
             z - 0.6 * radius,
             x + 0.6 * radius,
-            y + 0.3 * radius,
+            y + verticalExtent * radius,
             z + 0.6 * radius
         )
         val minPos = BlockPos(
@@ -211,7 +220,7 @@ open class CustomExplosion(
         val numRays = 32 + random.nextInt(17)
         val coreRadius = 0.4f * radius
         val flattenedCoreRadius = coreRadius * 1.2f
-        val beltHalfHeight = (radius * 0.34).toInt().coerceAtLeast(1)
+        val beltHalfHeight = (radius * (if (sphericalBlockDestruction) 0.6 else 0.34)).toInt().coerceAtLeast(1)
         val beltYMin = (floor(center.y) - beltHalfHeight).toInt()
         val beltYMax = (floor(center.y) + beltHalfHeight).toInt()
 
@@ -241,7 +250,7 @@ open class CustomExplosion(
                     val dx = (blockpos.center.x - center.x).toFloat()
                     val dy = (blockpos.center.y - center.y).toFloat()
                     val dz = (blockpos.center.z - center.z).toFloat()
-                    val flattenedDistSqr = (dx * dx + dz * dz) + dy * dy * 3.0f
+                    val flattenedDistSqr = (dx * dx + dz * dz) + dy * dy * verticalScale
                     val distSqr = dx * dx + dy * dy + dz * dz
 
                     if (level.isInWorldBounds(blockpos)
@@ -274,7 +283,7 @@ open class CustomExplosion(
                             val fdx = (blockpos.center.x - center.x).toFloat()
                             val fdy = (blockpos.center.y - center.y).toFloat()
                             val fdz = (blockpos.center.z - center.z).toFloat()
-                            val flattenedDistSqr = (fdx * fdx + fdz * fdz) + fdy * fdy * 3.0f
+                            val flattenedDistSqr = (fdx * fdx + fdz * fdz) + fdy * fdy * verticalScale
                             if (flattenedDistSqr > spikeLength * spikeLength) continue
 
                             candidates.add(blockpos.immutable())
@@ -292,7 +301,7 @@ open class CustomExplosion(
                     val dx = (blockpos.center.x - center.x).toFloat()
                     val dy = (blockpos.center.y - center.y).toFloat()
                     val dz = (blockpos.center.z - center.z).toFloat()
-                    val flattenedDistSqr = (dx * dx + dz * dz) + dy * dy * 3.0f
+                    val flattenedDistSqr = (dx * dx + dz * dz) + dy * dy * verticalScale
                     val distanceSqr = dx * dx + dy * dy + dz * dz
                     var force = this.radius * (0.25f + random.nextFloat() * 0.15f) * 0.02f * damage
 
