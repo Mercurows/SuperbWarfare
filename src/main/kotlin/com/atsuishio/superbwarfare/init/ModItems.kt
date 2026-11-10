@@ -22,7 +22,6 @@ import com.atsuishio.superbwarfare.item.gun.*
 import com.atsuishio.superbwarfare.item.gun.launcher.IglaItem
 import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem
 import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem
-import com.atsuishio.superbwarfare.item.gun.shotgun.HomemadeShotgunItem
 import com.atsuishio.superbwarfare.item.gun.special.HammerItem
 import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem
 import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGunItem
@@ -110,7 +109,7 @@ object ModItems {
     @JvmField val GLOCK_18 = registerGun("glock_18") { GeoGunItem(Properties().rarity(Rarity.RARE)) }
     @JvmField val MP_443 = registerGun("mp_443") { GeoGunItem(Properties()) }
     @JvmField val M_1911 = registerGun("m_1911") { GeoGunItem(Properties()) }
-    @JvmField val HOMEMADE_SHOTGUN = registerGun<HomemadeShotgunItem>()
+    @JvmField val HOMEMADE_SHOTGUN = registerGun("homemade_shotgun") { GeoGunItem(Properties()) }
     @JvmField val NAIL_GUN = registerGun("nail_gun") { GeoGunItem(Properties().rarity(Rarity.RARE)) }
     @JvmField val TRACHELIUM = registerGun("trachelium") { GeoGunItem(Properties().rarity(ModRarities.VIRTUAL)) }
     @JvmField val MP_5 = registerGun("mp_5") { GeoGunItem(Properties().rarity(Rarity.RARE)) }

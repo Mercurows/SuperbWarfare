@@ -14,6 +14,28 @@
   },
   "HideCrosshairWhenZoom": false,
   "SprintOffset": [12, 0, 0],
+  "FlareSize": 4.5,
+  "HasSmoke": true,
+  "MuzzleFx": {
+    "Trigger": "shot",
+    "Flash": { "Length": 0.85, "Duration": 0.041 },
+    "Smoke": { "TailCount": 1 },
+    "Sparks": { "Probability": 0.5, "MaxCount": 2 }
+  },
+  "Smoke": {
+    "Size": 0.01,
+    "Growth": 1.5,
+    "Lifetime": 0.2,
+    "Speed": 5,
+    "Count": 2,
+    "Opacity": 0.35,
+    "Drag": 10,
+    "RandomSize": 0.2,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.05,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.05
+  },
   "ItemDisplay": {
     "firstperson_righthand": {
       "scale": [

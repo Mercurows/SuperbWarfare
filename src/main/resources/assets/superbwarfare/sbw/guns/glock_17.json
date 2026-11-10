@@ -23,27 +23,27 @@
     "LODModel": "superbwarfare:models/bedrock/gun_lod/glock_17.geo.json",
     "LODTexture": "superbwarfare:textures/bedrock/gun_lod/glock_17.png"
   },
-  "FlareSize": 0.3,
+  "FlareSize": 1,
   "HasSmoke": true,
   "MuzzleFx": {
     "Trigger": "shot",
-    "Flash": { "Length": 0.62, "Duration": 0.04 },
+    "Flash": { "Length": 0.85, "Duration": 0.041 },
     "Smoke": { "TailCount": 1 },
-    "Sparks": { "Probability": 0.06, "MaxCount": 2 }
+    "Sparks": { "Probability": 0.1, "MaxCount": 2 }
   },
   "Smoke": {
-    "Size": 0.15,
-    "Growth": 0.25,
-    "Lifetime": 0.3,
-    "Speed": 0.4,
-    "Count": 1,
-    "Opacity": 0.9,
-    "Drag": 2,
-    "RandomSize": 0.05,
+    "Size": 0.01,
+    "Growth": 1,
+    "Lifetime": 0.2,
+    "Speed": 5,
+    "Count": 2,
+    "Opacity": 0.35,
+    "Drag": 10,
+    "RandomSize": 0.2,
     "RandomGrowth": 0.2,
-    "RandomLifetime": 0.2,
+    "RandomLifetime": 0.05,
     "RandomSpeed": 0.2,
-    "RandomOpacity": 0.1
+    "RandomOpacity": 0.05
   },
   "EjectShell": true,
   "ShellEject": {
