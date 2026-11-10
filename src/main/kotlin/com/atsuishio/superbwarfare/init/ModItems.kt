@@ -535,6 +535,7 @@ object ModItems {
     @JvmField val RAW_SILVER_BLOCK = registerBlock(ModBlocks.RAW_SILVER_BLOCK)
     @JvmField val RAW_URANIUM_BLOCK = registerBlock(ModBlocks.RAW_URANIUM_BLOCK)
     @JvmField val JUMP_PAD = registerBlock(ModBlocks.JUMP_PAD)
+    @JvmField val BOOBY_TRAP = registerBlock(ModBlocks.BOOBY_TRAP)
     @JvmField val SANDBAG = registerBlock(ModBlocks.SANDBAG)
     @JvmField val BARBED_WIRE = registerBlock(ModBlocks.BARBED_WIRE)
     @JvmField val DRAGON_TEETH = registerBlock(ModBlocks.DRAGON_TEETH)

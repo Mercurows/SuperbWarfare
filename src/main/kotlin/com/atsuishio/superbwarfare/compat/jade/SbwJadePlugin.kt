@@ -21,6 +21,7 @@ class SbwJadePlugin : IWailaPlugin {
     }
 
     override fun registerClient(registration: IWailaClientRegistration) {
+        registration.addRayTraceCallback(BoobyTrapCamouflageProvider(registration))
         registration.registerEntityComponent(VehicleInfoProvider, VehicleEntity::class.java)
         registration.registerEntityComponent(C4InfoProvider, C4Entity::class.java)
         registration.registerEntityComponent(DPSGeneratorProvider, DPSGeneratorEntity::class.java)

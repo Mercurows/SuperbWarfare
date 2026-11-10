@@ -256,6 +256,7 @@ object ClientRenderHandler {
         event.registerBlockEntityRenderer(ModBlockEntities.BLUEPRINT_RESEARCH_TABLE.get()) { _ -> BlueprintResearchTableBlockEntityRenderer() }
         event.registerBlockEntityRenderer(ModBlockEntities.TRIPOD.get()) { _ -> TripodBlockEntityRenderer() }
         event.registerBlockEntityRenderer(ModBlockEntities.RESONANCE_BASE.get()) { _ -> ResonanceBaseBlockEntityRenderer() }
+        event.registerBlockEntityRenderer(ModBlockEntities.BOOBY_TRAP.get()) { _ -> BoobyTrapBlockEntityRenderer() }
         event.registerBlockEntityRenderer(ModBlockEntities.ITEM_DISPLAY_BOARD.get()) { _ -> ItemDisplayBoardBlockEntityRenderer() }
     }
 

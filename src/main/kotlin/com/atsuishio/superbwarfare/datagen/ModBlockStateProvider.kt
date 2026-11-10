@@ -18,6 +18,7 @@ class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper
     BlockStateProvider(output, Mod.MODID, exFileHelper) {
     override fun registerStatesAndModels() {
         horizontalBlock(ModBlocks.BARBED_WIRE.get(), UncheckedModelFile(modLoc("block/barbed_wire")))
+        simpleBlock(ModBlocks.BOOBY_TRAP.get())
         horizontalBlock(ModBlocks.JUMP_PAD.get(), UncheckedModelFile(modLoc("block/jump_pad")))
         horizontalBlock(ModBlocks.REFORGING_TABLE.get(), UncheckedModelFile(modLoc("block/reforging_table")))
         horizontalBlock(ModBlocks.WEAPON_REPAIR_STATION.get(), UncheckedModelFile(modLoc("block/weapon_repair_station")))

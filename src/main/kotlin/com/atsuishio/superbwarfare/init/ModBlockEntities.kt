@@ -121,6 +121,11 @@ object ModBlockEntities {
     }
 
     @JvmField
+    val BOOBY_TRAP = registerBlockEntity("booby_trap") {
+        BlockEntityType.Builder.of(::BoobyTrapBlockEntity, ModBlocks.BOOBY_TRAP.get()).build(null)
+    }
+
+    @JvmField
     val TRIPOD = registerBlockEntity("tripod") {
         BlockEntityType.Builder.of(
             { pos, state -> TripodBlockEntity(pos, state) },

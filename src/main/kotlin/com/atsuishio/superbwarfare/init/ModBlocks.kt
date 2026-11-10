@@ -36,6 +36,7 @@ object ModBlocks {
     @JvmField val SANDBAG = registerBlock("sandbag") { Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.SNARE).sound(SoundType.SAND).strength(10f, 20f)) }
     @JvmField val BARBED_WIRE = registerBlock("barbed_wire") { BarbedWireBlock() }
     @JvmField val JUMP_PAD = registerBlock("jump_pad") { JumpPadBlock() }
+    @JvmField val BOOBY_TRAP = registerBlock("booby_trap") { BoobyTrapBlock() }
     @JvmField val DRAGON_TEETH = registerBlock("dragon_teeth") { DragonTeethBlock() }
     @JvmField val REFORGING_TABLE = registerBlock("reforging_table") { ReforgingTableBlock() }
     @JvmField val RESONANCE_BASE = registerBlock("resonance_base") { ResonanceBaseBlock() }
