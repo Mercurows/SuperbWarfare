@@ -6,12 +6,12 @@ import com.atsuishio.superbwarfare.data.gun.subdata.Attachment
 import com.atsuishio.superbwarfare.data.gun.subweapon.SubWeaponRuntime
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.item.attachment.AttachmentProvider
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
-import net.minecraftforge.registries.ForgeRegistries
 import java.util.*
 
 /** Shared preview/server validation. Preparation only mutates a private copy of the gun. */
@@ -49,7 +49,7 @@ object GunModificationService {
             val slot = slots.first { it.attachmentName == name }
             val allowed = AvailableAttachments.resolve(data, slot).map { it.id }.toSet()
             for (entry in entries) {
-                val id = ResourceLocation(GunModificationCode.fullId(entry.id))
+                val id = ResourceLocation.parse(GunModificationCode.fullId(entry.id))
                 val definition = AttachmentDefinition.from(id) ?: continue
                 if (id !in allowed || entry.rotation != 0.0 &&
                     !(slot == AttachmentType.MUZZLE && definition.canRotate) ||
@@ -79,7 +79,7 @@ object GunModificationService {
         // Validate against the final assembly, with the old configuration completely removed.
         for (slot in slots) {
             for (entry in preset.attachments[slot.attachmentName].orEmpty()) {
-                val id = ResourceLocation(GunModificationCode.fullId(entry.id))
+                val id = ResourceLocation.parse(GunModificationCode.fullId(entry.id))
                 val definition = AttachmentDefinition.from(id) ?: error("missing", id.toString())
                 val stacking = preview.attachment.acceptsStacked(slot)
                 if (!preview.canInstall(slot, id) || slot == AttachmentType.SCOPE &&
@@ -101,7 +101,7 @@ object GunModificationService {
         for (slot in slots) {
             val entries = preset.attachments[slot.attachmentName].orEmpty()
             for (entry in entries) {
-                val id = ResourceLocation(GunModificationCode.fullId(entry.id))
+                val id = ResourceLocation.parse(GunModificationCode.fullId(entry.id))
                 val definition = AttachmentDefinition.from(id)!!
                 val canRotate = slot != AttachmentType.MAGAZINE && slot != AttachmentType.CHARM &&
                     (GunConfig.fullyFreeAttachmentMode || slot == AttachmentType.MUZZLE && definition.canRotate)
@@ -130,7 +130,7 @@ object GunModificationService {
         val subWeapons = SubWeaponRuntime.installed(data, false)
         val old = slots.flatMap { slot -> nodes(data, slot).map { (id, tag) -> Existing(slot, id, tag) } }.toMutableList()
         val targets = slots.associateWith { slot -> prepared.preset.attachments[slot.attachmentName].orEmpty().map { entry ->
-            val id = ResourceLocation(GunModificationCode.fullId(entry.id))
+            val id = ResourceLocation.parse(GunModificationCode.fullId(entry.id))
             val match = old.firstOrNull { it.slot == slot && it.id == id } ?: old.firstOrNull { it.id == id }
             if (match != null) old.remove(match)
             Triple(entry, AttachmentDefinition.from(id)!!, match?.tag ?: CompoundTag().apply { putString("Id", id.toString()) })
@@ -195,13 +195,13 @@ object GunModificationService {
     }
 
     private fun counts(preset: GunModificationPreset) = preset.attachments.values.flatten()
-        .groupingBy { ResourceLocation(GunModificationCode.fullId(it.id)) }.eachCount()
+        .groupingBy { ResourceLocation.parse(GunModificationCode.fullId(it.id)) }.eachCount()
 
     private fun inventory(player: Player) = player.inventory.items + player.inventory.offhand
     private fun attachmentId(stack: ItemStack): ResourceLocation? = if (stack.isEmpty) null else
         (stack.item as? AttachmentProvider)?.attachmentId?.let(ResourceLocation::tryParse)
 
-    fun itemFor(id: ResourceLocation): ItemStack = ForgeRegistries.ITEMS.values.firstOrNull {
+    fun itemFor(id: ResourceLocation): ItemStack = BuiltInRegistries.ITEM.firstOrNull {
         (it as? AttachmentProvider)?.attachmentId?.let(ResourceLocation::tryParse) == id
     }?.let(::ItemStack) ?: ItemStack.EMPTY
 
