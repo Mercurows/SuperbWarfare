@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:suspicious_yellow_cake"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_yellow_cake": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:yellow_cake"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_yellow_cake",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:suspicious_yellow_cake"
+    ]
+  },
+  "sends_telemetry_event": false
+}

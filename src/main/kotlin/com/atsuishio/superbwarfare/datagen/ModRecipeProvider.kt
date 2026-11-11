@@ -1942,6 +1942,13 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('b', INGOTS_STEEL)
                 .unlockedBy(getHasName(Items.PAPER), has(Items.PAPER))
                 .save(writer, loc(getItemName(ModItems.VEHICLE_RESET_KIT.get())))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.YELLOW_CAKE.get())
+                .requires(Ingredient.of(INGOTS_URANIUM), 4)
+                .requires(Items.WATER_BUCKET)
+                .requires(Items.PAPER)
+                .requires(ItemTags.COALS)
+                .unlockedBy(getHasName(ModItems.URANIUM_INGOT.get()), has(INGOTS_URANIUM))
+                .save(writer, loc(getItemName(ModItems.YELLOW_CAKE.get())))
         }
 
         private fun buildBlockRecipes(writer: Consumer<FinishedRecipe>) {
@@ -3407,6 +3414,11 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('d', Items.REDSTONE)
                 .unlockedBy(getHasName(Items.TRIPWIRE_HOOK), has(Items.TRIPWIRE_HOOK))
                 .save(writer, loc("${getItemName(ModItems.CATAPULT_SHUTTLE.get())}"))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ModItems.SUSPICIOUS_YELLOW_CAKE.get())
+                .requires(ModItems.YELLOW_CAKE.get())
+                .requires(ModItems.CRUST.get())
+                .unlockedBy(getHasName(ModItems.YELLOW_CAKE.get()), has(ModItems.YELLOW_CAKE.get()))
+                .save(writer, loc(getItemName(ModItems.SUSPICIOUS_YELLOW_CAKE.get())))
         }
 
         private fun buildSpecialRecipes(writer: Consumer<FinishedRecipe>) {

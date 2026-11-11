@@ -18,6 +18,7 @@ import com.atsuishio.superbwarfare.item.container.LuckyContainerBlockItem
 import com.atsuishio.superbwarfare.item.container.SmallContainerBlockItem
 import com.atsuishio.superbwarfare.item.curio.*
 import com.atsuishio.superbwarfare.item.food.CrustItem
+import com.atsuishio.superbwarfare.item.food.SuspiciousYellowCakeItem
 import com.atsuishio.superbwarfare.item.gun.*
 import com.atsuishio.superbwarfare.item.gun.launcher.IglaItem
 import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem
@@ -380,6 +381,8 @@ object ModItems {
     @JvmField val SCHEELITE = registerItem("scheelite")
     @JvmField val RAW_SILVER = registerItem("raw_silver")
     @JvmField val RAW_URANIUM = registerItem("raw_uranium")
+    @JvmField val YELLOW_CAKE = registerItem("yellow_cake")
+    @JvmField val SUSPICIOUS_YELLOW_CAKE = registerItem<SuspiciousYellowCakeItem>()
     @JvmField val SLIME_COVERED_LEATHER = registerItem("slime_covered_leather")
     @JvmField val DOG_TAG = registerItem<DogTagItem>()
     @JvmField val IFF = registerItem<IffItem>()
