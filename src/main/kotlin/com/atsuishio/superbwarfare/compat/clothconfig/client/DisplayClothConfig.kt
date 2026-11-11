@@ -289,5 +289,25 @@ object DisplayClothConfig {
                 .setTooltip(Component.translatable("config.superbwarfare.client.display.enable_fire_flash_light.des"))
                 .build()
         )
+        category.addEntry(
+            entryBuilder.startIntSlider(
+                Component.translatable("config.superbwarfare.client.display.muzzle_light_limit"),
+                DisplayConfig.MUZZLE_LIGHT_LIMIT.get(), 1, 32
+            )
+                .setDefaultValue(16)
+                .setSaveConsumer { DisplayConfig.MUZZLE_LIGHT_LIMIT.set(it) }
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.muzzle_light_limit.des"))
+                .build()
+        )
+        category.addEntry(
+            entryBuilder.startIntSlider(
+                Component.translatable("config.superbwarfare.client.display.muzzle_light_strength"),
+                (DisplayConfig.MUZZLE_LIGHT_STRENGTH.get() * 100).toInt(), 0, 200
+            )
+                .setDefaultValue(100)
+                .setSaveConsumer { DisplayConfig.MUZZLE_LIGHT_STRENGTH.set(it / 100.0) }
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.muzzle_light_strength.des"))
+                .build()
+        )
     }
 }

@@ -1,10 +1,11 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightRenderer;
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer;
+import com.atsuishio.superbwarfare.compat.shader.ShaderCompat;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -26,10 +27,12 @@ public class LevelRendererMixin {
 // 感谢 Minecraft-Ping-Wheel 开源
     // https://github.com/LukenSkyne/Minecraft-Ping-Wheel/blob/ede72b18f57bd9dfe55ef44afe61190421fbc084/common/src/main/java/nx/pingwheel/common/mixin/LevelRendererMixin.java
 
-    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;applyModelViewMatrix()V", ordinal = 0, shift = At.Shift.AFTER))
+    @Inject(method = "renderLevel", at = @At("HEAD"))
     private void onStartRenderLevel(DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
-        ClientEventHandler.modelViewMatrix = RenderSystem.getModelViewMatrix();
-        ClientEventHandler.projectionMatrix = RenderSystem.getProjectionMatrix();
+        if (ShaderCompat.isRenderingShadowPass()) return;
+        ClientEventHandler.modelViewMatrix = new Matrix4f(matrix4f);
+        ClientEventHandler.projectionMatrix = new Matrix4f(matrix4f2);
+        GunMuzzleLightRenderer.captureWorld(ClientEventHandler.modelViewMatrix, ClientEventHandler.projectionMatrix);
     }
 
     // Capture heat-source geometry without changing normal entity lighting.

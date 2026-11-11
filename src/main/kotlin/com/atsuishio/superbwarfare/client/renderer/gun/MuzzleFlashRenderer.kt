@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.gun
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
+import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightHandler
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.gun.MuzzleFlashRenderer.MAX_VISIBLE_TIME
@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource
 import com.atsuishio.superbwarfare.resource.gun.GunResource
+import com.atsuishio.superbwarfare.tools.BedrockBoneCoordinateTool
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.LightTexture
@@ -21,6 +22,7 @@ import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.phys.Vec3
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import java.util.WeakHashMap
@@ -100,7 +102,10 @@ object MuzzleFlashRenderer {
         return false
     }
 
-    fun clear() = shots.clear()
+    fun clear() {
+        shots.clear()
+        GunMuzzleLightHandler.clear()
+    }
 
     fun recordShot(holder: LivingEntity, barrel: ItemStack) {
         val mc = Minecraft.getInstance()
@@ -109,6 +114,7 @@ object MuzzleFlashRenderer {
         while (queue.isNotEmpty() && (time - queue.first().start > 2 || queue.size >= 8)) queue.removeFirst()
         queue.addLast(Shot(time, identity(holder.mainHandItem), identity(barrel),
             holder === mc.player && mc.options.cameraType.isFirstPerson))
+        GunMuzzleLightHandler.recordShot(holder, barrel)
     }
 
     fun remoteShot(id: Int, weapon: String, subWeapon: Boolean) {
@@ -120,7 +126,6 @@ object MuzzleFlashRenderer {
         val data = GunData.from(active)
         if (data.id != weapon || ActiveGun.isSubWeapon(data) != subWeapon) return
         recordShot(holder, active)
-        MuzzleFlashHelper.calculateFromStack(active)?.let { MuzzleFlashHelper.spawnFlashCone(holder.eyePosition, holder.lookAngle, it) }
     }
 
     fun renderShot(
@@ -145,6 +150,14 @@ object MuzzleFlashRenderer {
         val duration = (fx?.flash?.duration ?: 0.045f).coerceIn(0.015f, 0.09f)
         val silenced = GunData.from(barrel).isBarrelSilenced()
         val matrix = Matrix4f(poseStack.last().pose()).mul(anchor)
+        if (!firstPerson) {
+            val camera = Minecraft.getInstance().gameRenderer.mainCamera
+            val point = matrix.getTranslation(Vector3f())
+            val axis = matrix.transformDirection(0f, 0f, -1f, Vector3f())
+            GunMuzzleLightHandler.sample(holder, barrel,
+                BedrockBoneCoordinateTool.viewPointToWorld(Vec3(point.x.toDouble(), point.y.toDouble(), point.z.toDouble()), camera),
+                BedrockBoneCoordinateTool.viewPointToWorldOffset(Vec3(axis.x.toDouble(), axis.y.toDouble(), axis.z.toDouble()), camera))
+        }
         for (shot in queue) {
             if (shot.firstPerson != firstPerson || shot.host != hostId || shot.barrel != barrelId) continue
             val age = ((now - shot.start) * 0.05).coerceAtLeast(0.0).toFloat()

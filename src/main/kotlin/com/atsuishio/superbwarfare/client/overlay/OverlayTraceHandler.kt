@@ -53,13 +53,7 @@ object OverlayTraceHandler {
 
     @JvmStatic
     fun handlePlayerTrace(player: Player) {
-        playerViewBlockResult = player.level().clip(
-            ClipContext(
-                player.eyePosition,
-                player.eyePosition.add(player.getViewVector(1f).scale(MAX_TRACE_DISTANCE)),
-                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player
-            )
-        )
+        playerViewBlockResult = traceViewBlocks(player, player.eyePosition, player.getViewVector(1f), MAX_TRACE_DISTANCE)
 
         val reachDistance = player.getEntityReach()
         val reachEntity = TraceTool.findLookingEntity(player, reachDistance)
@@ -71,6 +65,15 @@ object OverlayTraceHandler {
 
         val maxEntity = TraceTool.findLookingEntity(player, reachDistance)
         maxRangeEntity = maxEntity
+    }
+
+    /** 与 HUD 的视线检测保持一致；短距渲染查询可传入当前帧的起点，不依赖上一 tick 的缓存。 */
+    @JvmStatic
+    fun traceViewBlocks(entity: Entity, origin: Vec3, direction: Vec3, distance: Double): BlockHitResult {
+        return entity.level().clip(
+            ClipContext(origin, origin.add(direction.normalize().scale(distance.coerceAtLeast(0.0))),
+                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity)
+        )
     }
 
     @JvmStatic

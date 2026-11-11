@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightRenderer;
 import com.atsuishio.superbwarfare.client.overlay.FlashbangOverlay;
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensPostProcessor;
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer;
@@ -40,13 +41,17 @@ public abstract class GameRendererMixin {
 
     @Inject(method = "renderLevel", at = @At("HEAD"))
     private void superbWarfare$beginScopeFrame(DeltaTracker deltaTracker, CallbackInfo ci) {
+        GunMuzzleLightRenderer.beginFrame();
         ScopeLensPostProcessor.beginFrame();
         ScopeThermalRenderer.beginFrame();
     }
 
     // Iris has completed its composite at this point; its final colour-space conversion is later.
-    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V", ordinal = 2))
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V",
+            shift = At.Shift.AFTER))
     private void superbWarfare$renderScopeLenses(DeltaTracker deltaTracker, CallbackInfo ci) {
+        GunMuzzleLightRenderer.render();
         ScopeThermalRenderer.captureWorldDepth();
         if (ShaderCompat.isShaderPackActive()) ScopeThermalRenderer.renderFullScreen();
         ScopeLensPostProcessor.render();
