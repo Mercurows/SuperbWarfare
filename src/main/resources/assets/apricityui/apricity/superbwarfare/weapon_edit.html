@@ -35,6 +35,27 @@
         </div>
     </div>
     <div id="gun-skin-control"><select id="gun-skin"></select></div>
+    <div id="code-toolbar">
+        <button id="code-import" type="button"><span id="code-import-label" class="button-label"></span></button>
+        <button id="code-export" type="button"><span id="code-export-label" class="button-label"></span></button>
+    </div>
+    <div id="code-dialog">
+        <div id="code-card">
+            <div id="code-title"></div>
+            <button id="code-close" type="button"><span id="code-close-label" class="button-label"></span></button>
+            <div id="code-hint"></div>
+            <input id="code-input" type="text" maxlength="16641" placeholder="…#SBW1.…" autocomplete="off" spellcheck="false">
+            <div id="code-actions">
+                <button id="code-paste" type="button"><span id="code-paste-label" class="button-label"></span></button>
+                <button id="code-copy" type="button"><span id="code-copy-label" class="button-label"></span></button>
+                <button id="code-preview" type="button"><span id="code-preview-label" class="button-label"></span></button>
+                <button id="code-apply" type="button" disabled><span id="code-apply-label" class="button-label"></span></button>
+            </div>
+            <div id="code-status"></div>
+            <div id="code-meta"><div id="code-gun"></div><div id="code-mode"></div></div>
+            <div id="code-summary"></div>
+        </div>
+    </div>
     <div id="panel">
         <div id="panel-index" class="section-index"><span class="section-number">03</span><span class="section-slash">/</span></div>
         <div id="panel-title"></div>
@@ -162,6 +183,66 @@
     </div>
 </body>
 <style>
+    #code-toolbar {
+        position: absolute; left: 0; top: 0; width: 100px; height: 14px;
+        transform-origin: 0 0; display: flex; gap: 4px; pointer-events: auto; z-index: 6;
+    }
+    #code-toolbar button { width: 48px; height: 14px; font-size: 7px; padding: 0; }
+    #code-toolbar .button-label { line-height: 13px; }
+    #code-toolbar button, #code-card button {
+        box-sizing: border-box; margin: 0; border: 0.5px solid #338997; border-radius: 0;
+        background: #001a23; color: #52fcda; cursor: pointer; pointer-events: auto;
+    }
+    #code-toolbar button:hover, #code-card button:hover { background: #145a63; border-color: #52fcda; }
+    #code-card button:disabled { color: #668a95; background: #00121a; cursor: default; }
+    #code-dialog {
+        position: absolute; inset: 0; display: none;
+        background: rgba(0, 8, 14, 0.76); pointer-events: auto; z-index: 100;
+    }
+    #code-card {
+        position: absolute; left: 0; top: 0; width: 300px; height: 208px; transform-origin: 0 0;
+        box-sizing: border-box; display: block; padding: 8px;
+        border: 0.5px solid #338997; background: #00121b; pointer-events: auto; font-size: 7px;
+    }
+    #code-title { position: absolute; left: 8px; top: 7px; height: 14px; line-height: 14px; color: #52fcda; font-size: 9px; }
+    #code-close { position: absolute; right: 8px; top: 7px; width: 30px; height: 14px; padding: 0; font-size: 7px; }
+    #code-close-label { line-height: 13px; }
+    #code-hint { position: absolute; left: 8px; right: 8px; top: 24px; height: 10px; line-height: 8px; color: #a9c6d2; font-size: 6px; }
+    #code-input {
+        position: absolute; left: 8px; top: 37px; width: 284px; height: 17px; box-sizing: border-box; padding: 2px 4px;
+        border: 0.5px solid #338997; background: #000c12; color: #ffffff; font-size: 7px;
+        user-select: text; pointer-events: auto;
+    }
+    #code-actions { position: absolute; left: 8px; right: 8px; top: 58px; display: flex; gap: 4px; height: 16px; }
+    #code-actions button { height: 16px; flex: 1; font-size: 7px; padding: 0; }
+    #code-actions .button-label { line-height: 15px; }
+    #code-apply { border-color: #52fcda; background: #12413f; }
+    #code-status { position: absolute; left: 8px; right: 8px; top: 78px; height: 12px; line-height: 8px;
+        overflow-y: auto; color: #52fcda; white-space: pre-wrap; font-size: 6px; }
+    #code-meta { position: absolute; left: 8px; right: 8px; top: 94px; height: 13px;
+        border-bottom: 0.5px solid #24606b; display: flex; align-items: center; gap: 5px; }
+    #code-gun { flex: 1; min-width: 0; font-size: 8px; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #code-mode { color: #52fcda; font-size: 6px; white-space: nowrap; }
+    #code-summary {
+        position: absolute; left: 8px; right: 8px; top: 111px; bottom: 8px;
+        overflow-x: hidden; overflow-y: auto; color: #d3e5e9; font-size: 7px; line-height: 10px;
+        scrollbar-gutter: stable; scrollbar-width: 3px; scrollbar-color: #338997 #00121b;
+    }
+    .code-columns { display: flex; align-items: flex-start; gap: 5px; width: 100%; }
+    .code-column { flex: 1; min-width: 0; }
+    .code-entry { box-sizing: border-box; width: 100%; padding: 5px; margin-bottom: 5px;
+        background: #041f29; border-left: 1px solid #338997; }
+    .code-entry-slot { font-size: 5.5px; line-height: 8px; color: #52fcda; }
+    .code-entry-head { display: flex; align-items: center; gap: 4px; margin-top: 1px; min-height: 14px; }
+    .code-entry-icon { width: 12px; height: 12px; flex-shrink: 0; }
+    .code-entry-icon > slot { --aui-slot-size: 12; --aui-slot-icon-scale: 0.75; width: 12px; height: 12px; }
+    .code-entry-name { flex: 1; min-width: 0; font-size: 7px; line-height: 9px; color: #ffffff; white-space: normal; overflow-wrap: anywhere; }
+    .code-entry-id { font-size: 5px; line-height: 7px; color: #668a95; overflow-wrap: anywhere; user-select: text; }
+    .code-entry-params { margin-top: 2px; font-size: 6px; line-height: 9px; color: #a9c6d2; overflow-wrap: anywhere; }
+    .code-entry-color { display: flex; align-items: center; gap: 3px; margin-top: 2px; height: 9px; }
+    .code-color-chip { width: 5px; height: 5px; border: 0.5px solid #668a95; flex-shrink: 0; }
+    .code-color-label { font-size: 5.5px; line-height: 9px; }
+    .code-empty-slots { padding: 3px 5px; border-top: 0.5px solid #24606b; color: #668a95; font-size: 6px; line-height: 9px; }
     /* 思源黑体 Medium：SIL OFL 1.1，授权与来源见 fonts/OFL.txt、fonts/README.md。 */
     @font-face {
         font-family: WeaponEditHeading;
