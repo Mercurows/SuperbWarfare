@@ -481,6 +481,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE)
         evenSimplerBlockItem(ModBlocks.JUMP_PAD)
+        evenSimplerBlockItem(ModBlocks.HIGH_ENERGY_EXPLOSIVES_BLOCK)
         evenSimplerBlockItem(ModBlocks.BOOBY_TRAP)
         evenSimplerBlockItem(ModBlocks.REFORGING_TABLE)
         getBuilder("resonance_base").parent(UncheckedModelFile(modLoc("displaysettings/resonance_base")))

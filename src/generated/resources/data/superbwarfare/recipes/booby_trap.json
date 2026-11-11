@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "a": {
+      "tag": "forge:plates/steel"
+    },
+    "b": {
+      "tag": "forge:cobblestone"
+    },
+    "c": {
+      "item": "superbwarfare:high_energy_explosives_block"
+    }
+  },
+  "pattern": [
+    "aba",
+    "bcb",
+    "aba"
+  ],
+  "result": {
+    "count": 2,
+    "item": "superbwarfare:booby_trap"
+  },
+  "show_notification": true
+}

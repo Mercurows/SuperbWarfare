@@ -418,6 +418,7 @@
   "block.superbwarfare.jump_pad": "Jump Pad",
   "block.superbwarfare.sandbag": "Sandbag",
   "block.superbwarfare.barbed_wire": "Barbed Wire",
+  "block.superbwarfare.high_energy_explosives_block": "High Energy Explosives Block",
   "block.superbwarfare.booby_trap": "Booby Trap",
   "block.superbwarfare.galena_ore": "Galena Ore",
   "block.superbwarfare.scheelite_ore": "Scheelite Ore",
@@ -1048,6 +1049,7 @@
   "entity.superbwarfare.m84_stun_grenade": "M84 Stun Grenade",
   "entity.superbwarfare.sea_mine": "Sea Mine",
   "entity.superbwarfare.decoy_grenade": "Decoy Grenade",
+  "entity.superbwarfare.high_energy_explosives": "Primed High Energy Explosives",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.move_forward": "Forward / Throttle Up",

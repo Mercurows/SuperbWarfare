@@ -229,6 +229,21 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val HIGH_ENERGY_EXPLOSIVES_BLOCK_EXPLOSION_DAMAGE = buildServerConfig {
+        push("HighEnergyExplosivesBlock")
+        comment("高能炸药块爆炸伤害")
+        comment("High energy explosives block damage")
+        defineInRange("high_energy_explosives_block_explosion_damage", 180.0, 0.0, 10000000.0)
+    }
+
+    @JvmField
+    val HIGH_ENERGY_EXPLOSIVES_BLOCK_EXPLOSION_RADIUS = buildServerConfig {
+        comment("高能炸药块爆炸半径（格）")
+        comment("High energy explosives block explosion radius in blocks")
+        defineInRange("high_energy_explosives_block_explosion_radius", 12.0, 0.0, 256.0).also { pop() }
+    }
+
+    @JvmField
     val BOOBY_TRAP_EXPLOSION_DAMAGE = buildServerConfig {
         push("BoobyTrap")
         comment("伪装诡雷爆炸伤害")
