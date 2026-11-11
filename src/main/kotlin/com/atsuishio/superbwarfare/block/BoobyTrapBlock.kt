@@ -56,6 +56,9 @@ open class BoobyTrapBlock : BaseEntityBlock(
     override fun getLightBlock(state: BlockState, world: BlockGetter, pos: BlockPos): Int =
         lightMaterial(state, world, pos)?.getLightBlock(world, pos) ?: world.maxLightLevel
 
+    override fun getLightEmission(state: BlockState, world: BlockGetter, pos: BlockPos): Int =
+        lightMaterial(state, world, pos)?.getLightEmission(world, pos) ?: 0
+
     override fun propagatesSkylightDown(state: BlockState, world: BlockGetter, pos: BlockPos): Boolean =
         lightMaterial(state, world, pos)?.propagatesSkylightDown(world, pos) ?: false
 
