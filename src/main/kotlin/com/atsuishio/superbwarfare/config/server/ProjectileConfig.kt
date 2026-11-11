@@ -72,63 +72,80 @@ object ProjectileConfig {
     @JvmField
     val DECOY_GRENADE_RADIUS = buildServerConfig {
         push("DecoyGrenade")
-        comment("诱饵弹吸引生物的半径（格） / Mob attraction radius in blocks")
+        comment("Mob attraction radius in blocks")
+        comment("诱饵弹吸引生物的半径（格）")
         defineInRange("radius", 32, 1, 256)
     }
 
     @JvmField
     val DECOY_GRENADE_DURATION = buildServerConfig {
-        comment("诱饵弹播放枪声的持续时间（tick） / Gunshot playback duration in ticks")
+        comment("Gunshot playback duration in ticks")
+        comment("诱饵弹播放枪声的持续时间（tick）")
         defineInRange("duration", 300, 1, Int.MAX_VALUE)
     }
 
     @JvmField
     val DECOY_GRENADE_LIFETIME = buildServerConfig {
-        comment("诱饵弹总寿命上限（tick） / Maximum total lifetime in ticks")
+        comment("Maximum total lifetime in ticks")
+        comment("诱饵弹总寿命上限（tick）")
         defineInRange("lifetime", 1200, 1, Int.MAX_VALUE)
     }
 
     @JvmField
     val DECOY_GRENADE_ACTIVATION_DELAY = buildServerConfig {
-        comment("诱饵弹停稳后开始播放枪声的延迟（tick） / Delay after settling in ticks")
+        comment("Delay after settling in ticks")
+        comment("诱饵弹停稳后开始播放枪声的延迟（tick）")
         defineInRange("activation_delay", 40, 0, Int.MAX_VALUE)
     }
 
     @JvmField
     val DECOY_GRENADE_STOP_SPEED = buildServerConfig {
-        comment("诱饵弹接触地面后固定位置的速度阈值 / Grounded settling speed threshold")
+        comment("Grounded settling speed threshold")
+        comment("诱饵弹接触地面后固定位置的速度阈值")
         defineInRange("stop_speed", 0.05, 0.001, 1.0)
     }
 
     @JvmField
     val DECOY_GRENADE_HIT_DAMAGE = buildServerConfig {
-        comment("诱饵弹投掷命中伤害 / Direct impact damage")
+        comment("Direct impact damage")
+        comment("诱饵弹投掷命中伤害")
         defineInRange("hit_damage", 1.0, 0.0, 10000000.0)
     }
 
     @JvmField
     val DECOY_GRENADE_EXPLOSION_DAMAGE = buildServerConfig {
-        comment("诱饵弹播放结束后的爆炸伤害 / Explosion damage after playback")
+        comment("Explosion damage after playback")
+        comment("诱饵弹播放结束后的爆炸伤害")
         defineInRange("explosion_damage", 1.0, 0.0, 10000000.0)
     }
 
     @JvmField
     val DECOY_GRENADE_EXPLOSION_RADIUS = buildServerConfig {
-        comment("诱饵弹爆炸半径（格） / Explosion radius in blocks")
+        comment("Explosion radius in blocks")
+        comment("诱饵弹爆炸半径（格）")
         defineInRange("explosion_radius", 3.0, 0.0, 256.0)
     }
 
     @JvmField
     val DECOY_GRENADE_ATTRACT_MOBS = buildServerConfig {
-        comment("诱饵弹是否吸引生物 / Whether decoy grenades attract mobs")
+        comment("Whether decoy grenades attract mobs")
+        comment("诱饵弹是否吸引生物")
         define("attract_mobs", true).also { pop() }
     }
 
     @JvmField
     val MOLOTOV_FIRE_RADIUS = buildServerConfig {
         push("Molotov")
-        comment("燃烧瓶火焰半径（格），设为0关闭铺火 / Molotov fire radius in blocks; set to 0 to disable fire placement")
-        defineInRange("fire_radius", 3.0, 0.0, 32.0).also { pop() }
+        comment("Molotov ground fire and burn cloud radius in blocks; set to 0 to disable both")
+        comment("燃烧瓶地面火焰与灼烧云的半径（格），设为0关闭两者")
+        defineInRange("fire_radius", 3.0, 0.0, 32.0)
+    }
+
+    @JvmField
+    val MOLOTOV_CLOUD_DURATION = buildServerConfig {
+        comment("Molotov burn cloud duration in ticks; set to 0 to disable the cloud")
+        comment("燃烧瓶灼烧云持续时间（tick），设为0关闭灼烧云")
+        defineInRange("cloud_duration", 200, 0, Int.MAX_VALUE).also { pop() }
     }
 
     @JvmField
