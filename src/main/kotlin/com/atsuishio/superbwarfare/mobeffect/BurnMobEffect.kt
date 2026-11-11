@@ -14,6 +14,7 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectCategory
+import net.minecraft.world.entity.AreaEffectCloud
 import net.minecraft.world.entity.LivingEntity
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
@@ -59,18 +60,19 @@ object BurnMobEffect : MobEffect(MobEffectCategory.HARMFUL, -12708330) {
             return
         }
 
+        val source = event.effectSource
+        val attacker = if (source is AreaEffectCloud) source.owner else source as? LivingEntity
         living.forceHurt(
             DamageSource(
                 living.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
                     .getHolderOrThrow(DamageTypes.IN_FIRE),
-                event.effectSource
+                attacker ?: source
             ), 0.6f + (0.3f * instance.amplifier)
         )
         living.invulnerableTime = 0
 
-        val source = event.effectSource
-        if (source is LivingEntity) {
-            living.persistentData.putInt(TAG_ATTACKER, source.id)
+        if (attacker != null) {
+            living.persistentData.putInt(TAG_ATTACKER, attacker.id)
         }
     }
 

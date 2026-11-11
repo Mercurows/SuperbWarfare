@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -11,7 +12,10 @@ import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
+import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.entity.AreaEffectCloud
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseFireBlock
@@ -59,14 +63,32 @@ open class MolotovEntity(type: EntityType<out MolotovEntity>, level: Level) :
         )
         // Water extinguishes the contents, but the bottle still breaks on impact.
         if (ignite && level.getFluidState(BlockPos.containing(location)).isEmpty) {
-            spreadFire(level, location)
+            val radius = ProjectileConfig.MOLOTOV_FIRE_RADIUS.get()
+            if (radius > 0.0) {
+                spreadFire(level, location, radius)
+                createBurnCloud(level, location, radius.toFloat())
+            }
         }
         discard()
     }
 
-    private fun spreadFire(level: ServerLevel, location: Vec3) {
-        val radius = ProjectileConfig.MOLOTOV_FIRE_RADIUS.get()
-        if (radius <= 0.0) return
+    private fun createBurnCloud(level: ServerLevel, location: Vec3, radius: Float) {
+        val duration = ProjectileConfig.MOLOTOV_CLOUD_DURATION.get()
+        if (duration <= 0) return
+        val cloud = AreaEffectCloud(level, location.x, location.y, location.z)
+        cloud.addTag(BURN_CLOUD_TAG)
+        cloud.owner = owner as? LivingEntity
+        cloud.radius = radius
+        cloud.radiusOnUse = 0f
+        cloud.radiusPerTick = 0f
+        cloud.waitTime = 0
+        cloud.duration = duration * 20
+        cloud.particle = ParticleTypes.FLAME
+        cloud.addEffect(MobEffectInstance(ModMobEffects.BURN.get(), 60, 0))
+        level.addFreshEntity(cloud)
+    }
+
+    private fun spreadFire(level: ServerLevel, location: Vec3, radius: Double) {
         val range = ceil(radius).toInt()
         val center = BlockPos.containing(location)
         for (dx in -range..range) {
@@ -92,5 +114,9 @@ open class MolotovEntity(type: EntityType<out MolotovEntity>, level: Level) :
             }
         }
         level.playSound(null, location.x, location.y, location.z, SoundEvents.FIRECHARGE_USE, SoundSource.NEUTRAL, 1f, 1f)
+    }
+
+    companion object {
+        const val BURN_CLOUD_TAG = "superbwarfare:molotov_cloud"
     }
 }
