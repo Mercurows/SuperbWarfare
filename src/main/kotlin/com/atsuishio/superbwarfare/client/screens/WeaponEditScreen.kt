@@ -1082,6 +1082,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private fun syncMounts(doc: Document, data: GunData, reservedPanels: List<Box> = emptyList()): List<Mount> {
         val mounts = mutableListOf<Mount>()
         val selectedType = AttachmentSlots.slotAt(editingAttachmentType)
+        val safeArea = mountSafeArea()
         fun sync(
             id: String, type: AttachmentType?, point: BoneScreenPoint?, available: Boolean,
             stacked: Boolean = false,
@@ -1092,7 +1093,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             // 入场动画的前 n tick 隐藏挂点；二级菜单打开后只保留当前挂点。
             // 图标、连线和标签也只按返回的点位列表绘制。
             if (openingTicks < MOUNT_REVEAL_DELAY_TICKS || (selectedType != null && type != selectedType) ||
-                point == null || !point.visible || (!available && installed == null)
+                point == null || !point.x.isFinite() || !point.y.isFinite() || (!available && installed == null)
             ) {
                 setStyle(element, "display", "none")
                 return
@@ -1100,7 +1101,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             // gui 模式在 GUI scale >= 6 时不再是 1:1，必须使用 AUI 的坐标转换。
             val projected = doc.guiToDocumentPosition(Position(point.x.toDouble(), point.y.toDouble()))
             val bounds = findSpace(projected.x.toFloat(), projected.y.toFloat(), MOUNT_SIZE, MOUNT_SIZE,
-                mounts.map { it.bounds } + reservedPanels, 3f, step = 4f)
+                mounts.map { it.bounds } + reservedPanels, 3f, step = 4f, area = safeArea,
+                edgeLocked = !safeArea.contains(projected.x.toFloat(), projected.y.toFloat()))
             place(element, bounds)
             setClass(element, "active", editingAttachmentType == editIndex)
             setClass(element, "filled", installed != null)
@@ -1873,6 +1875,15 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
 
     private fun usableHeight() = (viewportHeight - 28f).coerceAtLeast(1f)
 
+    /** 与图示一致：左右约 6% 留白，上方避开工具栏，下方避开快捷栏。 */
+    private fun mountSafeArea(): Box {
+        val left = (viewportWidth * 0.06f).coerceAtMost((viewportWidth - MOUNT_SIZE).coerceAtLeast(0f) / 2f)
+        val top = max(viewportHeight * 0.175f, TITLE_BAR_HEIGHT + 6f)
+            .coerceAtMost((viewportHeight - MOUNT_SIZE).coerceAtLeast(0f))
+        val bottom = max(viewportHeight * 0.885f, top + MOUNT_SIZE).coerceAtMost(viewportHeight)
+        return Box(left, top, viewportWidth - 2f * left, bottom - top)
+    }
+
     // 缩放只由视口与固定布局预算决定，任何菜单显隐、配件类型、属性数量都不会改变它。
     private fun editorPanelScale() =
         minOf(1f, (viewportWidth - 8f) / (PANEL_WIDTH * 2f),
@@ -1887,20 +1898,37 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
 
     /** 从期望位置向外搜索，矩形间保留 gap；极小窗口放不下时选择遮挡最少的位置。 */
     private fun findSpace(
-        x: Float, y: Float, width: Float, height: Float, obstacles: List<Box>, gap: Float, step: Float = 12f
+        x: Float, y: Float, width: Float, height: Float, obstacles: List<Box>, gap: Float, step: Float = 12f,
+        area: Box? = null, edgeLocked: Boolean = false,
     ): Box {
-        fun candidate(cx: Float, cy: Float) = Box(
-            (cx - width / 2f).coerceIn(4f, (viewportWidth - width - 4f).coerceAtLeast(4f)),
-            (cy - height / 2f).coerceIn(TITLE_BAR_HEIGHT + 4f,
-                (usableHeight() - height - 4f).coerceAtLeast(TITLE_BAR_HEIGHT + 4f)), width, height
-        )
-        var best = candidate(x, y)
+        val minX = area?.left ?: 4f
+        val minY = area?.top ?: (TITLE_BAR_HEIGHT + 4f)
+        val maxX = ((area?.right ?: (viewportWidth - 4f)) - width).coerceAtLeast(minX)
+        val maxY = ((area?.bottom ?: (usableHeight() - 4f)) - height).coerceAtLeast(minY)
+        // 先把搜索原点拉回区域内，远在屏幕外的投影也能沿边缘找到空位。
+        val anchorX = x.coerceIn(minX + width / 2f, maxX + width / 2f)
+        val anchorY = y.coerceIn(minY + height / 2f, maxY + height / 2f)
+        fun candidate(cx: Float, cy: Float): Box {
+            var left = (cx - width / 2f).coerceIn(minX, maxX)
+            var top = (cy - height / 2f).coerceIn(minY, maxY)
+            if (edgeLocked) {
+                // 就近沿边排开；一条边被占满时，搜索还能到达相邻边，不能把按钮挤在一起。
+                var edge = 0
+                var distance = left - minX
+                if (maxX - left < distance) { edge = 1; distance = maxX - left }
+                if (top - minY < distance) { edge = 2; distance = top - minY }
+                if (maxY - top < distance) edge = 3
+                when (edge) { 0 -> left = minX; 1 -> left = maxX; 2 -> top = minY; 3 -> top = maxY }
+            }
+            return Box(left, top, width, height)
+        }
+        var best = candidate(anchorX, anchorY)
         var bestOverlap = Float.POSITIVE_INFINITY
         val rings = ceil(max(viewportWidth, viewportHeight) / step).toInt()
         for (ring in 0..rings) {
             for (direction in 0 until if (ring == 0) 1 else 24) {
-                val box = candidate(x + (SEARCH_COS[direction] * ring * step).toFloat(),
-                    y + (SEARCH_SIN[direction] * ring * step).toFloat())
+                val box = candidate(anchorX + (SEARCH_COS[direction] * ring * step).toFloat(),
+                    anchorY + (SEARCH_SIN[direction] * ring * step).toFloat())
                 if (obstacles.none { box.overlaps(it, gap) }) return box
                 val overlap = obstacles.sumOf { box.overlapArea(it, gap).toDouble() }.toFloat()
                 if (overlap < bestOverlap) {

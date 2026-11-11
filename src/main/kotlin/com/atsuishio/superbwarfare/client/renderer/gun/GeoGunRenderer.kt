@@ -2462,34 +2462,30 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      *
      * 用的是**槽位登记的固定骨骼**（[AttachmentSlot.focusBone]，即 `scope_pos` / `grip_pos`
      * 这类约定名），而不是"配件自己的 Bone"——按钮位置必须稳定，不能因为装了什么配件就跳走。
-     * 骨骼不在模型里、或投影落到相机背面时该槽位不出现在结果里，界面据此隐藏按钮。
+     * 仅骨骼不存在时不提供点位；屏幕外与相机背面的点保留方向，界面将按钮放到安全区域边缘。
      *
      * 投影矩阵取采样这一刻生效的那一份，与 [submitScopeReticleSample] 同一套口径。
      */
     private fun captureMountScreenPositions(stack: ItemStack, poseStack: PoseStack, model: GeoGunModel) {
         val positions = mutableMapOf<AttachmentType, BoneScreenPoint>()
+        val window = Minecraft.getInstance().window
         for (slot in AttachmentSlots.ALL) {
             val bone = slot.focusBone ?: continue
-            val point = BedrockBoneCoordinateTool.firstPersonBonePointToScreen(
-                poseStack, model, bone, EDIT_MOUNT_POINT
-            ) ?: continue
+            val transform = model.getGlobalTransform(bone) ?: continue
+            val point = editMountScreenPoint(poseStack, transform, window.guiScaledWidth, window.guiScaledHeight) ?: continue
             positions[slot.type] = point
         }
 
         // 弹种不是一个槽位，骨骼得按模型挑：有 `ammo_pos` 就用它，否则退回弹匣的定位骨骼
-        val ammo = BedrockBoneCoordinateTool.firstPersonBonePointToScreen(
-            poseStack, model, ammoFocusBone(model), EDIT_MOUNT_POINT
-        )
+        val ammo = model.getGlobalTransform(ammoFocusBone(model))?.let {
+            editMountScreenPoint(poseStack, it, window.guiScaledWidth, window.guiScaledHeight)
+        }
 
-        val window = Minecraft.getInstance().window
         // 副武器自己的弹种定位点：拆装界面里副武器是独立一份模型，要进它自己的模型取 `ammo_pos`
         val subAmmo = subWeaponAmmoBonePoint(stack, poseStack, model, window.guiScaledWidth, window.guiScaledHeight)
 
         val stackMount = scopeStackMountTransform(stack, model)?.let {
-            BedrockBoneCoordinateTool.firstPersonBonePointToScreen(
-                poseStack, it, EDIT_MOUNT_POINT,
-                RenderSystem.getProjectionMatrix(), window.guiScaledWidth, window.guiScaledHeight
-            )
+            editMountScreenPoint(poseStack, it, window.guiScaledWidth, window.guiScaledHeight)
         }
         WeaponEditMountTracker.update(
             positions, ammo, stackMount, subAmmo, window.guiScaledWidth, window.guiScaledHeight
@@ -2518,7 +2514,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         return Matrix4f(mount).mul(ammoBone)
     }
 
-    /** 把上面那个变换投影成屏幕坐标；点位落到相机背面时为 `null` */
+    /** 把上面那个变换投影成屏幕坐标，保留屏幕外方向。 */
     private fun subWeaponAmmoBonePoint(
         stack: ItemStack,
         poseStack: PoseStack,
@@ -2527,10 +2523,24 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         screenHeight: Int,
     ): BoneScreenPoint? {
         val ammo = subWeaponAmmoTransform(stack, model) ?: return null
-        return BedrockBoneCoordinateTool.firstPersonBonePointToScreen(
-            poseStack, ammo, EDIT_MOUNT_POINT,
-            RenderSystem.getProjectionMatrix(), screenWidth, screenHeight
-        )
+        return editMountScreenPoint(poseStack, ammo, screenWidth, screenHeight)
+    }
+
+    /** 仅用于改装按钮；不改变激光、分划等场景中对相机背面点的剔除规则。 */
+    private fun editMountScreenPoint(
+        poseStack: PoseStack, transform: Matrix4f, screenWidth: Int, screenHeight: Int,
+    ): BoneScreenPoint? {
+        val view = BedrockBoneCoordinateTool.firstPersonBonePointToView(poseStack, transform, EDIT_MOUNT_POINT)
+        val projection = RenderSystem.getProjectionMatrix()
+        val point = BedrockBoneCoordinateTool.viewPointToScreen(view, projection, screenWidth, screenHeight)
+        if (point != null && point.x.isFinite() && point.y.isFinite()) return point
+        // 不能对背面点除以负 w，否则左右方向会翻转。用投影方向生成屏幕外的代理点。
+        val clip = projection.transform(Vector4f(view.x.toFloat(), view.y.toFloat(), view.z.toFloat(), 1f))
+        if (!clip.x.isFinite() || !clip.y.isFinite() || !clip.w.isFinite()) return null
+        val direction = max(kotlin.math.abs(clip.x), kotlin.math.abs(clip.y))
+        val dx = if (direction > 0.000001f) clip.x / direction else 0f
+        val dy = if (direction > 0.000001f) clip.y / direction else -1f
+        return BoneScreenPoint((0.5f + dx) * screenWidth, (0.5f - dy) * screenHeight, 0f, false)
     }
 
     private fun scopeStackMountTransform(stack: ItemStack, model: GeoGunModel): Matrix4f? {
