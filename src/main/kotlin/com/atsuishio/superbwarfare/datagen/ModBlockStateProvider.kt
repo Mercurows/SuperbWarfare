@@ -19,6 +19,9 @@ class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper
     BlockStateProvider(output, Mod.MODID, exFileHelper) {
     override fun registerStatesAndModels() {
         horizontalBlock(ModBlocks.BARBED_WIRE.get(), UncheckedModelFile(modLoc("block/barbed_wire")))
+        simpleBlock(ModBlocks.HIGH_ENERGY_EXPLOSIVES_BLOCK.get(), models().cubeBottomTop(
+            "high_energy_explosives_block", modLoc("block/high_energy_explosives_block_side"),
+            modLoc("block/high_energy_explosives_block_bottom"), modLoc("block/high_energy_explosives_block_top")))
         val boobyTrapOn = models().cubeAll("booby_trap", modLoc("block/booby_trap"))
         val boobyTrapOff = models().cubeAll("booby_trap_off", modLoc("block/booby_trap_off"))
         getVariantBuilder(ModBlocks.BOOBY_TRAP.get()).forAllStates { state ->

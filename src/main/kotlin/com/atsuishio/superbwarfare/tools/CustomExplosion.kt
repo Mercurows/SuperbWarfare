@@ -686,8 +686,8 @@ open class CustomExplosion @JvmOverloads constructor(
                 .setBeast(beast)
                 .setExcludeDirectSource(!includeDirectSource)
 
+            if (EventHooks.onExplosionStart(level, customExplosion)) return
             customExplosion.explode()
-            EventHooks.onExplosionStart(directSource.level(), customExplosion)
             customExplosion.finalizeExplosion(false)
 
             // Auto-detect particle type from radius if not explicitly set

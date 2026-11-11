@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "a": {
+      "item": "superbwarfare:high_energy_explosives"
+    },
+    "b": {
+      "tag": "minecraft:sand"
+    }
+  },
+  "pattern": [
+    "aba",
+    "bab",
+    "aba"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:high_energy_explosives_block"
+  }
+}

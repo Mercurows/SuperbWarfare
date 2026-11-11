@@ -418,6 +418,7 @@
   "block.superbwarfare.jump_pad": "弹射台",
   "block.superbwarfare.sandbag": "沙袋",
   "block.superbwarfare.barbed_wire": "铁丝网",
+  "block.superbwarfare.high_energy_explosives_block": "高能炸药块",
   "block.superbwarfare.booby_trap": "伪装诡雷",
   "block.superbwarfare.galena_ore": "方铅矿石",
   "block.superbwarfare.scheelite_ore": "白钨矿石",
@@ -1048,6 +1049,7 @@
   "entity.superbwarfare.m84_stun_grenade": "M84震爆弹",
   "entity.superbwarfare.sea_mine": "水雷",
   "entity.superbwarfare.decoy_grenade": "诱饵弹",
+  "entity.superbwarfare.high_energy_explosives": "引燃的高能炸药",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.move_forward": "前进/提升油门",
