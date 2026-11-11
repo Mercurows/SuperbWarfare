@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.ParticleTool
+import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.Packet
@@ -15,6 +16,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.MoverType
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.BaseFireBlock
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.network.NetworkHooks
 
@@ -83,6 +85,7 @@ open class SmokeDecoyEntity : Entity {
 
     override fun tick() {
         super.tick()
+        this.clearFire()
         this.move(MoverType.SELF, this.deltaMovement)
         if (tickCount == this.igniteTime) {
             if (releaseSmoke) {
@@ -133,6 +136,24 @@ open class SmokeDecoyEntity : Entity {
 
         if (this.tickCount > this.life) {
             this.discard()
+            return
+        }
+
+        val level = this.level()
+        if (level is ServerLevel && tickCount >= igniteTime && (tickCount - igniteTime) % 5 == 0) {
+            extinguishFire(level)
+        }
+    }
+
+    private fun extinguishFire(level: ServerLevel) {
+        val box = boundingBox
+        for (pos in BlockPos.betweenClosed(
+            Mth.floor(box.minX), Mth.floor(box.minY), Mth.floor(box.minZ),
+            Mth.floor(box.maxX), Mth.floor(box.maxY), Mth.floor(box.maxZ)
+        )) {
+            if (level.hasChunkAt(pos) && level.getBlockState(pos).block is BaseFireBlock) {
+                level.removeBlock(pos, false)
+            }
         }
     }
 
