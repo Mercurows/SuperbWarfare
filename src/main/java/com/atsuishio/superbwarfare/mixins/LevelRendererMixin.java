@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightRenderer;
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -34,6 +35,7 @@ public class LevelRendererMixin {
     private void onStartRenderLevel(PoseStack $$0, float tickDelta, long $$2, boolean $$3, Camera $$4, GameRenderer $$5, LightTexture $$6, Matrix4f $$7, CallbackInfo ci) {
         ClientEventHandler.modelViewMatrix = RenderSystem.getModelViewMatrix();
         ClientEventHandler.projectionMatrix = RenderSystem.getProjectionMatrix();
+        GunMuzzleLightRenderer.captureWorld(ClientEventHandler.modelViewMatrix, ClientEventHandler.projectionMatrix);
     }
 
     // 热成像不再需要给实体整体提亮：热源轮廓来自 ScopeThermalRenderer 的遮罩，这里只负责把几何喂给它。

@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
 import com.atsuishio.superbwarfare.client.animation.gun.GunDrawAnimation
 import com.atsuishio.superbwarfare.client.animation.gun.GunSprintAnimation
 import com.atsuishio.superbwarfare.client.gun.*
+import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightRenderer
 import com.atsuishio.superbwarfare.client.lighting.LightPositionRegistry
 import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
 import com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
@@ -889,6 +890,7 @@ object ClientEventHandler {
         scopeThermalEnabled = true
         ReforgingGravityBallRenderer.clearWorldEffects()
         ScopeLensPostProcessor.close()
+        GunMuzzleLightRenderer.close()
         com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer.close()
     }
 
@@ -2332,12 +2334,6 @@ object ClientEventHandler {
             subWeaponFireRotTimer = 0.0
             subWeaponRecoilTimer = 0.0
             fireRecoilTime = 10.0
-        }
-
-        // Spawn dynamic block light muzzle flash for firearms using unified muzzle node
-        val flashParams = MuzzleFlashHelper.calculateFromStack(stack)
-        if (flashParams != null) {
-            MuzzleFlashHelper.spawnFlashCone(player.eyePosition, player.lookAngle, flashParams)
         }
 
         // 真实后坐（

@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
 import com.atsuishio.superbwarfare.client.charm.CharmRuntime
 import com.atsuishio.superbwarfare.client.charm.CharmSnapshot
+import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightHandler
 import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
@@ -330,6 +331,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedOverlay: Int,
         partialTick: Float
     ) {
+        val packedLight = if (transformType.firstPerson()) {
+            GunMuzzleLightHandler.firstPersonLight(packedLight)
+        } else packedLight
         handledScopeAttachment = null
         if (StaticGunRenderer.tryRender(
                 stack, transformType, poseStack, bufferSource, packedLight, packedOverlay
@@ -2169,8 +2173,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 Vec3(worldAxis.x.toDouble(), worldAxis.y.toDouble(), worldAxis.z.toDouble())
         }
 
-        if (!MuzzleFlashRenderer.isFiring()) return
-
         // 枪口在相机空间里的位置
         val muzzle = muzzleTransform.getTranslation(Vector3f())
 
@@ -2184,6 +2186,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val offset = cameraRotationInverse().transformPosition(
             Vector3f(adjusted.x.toFloat(), adjusted.y.toFloat(), adjusted.z.toFloat())
         )
+        localPlayer?.takeIf { localFirstPersonHand == InteractionHand.MAIN_HAND }?.let { holder ->
+            GunMuzzleLightHandler.sample(holder, ActiveGun.stackOf(holder),
+                Minecraft.getInstance().gameRenderer.mainCamera.position.add(
+                    Vec3(offset.x.toDouble(), offset.y.toDouble(), offset.z.toDouble())),
+                ClientRenderHandler.muzzleDirection ?: holder.lookAngle)
+        }
+        if (!MuzzleFlashRenderer.isFiring()) return
         ClientRenderHandler.bulletRenderOffset =
             Vec3(offset.x.toDouble(), offset.y.toDouble(), offset.z.toDouble())
     }

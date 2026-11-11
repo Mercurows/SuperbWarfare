@@ -1,0 +1,19 @@
+{
+  "vertex": "superbwarfare:gun_muzzle_light",
+  "fragment": "superbwarfare:gun_muzzle_light",
+  "attributes": ["Position"],
+  "blend": {"func":"add","srcrgb":"1","dstrgb":"1","srcalpha":"0","dstalpha":"1"},
+  "samplers": [{"name":"SceneColor"}, {"name":"SceneDepth"}, {"name":"WorldDepth"}],
+  "uniforms": [
+    {"name":"InverseProjection","type":"matrix4x4","count":16,"values":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]},
+    {"name":"InverseView","type":"matrix4x4","count":16,"values":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]},
+    {"name":"Projection","type":"matrix4x4","count":16,"values":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]},
+    {"name":"View","type":"matrix4x4","count":16,"values":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]},
+    {"name":"TexelSize","type":"float","count":2,"values":[1,1]},
+    {"name":"ShaderPackMode","type":"int","count":1,"values":[0]},
+    {"name":"LightPosition","type":"float","count":3,"values":[0,0,0]},
+    {"name":"LightDirection","type":"float","count":3,"values":[0,0,-1]},
+    {"name":"LightRadius","type":"float","count":1,"values":[1]},
+    {"name":"LightStrength","type":"float","count":1,"values":[0]}
+  ]
+}

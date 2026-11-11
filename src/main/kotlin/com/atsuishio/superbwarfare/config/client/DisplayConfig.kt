@@ -225,6 +225,20 @@ object DisplayConfig {
     }
 
     @JvmField
+    val MUZZLE_LIGHT_LIMIT = buildClientConfig {
+        comment("Maximum simultaneous gun muzzle shader lights; nearest sources and the local player have priority")
+        comment("枪口 shader 光源数量上限，优先保留本地玩家与近处光源")
+        defineInRange("muzzle_light_limit", 16, 1, 32)
+    }
+
+    @JvmField
+    val MUZZLE_LIGHT_STRENGTH = buildClientConfig {
+        comment("Intensity multiplier for gun muzzle environment and first-person lighting")
+        comment("枪口环境照明与第一人称补光的强度倍率")
+        defineInRange("muzzle_light_strength", 1.0, 0.0, 2.0)
+    }
+
+    @JvmField
     val TACTICAL_MAP_ZOOM = buildClientConfig {
         comment("Zoom level for the tactical map (1=closest, 10=farthest)")
         comment("战术地图缩放等级")
