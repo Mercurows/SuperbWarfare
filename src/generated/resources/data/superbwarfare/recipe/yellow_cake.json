@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "c:ingots/uranium"
+    },
+    {
+      "tag": "c:ingots/uranium"
+    },
+    {
+      "tag": "c:ingots/uranium"
+    },
+    {
+      "tag": "c:ingots/uranium"
+    },
+    {
+      "item": "minecraft:water_bucket"
+    },
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "tag": "minecraft:coals"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:yellow_cake"
+  }
+}

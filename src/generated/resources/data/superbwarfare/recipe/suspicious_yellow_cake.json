@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "superbwarfare:yellow_cake"
+    },
+    {
+      "item": "superbwarfare:crust"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:suspicious_yellow_cake"
+  }
+}
