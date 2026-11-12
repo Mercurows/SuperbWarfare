@@ -26,6 +26,26 @@
       }
     ]
   },
+  "a_762_fire_1p": {
+    "sounds": [
+      "superbwarfare:gun/a_762/a_762_fire_1p"
+    ]
+  },
+  "a_762_fire_1p_s": {
+    "sounds": [
+      "superbwarfare:gun/a_762/a_762_fire_1p_s"
+    ]
+  },
+  "a_762_fire_3p": {
+    "sounds": [
+      "superbwarfare:gun/a_762/a_762_fire_3p"
+    ]
+  },
+  "a_762_fire_3p_s": {
+    "sounds": [
+      "superbwarfare:gun/a_762/a_762_fire_3p_s"
+    ]
+  },
   "aa_12_bolt_close": {
     "sounds": [
       "superbwarfare:gun/aa_12/aa_12_bolt_close"

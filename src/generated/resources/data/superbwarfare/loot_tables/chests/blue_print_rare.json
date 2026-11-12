@@ -221,6 +221,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:a_762_blueprint",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:mk_42_blueprint",
           "weight": 3
         },

@@ -1,0 +1,99 @@
+{
+  "SlotIcon": "superbwarfare:textures/item/a_762_icon.png",
+  "Animation": {
+    "Idle": "animation.a_762.idle",
+    "Fire": "animation.a_762.fire",
+    "ChangeFireMode": "animation.a_762.change_fire_mode",
+    "ReloadNormal": "animation.a_762.reload_normal",
+    "ReloadEmpty": "animation.a_762.reload_empty",
+    "Edit": "animation.a_762.edit",
+    "ReloadNormalDrum": "animation.a_762.reload_normal_drum",
+    "ReloadEmptyDrum": "animation.a_762.reload_empty_drum",
+    "Melee": "animation.a_762.hit",
+    "BayonetCharge": "animation.a_762.bayonet_charge",
+    "BayonetChargeHit": "animation.a_762.bayonet_charge_hit"
+  },
+  "ShootRecoil": {
+    "Offset": [
+      0.85,
+      0.8,
+      0.45
+    ],
+    "Rotation": [
+      0.16,
+      0.28,
+      0.48
+    ],
+    "ZoomRate": 0.5,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/a_762.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/a_762.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/a_762.png"
+  },
+  "FlareSize": 2,
+  "HasSmoke": true,
+  "MuzzleFx": {
+    "Trigger": "shot",
+    "Flash": {
+      "Length": 0.85,
+      "Duration": 0.041
+    },
+    "Smoke": {
+      "TailCount": 1
+    },
+    "Sparks": {
+      "Probability": 0.1,
+      "MaxCount": 2
+    }
+  },
+  "Smoke": {
+    "Size": 0.01,
+    "Growth": 1.5,
+    "Lifetime": 0.2,
+    "Speed": 5,
+    "Count": 2,
+    "Opacity": 0.35,
+    "Drag": 10,
+    "RandomSize": 0.2,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.05,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.05
+  },
+  "EjectShell": true,
+  "ShellEject": {
+    "BoneName": "shell",
+    "ShellModel": "superbwarfare:models/bedrock/shell/rifle_shell_steel.geo.json",
+    "ShellTexture": "superbwarfare:textures/bedrock/shell/rifle_shell_steel.png",
+    "Size": 0.6,
+    "InitialVelocity": [
+      5.8,
+      3.2,
+      -0.75
+    ],
+    "RandomVelocity": [
+      0.7,
+      0.6,
+      0.3
+    ],
+    "Acceleration": [
+      0,
+      -16,
+      0
+    ],
+    "AngularVelocity": [
+      -1800,
+      -2000,
+      240
+    ],
+    "RandomAngle": [
+      60,
+      60,
+      360
+    ],
+    "LivingTime": 0.8,
+    "MaxActive": 24
+  }
+}

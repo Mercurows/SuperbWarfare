@@ -117,6 +117,7 @@ object ModItems {
     @JvmField val VECTOR = registerGun("vector") { GeoGunItem(Properties().rarity(Rarity.EPIC)) }
     @JvmField val AK_47 = registerGun("ak_47") { GeoGunItem(Properties().rarity(Rarity.RARE)) }
     @JvmField val AK_12 = registerGun("ak_12") { GeoGunItem(Properties().rarity(Rarity.RARE)) }
+    @JvmField val A_762 = registerGun("a_762") { GeoGunItem(Properties().rarity(LEGENDARY)) }
     @JvmField val SKS = registerGun("sks") { GeoGunItem(Properties().rarity(Rarity.RARE)) }
     @JvmField val M_4 = registerGun("m_4") { GeoGunItem(Properties().rarity(Rarity.RARE)) }
     @JvmField val HK_416 = registerGun("hk_416") { GeoGunItem(Properties().rarity(Rarity.RARE)) }
@@ -478,6 +479,7 @@ object ModItems {
     @JvmField val M_98B_BLUEPRINT = registerBlueprint("m_98b_blueprint", Rarity.EPIC)
     @JvmField val AK_47_BLUEPRINT = registerBlueprint("ak_47_blueprint", Rarity.RARE)
     @JvmField val AK_12_BLUEPRINT = registerBlueprint("ak_12_blueprint", Rarity.RARE)
+    @JvmField val A_762_BLUEPRINT = registerBlueprint("a_762_blueprint", LEGENDARY)
     @JvmField val DEVOTION_BLUEPRINT = registerBlueprint("devotion_blueprint", Rarity.EPIC)
     @JvmField val TASER_BLUEPRINT = registerBlueprint("taser_blueprint", Rarity.COMMON)
     @JvmField val M_1911_BLUEPRINT = registerBlueprint("m_1911_blueprint", Rarity.COMMON)

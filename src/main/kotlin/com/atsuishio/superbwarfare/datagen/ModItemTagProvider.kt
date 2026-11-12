@@ -202,6 +202,7 @@ class ModItemTagProvider(
         this.tag(ModTags.Items.ANIMATED_RIFLE).add(
             ModItems.AK_47.get(),
             ModItems.AK_12.get(),
+            ModItems.A_762.get(),
             ModItems.SKS.get(),
             ModItems.M_4.get(),
             ModItems.HK_416.get(),
@@ -259,6 +260,7 @@ class ModItemTagProvider(
             ModItems.MARLIN.get(),
             ModItems.AK_47.get(),
             ModItems.AK_12.get(),
+            ModItems.A_762.get(),
             ModItems.QBZ_95.get(),
             ModItems.QBZ_191.get()
         )
@@ -348,6 +350,7 @@ class ModItemTagProvider(
             ModItems.ANNIHILATOR_BLUEPRINT.get(),
             ModItems.HPJ_11_BLUEPRINT.get(),
             ModItems.BL_132_BLUEPRINT.get(),
+            ModItems.A_762_BLUEPRINT.get(),
         )
 
         this.tag(ModTags.Items.SUPERB_BLUEPRINT).add(

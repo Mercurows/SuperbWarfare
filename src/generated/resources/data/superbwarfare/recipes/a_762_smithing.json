@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "tag": "forge:plates/plastic"
+  },
+  "base": {
+    "item": "superbwarfare:legendary_material_pack"
+  },
+  "result": {
+    "item": "superbwarfare:a_762"
+  },
+  "template": {
+    "item": "superbwarfare:a_762_blueprint"
+  }
+}

@@ -27,6 +27,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         // gun
         gunItem(ModItems.AA_12)
         gunItem(ModItems.AK_12)
+        gunItem(ModItems.A_762)
         gunItem(ModItems.AK_47)
         gunItem(ModItems.BOCEK)
         gunItem(ModItems.DEVOTION)
@@ -312,6 +313,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunBlueprintItem(ModItems.AWM_BLUEPRINT)
         gunBlueprintItem(ModItems.M_98B_BLUEPRINT)
         gunBlueprintItem(ModItems.AK_12_BLUEPRINT)
+        gunBlueprintItem(ModItems.A_762_BLUEPRINT)
         gunBlueprintItem(ModItems.AK_47_BLUEPRINT)
         gunBlueprintItem(ModItems.DEVOTION_BLUEPRINT)
         gunBlueprintItem(ModItems.TASER_BLUEPRINT)
