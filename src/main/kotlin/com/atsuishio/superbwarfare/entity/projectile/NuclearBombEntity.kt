@@ -1,28 +1,33 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
+import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.network.message.receive.NuclearExplosionMessage
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage
+import com.atsuishio.superbwarfare.tools.CustomExplosion
 import kotlinx.serialization.Serializable
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.level.Explosion
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
+import net.minecraftforge.event.ForgeEventFactory
 
-open class NuclearBombEntity(type: EntityType<out NuclearBombEntity>, level: Level) :
+open class NuclearBombEntity(type: EntityType<out NuclearBombEntity>, level: Level, animated: Boolean = true) :
     FastThrowableProjectile(type, level), BasicGeoProjectileEntity {
     private val anim: BasicProjectileAnimationInstance<*>? =
-        if (level.isClientSide) BasicProjectileAnimationInstance(
+        if (animated && level.isClientSide) BasicProjectileAnimationInstance(
             this, loop = true, loopAnimation = "animation.projectile.flight"
         ) else null
 
     init {
-        this.explosionDestroyValue = false
+        this.explosionRadiusValue = NuclearExplosionParameters.DEFAULT_RADIUS
+        this.explosionDamageValue = 1000f
     }
 
     /** Null follows the projectile's explosion radius; height and duration are independent. */
@@ -83,8 +88,24 @@ open class NuclearBombEntity(type: EntityType<out NuclearBombEntity>, level: Lev
         val level = level() as? ServerLevel ?: return
         if (exploded) return
         exploded = true
-        NuclearExplosionMessage.send(level, vec3, getNuclearExplosionParameters())
+        val blastRadius = getExplosionRadius().let {
+            if (it.isFinite() && it > 0f) it.coerceIn(1f, 4096f) else NuclearExplosionParameters.DEFAULT_RADIUS
+        }
+        val effect = getNuclearExplosionParameters()
+        val explosion = CustomExplosion(
+            level, this, ModDamageTypes.causeCustomExplosionDamage(level.registryAccess(), this, owner), null,
+            getExplosionDamage(), vec3.x, vec3.y, vec3.z, blastRadius,
+            if (hasExplosionDestroy()) Explosion.BlockInteraction.DESTROY else Explosion.BlockInteraction.KEEP
+        ).setDropBlocks(false).setBlockDestructionRadius(blastRadius)
+            .setBlockDestructionDuration((effect.durationTicks / 5).coerceIn(1, 80))
+        if (ForgeEventFactory.onExplosionStart(level, explosion)) {
+            discard()
+            return
+        }
+        NuclearExplosionMessage.send(level, vec3, effect)
         ShakeClientMessage.sendToNearbyPlayers(level, vec3.x, vec3.y, vec3.z, 384.0, 35.0, 8.0)
+        explosion.explode()
+        explosion.finalizeExplosion(false)
         this.discard()
     }
 

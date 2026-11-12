@@ -12,25 +12,23 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.item.ItemStack
 
-class FoodRainAtomBombItemRenderer(dispatcher: BlockEntityRenderDispatcher, models: EntityModelSet) :
+class NuclearBombItemRenderer(dispatcher: BlockEntityRenderDispatcher, models: EntityModelSet, modelId: String) :
     BlockEntityWithoutLevelRenderer(dispatcher, models) {
+    private val modelLocation = loc("models/bedrock/projectile/$modelId.geo.json")
+    private val textureLocation = loc("textures/bedrock/projectile/$modelId.png")
+
     override fun renderByItem(
         stack: ItemStack, context: ItemDisplayContext, pose: PoseStack,
         buffer: MultiBufferSource, light: Int, overlay: Int
     ) {
-        val instance = instance ?: return
+        // Resolve the model after resource loading, including subsequent resource reloads.
+        val instance = ProjectileModelReloadListener.getModel(modelLocation)?.createInstance() ?: return
         pose.pushPose()
         pose.translate(0.5, 0.5, 0.5)
         instance.renderToBuffer(
-            pose, buffer, RenderType.entityCutout(TEXTURE),
-            BedrockModelRenderTypes.polyMeshCutout(TEXTURE), light, overlay
+            pose, buffer, RenderType.entityCutout(textureLocation),
+            BedrockModelRenderTypes.polyMeshCutout(textureLocation), light, overlay
         )
         pose.popPose()
-    }
-
-    companion object {
-        val MODEL = loc("models/bedrock/projectile/food_rain_atom_bomb.geo.json")
-        val TEXTURE = loc("textures/bedrock/projectile/food_rain_atom_bomb.png")
-        val instance = ProjectileModelReloadListener.getModel(MODEL)?.createInstance()
     }
 }
