@@ -84,7 +84,7 @@ open class MolotovEntity(type: EntityType<out MolotovEntity>, level: Level) :
         cloud.waitTime = 0
         cloud.duration = duration * 20
         cloud.particle = ParticleTypes.FLAME
-        cloud.addEffect(MobEffectInstance(ModMobEffects.BURN.get(), 60, 0))
+        cloud.addEffect(MobEffectInstance(ModMobEffects.BURN, 60, 0))
         level.addFreshEntity(cloud)
     }
 

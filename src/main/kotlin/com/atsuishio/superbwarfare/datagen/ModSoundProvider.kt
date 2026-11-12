@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.datagen
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.datagen.ModSoundProvider.Companion.subKey
 import net.minecraft.data.PackOutput
 import net.neoforged.neoforge.common.data.ExistingFileHelper
 import net.neoforged.neoforge.common.data.SoundDefinition
@@ -271,6 +270,11 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         group(
             "gun/ak_47", "ak_47_fire_1p", "ak_47_fire_1p_s", "ak_47_fire_3p", "ak_47_fire_3p_s", "ak_47_far",
             "ak_47_veryfar", "ak_47_mag_in", "ak_47_mag_out", "ak_47_bolt",
+        )
+
+        // -------------------- gun/a_762 --------------------
+        group(
+            "gun/a_762", "a_762_fire_1p", "a_762_fire_3p", "a_762_fire_1p_s", "a_762_fire_3p_s",
         )
 
         // -------------------- gun/aurelia_sceptre --------------------

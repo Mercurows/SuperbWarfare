@@ -1,0 +1,212 @@
+{
+  "Spread": 5.2,
+  "TacticalReload": true,
+  "HasBarrelBullet": true,
+  "RecoilX": 0.0006,
+  "RecoilY": 0.008,
+  "Damage": 9,
+  "Headshot": 2,
+  "Velocity": 20,
+  "Magazine": [
+    30,
+    40,
+    70
+  ],
+  "DrumLevels": 2,
+  "MeleeDamage": 5,
+  "MeleeDuration": 16,
+  "MeleeComboReset": 15,
+  "MeleeHitbox": {
+    "Type": "Box",
+    "Range": 1.5,
+    "Width": 1.8,
+    "Height": 1.8,
+    "YOffset": -0.2,
+    "Occlusion": true
+  },
+  "MeleeSweep": {
+    "From": 0,
+    "To": 0
+  },
+  "MeleeActions": [
+    {
+      "Animation": "hit",
+      "Duration": 16,
+      "HitTime": 6,
+      "MaxTargets": 8,
+      "Falloff": 0.1,
+      "SortBy": "Angle",
+      "Knockback": 0.3,
+      "Headshot": 1.25,
+      "Legshot": 0.75
+    }
+  ],
+  "BayonetCharge": {
+    "Duration": 180,
+    "Speed": 2,
+    "Cooldown": 300,
+    "Sound": "superbwarfare:lunge_mine_growl",
+    "StrikeDuration": 18,
+    "StrikeHitTime": 1,
+    "StrikeDamage": 50
+  },
+  "Weight": 4.2,
+  "DrawTime": 11,
+  "ZoomTime": 6,
+  "DefaultFireMode": "Auto",
+  "NormalReloadTime": [
+    48,
+    48,
+    56
+  ],
+  "EmptyReloadTime": [
+    64,
+    64,
+    72
+  ],
+  "BypassesArmor": 0.25,
+  "SoundRadius": 12,
+  "RPM": 900,
+  "GunType": "Rifle",
+  "AvailableFireModes": [
+    "Semi",
+    "Auto"
+  ],
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
+  "Icon": "superbwarfare:textures/gun_icon/a_762_icon.png",
+  "AmmoType": "@RifleAmmo",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:practice_makes_perfect",
+    "superbwarfare:crushing_force",
+    "superbwarfare:striving_for_perfection",
+    "superbwarfare:heal_clip",
+    "superbwarfare:field_doctor",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:turbo_charger",
+    "superbwarfare:regeneration",
+    "superbwarfare:kill_clip",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:head_seeker",
+    "superbwarfare:desperado",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:firefly",
+    "superbwarfare:fair_means",
+    "superbwarfare:high_impact_reserves",
+    "superbwarfare:brain_storm",
+    "superbwarfare:target_lock",
+    "superbwarfare:stop_gap",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights",
+    "superbwarfare:triple_tap",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve",
+    "!superbwarfare:arrsow_discord",
+    "!superbwarfare:chain_lightning",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:cluster_bomb"
+  ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_raiser",
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_aimpoint_t2",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_drs_th",
+      "superbwarfare:scope_okp_7",
+      "superbwarfare:scope_pkas",
+      "superbwarfare:scope_bruiser",
+      "superbwarfare:scope_ranger",
+      "superbwarfare:scope_1p_78",
+      "superbwarfare:scope_pk_a",
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_qmk171",
+      "superbwarfare:scope_hamr",
+      "superbwarfare:scope_elcan_4x",
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper",
+      "superbwarfare:scope_hanyang_88_re_standard",
+      "superbwarfare:scope_winefox",
+      "superbwarfare:steel_pipe_scope",
+      "superbwarfare:scope_spyglass"
+    ],
+    "Magazine": [
+      "superbwarfare:magazine_extend",
+      "superbwarfare:magazine_extend_pro"
+    ],
+    "Grip": [
+      "superbwarfare:vertical_grip",
+      "superbwarfare:grip_vertical_pineapple",
+      "superbwarfare:grip_vertical_bipod",
+      "superbwarfare:grip_rectangle_vertical",
+      "superbwarfare:triangle_grip",
+      "superbwarfare:grip_cqr_gen2",
+      "superbwarfare:steel_pipe_grip"
+    ],
+    "Muzzle": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:ru_silencer",
+      "superbwarfare:muzzle_brake_ru",
+      "superbwarfare:muzzle_brake_ar",
+      "superbwarfare:muzzle_break_birdcage",
+      "superbwarfare:muzzle_zenit_dtk_1",
+      "superbwarfare:muzzle_compensator_r_17",
+      "superbwarfare:ar_silencer",
+      "superbwarfare:loudspeaker",
+      "superbwarfare:steel_pipe_silencer",
+      "superbwarfare:bayonet_6kh2",
+      "superbwarfare:milencer"
+    ],
+    "SubWeapon": [
+      "superbwarfare:sub_weapon_gp_25"
+    ],
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ],
+    "LowerRail": [
+      "superbwarfare:lower_rail_bipod",
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
+    ],
+    "UpperRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:standard_gun_shield",
+      "superbwarfare:pistol_laser",
+      "superbwarfare:hyperion_shield_module"
+    ],
+    "LeftRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:range_finder",
+      "superbwarfare:pistol_laser"
+    ],
+    "RightRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
+    ]
+  },
+  "AttachmentConflicts": {
+    "Grip": [
+      "LowerRail"
+    ]
+  },
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:a_762_fire_1p",
+    "Fire3P": "superbwarfare:a_762_fire_3p",
+    "Fire3PFar": "superbwarfare:ak_12_far",
+    "Fire3PVeryFar": "superbwarfare:ak_12_veryfar",
+    "Fire1PSilent": "superbwarfare:a_762_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:a_762_fire_3p_s"
+  }
+}

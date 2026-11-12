@@ -218,6 +218,11 @@
           "type": "minecraft:item",
           "name": "superbwarfare:hanyang_88_re_blueprint",
           "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:a_762_blueprint",
+          "weight": 5
         }
       ],
       "rolls": 1.0

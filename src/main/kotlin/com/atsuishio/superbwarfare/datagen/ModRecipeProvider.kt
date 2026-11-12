@@ -2820,6 +2820,13 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
             )
             gunSmithing(
                 writer,
+                ModItems.A_762_BLUEPRINT.get(),
+                GunRarity.LEGENDARY,
+                PLATES_PLASTIC,
+                ModItems.A_762.get()
+            )
+            gunSmithing(
+                writer,
                 ModItems.DEVOTION_BLUEPRINT.get(),
                 GunRarity.EPIC,
                 ModTags.Items.INGOTS_CEMENTED_CARBIDE,
@@ -2989,6 +2996,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
             copyBlueprint(writer, ModItems.M_98B_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.AK_47_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.AK_12_BLUEPRINT.get())
+            copyBlueprint(writer, ModItems.A_762_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.DEVOTION_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.TASER_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.M_1911_BLUEPRINT.get())
