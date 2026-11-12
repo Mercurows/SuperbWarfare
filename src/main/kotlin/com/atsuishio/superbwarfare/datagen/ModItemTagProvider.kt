@@ -740,6 +740,32 @@ class ModItemTagProvider(
                     .toTypedArray()
             )
         }
+
+        // 皮卡汀尼标准瞄准镜：标准导轨枪械通用的那一组镜，顺序与枪械 Scope 列表保持一致。
+        // 枪械的 AvailableAttachments.Scope 里写 "#superbwarfare:attachment/scope/picatinny" 即可整组引用。
+        this.tag(ModTags.Items.ATTACHMENT_SCOPE_PICATINNY).add(
+            ModItems.SCOPE_RAISER.get(),
+            ModItems.SCOPE_COYOTE.get(),
+            ModItems.SCOPE_AIMPOINT_T2.get(),
+            ModItems.SCOPE_EOTECH_551.get(),
+            ModItems.SCOPE_DRS_TH.get(),
+            ModItems.SCOPE_OKP_7.get(),
+            ModItems.SCOPE_PKAS.get(),
+            ModItems.SCOPE_BRUISER.get(),
+            ModItems.SCOPE_RANGER.get(),
+            ModItems.SCOPE_1P_78.get(),
+            ModItems.SCOPE_PK_A.get(),
+            ModItems.SCOPE_ACOG.get(),
+            ModItems.SCOPE_QMK171.get(),
+            ModItems.SCOPE_HAMR.get(),
+            ModItems.SCOPE_ELCAN_4X.get(),
+            ModItems.SCOPE_LPVO.get(),
+            ModItems.SCOPE_SNIPER.get(),
+            ModItems.SCOPE_HANYANG_88_RE_STANDARD.get(),
+            ModItems.SCOPE_WINEFOX.get(),
+            ModItems.SCOPE_SPYGLASS.get(),
+            ModItems.STEEL_PIPE_SCOPE.get(),
+        )
     }
 
     /** 按物品自身的稀有度把它落进 [slot] 的对应子 tag */

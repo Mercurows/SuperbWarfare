@@ -102,7 +102,7 @@
   ],
   "ReloadTypesWithAttachment": {
     "Scope": [
-      "Iterative"
+      "#superbwarfare:attachment/scope/picatinny"
     ]
   },
   "EmptyReloadTime": 49,
