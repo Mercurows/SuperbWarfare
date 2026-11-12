@@ -53,41 +53,25 @@
       "superbwarfare:scope_handgun_red_dot"
     ],
     "Grip": [
-      "superbwarfare:vertical_grip",
-      "superbwarfare:grip_vertical_pineapple",
-      "superbwarfare:grip_vertical_bipod",
-      "superbwarfare:grip_rectangle_vertical",
-      "superbwarfare:triangle_grip",
-      "superbwarfare:steel_pipe_grip",
-      "superbwarfare:grip_cqr_gen2"
+      "#superbwarfare:attachment/grip/standard"
     ],
     "Stock": [
       "superbwarfare:oem_stock_heavy"
     ],
     "Muzzle": [
-      "superbwarfare:meowlencer",
-      "superbwarfare:hissilencer",
-      "superbwarfare:silaowuncer",
-      "superbwarfare:loudspeaker",
+      "#superbwarfare:attachment/muzzle/standard",
       "superbwarfare:handgun_silencer",
-      "superbwarfare:osprey_silencer",
-      "superbwarfare:steel_pipe_silencer",
-      "superbwarfare:milencer"
+      "superbwarfare:osprey_silencer"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
     ],
     "LowerRail": [
-      "superbwarfare:lower_rail_bipod",
-      "superbwarfare:peq_15",
-      "superbwarfare:pistol_laser",
+      "#superbwarfare:attachment/lower_rail/standard",
       "superbwarfare:handgun_shield"
     ],
     "UpperRail": [
-      "superbwarfare:peq_15",
-      "superbwarfare:pistol_laser",
-      "superbwarfare:hyperion_shield_module",
-      "superbwarfare:standard_gun_shield"
+      "#superbwarfare:attachment/upper_rail/standard"
     ]
   },
   "AvailablePerks": [

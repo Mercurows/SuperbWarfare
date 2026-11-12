@@ -87,7 +87,7 @@
   },
   "AvailableAttachments": {
     "SubWeapon": [
-      "superbwarfare:sub_weapon_gp_25"
+      "#superbwarfare:attachment/subweapon/standard"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
