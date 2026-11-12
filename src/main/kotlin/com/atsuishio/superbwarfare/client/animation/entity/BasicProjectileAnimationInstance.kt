@@ -8,9 +8,10 @@ import net.minecraft.world.entity.Entity
 
 open class BasicProjectileAnimationInstance<T>(
     entity: T,
-    loop: Boolean = false
+    loop: Boolean = false,
+    loopAnimation: String = "animation.projectile.idle"
 ) where T : Entity, T : BasicGeoProjectileEntity {
-    val context = BasicProjectileContext(entity, getAnimationLocation(entity), loop)
+    val context = BasicProjectileContext(entity, getAnimationLocation(entity), loop, loopAnimation)
     private val stateMachine: AnimationStateMachine<BasicProjectileContext<*>> =
         AnimationStateMachine(BasicProjectileStates.INIT, context) { System.nanoTime() }
 

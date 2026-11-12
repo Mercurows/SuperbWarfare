@@ -121,6 +121,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.AC_130H.get(), ::Ac130hRenderer)
             registerEntityRenderer(ModEntities.J_16.get(), ::J16Renderer)
             registerEntityRenderer(ModEntities.FIM_92_MISSILE.get(), ::BasicProjectileRenderer)
+            registerEntityRenderer(ModEntities.FOOD_RAIN_ATOM_BOMB.get(), ::BasicProjectileRenderer)
         }
     }
 }

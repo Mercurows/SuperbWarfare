@@ -249,6 +249,7 @@
   "item.superbwarfare.medium_anti_ground_missile": "中型对地导弹",
   "item.superbwarfare.large_anti_ground_missile": "大型对地导弹",
   "item.superbwarfare.extra_large_anti_ground_missile": "超大型对地导弹",
+  "item.superbwarfare.food_rain_atom_bomb": "食物雨核弹",
   "item.superbwarfare.beast": "BEAST",
   "des.superbwarfare.beast": "你是一个一个一个......",
   "item.superbwarfare.fire_axe": "消防斧",
@@ -1058,6 +1059,7 @@
   "entity.superbwarfare.sea_mine": "水雷",
   "entity.superbwarfare.decoy_grenade": "诱饵弹",
   "entity.superbwarfare.high_energy_explosives": "引燃的高能炸药",
+  "entity.superbwarfare.food_rain_atom_bomb": "食物雨核弹",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.move_forward": "前进/提升油门",

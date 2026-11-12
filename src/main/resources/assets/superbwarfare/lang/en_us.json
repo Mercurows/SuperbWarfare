@@ -249,6 +249,7 @@
   "item.superbwarfare.medium_anti_ground_missile": "Medium Anti Ground Missile",
   "item.superbwarfare.large_anti_ground_missile": "Large Anti Ground Missile",
   "item.superbwarfare.extra_large_anti_ground_missile": "Extra Large Anti Ground Missile",
+  "item.superbwarfare.food_rain_atom_bomb": "Food Rain Atom Bomb",
   "item.superbwarfare.beast": "BEAST",
   "des.superbwarfare.beast": "You are one one one...",
   "item.superbwarfare.fire_axe": "Fire Axe",
@@ -1058,6 +1059,7 @@
   "entity.superbwarfare.sea_mine": "Sea Mine",
   "entity.superbwarfare.decoy_grenade": "Decoy Grenade",
   "entity.superbwarfare.high_energy_explosives": "Primed High Energy Explosives",
+  "entity.superbwarfare.food_rain_atom_bomb": "Food Rain Atom Bomb",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.move_forward": "Forward / Throttle Up",

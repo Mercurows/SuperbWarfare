@@ -24,7 +24,7 @@ object BasicProjectileStates {
         .predicate { it.loop }
         .target(IDLE)
         .from(INIT)
-        .afterTrigger { it.playAnimation("animation.projectile.idle", AnimationPlayType.LOOP) }
+        .afterTrigger { it.playAnimation(it.loopAnimation, AnimationPlayType.LOOP) }
         .build()
 
     val TO_START: SimpleTransition<BasicProjectileContext<*>> = SimpleTransition.Builder<BasicProjectileContext<*>>()
