@@ -6,11 +6,12 @@ import com.sighs.apricityui.init.Element
 import com.sighs.apricityui.layout.Position
 import com.sighs.apricityui.render.Base
 import com.sighs.apricityui.render.Drawer
-import com.sighs.apricityui.resource.async.style.StyleAsyncHandler
+import com.sighs.apricityui.resource.Font
 import com.sighs.apricityui.screen.ApricityContainerMenu
 import com.sighs.apricityui.screen.ApricityContainerScreen
 import com.sighs.apricityui.spi.AuiItemRenderRequest
 import com.sighs.apricityui.spi.AuiServices
+import net.minecraft.Util
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.player.Inventory
@@ -32,6 +33,7 @@ open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inv
     private val styles = mutableMapOf<String, String>()
     private val elements = mutableMapOf<String, Element>()
     private var firstFrameReady = false
+    private var resourceWaitStartedAt = 0L
 
     override fun init() {
         floatingItems.clear()
@@ -55,9 +57,9 @@ open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inv
         if (boundDocument !== doc || !doc.isCurrentGeneration(generation)) syncDashboard()
         syncLayout(doc)
         if (!firstFrameReady) {
-            // Async CSS/font tasks run on the client resource queue, independently of screen rendering.
-            // Do not paint or expose native slots with fallback metrics or the unscaled initial layout.
-            if ((StyleAsyncHandler.peekHandle(doc)?.pendingCount() ?: 0) > 0) {
+            // Wait for this dashboard's stylesheet and font through public resource/style APIs.
+            // Resource loading continues on the client queue while painting and slot input are withheld.
+            if (!dashboardResourcesReady(doc)) {
                 graphics.fill(0, 0, width, height, 0xF2040B10.toInt())
                 return
             }
@@ -68,6 +70,14 @@ open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inv
         super.render(graphics, mouseX, mouseY, partialTick)
         renderFloatingItems(graphics)
         renderStationTooltip(graphics, mouseX, mouseY)
+    }
+
+    private fun dashboardResourcesReady(doc: Document): Boolean {
+        doc.flushPendingStyleUpdates()
+        val family = element(doc, "repair-layout")?.computedStyle?.fontFamily
+        val stylesheetReady = family != null && Font.parseFontFamilies(family).any { it.equals("RepairUI", ignoreCase = true) }
+        if (stylesheetReady && Font.isRegistered("RepairUI")) return true
+        return Util.getMillis() - resourceWaitStartedAt >= 5_000L
     }
 
     private fun commitScreenLayout(doc: Document) {
@@ -162,6 +172,7 @@ open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inv
             generation = doc.refreshGeneration
             texts.clear(); styles.clear(); elements.clear()
             firstFrameReady = false
+            resourceWaitStartedAt = Util.getMillis()
             layoutWidth = -1.0
             layoutHeight = -1.0
             doc.getElementById("close")?.addEventListener("click") { onClose() }
