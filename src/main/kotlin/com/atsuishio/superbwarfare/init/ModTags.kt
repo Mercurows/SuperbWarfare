@@ -112,6 +112,15 @@ object ModTags {
         // 这里、datagen 与"可研究配件"的汇总都会自动跟上。
         @JvmField val ATTACHMENT = modItemTag("attachment")
 
+        /**
+         * 皮卡汀尼标准瞄准镜：所有标准导轨枪械（步枪/冲锋枪/霰弹枪/机枪）目前都能装的通用镜。
+         *
+         * 枪械的 `AvailableAttachments.Scope` 里写 `"#superbwarfare:attachment/scope/picatinny"`
+         * 就等于把这一整组通用镜一次性列上，不用再逐个抄 id；枪专用的镜
+         * （莫辛纳甘 PU、PSO-1、手枪红点等）仍然单独列。
+         */
+        @JvmField val ATTACHMENT_SCOPE_PICATINNY = modItemTag("attachment/scope/picatinny")
+
         /** 槽位 → 该槽位的 tag（`superbwarfare:attachment/<AttachmentSlot.tagBucket>`） */
         @JvmField
         val ATTACHMENT_BY_SLOT: Map<AttachmentType, TagKey<Item>> = AttachmentSlots.ALL
