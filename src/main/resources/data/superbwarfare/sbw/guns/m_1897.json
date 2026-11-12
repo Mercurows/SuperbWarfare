@@ -129,19 +129,14 @@
   ],
   "AvailableAttachments": {
     "Muzzle": [
-      "superbwarfare:meowlencer",
-      "superbwarfare:hissilencer",
-      "superbwarfare:silaowuncer",
+      "#superbwarfare:attachment/muzzle/standard",
       "superbwarfare:silencer_superb_12",
-      "superbwarfare:loudspeaker",
       "superbwarfare:triangular_muzzle",
       "superbwarfare:love_muzzle",
       "superbwarfare:star_muzzle",
       "superbwarfare:linear_muzzle",
       "superbwarfare:cross_muzzle",
-      "superbwarfare:bayonet_m1917",
-      "superbwarfare:milencer",
-      "superbwarfare:steel_pipe_silencer"
+      "superbwarfare:bayonet_m1917"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"

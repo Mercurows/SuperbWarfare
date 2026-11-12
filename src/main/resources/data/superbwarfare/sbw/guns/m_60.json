@@ -111,12 +111,7 @@
       "superbwarfare:magazine_extend_pro"
     ],
     "Muzzle": [
-      "superbwarfare:meowlencer",
-      "superbwarfare:hissilencer",
-      "superbwarfare:silaowuncer",
-      "superbwarfare:loudspeaker",
-      "superbwarfare:milencer",
-      "superbwarfare:steel_pipe_silencer"
+      "#superbwarfare:attachment/muzzle/standard"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"

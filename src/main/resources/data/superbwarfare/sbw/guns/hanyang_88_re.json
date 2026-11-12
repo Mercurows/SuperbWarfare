@@ -144,48 +144,15 @@
   "Icon": "superbwarfare:textures/gun_icon/hanyang_88_re_icon.png",
   "AvailableAttachments": {
     "Scope": [
-      "superbwarfare:scope_raiser",
-      "superbwarfare:scope_coyote",
-      "superbwarfare:scope_aimpoint_t2",
-      "superbwarfare:scope_eotech_551",
-      "superbwarfare:scope_drs_th",
-      "superbwarfare:scope_okp_7",
-      "superbwarfare:scope_pkas",
-      "superbwarfare:scope_bruiser",
-      "superbwarfare:scope_ranger",
-      "superbwarfare:scope_1p_78",
-      "superbwarfare:scope_pk_a",
-      "superbwarfare:scope_acog",
-      "superbwarfare:scope_qmk171",
-      "superbwarfare:scope_hamr",
-      "superbwarfare:scope_elcan_4x",
-      "superbwarfare:scope_lpvo",
-      "superbwarfare:scope_sniper",
-      "superbwarfare:scope_hanyang_88_re_standard",
-      "superbwarfare:scope_winefox",
-      "superbwarfare:steel_pipe_scope",
-      "superbwarfare:scope_spyglass"
+      "#superbwarfare:attachment/scope/picatinny"
     ],
     "Muzzle": [
-      "superbwarfare:meowlencer",
-      "superbwarfare:hissilencer",
-      "superbwarfare:silaowuncer",
-      "superbwarfare:ru_silencer",
-      "superbwarfare:muzzle_brake_ru",
-      "superbwarfare:muzzle_brake_ar",
-      "superbwarfare:muzzle_break_birdcage",
-      "superbwarfare:muzzle_zenit_dtk_1",
-      "superbwarfare:muzzle_compensator_r_17",
-      "superbwarfare:ar_silencer",
-      "superbwarfare:loudspeaker",
-      "superbwarfare:bayonet_hanyang_88_re_standard",
-      "superbwarfare:milencer",
-      "superbwarfare:steel_pipe_silencer"
+      "#superbwarfare:attachment/muzzle/standard",
+      "#superbwarfare:attachment/muzzle/rifle",
+      "superbwarfare:bayonet_hanyang_88_re_standard"
     ],
     "LowerRail": [
-      "superbwarfare:lower_rail_bipod",
-      "superbwarfare:peq_15",
-      "superbwarfare:pistol_laser"
+      "#superbwarfare:attachment/lower_rail/standard"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"

@@ -192,15 +192,10 @@
       "#superbwarfare:attachment/charm"
     ],
     "UpperRail": [
-      "superbwarfare:peq_15",
-      "superbwarfare:standard_gun_shield",
-      "superbwarfare:pistol_laser",
-      "superbwarfare:hyperion_shield_module"
+      "#superbwarfare:attachment/upper_rail/standard"
     ],
     "LeftRail": [
-      "superbwarfare:peq_15",
-      "superbwarfare:range_finder",
-      "superbwarfare:pistol_laser"
+      "#superbwarfare:attachment/left_rail/standard"
     ]
   },
   "SoundInfo": {

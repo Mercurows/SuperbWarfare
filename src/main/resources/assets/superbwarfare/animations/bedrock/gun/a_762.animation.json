@@ -2886,6 +2886,14 @@
 					}
 				}
 			}
+		},
+		"animation.a_762.fire_mode_semi": {
+			"animation_length": 0.1,
+			"bones": {
+				"switch": {
+					"rotation": [35, 0, 0]
+				}
+			}
 		}
 	}
 }

@@ -83,21 +83,14 @@
       "#superbwarfare:attachment/scope/picatinny"
     ],
     "Muzzle": [
-      "superbwarfare:meowlencer",
-      "superbwarfare:hissilencer",
-      "superbwarfare:silaowuncer",
-      "superbwarfare:loudspeaker",
-      "superbwarfare:silencer_50_cal",
-      "superbwarfare:milencer",
-      "superbwarfare:steel_pipe_silencer"
+      "#superbwarfare:attachment/muzzle/standard",
+      "superbwarfare:silencer_50_cal"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
     ],
     "LowerRail": [
-      "superbwarfare:lower_rail_bipod",
-      "superbwarfare:peq_15",
-      "superbwarfare:pistol_laser"
+      "#superbwarfare:attachment/lower_rail/standard"
     ]
   },
   "SoundInfo": {

@@ -4,6 +4,9 @@
     "Idle": "animation.a_762.idle",
     "Fire": "animation.a_762.fire",
     "ChangeFireMode": "animation.a_762.change_fire_mode",
+    "FireModes": [
+      "animation.a_762.fire_mode_semi"
+    ],
     "ReloadNormal": "animation.a_762.reload_normal",
     "ReloadEmpty": "animation.a_762.reload_empty",
     "Edit": "animation.a_762.edit",

@@ -104,37 +104,14 @@
       "superbwarfare:magazine_extend_pro"
     ],
     "Grip": [
-      "superbwarfare:vertical_grip",
-      "superbwarfare:grip_vertical_pineapple",
-      "superbwarfare:grip_vertical_bipod",
-      "superbwarfare:grip_rectangle_vertical",
-      "superbwarfare:triangle_grip",
-      "superbwarfare:grip_cqr_gen2",
-      "superbwarfare:steel_pipe_grip"
+      "#superbwarfare:attachment/grip/standard"
     ],
     "Muzzle": [
-      "superbwarfare:meowlencer",
-      "superbwarfare:hissilencer",
-      "superbwarfare:silaowuncer",
-      "superbwarfare:ru_silencer",
-      "superbwarfare:muzzle_brake_ru",
-      "superbwarfare:muzzle_brake_ar",
-      "superbwarfare:muzzle_break_birdcage",
-      "superbwarfare:muzzle_zenit_dtk_1",
-      "superbwarfare:muzzle_compensator_r_17",
-      "superbwarfare:ar_silencer",
-      "superbwarfare:loudspeaker",
-      "superbwarfare:milencer",
-      "superbwarfare:steel_pipe_silencer"
+      "#superbwarfare:attachment/muzzle/standard",
+      "#superbwarfare:attachment/muzzle/rifle"
     ],
     "Stock": [
-      "superbwarfare:stock_ar_tactical",
-      "superbwarfare:stock_elite",
-      "superbwarfare:stock_str",
-      "superbwarfare:stock_ubr",
-      "superbwarfare:stock_prs",
-      "superbwarfare:steel_pipe_stock",
-      "superbwarfare:stock_zenit_pt_1"
+      "#superbwarfare:attachment/stock/standard"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"

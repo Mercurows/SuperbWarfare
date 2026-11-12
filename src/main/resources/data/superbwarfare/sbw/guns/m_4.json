@@ -114,64 +114,34 @@
       "superbwarfare:magazine_extend_pro"
     ],
     "Grip": [
-      "superbwarfare:vertical_grip",
-      "superbwarfare:grip_vertical_pineapple",
-      "superbwarfare:grip_vertical_bipod",
-      "superbwarfare:grip_rectangle_vertical",
-      "superbwarfare:triangle_grip",
-      "superbwarfare:grip_cqr_gen2",
-      "superbwarfare:steel_pipe_grip"
+      "#superbwarfare:attachment/grip/standard"
     ],
     "Stock": [
-      "superbwarfare:stock_elite",
-      "superbwarfare:stock_str",
-      "superbwarfare:stock_ubr",
-      "superbwarfare:stock_prs",
-      "superbwarfare:steel_pipe_stock",
-      "superbwarfare:stock_ar_tactical",
-      "superbwarfare:stock_zenit_pt_1"
+      "#superbwarfare:attachment/stock/standard",
+      "!superbwarfare:stock_ar_tactical"
     ],
     "Muzzle": [
-      "superbwarfare:meowlencer",
-      "superbwarfare:hissilencer",
-      "superbwarfare:silaowuncer",
-      "superbwarfare:ru_silencer",
-      "superbwarfare:muzzle_brake_ru",
-      "superbwarfare:muzzle_brake_ar",
-      "superbwarfare:muzzle_break_birdcage",
-      "superbwarfare:muzzle_zenit_dtk_1",
-      "superbwarfare:muzzle_compensator_r_17",
-      "superbwarfare:ar_silencer",
-      "superbwarfare:loudspeaker",
-      "superbwarfare:bayonet_m_9",
-      "superbwarfare:milencer",
-      "superbwarfare:steel_pipe_silencer"
+      "#superbwarfare:attachment/muzzle/standard",
+      "#superbwarfare:attachment/muzzle/rifle",
+      "superbwarfare:bayonet_m_9"
     ],
     "SubWeapon": [
-      "superbwarfare:sub_weapon_gp_25"
+      "#superbwarfare:attachment/subweapon/standard"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
     ],
     "LowerRail": [
-      "superbwarfare:lower_rail_bipod",
-      "superbwarfare:peq_15",
-      "superbwarfare:pistol_laser"
+      "#superbwarfare:attachment/lower_rail/standard"
     ],
     "UpperRail": [
-      "superbwarfare:peq_15",
-      "superbwarfare:standard_gun_shield",
-      "superbwarfare:pistol_laser",
-      "superbwarfare:hyperion_shield_module"
+      "#superbwarfare:attachment/upper_rail/standard"
     ],
     "LeftRail": [
-      "superbwarfare:peq_15",
-      "superbwarfare:range_finder",
-      "superbwarfare:pistol_laser"
+      "#superbwarfare:attachment/left_rail/standard"
     ],
     "RightRail": [
-      "superbwarfare:peq_15",
-      "superbwarfare:pistol_laser"
+      "#superbwarfare:attachment/right_rail/standard"
     ]
   },
   "SoundInfo": {
