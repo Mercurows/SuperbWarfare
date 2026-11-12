@@ -53,6 +53,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
     private var persistentAngerTarget: UUID? = null
 
     private var wasMoving = false
+    private var horizontalTravelSqr = 0.0
 
     override fun addAdditionalSaveData(pCompound: CompoundTag) {
         super.addAdditionalSaveData(pCompound)
@@ -128,24 +129,36 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
         return NetworkHooks.getEntitySpawningPacket(this)
     }
 
-    override fun baseTick() {
-        if (this.level().isClientSide) {
-            if (!this.wasMoving && this.moving()) {
-                playMoveSound.accept(this)
-            }
-        }
-
-        this.wasMoving = this.moving()
+    override fun tick() {
+        val previousX = x
+        val previousZ = z
+        // Keep interpolation angles near zero without introducing a 360-degree wrap between frames.
+        val turns = Mth.floor(wheelRot / 360f) * 360f
+        wheelRot -= turns
         wheelRotO = wheelRot
-        super.baseTick()
-        val speed = deltaMovement.dot(forward).toFloat()
-        if (speed > 0) {
-            val c = 4f * Mth.PI
-            val t = c / speed
-            val rpt = 360f / t
-            wheelRot += Mth.PI * rpt
-        }
+        super.tick()
+        val dx = x - previousX
+        val dz = z - previousZ
+        updateRollingAnimation(dx, dz)
+        val moving = moving()
+        if (level().isClientSide && moving && !wasMoving) playMoveSound.accept(this)
+        wasMoving = moving
+    }
 
+    private fun updateRollingAnimation(dx: Double, dz: Double) {
+        horizontalTravelSqr = dx * dx + dz * dz
+        // Read the position after collision resolution and client network interpolation, not requested velocity.
+        if (horizontalTravelSqr > bbWidth * bbWidth * 16.0) {
+            horizontalTravelSqr = 0.0
+        } else {
+            val heading = Vec3.directionFromRotation(0f, yRot)
+            val distance = dx * heading.x + dz * heading.z
+            wheelRot += (distance / ROLLING_RADIUS * Mth.RAD_TO_DEG).toFloat()
+        }
+    }
+
+    override fun baseTick() {
+        super.baseTick()
         if (this.target != null && this.tickCount % 20 == 0) {
             val targetPos = target!!.position().add(
                 this.position().vectorTo(target!!.position()).normalize()
@@ -158,7 +171,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
         crushEntities()
     }
 
-    open fun moving() = deltaMovement.lengthSqr() > 0.0001 && onGround()
+    open fun moving() = horizontalTravelSqr > 0.0001 && onGround()
 
     fun isAttackableEntity(entity: Entity): Boolean {
         return entity.isAlive || (entity is Player && (!entity.isCreative && !entity.isSpectator))
@@ -189,6 +202,8 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
     }
 
     companion object {
+        // The model has an 8/16-block radius and is rendered at scale 2.
+        private const val ROLLING_RADIUS = 1.0
         fun createAttributes(): AttributeSupplier.Builder {
             return createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.25)
