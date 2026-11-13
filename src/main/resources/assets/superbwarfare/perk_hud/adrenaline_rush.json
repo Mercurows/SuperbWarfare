@@ -1,0 +1,10 @@
+{
+  "States": [
+    {
+      "When": {
+        "Tag": "AdrenalineRushBoost",
+        "Gt": 0
+      }
+    }
+  ]
+}

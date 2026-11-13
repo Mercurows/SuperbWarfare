@@ -1,0 +1,12 @@
+{
+  "States": [
+    {
+      "When": {
+        "Tag": "HeadSeeker",
+        "Gt": 0
+      },
+      "Display": "timer",
+      "Value": "HeadSeeker"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "States": [
+    {
+      "When": {
+        "All": [
+          {
+            "Source": "Magazine",
+            "Gt": 0
+          },
+          {
+            "Source": "Ammo",
+            "Gt": 0
+          },
+          {
+            "Source": "AmmoRatio",
+            "Lte": {
+              "Constant": 0.5,
+              "PerLevel": 0.02
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

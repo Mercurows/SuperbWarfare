@@ -1,0 +1,12 @@
+{
+  "States": [
+    {
+      "When": {
+        "Tag": "KillingTally",
+        "Gt": 0
+      },
+      "Display": "stacks",
+      "Value": "KillingTally"
+    }
+  ]
+}

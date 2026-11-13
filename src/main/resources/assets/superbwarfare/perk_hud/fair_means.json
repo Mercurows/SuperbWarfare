@@ -1,0 +1,13 @@
+{
+  "States": [
+    {
+      "When": {
+        "Tag": "FairMeans",
+        "Equals": true
+      }
+    },
+    {
+      "Effect": "debuff"
+    }
+  ]
+}

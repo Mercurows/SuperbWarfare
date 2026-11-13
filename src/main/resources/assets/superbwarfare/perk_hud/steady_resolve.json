@@ -1,0 +1,22 @@
+{
+  "States": [
+    {
+      "When": {
+        "Tag": "SteadyResolveTime",
+        "Gt": 0
+      },
+      "Display": "timer",
+      "Value": "SteadyResolveTime"
+    },
+    {
+      "When": {
+        "Tag": "SteadyResolveFocus",
+        "Gte": 100
+      }
+    },
+    {
+      "Display": "percent",
+      "Value": "SteadyResolveFocus"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "States": [
+    {
+      "When": {
+        "Tag": "MagnificentHowlDamageCount",
+        "Gt": 0
+      },
+      "Display": "stacks",
+      "Value": "MagnificentHowlDamageCount"
+    }
+  ]
+}

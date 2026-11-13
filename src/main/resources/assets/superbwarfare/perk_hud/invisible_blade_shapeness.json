@@ -1,0 +1,25 @@
+{
+  "States": [
+    {
+      "When": {
+        "Tag": "Charge",
+        "Gte": {
+          "Constant": 1200,
+          "PerLevel": 200
+        }
+      }
+    },
+    {
+      "When": {
+        "Tag": "Charge",
+        "Gt": 0
+      },
+      "Display": "percent",
+      "Value": "Charge",
+      "Maximum": {
+        "Constant": 1200,
+        "PerLevel": 200
+      }
+    }
+  ]
+}
