@@ -582,6 +582,20 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             if (transformType.firstPerson() || transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
                 LaserSightRenderer.render(poseStack, bufferSource, partialTick)
             }
+            // SIGHT reticles are composited after the gun, hands and attachments, while AR is
+            // still on its vanilla pipeline. The original ocular stencil clips them to the lens.
+            if (stencilScope?.scopeMode?.isSight() == true && !stencilScope.scopeMode.thermal) {
+                poseStack.pushPose()
+                try {
+                    mulPoseWithNormal(poseStack, stencilScope.slotTransform)
+                    stencilScope.model.renderSightReticleOverlay(
+                        poseStack, bufferSource as MultiBufferSource.BufferSource, stencilScope.texture,
+                        packedLight, stencilScope.scopeMode, resolveAmmoReadout(stack, stencilScope)
+                    )
+                } finally {
+                    poseStack.popPose()
+                }
+            }
         } finally {
             if (vanillaAcceleration) {
                 AcceleratedRenderingCompat.endVanillaAcceleration()

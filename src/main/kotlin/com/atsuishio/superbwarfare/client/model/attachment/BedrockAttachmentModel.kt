@@ -392,23 +392,75 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX)
 
         renderOcularStencil(poseStack, bufferSource, quadType, triangleType, light, false, info)
-        renderDivisionOnly(
-            poseStack,
-            bufferSource,
-            texture,
-            quadType,
-            triangleType,
-            light,
-            info,
-            divisionIndices(info),
-            texts
-        )
+        // Ordinary sight reticles are drawn once, after the gun and other attachments.
+        // Thermal sights retain their existing deferred lens/reticle composition.
+        if (info.thermal) {
+            renderDivisionOnly(
+                poseStack, bufferSource, texture, quadType, triangleType, light,
+                info, divisionIndices(info), texts
+            )
+        }
 
         RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF)
         ScopeStencilRenderHelper.disableItemEntityStencilTest()
 
         for (bodyIndex in scopeBodyIndices(info)) {
             renderBoneImmediate(bodyIndex, poseStack, bufferSource, quadType, triangleType, light)
+        }
+    }
+
+    /** Draw ordinary SIGHT divisions over model depth, still clipped by the original lens stencil. */
+    fun renderSightReticleOverlay(
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource.BufferSource,
+        texture: ResourceLocation,
+        light: Int,
+        info: ScopeMode,
+        readout: AmmoReadout
+    ) {
+        if (!info.isSight() || info.thermal || ClientEventHandler.zoomTime < DIVISION_MIN_ZOOM) return
+        val divisions = divisionIndices(info)
+        if (divisions.isEmpty()) return
+        // Both Oculus batching and AR must finish model draws before the foreground pass starts.
+        if (!ShaderCompat.endBatch(bufferSource)) bufferSource.endBatch()
+        val quadType = RenderType.entityTranslucent(texture)
+        val triangleType = BedrockModelRenderTypes.polyMeshCutout(texture)
+        val foreground = MultiBufferSource { type ->
+            val illuminated = type == ModRenderTypes.scopeReticle(texture) ||
+                    type == ModRenderTypes.scopeReticleMesh(texture)
+            bufferSource.getBuffer(ModRenderTypes.sightReticle(
+                texture, type.mode() == VertexFormat.Mode.TRIANGLES, illuminated
+            ))
+        }
+        val texts = ammo.buildTexts(
+            readout.texts, readout.count, readout.progress, readout.range, readout.heat, readout.zoom,
+            readout.heatShots, readout.heatShotsMax
+        )
+        ScopeStencilRenderHelper.enableItemEntityStencilTest()
+        RenderSystem.stencilMask(0)
+        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
+        RenderSystem.disableDepthTest()
+        RenderSystem.depthMask(false)
+        try {
+            withShaderBonesHidden {
+                for ((i, division) in divisions.withIndex()) {
+                    RenderSystem.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF)
+                    renderDivisionVertices(division, poseStack, foreground, texture, quadType, triangleType, light)
+                    if (!ShaderCompat.endBatch(bufferSource)) bufferSource.endBatch()
+                    for (text in texts) {
+                        if (text.divisionIndex == division) {
+                            ammo.renderText(text, poseStack, bufferSource, foreground = true)
+                        }
+                    }
+                    if (!ShaderCompat.endBatch(bufferSource)) bufferSource.endBatch()
+                }
+            }
+        } finally {
+            RenderSystem.depthMask(true)
+            RenderSystem.enableDepthTest()
+            RenderSystem.stencilMask(0xFF)
+            RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF)
+            ScopeStencilRenderHelper.disableItemEntityStencilTest()
         }
     }
 

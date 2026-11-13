@@ -163,10 +163,12 @@ internal class AmmoDisplayRenderer(
     }
 
     /** 在 [text] 的锚点骨骼上把它画出来 */
-    fun renderText(text: AmmoText, poseStack: PoseStack, bufferSource: MultiBufferSource) {
+    fun renderText(
+        text: AmmoText, poseStack: PoseStack, bufferSource: MultiBufferSource, foreground: Boolean = false
+    ) {
         renderText(
             text.entry, text.count, text.progress, text.range, text.heat, text.zoom, text.heatShots,
-            text.heatShotsMax, poseStack, bufferSource
+            text.heatShotsMax, poseStack, bufferSource, foreground
         )
     }
 
@@ -181,7 +183,8 @@ internal class AmmoDisplayRenderer(
         heatShots: Int,
         heatShotsMax: Int,
         poseStack: PoseStack,
-        bufferSource: MultiBufferSource
+        bufferSource: MultiBufferSource,
+        foreground: Boolean = false
     ) {
         val index = baseModel.getIndex(entry.bone)
         if (index < 0) return
@@ -194,17 +197,10 @@ internal class AmmoDisplayRenderer(
         val font = Minecraft.getInstance().font
         poseStack.pushPose()
         poseStack.mulPoseMatrix(instance.getGlobalTransform(index))
-        // Glyphs are laid out for a space where +y points down, so Y has to be mirrored for the text
-        // to come out upright. That mirroring alone would leave the determinant negative and reverse
-        // the winding of every quad, and RenderType.text never calls setCullState, so it inherits the
-        // default of backface culling and the text would vanish entirely. Mirroring Z as well puts the
-        // determinant back to +scale³, and it costs nothing visually: all four vertices of a glyph
-        // quad share the same z, so the quad is mapped onto itself.
+
         poseStack.scale(entry.scale, -entry.scale, -entry.scale)
         poseStack.translate(entry.offsetX(font.width(text)), GLYPH_BOX_CENTER, 0f)
-        // DisplayMode.NORMAL only picks the glyph atlas and blending; whether depth testing applies is
-        // left to the caller, which is what lets the reticle pass draw the text with depth testing off
-        // while the whole-model pass keeps it on.
+
         font.drawInBatch(
             text,
             0f,
@@ -213,16 +209,11 @@ internal class AmmoDisplayRenderer(
             entry.shadow,
             poseStack.last().pose(),
             bufferSource,
-            Font.DisplayMode.NORMAL,
+            if (foreground) Font.DisplayMode.SEE_THROUGH else Font.DisplayMode.NORMAL,
             0,
             LightTexture.FULL_BRIGHT
         )
-        // drawInBatch queues the glyphs into the caller's own buffer source, and they would sit there
-        // until something asks for a different render type. They have to go out now instead: what
-        // limits where the text is visible is the stencil and depth state around this call, and by the
-        // time the outer endBatch runs that window is long closed. endLastBatch() flushes exactly the
-        // one render type that is currently open, so there is no need to rebuild the RenderType.text
-        // instance, and no dependency on which font atlas a resource pack supplies.
+
         if (bufferSource is MultiBufferSource.BufferSource) bufferSource.endLastBatch()
         poseStack.popPose()
     }
