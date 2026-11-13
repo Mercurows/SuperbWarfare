@@ -3,6 +3,9 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
+import com.atsuishio.superbwarfare.entity.projectile.NuclearBombEntity.Companion.STUN_CONE_DEGREES
+import com.atsuishio.superbwarfare.entity.projectile.NuclearBombEntity.Companion.THERMAL_INTERVAL_TICKS
+import com.atsuishio.superbwarfare.entity.projectile.NuclearBombEntity.Companion.THERMAL_WINDOW_TICKS
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -110,7 +113,7 @@ open class NuclearBombEntity(type: EntityType<out NuclearBombEntity>, level: Lev
             getExplosionDamage(), vec3.x, vec3.y, vec3.z, blastRadius,
             if (hasExplosionDestroy()) Explosion.BlockInteraction.DESTROY else Explosion.BlockInteraction.KEEP
         ).setPenetrationRatio(ExplosionConfig.NUCLEAR_BOMB_EXPLOSION_PENETRATION_RATIO.get().toFloat())
-            .setDropBlocks(false).setBlockDestructionRadius(blastRadius)
+            .setDropBlocks(false)
             .setBlockDestructionDuration((effect.durationTicks / 5).coerceIn(1, 80))
         if (ForgeEventFactory.onExplosionStart(level, explosion)) {
             discard()

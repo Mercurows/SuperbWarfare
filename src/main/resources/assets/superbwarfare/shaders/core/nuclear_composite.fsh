@@ -59,6 +59,41 @@ vec2 heatOffset(vec2 uv) {
     return offset;
 }
 
+// Atmospheric scattering belongs behind the cloud, so its opaque billows still
+// silhouette against the illuminated sky. Only sky-depth pixels enter this pass.
+vec3 illuminateSky(vec3 sky, vec3 ray) {
+    for (int i = 0; i < 4; ++i) {
+        if (i >= HeatCount) break;
+        vec4 h = i == 0 ? Heat0 : i == 1 ? Heat1 : i == 2 ? Heat2 : Heat3;
+        if (h.w < 0.0 || h.w >= 12.0) continue;
+        vec2 scale = i == 0 ? HeatScale0 : i == 1 ? HeatScale1 : i == 2 ? HeatScale2 : HeatScale3;
+        // Match the volume's primary flash and its slower secondary pulse.
+        float flashAge = h.w * 0.25;
+        float pulse = exp(-flashAge * 7.0) + 0.38 * exp(-pow((flashAge - 0.32) / 0.20, 2.0));
+        float recovery = 1.0 - smoothstep(6.0, 12.0, h.w);
+        float afterglow = smoothstep(0.15, 0.6, h.w) * exp(-h.w * 0.48) * recovery;
+        float range = 800.0 * scale.x;
+        float attenuation = 1.0 / (1.0 + dot(h.xyz,h.xyz) / (range * range));
+        float lift = 5.0 + 95.0 * (1.0 - exp(-max(h.w - 0.7, 0.0) / 8.0));
+        vec3 source = h.xyz + vec3(0.0, max(80.0, lift) * scale.y, 0.0);
+        // Illuminate air above the source even when the fireball sits below the horizon.
+        source.y = max(source.y, length(source.xz) * 0.16);
+        vec3 direction = normalize(source + vec3(0.0, 0.001, 0.0));
+        float facing = max(dot(ray, direction), 0.0);
+        float forwardGlow = pow(facing, 4.0);
+        float horizon = exp(-max(ray.y, 0.0) * 3.5);
+        float hemisphere = smoothstep(-0.12, 0.06, ray.y);
+        float flashLight = pulse * recovery * (0.48 + forwardGlow * 1.65 + horizon * facing * 0.45);
+        float warmLight = afterglow * (0.06 + forwardGlow * 0.32 + horizon * facing * 0.16);
+        float exposure = 1.0 - exp(-(flashLight + warmLight) * attenuation * hemisphere);
+        vec3 tint = mix(vec3(1.0,0.95,0.84), vec3(1.0,0.56,0.28),
+            warmLight / max(flashLight + warmLight, 0.00001));
+        // Screen-space exposure remains visible against a night sky without crushing daylight to white.
+        sky += max(vec3(1.0) - sky, vec3(0.0)) * tint * exposure;
+    }
+    return sky;
+}
+
 void main() {
     vec4 original = texture(SceneColor, texCoord);
     float depth = texture(SceneDepth, texCoord).r;
@@ -86,5 +121,11 @@ void main() {
         total += weight;
     }
     color = total > 0.00001 ? color / total : vec4(0.0);
-    fragColor = vec4(color.rgb + texture(SceneColor, warped).rgb * (1.0 - color.a), original.a);
+    vec3 background = texture(SceneColor, warped).rgb;
+    if (texture(WorldDepth, texCoord).r >= 0.999999) {
+        vec4 farPoint = InverseProjection * vec4(texCoord * 2.0 - 1.0, 1.0, 1.0);
+        vec3 ray = normalize(mat3(InverseView) * (farPoint.xyz / farPoint.w));
+        background = illuminateSky(background, ray);
+    }
+    fragColor = vec4(color.rgb + background * (1.0 - color.a), original.a);
 }
