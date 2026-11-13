@@ -114,7 +114,7 @@ open class NuclearBombEntity(type: EntityType<out NuclearBombEntity>, level: Lev
             getExplosionDamage(), vec3.x, vec3.y, vec3.z, blastRadius,
             if (hasExplosionDestroy()) Explosion.BlockInteraction.DESTROY else Explosion.BlockInteraction.KEEP
         ).setPenetrationRatio(ExplosionConfig.NUCLEAR_BOMB_EXPLOSION_PENETRATION_RATIO.get().toFloat())
-            .setDropBlocks(false).setBlockDestructionRadius(blastRadius)
+            .setDropBlocks(false)
             .setBlockDestructionDuration((effect.durationTicks / 5).coerceIn(1, 80))
         if (EventHooks.onExplosionStart(level, explosion)) {
             discard()
