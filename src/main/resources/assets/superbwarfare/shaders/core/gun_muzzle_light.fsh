@@ -21,21 +21,58 @@ vec3 viewPosition(vec2 uv, float depth) {
     return p.xyz / p.w;
 }
 
-// Screen-space contact shadows only use actual scene depth. A wall hit on one
-// CPU ray cannot define an infinite clipping plane across the adjacent open space.
+float shadowSample(vec2 uv, float rayZ) {
+    if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0)))) return 0.0;
+    float depth = texture(WorldDepth, uv).r;
+    if (depth >= 0.999999) return 0.0;
+    float gap = viewPosition(uv, depth).z - rayZ;
+    // Feather both ends of the finite depth thickness to avoid binary depth bands.
+    return smoothstep(0.025, 0.075, gap) * (1.0 - smoothstep(0.45, 0.65, gap));
+}
+
+// Filter occlusion comparisons, never raw depth: interpolating foreground and
+// background depth would invent an occluder between unrelated surfaces.
+float filteredShadow(vec2 uv, float rayZ) {
+    vec2 footprint = TexelSize * 2.0;
+    vec2 grid = uv / footprint - 0.5;
+    vec2 base = (floor(grid) + 0.5) * footprint;
+    vec2 weight = fract(grid);
+    float a = shadowSample(base, rayZ);
+    float b = shadowSample(base + vec2(footprint.x, 0.0), rayZ);
+    float c = shadowSample(base + vec2(0.0, footprint.y), rayZ);
+    float d = shadowSample(base + footprint, rayZ);
+    return mix(mix(a, b, weight.x), mix(c, d, weight.x), weight.y);
+}
+
+// A fixed sampling pattern is stable across frames and needs no temporal history.
 float visibility(vec3 surface, vec3 light) {
-    for (int i = 1; i <= 6; i++) {
-        vec3 p = mix(surface, light, float(i) / 7.0);
-        vec4 clip = Projection * vec4(p, 1.0);
-        if (clip.w <= 0.0) continue;
-        vec2 uv = clip.xy / clip.w * 0.5 + 0.5;
-        if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0)))) continue;
-        float depth = texture(WorldDepth, uv).r;
-        if (depth >= 0.999999) continue;
-        float gap = viewPosition(uv, depth).z - p.z;
-        if (gap > 0.07 && gap < 0.65) return 0.0;
+    // March uniformly in screen space, with perspective-correct ray depth.
+    // Uniform world-space steps can jump over a thin fence and form sawtooth shadows.
+    vec3 end = light;
+    if (end.z > -0.05) end = mix(surface, end, (-0.05 - surface.z) / (end.z - surface.z));
+    vec4 startClip = Projection * vec4(surface, 1.0);
+    vec4 endClip = Projection * vec4(end, 1.0);
+    vec2 startUv = startClip.xy / startClip.w * 0.5 + 0.5;
+    vec2 deltaUv = endClip.xy / endClip.w * 0.5 + 0.5 - startUv;
+    float limit = 1.0;
+    for (int axis = 0; axis < 2; axis++) {
+        if (deltaUv[axis] > 0.000001) limit = min(limit, (1.0 - startUv[axis]) / deltaUv[axis]);
+        if (deltaUv[axis] < -0.000001) limit = min(limit, -startUv[axis] / deltaUv[axis]);
     }
-    return 1.0;
+    limit = clamp(limit, 0.0, 1.0);
+    float pixels = length(deltaUv * limit / TexelSize);
+    int steps = int(clamp(ceil(pixels / 2.0), 12.0, 32.0));
+    float visible = 1.0;
+    for (int i = 0; i < 32; i++) {
+        if (i >= steps) break;
+        float t = (float(i) + 0.5) / float(steps) * limit;
+        vec2 uv = startUv + deltaUv * t;
+        float reciprocalW = mix(1.0 / startClip.w, 1.0 / endClip.w, t);
+        float rayZ = mix(surface.z / startClip.w, end.z / endClip.w, t) / reciprocalW;
+        visible = min(visible, 1.0 - filteredShadow(uv, rayZ));
+        if (visible <= 0.005) return 0.0;
+    }
+    return visible;
 }
 
 void main() {
