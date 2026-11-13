@@ -1,25 +1,34 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
+import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.network.message.receive.FlashbangMessage
 import com.atsuishio.superbwarfare.network.message.receive.NuclearExplosionMessage
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.SoundTool
+import com.atsuishio.superbwarfare.tools.forceApplyEffect
+import com.atsuishio.superbwarfare.tools.sendPacketTo
 import kotlinx.serialization.Serializable
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Explosion
 import net.minecraft.world.level.Level
-import net.minecraft.world.phys.BlockHitResult
-import net.minecraft.world.phys.EntityHitResult
-import net.minecraft.world.phys.Vec3
+import net.minecraft.world.phys.*
 import net.minecraftforge.event.ForgeEventFactory
+import kotlin.math.cos
+import kotlin.math.sqrt
 
 open class NuclearBombEntity(type: EntityType<out NuclearBombEntity>, level: Level, animated: Boolean = true) :
     FastThrowableProjectile(type, level), BasicGeoProjectileEntity {
@@ -116,7 +125,96 @@ open class NuclearBombEntity(type: EntityType<out NuclearBombEntity>, level: Lev
         ShakeClientMessage.sendToNearbyPlayers(level, vec3.x, vec3.y, vec3.z, 2048.0, 45.0, 16.0)
         explosion.explode()
         explosion.finalizeExplosion(false)
+
+        // 爆闪：正对爆心且中间没有方块遮挡的玩家和生物被闪光眩晕，越近越久
+        applyFlashStun(level, vec3, blastRadius)
+        // 热/辐射杀伤窗口：爆后 30 秒内持续施加燃烧与辐射，随距离和窗口剩余时间衰减
+        applyThermalRadiation(level, vec3, blastRadius, THERMAL_WINDOW_TICKS)
+
         this.discard()
+    }
+
+    /**
+     * 核爆瞬间的闪光眩晕（本模组的 STUN 效果，等同闪光弹的致盲）：伤害半径内、
+     * 视线与爆心方向夹角小于 [STUN_CONE_DEGREES]、且眼睛高度到爆心没有方块遮挡的
+     * 玩家和生物会被眩晕，越靠近爆心时间越长。
+     */
+    private fun applyFlashStun(level: ServerLevel, center: Vec3, blastRadius: Float) {
+        val minCos = cos(Math.toRadians(STUN_CONE_DEGREES))
+        val area = AABB(center, center).inflate(blastRadius.toDouble())
+
+        for (target in level.getEntitiesOfClass(LivingEntity::class.java, area)) {
+            if (!target.isAlive || target.isSpectator) continue
+
+            val eyePos = target.eyePosition
+            val direction = center.subtract(eyePos)
+            val distance = direction.length()
+            if (distance > blastRadius) continue
+
+            // 视线方向与爆心方向的夹角必须小于 STUN_CONE_DEGREES
+            if (distance > 1.0e-3 && target.lookAngle.dot(direction.scale(1.0 / distance)) < minCos) continue
+
+            // 眼睛高度到爆心之间不能有方块遮挡
+            val obstruction = level.clip(
+                ClipContext(eyePos, center, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, target)
+            )
+            if (obstruction.type != HitResult.Type.MISS) continue
+
+            val exposure = (1.0 - distance / blastRadius).coerceIn(0.0, 1.0)
+            val duration = (STUN_MIN_TICKS + (STUN_MAX_TICKS - STUN_MIN_TICKS) * exposure).toInt()
+
+            target.forceApplyEffect(
+                MobEffectInstance(ModMobEffects.STUN.get(), duration, 0, false, false, true),
+                owner
+            )
+            if (target is ServerPlayer) {
+                // 复用闪光弹的爆闪/残影/耳鸣表现，强度按距离衰减
+                sendPacketTo(target, FlashbangMessage(exposure.toFloat(), (0.7 * exposure).toFloat()))
+            }
+        }
+    }
+
+    /**
+     * 热辐射杀伤窗口：爆后 [THERMAL_WINDOW_TICKS] 内每隔 [THERMAL_INTERVAL_TICKS] 刷新一次，
+     * 爆炸范围内的生物持续获得燃烧与辐射效果；等级和时长都随距离、窗口剩余时间衰减。
+     */
+    private fun applyThermalRadiation(level: ServerLevel, center: Vec3, blastRadius: Float, remainingTicks: Int) {
+        if (remainingTicks <= 0) return
+
+        val attacker = owner
+        val windowFactor = remainingTicks.toFloat() / THERMAL_WINDOW_TICKS
+        val area = AABB(center, center).inflate(blastRadius.toDouble())
+
+        for (target in level.getEntitiesOfClass(LivingEntity::class.java, area)) {
+            if (!target.isAlive || target.isSpectator) continue
+
+            val distance = sqrt(target.eyePosition.distanceToSqr(center))
+            if (distance > blastRadius) continue
+
+            val intensity = (1.0 - distance / blastRadius).toFloat().coerceIn(0f, 1f) * windowFactor
+            if (intensity <= 0f) continue
+
+            val amplifier = (intensity * (THERMAL_MAX_AMPLIFIER + 1)).toInt()
+                .coerceIn(0, THERMAL_MAX_AMPLIFIER)
+            val duration = (THERMAL_MAX_EFFECT_TICKS * intensity).toInt()
+                .coerceIn(THERMAL_MIN_EFFECT_TICKS, THERMAL_MAX_EFFECT_TICKS)
+
+            target.forceApplyEffect(
+                MobEffectInstance(ModMobEffects.BURN.get(), duration, amplifier, false, true, true),
+                attacker
+            )
+            target.forceApplyEffect(
+                MobEffectInstance(ModMobEffects.RADIATION.get(), duration, amplifier, false, true, true),
+                attacker
+            )
+        }
+
+        val next = remainingTicks - THERMAL_INTERVAL_TICKS
+        if (next > 0) {
+            Mod.queueServerWork(THERMAL_INTERVAL_TICKS) {
+                applyThermalRadiation(level, center, blastRadius, next)
+            }
+        }
     }
 
     /** Per-detonation visuals. Distances are blocks; duration is game ticks (20 ticks = 1 second). */
@@ -147,5 +245,31 @@ open class NuclearBombEntity(type: EntityType<out NuclearBombEntity>, level: Lev
             const val DEFAULT_HEIGHT = 140f
             const val DEFAULT_DURATION_TICKS = 1000
         }
+    }
+
+    companion object {
+        /** 闪光眩晕：视线与爆心方向夹角小于该角度（度）时才会被闪到 */
+        const val STUN_CONE_DEGREES = 70.0
+
+        /** 闪光眩晕的最长持续时间（tick）：贴脸 30 秒 */
+        const val STUN_MAX_TICKS = 600
+
+        /** 闪光眩晕的最短持续时间（tick） */
+        const val STUN_MIN_TICKS = 20
+
+        /** 热/辐射杀伤窗口时长（tick）：爆后 30 秒 */
+        const val THERMAL_WINDOW_TICKS = 600
+
+        /** 热/辐射窗口内的刷新间隔（tick） */
+        const val THERMAL_INTERVAL_TICKS = 20
+
+        /** 燃烧/辐射的最高等级对应的放大器（5 级 → 4） */
+        const val THERMAL_MAX_AMPLIFIER = 4
+
+        /** 燃烧/辐射效果的最长持续时间（tick）：30 秒 */
+        const val THERMAL_MAX_EFFECT_TICKS = 600
+
+        /** 燃烧/辐射效果的最短持续时间（tick） */
+        const val THERMAL_MIN_EFFECT_TICKS = 20
     }
 }
