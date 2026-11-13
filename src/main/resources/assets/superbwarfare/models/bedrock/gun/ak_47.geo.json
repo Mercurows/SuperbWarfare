@@ -11377,7 +11377,7 @@
 				{
 					"name": "idle_view",
 					"parent": "positioning",
-					"pivot": [2.9535, 6.9832, 10.4833]
+					"pivot": [2.4535, 6.1332, 8.9833]
 				},
 				{
 					"name": "bipod_view",
