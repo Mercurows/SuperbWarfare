@@ -1,0 +1,12 @@
+{
+  "States": [
+    {
+      "When": {
+        "Tag": "OneTwoPunchTime",
+        "Gt": 0
+      },
+      "Display": "timer",
+      "Value": "OneTwoPunchTime"
+    }
+  ]
+}

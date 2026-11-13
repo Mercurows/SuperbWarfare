@@ -55,6 +55,11 @@ import kotlin.math.min
 object ClientRenderHandler {
 
     @SubscribeEvent
+    fun registerPerkHudRules(event: net.minecraftforge.client.event.RegisterClientReloadListenersEvent) {
+        PerkOverlay.registerReloadListener(event)
+    }
+
+    @SubscribeEvent
     fun registerGravityLensingShader(event: RegisterShadersEvent) {
         ReforgingGravityBallRenderer.registerLensingShader(event)
         GunMuzzleLightRenderer.onRegisterShaders(event)
@@ -289,6 +294,7 @@ object ClientRenderHandler {
         event.registerBelowAll(AmmoCountOverlay.ID, AmmoCountOverlay)
         event.registerBelowAll(CrossHairOverlay.ID, CrossHairOverlay)
         event.registerBelowAll(InvisibleBladeChargeOverlay.ID, InvisibleBladeChargeOverlay)
+        event.registerBelowAll(PerkOverlay.ID, PerkOverlay)
         event.registerBelowAll(HeatBarOverlay.ID, HeatBarOverlay)
         event.registerBelowAll(BayonetChargeOverlay.ID, BayonetChargeOverlay)
         event.registerAbove(Mod.loc(CrossHairOverlay.ID), GunShieldOverlay.ID, GunShieldOverlay)

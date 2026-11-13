@@ -1,0 +1,21 @@
+{
+  "States": [
+    {
+      "When": {
+        "Tag": "EagerEdgeCooldown",
+        "Gt": 0
+      },
+      "Display": "timer",
+      "Value": "EagerEdgeCooldown",
+      "Effect": "debuff"
+    },
+    {
+      "When": {
+        "Tag": "EagerEdgeTime",
+        "Gt": 0
+      },
+      "Display": "timer",
+      "Value": "EagerEdgeTime"
+    }
+  ]
+}

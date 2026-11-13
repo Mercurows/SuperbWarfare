@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="aui-preload" content="true">
+    <meta name="aui-viewport" content="mode=gui,zoom=1,min-zoom=1,max-zoom=1,user-scalable=false">
+    <style>
+        * { user-select: none; pointer-events: none; }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+        body { color: #ffffff; }
+        #perks { position: absolute; width: 224px; height: 60px; transform-origin: 0 0; }
+        .row { position: absolute; left: 0; width: 224px; height: 12px; display: none; align-items: center; }
+        texture { width: 10px; height: 10px; margin-right: 4px; image-rendering: pixelated; flex-shrink: 0; }
+        sbw-hud-text { display: block; flex-shrink: 0; }
+    </style>
+</head>
+<body>
+    <div id="perks">
+        <div id="row-0" class="row" style="top:0px"><texture id="icon-0"/><sbw-hud-text id="name-0" data-scale="0.75"></sbw-hud-text></div>
+        <div id="row-1" class="row" style="top:12px"><texture id="icon-1"/><sbw-hud-text id="name-1" data-scale="0.75"></sbw-hud-text></div>
+        <div id="row-2" class="row" style="top:24px"><texture id="icon-2"/><sbw-hud-text id="name-2" data-scale="0.75"></sbw-hud-text></div>
+        <div id="row-3" class="row" style="top:36px"><texture id="icon-3"/><sbw-hud-text id="name-3" data-scale="0.75"></sbw-hud-text></div>
+        <div id="row-4" class="row" style="top:48px"><texture id="icon-4"/><sbw-hud-text id="name-4" data-scale="0.75"></sbw-hud-text></div>
+    </div>
+</body>
+</html>

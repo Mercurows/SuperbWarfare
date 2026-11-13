@@ -1,0 +1,10 @@
+{
+  "States": [
+    {
+      "When": {
+        "Source": "Zooming",
+        "Equals": true
+      }
+    }
+  ]
+}

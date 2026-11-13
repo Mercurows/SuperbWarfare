@@ -113,6 +113,13 @@ object DisplayConfig {
     }
 
     @JvmField
+    val PERK_HUD = buildClientConfig {
+        comment("Show active weapon perks, remaining durations and stacks on HUD")
+        comment("显示当前武器的模组状态、剩余时间和层数HUD")
+        define("perk_hud", true)
+    }
+
+    @JvmField
     val ADVANCED_AMMO_HUD = buildClientConfig {
         comment("Show ammo source slots and type indices, and fire mode indices when more than 3 modes are available")
         comment("是否开启高级弹药显示HUD（显示弹种框和序号，开火模式超过3种时显示模式序号）")

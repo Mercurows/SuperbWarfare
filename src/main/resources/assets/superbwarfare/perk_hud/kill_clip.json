@@ -1,0 +1,12 @@
+{
+  "States": [
+    {
+      "When": {
+        "Tag": "KillClipTime",
+        "Gt": 0
+      },
+      "Display": "timer",
+      "Value": "KillClipTime"
+    }
+  ]
+}
