@@ -120,6 +120,13 @@ object ProjectileConfig {
     }
 
     @JvmField
+    val DECOY_GRENADE_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from decoy grenade")
+        comment("诱饵弹：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("explosion_penetration_ratio", 15, 0, 100)
+    }
+
+    @JvmField
     val DECOY_GRENADE_EXPLOSION_RADIUS = buildServerConfig {
         comment("Explosion radius in blocks")
         comment("诱饵弹爆炸半径（格）")

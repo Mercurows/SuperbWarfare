@@ -13,6 +13,10 @@ uniform float Seed;
 uniform float FlashVisibility;
 uniform int ShaderPackMode;
 
+// 底部烟尘水平范围倍率：只放大贴地那层（尘front + 堆积带）的 XZ 半径，高度不变。
+// 与 NuclearExplosionRenderer.kt 里的 DUST_FOOT_SCALE 保持一致。
+const float DUST_FOOT_SCALE = 1.4;
+
 in vec2 texCoord;
 out vec4 fragColor;
 
@@ -216,7 +220,7 @@ vec4 medium(vec3 point, out vec4 surface) {
     bool nearInflow = inflowShape < 2.0 && inflowLane > 0.001;
     // Compress the previous bank vertically to 30%, then taper it down toward its edge.
     // Radius still follows the crown at 1.18x; this changes height, not its broad footprint.
-    float pileRadius = capRadius * 1.18;
+    float pileRadius = capRadius * 1.18 * DUST_FOOT_SCALE;
     float pileHeight = 3.0 + 11.0 * (1.0 - exp(-Age / 4.0));
     float pileThickness = 3.0 + 10.0 * (1.0 - exp(-Age / 5.0));
     float taper = mix(1.0, 0.18, smoothstep(0.15, 1.0, radial / pileRadius));
@@ -364,11 +368,11 @@ void main() {
         32.0 * (1.0 - exp(-max(Age - 1.0, 0.0) / 8.0));
     capHeight = 5.0 + 95.0 * (1.0 - exp(-lift / 8.0));
     mushroom = smoothstep(2.5, 11.0, Age);
-    dustRadius = 5.0 + 51.0 * (1.0 - exp(-Age / 0.65));
+    dustRadius = (5.0 + 51.0 * (1.0 - exp(-Age / 0.65))) * DUST_FOOT_SCALE;
     shockRadius = 10.0 + 280.0 * (1.0 - exp(-Age / 0.24));
     drift = vec3(Age * 0.24, 0.0, Age * 0.11);
 
-    float radius = max(capRadius * 1.18 + 14.0, Age < 16.0 ? dustRadius + 34.0 : 32.0);
+    float radius = max(capRadius * 1.18 * DUST_FOOT_SCALE + 14.0, Age < 16.0 ? dustRadius + 34.0 : 32.0);
     radius = max(radius, Age < 1.25 ? shockRadius + 12.0 : 0.0);
     vec2 bounds = intersectBounds(origin, ray, vec3(-radius,-3.0,-radius) + drift,
         vec3(radius, capHeight + capRadius + 14.0, radius) + drift);
@@ -378,9 +382,11 @@ void main() {
     if (exitPoint > entry) {
         // A small stratification breaks march bands; broad billows avoid a gritty noise fringe.
         float jitter = 0.43 + 0.14 * fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233))) * 43758.5453);
-        float stepSize = (exitPoint - entry) / 80.0;
+        // The dust footprint is DUST_FOOT_SCALE wider, so the bounds grew with it: keep the
+        // sampling density (and therefore the smooth dust skirt) by stepping a little finer.
+        float stepSize = (exitPoint - entry) / 96.0;
         float distanceAlong = entry + jitter * stepSize;
-        for (int i = 0; i < 80; ++i) {
+        for (int i = 0; i < 96; ++i) {
             if (distanceAlong > exitPoint || transmission < 0.012) break;
             vec3 p = origin + ray * distanceAlong;
             vec4 surfaceInfo;
@@ -429,7 +435,8 @@ void main() {
     }
 
     // Brief primary flash and weaker, warmer secondary pulse; exposure recovers rapidly.
-    float flash = exp(-Age * 7.0) + 0.38 * exp(-pow((Age - 0.32) / 0.20, 2.0));
+    float flashAge = Age * 0.25;
+    float flash = exp(-flashAge * 7.0) + 0.38 * exp(-pow((flashAge - 0.32) / 0.20, 2.0));
     vec3 source = vec3(0.0, 4.0 * EffectScale.y, 0.0) - originWorld;
     float distanceToSource = max(length(source), 1.0);
     float facing = max(dot(worldRay, source / distanceToSource), 0.0);

@@ -37,6 +37,7 @@ open class ReforgingLightningBallEntity(type: EntityType<out ReforgingLightningB
     private var damage = 6f
     private var explosionDamage = 6f
     private var explosionRadius = 8f
+    private var explosionPenetrationRatio: Float = CustomExplosion.DEFAULT_PENETRATION_RATIO
     private var life = 100
     private var age = 0
     private var attackInterval = 10
@@ -78,6 +79,11 @@ open class ReforgingLightningBallEntity(type: EntityType<out ReforgingLightningB
     override fun getExplosionRadius() = explosionRadius
     override fun setExplosionRadius(value: Float) {
         explosionRadius = value.coerceIn(0f, 32f)
+    }
+
+    override fun getExplosionPenetrationRatio() = explosionPenetrationRatio
+    override fun setExplosionPenetrationRatio(value: Float) {
+        explosionPenetrationRatio = value.coerceIn(0f, CustomExplosion.MAX_PENETRATION_RATIO)
     }
 
     override fun getLife() = life

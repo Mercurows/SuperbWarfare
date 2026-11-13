@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.compat.valkyrienskies.ValkyrienSkiesCompat
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.OBBEntity
+import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -82,6 +83,14 @@ open class CustomExplosion(
     private var blockDestructionRadius: Float? = null
     private var blockDestructionDurationTicks: Int? = null
     private var deferredBlockDrops: ObjectArrayList<Pair<ItemStack, BlockPos>>? = null
+
+    /** 躲在掩体后时仍会受到的爆炸伤害比例（0~100），由各爆炸物自行配置 */
+    private var penetrationRatio: Float = DEFAULT_PENETRATION_RATIO
+
+    fun setPenetrationRatio(value: Float): CustomExplosion {
+        this.penetrationRatio = value.coerceIn(0f, MAX_PENETRATION_RATIO)
+        return this
+    }
 
     init {
         this.damageSource = source ?: level.damageSources().explosion(this)
@@ -350,7 +359,7 @@ open class CustomExplosion(
 
                         val seenPercent =
                             getSeenPercent(position, entity).toDouble().coerceIn(
-                                0.01 * ExplosionConfig.EXPLOSION_PENETRATION_RATIO.get(),
+                                0.01 * penetrationRatio,
                                 Double.POSITIVE_INFINITY
                             )
                         val damagePercent = (1 - distanceRate) * seenPercent
@@ -673,6 +682,7 @@ open class CustomExplosion(
         private var particlePosition: Vec3? = null
         private var beast = false
         private var includeDirectSource = false
+        private var penetrationRatio: Float? = null
         var position: Vec3
 
         init {
@@ -757,6 +767,12 @@ open class CustomExplosion(
             return this
         }
 
+        /** 掩体后仍会受到的爆炸伤害比例（百分比）；不写时按 [directSource] 的子弹属性或默认值 */
+        fun penetrationRatio(penetrationRatio: Float): Builder {
+            this.penetrationRatio = penetrationRatio
+            return this
+        }
+
         fun explode() {
             if (level.isClientSide) return
 
@@ -781,6 +797,11 @@ open class CustomExplosion(
                 .setBeast(beast)
                 .setExcludeDirectSource(!includeDirectSource)
                 .setDropBlocks(dropBlocks)
+                .setPenetrationRatio(
+                    penetrationRatio
+                        ?: (directSource as? IBulletProperties)?.getExplosionPenetrationRatio()
+                        ?: DEFAULT_PENETRATION_RATIO
+                )
 
             customExplosion.explode()
             ForgeEventFactory.onExplosionStart(directSource.level(), customExplosion)
@@ -797,6 +818,11 @@ open class CustomExplosion(
     }
 
     companion object {
+        /** 默认的掩体后爆炸伤害比例（百分比） */
+        const val DEFAULT_PENETRATION_RATIO: Float = 15f
+
+        const val MAX_PENETRATION_RATIO: Float = 100f
+
         private val PLAIN_TERRAIN = IdentityHashMap<Block, Boolean>()
         private val BLOCK_DIRECTIONS = Direction.entries.toTypedArray()
         /**

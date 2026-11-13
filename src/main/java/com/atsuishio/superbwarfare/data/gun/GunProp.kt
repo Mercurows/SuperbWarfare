@@ -349,6 +349,9 @@ class GunProp<T, R>(
         val EXPLOSION_RADIUS = plainProp(DefaultGunData::explosionRadius)
 
         @JvmField
+        val EXPLOSION_PENETRATION_RATIO = plainProp(DefaultGunData::explosionPenetrationRatio)
+
+        @JvmField
         val GRAVITY = plainProp(DefaultGunData::gravity)
 
         @JvmField
@@ -599,6 +602,7 @@ class GunProp<T, R>(
             modify(BURST_AMOUNT) { it.coerceAtLeast(0) }
             modify(RPM) { it.coerceIn(1, 114514) }
             modify(RPM_MULTIPLIER) { it.coerceAtLeast(0.0) }
+            modify(EXPLOSION_PENETRATION_RATIO) { it.coerceIn(0.0, 100.0) }
             modify(UNDERWATER_MOTION_SCALE) { it.coerceIn(0.0f, 1.0f) }
             modify(KNOCKBACK) { it.coerceIn(-10.0f, 10.0f) }
 

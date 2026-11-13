@@ -1847,6 +1847,7 @@
   "prop.superbwarfare.gravity": "Projectile Gravity",
   "prop.superbwarfare.explosion_damage": "Explosion Damage",
   "prop.superbwarfare.explosion_radius": "Explosion Radius",
+  "prop.superbwarfare.explosion_penetration_ratio": "Explosion Penetration",
   "prop.superbwarfare.normal_reload_time": "Normal Reload Time",
   "prop.superbwarfare.empty_reload_time": "Empty Reload Time",
   "prop.superbwarfare.underwater_motion_scale": "Projectile Underwater Motion Scale",

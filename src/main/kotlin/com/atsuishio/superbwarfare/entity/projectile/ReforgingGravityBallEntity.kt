@@ -5,10 +5,7 @@ import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.init.ModDamageTypes
-import com.atsuishio.superbwarfare.tools.EntityFindUtil
-import com.atsuishio.superbwarfare.tools.SeekTool
-import com.atsuishio.superbwarfare.tools.forceHurt
-import com.atsuishio.superbwarfare.tools.localPlayer
+import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.core.particles.DustParticleOptions
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.Packet
@@ -43,6 +40,7 @@ open class ReforgingGravityBallEntity(type: EntityType<out ReforgingGravityBallE
     private val animation = if (level.isClientSide) BasicProjectileAnimationInstance(this, true) else null
     private var damageValue = 12f
     private var explosionDamageValue = 80f
+    private var explosionPenetrationRatioValue: Float = CustomExplosion.DEFAULT_PENETRATION_RATIO
     private var projectileLife by PROJECTILE_LIFE
     private var age = 0
     private var gravityValue = 0.04f
@@ -155,6 +153,11 @@ open class ReforgingGravityBallEntity(type: EntityType<out ReforgingGravityBallE
     override fun getExplosionRadius() = syncedAttackRadius
     override fun setExplosionRadius(value: Float) {
         syncedAttackRadius = value.coerceIn(0f, 32f)
+    }
+
+    override fun getExplosionPenetrationRatio() = explosionPenetrationRatioValue
+    override fun setExplosionPenetrationRatio(value: Float) {
+        explosionPenetrationRatioValue = value.coerceIn(0f, CustomExplosion.MAX_PENETRATION_RATIO)
     }
 
     override fun getLife() = projectileLife

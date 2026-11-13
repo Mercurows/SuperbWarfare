@@ -1325,6 +1325,12 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         if (explosionRadius > 0.0) {
             add(propLabel("explosion_radius") to WeaponStat.EXPLOSION_RADIUS.format(explosionRadius))
         }
+        if (explosionDamage > 0.0 || explosionRadius > 0.0) {
+            add(
+                propLabel("explosion_penetration_ratio") to
+                        WeaponStat.EXPLOSION_PENETRATION_RATIO.format(data.get(GunProp.EXPLOSION_PENETRATION_RATIO))
+            )
+        }
         add(propLabel("bypasses_armor") to WeaponStat.ARMOR_BYPASS.format(data.get(GunProp.BYPASSES_ARMOR) * 100.0))
         add(propLabel("velocity") to WeaponStat.VELOCITY.format(data.get(GunProp.VELOCITY) * 20.0))
     }
@@ -1783,6 +1789,14 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             if (explosionRadius > 0.0) {
                 add(ammoPropertyLine("explosion_radius", WeaponStat.EXPLOSION_RADIUS.format(explosionRadius)))
             }
+            if (explosionDamage > 0.0 || explosionRadius > 0.0) {
+                add(
+                    ammoPropertyLine(
+                        "explosion_penetration_ratio",
+                        WeaponStat.EXPLOSION_PENETRATION_RATIO.format(probe.get(GunProp.EXPLOSION_PENETRATION_RATIO))
+                    )
+                )
+            }
 
             ammoDeltaLine("bypasses_armor",
                 (probe.get(GunProp.BYPASSES_ARMOR) - equipped.get(GunProp.BYPASSES_ARMOR)) * 100.0, "%")?.let(::add)
@@ -2170,6 +2184,12 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         PROJECTILES("projectile_amount", 16.0, 0, optional = true, firearmOnly = true, read = { it.get(GunProp.PROJECTILE_AMOUNT).toDouble() }),
         EXPLOSION_DAMAGE("explosion_damage", 200.0, optional = true, read = { it.get(GunProp.EXPLOSION_DAMAGE) }),
         EXPLOSION_RADIUS("explosion_radius", 12.0, unit = " m", optional = true, read = { it.get(GunProp.EXPLOSION_RADIUS) }),
+        EXPLOSION_PENETRATION_RATIO("explosion_penetration_ratio", 100.0, unit = " %", optional = true,
+            read = {
+                // 没有爆炸伤害/半径的武器不显示这一项
+                if (it.get(GunProp.EXPLOSION_DAMAGE) > 0.0 || it.get(GunProp.EXPLOSION_RADIUS) > 0.0)
+                    it.get(GunProp.EXPLOSION_PENETRATION_RATIO) else 0.0
+            }),
         MAX_ENERGY("max_energy", 100000.0, 0, " FE", optional = true, read = { it.get(GunProp.MAX_ENERGY).toDouble() }),
         ENERGY_REGEN("energy_regeneration", 100.0, unit = " FE/s", optional = true, read = { it.get(GunProp.ENERGY_REGENERATION) * 20.0 }),
         MELEE_DAMAGE("melee_damage", 100.0, optional = true, read = { it.get(GunProp.MELEE_DAMAGE) });

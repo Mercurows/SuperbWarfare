@@ -312,6 +312,7 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             "MaxEnergy",
             "ExplosionDamage",
             "ExplosionRadius",
+            "ExplosionPenetrationRatio",
             "UnderwaterMotionScale",
             "InWaterCooldownRate",
             "MaxDurability",

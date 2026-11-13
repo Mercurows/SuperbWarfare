@@ -104,6 +104,7 @@ fun DefaultGunData.withOverrides(diff: Map<out Prop<*, *, *, *, *>, Any?>): Defa
         maxCustomRpm = int(GunProp.CUSTOM_RPM_MAX, maxCustomRpm),
         explosionDamage = num(GunProp.EXPLOSION_DAMAGE, explosionDamage),
         explosionRadius = num(GunProp.EXPLOSION_RADIUS, explosionRadius),
+        explosionPenetrationRatio = num(GunProp.EXPLOSION_PENETRATION_RATIO, explosionPenetrationRatio),
         heatPerShoot = num(GunProp.HEAT_PER_SHOOT, heatPerShoot),
         naturalCooldown = num(GunProp.NATURAL_COOLDOWN, naturalCooldown),
         drawTime = int(GunProp.DRAW_TIME, drawTime),

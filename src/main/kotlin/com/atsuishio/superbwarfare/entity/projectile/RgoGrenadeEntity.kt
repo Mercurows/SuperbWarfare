@@ -29,6 +29,7 @@ open class RgoGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
     init {
         this.explosionDamageValue = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
         this.explosionRadiusValue = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get().toFloat()
+        this.explosionPenetrationRatioValue = ExplosionConfig.RGO_GRENADE_EXPLOSION_PENETRATION_RATIO.get().toFloat()
     }
 
     override fun canPassThroughFluid() = true

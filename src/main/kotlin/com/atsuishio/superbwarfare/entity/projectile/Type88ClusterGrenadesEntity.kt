@@ -34,6 +34,7 @@ open class Type88ClusterGrenadesEntity : BounceProjectile, BasicGeoProjectileEnt
         this.damageValue = 10f
         this.explosionDamageValue = ExplosionConfig.TYPE_88_CLUSTER_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
         this.explosionRadiusValue = ExplosionConfig.TYPE_88_CLUSTER_GRENADE_EXPLOSION_RADIUS.get().toFloat()
+        this.explosionPenetrationRatioValue = ExplosionConfig.TYPE_88_CLUSTER_GRENADE_EXPLOSION_PENETRATION_RATIO.get().toFloat()
         this.headShotValue = 10f
         this.lifeValue = ExplosionConfig.TYPE_88_CLUSTER_GRENADE_FUSE.get()
         this.projectileSplitCountValue = 1

@@ -24,6 +24,7 @@ class HighEnergyExplosivesEntity(type: EntityType<out HighEnergyExplosivesEntity
             .attacker(owner)
             .damage(ExplosionConfig.HIGH_ENERGY_EXPLOSIVES_BLOCK_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.HIGH_ENERGY_EXPLOSIVES_BLOCK_EXPLOSION_RADIUS.get().toFloat())
+            .penetrationRatio(ExplosionConfig.HIGH_ENERGY_EXPLOSIVES_BLOCK_EXPLOSION_PENETRATION_RATIO.get().toFloat())
             .explode()
     }
 

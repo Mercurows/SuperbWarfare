@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.client.particle.NuclearSmokeParticle
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
 import com.atsuishio.superbwarfare.entity.projectile.NuclearBombEntity.NuclearExplosionParameters
 import com.atsuishio.superbwarfare.event.ClientEventHandler
-import com.atsuishio.superbwarfare.init.ModSounds
 import com.mojang.blaze3d.pipeline.TextureTarget
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
@@ -20,7 +19,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.renderer.ShaderInstance
 import net.minecraft.core.BlockPos
-import net.minecraft.sounds.SoundSource
 import net.minecraft.util.RandomSource
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.levelgen.Heightmap
@@ -40,6 +38,12 @@ import kotlin.math.sin
 @OnlyIn(Dist.CLIENT)
 object NuclearExplosionRenderer {
     private const val MAX_EFFECTS = 4
+
+    /**
+     * 底部烟尘水平范围倍率：只放大贴地那层（尘front 粒子 + 持续堆积带）的半径，高度不变。
+     * 必须与 `nuclear_explosion.fsh` 里的 `DUST_FOOT_SCALE` 保持一致，否则 shader 体积与粒子层会错位。
+     */
+    private const val DUST_FOOT_SCALE = 1.4
 
     private data class Burst(
         val position: Vec3,
@@ -99,13 +103,6 @@ object NuclearExplosionRenderer {
         val effect = parameters.sanitized()
         bursts.add(Burst(position, level.gameTime, seed, effect))
         ProjectileLightHelper.emitExplosionFlashDirect(level, position, 28f * effect.radiusScale)
-        val distance = Minecraft.getInstance().gameRenderer.mainCamera.position.distanceTo(position)
-        val sound = when {
-            distance < 96 -> ModSounds.EPIC_EXPLOSION_CLOSE
-            distance < 320 -> ModSounds.EPIC_EXPLOSION_FAR
-            else -> ModSounds.EPIC_EXPLOSION_VERY_FAR
-        }.get()
-        level.playLocalSound(position.x, position.y, position.z, sound, SoundSource.BLOCKS, 32f, 0.7f, true)
     }
 
     @JvmStatic
@@ -148,7 +145,7 @@ object NuclearExplosionRenderer {
             // Small, sparse puffs follow the lowered dust front without a tall billboard fringe.
             if (phaseTick in 6..240 && tick % 6L == 0L) repeat(3) {
                 val angle = random.nextDouble() * Math.PI * 2
-                val radius = (5.0 + 51.0 * (1.0 - exp(-seconds / 0.65))) * horizontalScale
+                val radius = (5.0 + 51.0 * (1.0 - exp(-seconds / 0.65))) * horizontalScale * DUST_FOOT_SCALE
                 val x = burst.position.x + cos(angle) * radius
                 val z = burst.position.z + sin(angle) * radius
                 val block = BlockPos.containing(x, burst.position.y, z)
@@ -186,7 +183,7 @@ object NuclearExplosionRenderer {
             if (phaseTick in 24..820 && tick % 8L == 0L) repeat(2) {
                 val angle = random.nextDouble() * Math.PI * 2
                 val radialFraction = kotlin.math.sqrt(random.nextDouble())
-                val radius = radialFraction * capRadius * 1.18 * horizontalScale
+                val radius = radialFraction * capRadius * 1.18 * horizontalScale * DUST_FOOT_SCALE
                 val edgeProgress = ((radialFraction - 0.15) / 0.85).coerceIn(0.0, 1.0)
                 val heightTaper = 1.0 - 0.82 * edgeProgress * edgeProgress * (3.0 - 2.0 * edgeProgress)
                 val x = burst.position.x + cos(angle) * radius

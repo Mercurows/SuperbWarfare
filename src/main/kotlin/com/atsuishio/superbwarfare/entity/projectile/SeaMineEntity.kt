@@ -199,7 +199,8 @@ open class SeaMineEntity(type: EntityType<out SeaMineEntity>, level: Level) : En
         detonated = true // Claim the detonation before nearby explosions can call hurt again.
         CustomExplosion.Builder(this).attacker(owner)
             .damage(ExplosionConfig.SEA_MINE_EXPLOSION_DAMAGE.get().toFloat())
-            .radius(ExplosionConfig.SEA_MINE_EXPLOSION_RADIUS.get().toFloat()).keepBlock().explode()
+            .radius(ExplosionConfig.SEA_MINE_EXPLOSION_RADIUS.get().toFloat())
+            .penetrationRatio(ExplosionConfig.SEA_MINE_EXPLOSION_PENETRATION_RATIO.get().toFloat()).keepBlock().explode()
         discard()
     }
 

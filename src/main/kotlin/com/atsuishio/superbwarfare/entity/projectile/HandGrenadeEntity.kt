@@ -33,6 +33,7 @@ open class HandGrenadeEntity : BounceProjectile, BasicGeoProjectileEntity {
         this.damageValue = 1f
         this.explosionDamageValue = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
         this.explosionRadiusValue = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get().toFloat()
+        this.explosionPenetrationRatioValue = ExplosionConfig.M67_GRENADE_EXPLOSION_PENETRATION_RATIO.get().toFloat()
         this.headShotValue = 10f
     }
 

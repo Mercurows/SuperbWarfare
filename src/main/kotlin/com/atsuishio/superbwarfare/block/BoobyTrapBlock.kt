@@ -205,7 +205,8 @@ open class BoobyTrapBlock : BaseEntityBlock(
             pos.z + 0.5,
             radius,
             interaction
-        ).setSphericalBlockDestruction(true)
+        ).setPenetrationRatio(ExplosionConfig.BOOBY_TRAP_EXPLOSION_PENETRATION_RATIO.get().toFloat())
+            .setSphericalBlockDestruction(true)
         if (ForgeEventFactory.onExplosionStart(level, explosion)) return
         explosion.explode()
         explosion.finalizeExplosion(false)

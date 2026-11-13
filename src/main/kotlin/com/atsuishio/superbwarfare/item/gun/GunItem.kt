@@ -1010,6 +1010,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                     setCustomGravity(data.get(GunProp.GRAVITY).toFloat())
                     setExplosionDamage(data.get(GunProp.EXPLOSION_DAMAGE).toFloat())
                     setExplosionRadius(data.get(GunProp.EXPLOSION_RADIUS).toFloat())
+                    setExplosionPenetrationRatio(data.get(GunProp.EXPLOSION_PENETRATION_RATIO).toFloat())
                     setLife(data.get(GunProp.PROJECTILE_LIFE))
                     setHeadShot(headshot.toFloat())
                     setZoom(zoom)

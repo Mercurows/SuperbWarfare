@@ -1,10 +1,13 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
+import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.NuclearExplosionMessage
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage
 import com.atsuishio.superbwarfare.tools.CustomExplosion
+import com.atsuishio.superbwarfare.tools.SoundTool
 import kotlinx.serialization.Serializable
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
@@ -27,7 +30,8 @@ open class NuclearBombEntity(type: EntityType<out NuclearBombEntity>, level: Lev
 
     init {
         this.explosionRadiusValue = NuclearExplosionParameters.DEFAULT_RADIUS
-        this.explosionDamageValue = 1000f
+        this.explosionDamageValue = 20000f
+        this.explosionPenetrationRatioValue = ExplosionConfig.NUCLEAR_BOMB_EXPLOSION_PENETRATION_RATIO.get().toFloat()
     }
 
     /** Null follows the projectile's explosion radius; height and duration are independent. */
@@ -96,14 +100,20 @@ open class NuclearBombEntity(type: EntityType<out NuclearBombEntity>, level: Lev
             level, this, ModDamageTypes.causeCustomExplosionDamage(level.registryAccess(), this, owner), null,
             getExplosionDamage(), vec3.x, vec3.y, vec3.z, blastRadius,
             if (hasExplosionDestroy()) Explosion.BlockInteraction.DESTROY else Explosion.BlockInteraction.KEEP
-        ).setDropBlocks(false).setBlockDestructionRadius(blastRadius)
+        ).setPenetrationRatio(ExplosionConfig.NUCLEAR_BOMB_EXPLOSION_PENETRATION_RATIO.get().toFloat())
+            .setDropBlocks(false).setBlockDestructionRadius(blastRadius)
             .setBlockDestructionDuration((effect.durationTicks / 5).coerceIn(1, 80))
         if (ForgeEventFactory.onExplosionStart(level, explosion)) {
             discard()
             return
         }
         NuclearExplosionMessage.send(level, vec3, effect)
-        ShakeClientMessage.sendToNearbyPlayers(level, vec3.x, vec3.y, vec3.z, 384.0, 35.0, 8.0)
+
+        SoundTool.playDistantSound(level, ModSounds.NUKE_EXPLOSION_CLOSE.get(), vec3, 32f, 1f, null)
+        SoundTool.playDistantSound(level, ModSounds.NUKE_EXPLOSION_FAR.get(), vec3, 64f, 1f, null)
+        SoundTool.playDistantSound(level, ModSounds.NUKE_EXPLOSION_VERY_FAR.get(), vec3, 192f, 1f, null)
+
+        ShakeClientMessage.sendToNearbyPlayers(level, vec3.x, vec3.y, vec3.z, 2048.0, 45.0, 16.0)
         explosion.explode()
         explosion.finalizeExplosion(false)
         this.discard()
@@ -133,7 +143,7 @@ open class NuclearBombEntity(type: EntityType<out NuclearBombEntity>, level: Lev
         fun ageSeconds(elapsedTicks: Float) = (elapsedTicks * timeScale / 20f).coerceAtLeast(0f)
 
         companion object {
-            const val DEFAULT_RADIUS = 60f
+            const val DEFAULT_RADIUS = 100f
             const val DEFAULT_HEIGHT = 140f
             const val DEFAULT_DURATION_TICKS = 1000
         }

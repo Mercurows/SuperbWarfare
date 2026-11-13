@@ -34,6 +34,7 @@ open class PtkmProjectileEntity : FastThrowableProjectile, BasicGeoProjectileEnt
         this.damageValue = ExplosionConfig.PTKM_1R_PROJECTILE_HIT_DAMAGE.get().toFloat()
         this.explosionDamageValue = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_DAMAGE.get().toFloat()
         this.explosionRadiusValue = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_RADIUS.get().toFloat()
+        this.explosionPenetrationRatioValue = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_PENETRATION_RATIO.get().toFloat()
     }
 
     constructor(type: EntityType<out PtkmProjectileEntity>, level: Level) : super(type, level)

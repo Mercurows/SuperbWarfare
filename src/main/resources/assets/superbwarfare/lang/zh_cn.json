@@ -1847,6 +1847,7 @@
   "prop.superbwarfare.gravity": "子弹重力",
   "prop.superbwarfare.explosion_damage": "爆炸伤害",
   "prop.superbwarfare.explosion_radius": "爆炸半径",
+  "prop.superbwarfare.explosion_penetration_ratio": "穿掩体伤害比例",
   "prop.superbwarfare.normal_reload_time": "标准换弹时间",
   "prop.superbwarfare.empty_reload_time": "空仓换弹时间",
   "prop.superbwarfare.underwater_motion_scale": "子弹水下动量",

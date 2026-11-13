@@ -306,6 +306,7 @@ open class EDDEntity : HangingEntity, OwnableEntity {
             .attacker(this.getOwner())
             .damage(ExplosionConfig.EDD_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.EDD_EXPLOSION_RADIUS.get().toFloat())
+            .penetrationRatio(ExplosionConfig.EDD_EXPLOSION_PENETRATION_RATIO.get().toFloat())
             .keepBlock()
             .explode()
 
