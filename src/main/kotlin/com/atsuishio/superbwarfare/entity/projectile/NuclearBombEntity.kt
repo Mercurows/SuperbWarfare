@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.entity.projectile.NuclearBombEntity.Companion
 import com.atsuishio.superbwarfare.entity.projectile.NuclearBombEntity.Companion.THERMAL_INTERVAL_TICKS
 import com.atsuishio.superbwarfare.entity.projectile.NuclearBombEntity.Companion.THERMAL_WINDOW_TICKS
 import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.FlashbangMessage
@@ -17,7 +18,6 @@ import com.atsuishio.superbwarfare.tools.SoundTool
 import com.atsuishio.superbwarfare.tools.forceApplyEffect
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import kotlinx.serialization.Serializable
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.server.level.ServerLevel
@@ -80,7 +80,7 @@ open class NuclearBombEntity(type: EntityType<out NuclearBombEntity>, level: Lev
         compound.put("NuclearEffect", effect)
     }
 
-    override fun getDefaultItem() = BuiltInRegistries.ITEM.get(BuiltInRegistries.ENTITY_TYPE.getKey(this.type))
+    override fun getDefaultItem() = ModItems.SMELLY_BOY.get()
 
     override fun getAnimationInstance() = this.anim
 
@@ -227,7 +227,8 @@ open class NuclearBombEntity(type: EntityType<out NuclearBombEntity>, level: Lev
         val radius: Float = DEFAULT_RADIUS,
         /** Nominal height from the ground to the top of the mature cloud. */
         val mushroomHeight: Float = DEFAULT_HEIGHT,
-        val durationTicks: Int = DEFAULT_DURATION_TICKS
+        val durationTicks: Int = DEFAULT_DURATION_TICKS,
+        val renderMushroomCloud: Boolean = true
     ) {
         fun sanitized() = copy(
             radius = if (radius.isFinite() && radius > 0f) radius.coerceIn(1f, 4096f) else DEFAULT_RADIUS,

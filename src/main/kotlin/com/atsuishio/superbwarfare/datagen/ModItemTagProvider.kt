@@ -834,6 +834,11 @@ class ModItemTagProvider(
             ModItems.MUZZLE_COMPENSATOR_R_17.get(),
             ModItems.AR_SILENCER.get(),
         )
+
+        this.tag(ModTags.Items.FOOD_RAIN_FOODS).add(
+            Items.BREAD, Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.BAKED_POTATO,
+            Items.APPLE, Items.CARROT, Items.COOKIE, Items.PUMPKIN_PIE, Items.MELON_SLICE
+        )
     }
 
     /** 按物品自身的稀有度把它落进 [slot] 的对应子 tag */

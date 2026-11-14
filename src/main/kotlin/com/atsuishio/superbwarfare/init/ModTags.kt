@@ -57,6 +57,8 @@ object ModTags {
         @JvmField val MACHINE_GUN = modItemTag("machine_gun")
         @JvmField val LAUNCHER = modItemTag("launcher")
 
+        @JvmField val FOOD_RAIN_FOODS = modItemTag("food_rain_foods")
+
         @JvmField val MILITARY_ARMOR = modItemTag("military_armor")
         @JvmField val MILITARY_ARMOR_HEAVY = modItemTag("military_armor_heavy")
 

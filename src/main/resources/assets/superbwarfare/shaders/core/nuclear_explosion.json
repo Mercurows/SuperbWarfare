@@ -13,6 +13,7 @@
     {"name":"EffectScale","type":"float","count":3,"values":[1,1,1]},
     {"name":"Seed","type":"float","count":1,"values":[0]},
     {"name":"FlashVisibility","type":"float","count":1,"values":[0]},
+    {"name":"CloudVisibility","type":"float","count":1,"values":[1]},
     {"name":"ShaderPackMode","type":"int","count":1,"values":[0]}
   ]
 }

@@ -11,6 +11,7 @@ uniform float FlowTime;
 uniform vec3 EffectScale;
 uniform float Seed;
 uniform float FlashVisibility;
+uniform float CloudVisibility;
 uniform int ShaderPackMode;
 
 // 底部烟尘水平范围倍率：只放大贴地那层（尘front + 堆积带）的 XZ 半径，高度不变。
@@ -391,6 +392,8 @@ void main() {
             vec3 p = origin + ray * distanceAlong;
             vec4 surfaceInfo;
             vec4 m = medium(p, surfaceInfo);
+            m.x *= CloudVisibility;
+            m.z *= CloudVisibility;
             float density = m.x * 0.15 + m.y * 0.13 + m.z * 0.16;
             if (density > 0.001) {
                 float opacity = 1.0 - exp(-density * stepSize);

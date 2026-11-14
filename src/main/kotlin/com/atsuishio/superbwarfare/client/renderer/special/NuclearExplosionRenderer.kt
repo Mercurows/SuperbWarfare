@@ -208,7 +208,7 @@ object NuclearExplosionRenderer {
                 )
             }
             // A sparse fringe detaches from the crown, continuing the shader's rise and wind drift.
-            if (phaseTick in 40..800 && tick % 6L == 0L) {
+            if (parameters.renderMushroomCloud && phaseTick in 40..800 && tick % 6L == 0L) {
                 val angle = random.nextDouble() * Math.PI * 2
                 val radius = capRadius * 0.94 * horizontalScale
                 val height = (5.0 + 95.0 * (1.0 - exp(-maxOf(seconds - 0.7, 0.0) / 8.0))) * verticalScale
@@ -369,6 +369,7 @@ object NuclearExplosionRenderer {
                     .set(parameters.radiusScale, parameters.heightScale, parameters.radiusScale)
                 custom.safeGetUniform("Seed").set((burst.seed and 65535).toFloat() / 65535f)
                 custom.safeGetUniform("FlashVisibility").set(if (visible) 1f else 0f)
+                custom.safeGetUniform("CloudVisibility").set(if (parameters.renderMushroomCloud) 1f else 0f)
                 val builder = Tesselator.getInstance().builder
                 builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION)
                 builder.vertex(-1.0, -1.0, 0.0).endVertex()
