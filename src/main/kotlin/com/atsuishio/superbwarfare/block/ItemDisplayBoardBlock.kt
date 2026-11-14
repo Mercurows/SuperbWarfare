@@ -40,7 +40,6 @@ open class ItemDisplayBoardBlock : BaseEntityBlock(
         .strength(0.8f, 6.0f)
         .noOcclusion()
 ) {
-
     init {
         this.registerDefaultState(
             this.stateDefinition.any()
@@ -115,7 +114,7 @@ open class ItemDisplayBoardBlock : BaseEntityBlock(
         val blockEntity = pLevel.getBlockEntity(pPos) as? ItemDisplayBoardBlockEntity ?: return InteractionResult.PASS
         val heldItem = pPlayer.getItemInHand(pHand)
 
-        // 潜行 + 右键取下物品（手持物品时由 ItemDisplayBoardEventHandler 提前拦截）
+        // 潜行 + 右键取下物品
         if (pPlayer.isShiftKeyDown) {
             if (!blockEntity.hasItem) return InteractionResult.PASS
 
@@ -130,7 +129,7 @@ open class ItemDisplayBoardBlock : BaseEntityBlock(
 
         // 仅有一个物品时，空手右键旋转物品
         if (blockEntity.itemCount == 1 && heldItem.isEmpty) {
-            pLevel.setBlock(pPos, state.cycle(ROTATION), Block.UPDATE_ALL)
+            pLevel.setBlock(pPos, state.cycle(ROTATION), UPDATE_ALL)
             pLevel.playSound(null, pPos, SoundEvents.ITEM_FRAME_ROTATE_ITEM, SoundSource.BLOCKS, 1.0f, 1.0f)
             pLevel.gameEvent(pPlayer, GameEvent.BLOCK_CHANGE, pPos)
             return InteractionResult.SUCCESS
@@ -154,7 +153,7 @@ open class ItemDisplayBoardBlock : BaseEntityBlock(
             heldItem.shrink(1)
         }
         // 放入物品后角度归零
-        pLevel.setBlock(pPos, state.setValue(ROTATION, 0), Block.UPDATE_ALL)
+        pLevel.setBlock(pPos, state.setValue(ROTATION, 0), UPDATE_ALL)
         pLevel.playSound(null, pPos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 1.0f, 1.0f)
         pLevel.gameEvent(pPlayer, GameEvent.BLOCK_CHANGE, pPos)
         return InteractionResult.SUCCESS
@@ -280,7 +279,7 @@ open class ItemDisplayBoardBlock : BaseEntityBlock(
             val displayedItem = blockEntity.takeLastItem()
             if (displayedItem.isEmpty) return
 
-            level.setBlock(pos, state.setValue(ROTATION, 0), Block.UPDATE_ALL)
+            level.setBlock(pos, state.setValue(ROTATION, 0), UPDATE_ALL)
 
             if (!player.abilities.instabuild) {
                 val itemToGive = displayedItem.copy()

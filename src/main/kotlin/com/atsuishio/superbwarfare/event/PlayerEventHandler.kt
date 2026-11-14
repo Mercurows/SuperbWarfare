@@ -71,7 +71,7 @@ object PlayerEventHandler {
     fun onPlayerDeath(event: LivingDeathEvent) {
         val player = event.entity as? ServerPlayer ?: return
 
-        ChargeWindowHandler.clear(player)
+        UseActionMessage.clear(player)
         UseActionMessage.clearChargeCooldown(player)
     }
 

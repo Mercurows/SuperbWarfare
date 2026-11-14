@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.event
 
 import com.atsuishio.superbwarfare.api.event.PreKillEvent
+import com.atsuishio.superbwarfare.block.ItemDisplayBoardBlock
+import com.atsuishio.superbwarfare.block.entity.ItemDisplayBoardBlockEntity
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.config.common.GameplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
@@ -30,6 +32,7 @@ import net.minecraft.network.protocol.game.ClientboundStopSoundPacket
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.effect.MobEffectCategory
@@ -44,6 +47,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Explosion
 import net.minecraftforge.event.entity.living.*
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
+import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.event.level.ExplosionEvent
 import net.minecraftforge.eventbus.api.Event
 import net.minecraftforge.eventbus.api.EventPriority
@@ -829,5 +833,27 @@ object LivingEventHandler {
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    fun onRightClickBlock(event: PlayerInteractEvent.RightClickBlock) {
+        val level = event.level
+        val pos = event.pos
+        val state = level.getBlockState(pos)
+        if (state.block !is ItemDisplayBoardBlock) return
+
+        val player = event.entity
+        if (player.isSpectator) return
+        if (!player.isShiftKeyDown) return
+
+        val blockEntity = level.getBlockEntity(pos) as? ItemDisplayBoardBlockEntity ?: return
+        if (!blockEntity.hasItem) return
+
+        event.isCanceled = true
+        event.cancellationResult = InteractionResult.SUCCESS
+
+        if (level.isClientSide) return
+
+        ItemDisplayBoardBlock.takeDisplayedItem(level, pos, state, player)
     }
 }
