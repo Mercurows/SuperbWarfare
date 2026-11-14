@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "a": {
+      "tag": "c:ingots/iron"
+    },
+    "b": {
+      "tag": "c:plates/steel"
+    }
+  },
+  "pattern": [
+    "aba",
+    " b ",
+    "aba"
+  ],
+  "result": {
+    "count": 8,
+    "id": "superbwarfare:shelf"
+  }
+}
