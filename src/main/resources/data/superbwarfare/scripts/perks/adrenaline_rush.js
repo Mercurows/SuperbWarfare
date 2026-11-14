@@ -50,6 +50,7 @@ function modifyProperty(pmc, level, perkTag, gunData) {
     const reloadDurations = [
         "NormalReloadTime",
         "EmptyReloadTime",
+        "BoltActionTime",
         "PrepareTime",
         "PrepareLoadTime",
         "PrepareEmptyTime",

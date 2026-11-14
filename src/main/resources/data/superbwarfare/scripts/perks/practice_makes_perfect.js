@@ -31,7 +31,7 @@ function modifyProperty(pmc, level, perkTag, gunData) {
     pmc.mul("RecoilX", reduction)
     pmc.mul("RecoilY", reduction)
 
-    var durations = ["NormalReloadTime", "EmptyReloadTime", "DrawTime", "ZoomTime"]
+    var durations = ["NormalReloadTime", "EmptyReloadTime", "BoltActionTime", "DrawTime", "ZoomTime"]
     for (var j = 0; j < durations.length; j++) {
         reduceDuration(pmc, durations[j], reduction)
     }

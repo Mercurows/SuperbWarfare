@@ -1861,6 +1861,7 @@
   "prop.superbwarfare.melee_lifesteal": "Melee Lifesteal",
   "prop.superbwarfare.zoom_spread_rate": "Zoom Spread Rate",
   "prop.superbwarfare.fuel_per_ammo": "Fuel Cost Per Ammo",
+  "prop.superbwarfare.bolt_action_time": "Bolt Action Time",
 
   "gun_type.superbwarfare.rifle": "Rifle",
   "gun_type.superbwarfare.shotgun": "Shotgun",

@@ -1861,6 +1861,7 @@
   "prop.superbwarfare.melee_lifesteal": "近战生命汲取",
   "prop.superbwarfare.zoom_spread_rate": "瞄准散布倍率",
   "prop.superbwarfare.fuel_per_ammo": "开火能量消耗",
+  "prop.superbwarfare.bolt_action_time": "拉栓时间",
 
   "gun_type.superbwarfare.rifle": "步枪",
   "gun_type.superbwarfare.shotgun": "霰弹枪",
