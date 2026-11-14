@@ -267,6 +267,12 @@ object ClientRenderHandler {
         event.registerBlockEntityRenderer(ModBlockEntities.RESONANCE_BASE.get()) { _ -> ResonanceBaseBlockEntityRenderer() }
         event.registerBlockEntityRenderer(ModBlockEntities.BOOBY_TRAP.get()) { _ -> BoobyTrapBlockEntityRenderer() }
         event.registerBlockEntityRenderer(ModBlockEntities.ITEM_DISPLAY_BOARD.get()) { _ -> ItemDisplayBoardBlockEntityRenderer() }
+        event.registerBlockEntityRenderer(ModBlockEntities.SHELF.get()) { _ -> ShelfBlockEntityRenderer() }
+    }
+
+    @SubscribeEvent
+    fun modifyShelfItemModel(event: ModelEvent.ModifyBakingResult) {
+        ShelfBlockEntityRenderer.modifyItemModel(event)
     }
 
     @SubscribeEvent

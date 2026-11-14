@@ -576,6 +576,7 @@ object ModItems {
     @JvmField val WEAPON_REPAIR_STATION = registerBlock(ModBlocks.WEAPON_REPAIR_STATION)
     @JvmField val TRIPOD = registerBlock<TripodBlockItem>()
     @JvmField val ITEM_DISPLAY_BOARD = registerBlock(ModBlocks.ITEM_DISPLAY_BOARD)
+    @JvmField val SHELF = registerBlock<ShelfBlockItem>()
     // @formatter:on
 
     /**
