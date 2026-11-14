@@ -55,7 +55,7 @@ import kotlin.math.min
 object ClientRenderHandler {
 
     @SubscribeEvent
-    fun registerPerkHudRules(event: net.minecraftforge.client.event.RegisterClientReloadListenersEvent) {
+    fun registerPerkHudRules(event: RegisterClientReloadListenersEvent) {
         PerkOverlay.registerReloadListener(event)
     }
 
@@ -268,11 +268,6 @@ object ClientRenderHandler {
         event.registerBlockEntityRenderer(ModBlockEntities.BOOBY_TRAP.get()) { _ -> BoobyTrapBlockEntityRenderer() }
         event.registerBlockEntityRenderer(ModBlockEntities.ITEM_DISPLAY_BOARD.get()) { _ -> ItemDisplayBoardBlockEntityRenderer() }
         event.registerBlockEntityRenderer(ModBlockEntities.SHELF.get()) { _ -> ShelfBlockEntityRenderer() }
-    }
-
-    @SubscribeEvent
-    fun modifyShelfItemModel(event: ModelEvent.ModifyBakingResult) {
-        ShelfBlockEntityRenderer.modifyItemModel(event)
     }
 
     @SubscribeEvent

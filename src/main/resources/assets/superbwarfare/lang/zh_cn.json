@@ -1209,6 +1209,7 @@
   "commands.superbwarfare.ammo.infinite.get": "实体%1$s的无限弹药模式为%2$s",
   "commands.superbwarfare.radiation.get": "实体%1$s的辐射剂量为%2$s mSv",
   "commands.superbwarfare.radiation.set": "已将实体%1$s的辐射剂量设为%2$s mSv",
+  "commands.superbwarfare.radiation.clear": "已清除实体%1$s的辐射效果和剂量",
   "commands.superbwarfare.radiation.invalid": "目标实体不是可承载辐射剂量的生物",
   "commands.superbwarfare.skin.fail.gun": "目标实体必须在主手持有枪械",
   "commands.superbwarfare.skin.fail.gun_skin": "此枪械没有可用的皮肤：%1$s",

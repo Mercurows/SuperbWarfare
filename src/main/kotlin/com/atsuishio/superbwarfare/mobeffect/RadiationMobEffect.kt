@@ -165,6 +165,14 @@ object RadiationMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0x55FF55) {
     }
 
     @JvmStatic
+    fun clear(entity: LivingEntity) {
+        entity.removeEffect(ModMobEffects.RADIATION.get())
+        RadiationCapability.setDosage(entity, 0f)
+        setRadiationAttributes(entity, 0f)
+        entity.persistentData.remove(LAST_BLEED_TIME_TAG)
+    }
+
+    @JvmStatic
     fun reduceLevel(entity: LivingEntity): Boolean {
         val instance = entity.getEffect(ModMobEffects.RADIATION.get()) ?: return false
 

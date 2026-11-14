@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
 import net.minecraft.world.ContainerHelper
 import net.minecraft.world.Containers
+import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -17,11 +18,26 @@ class ShelfBlockEntity(pos: BlockPos, state: BlockState) : BlockEntity(ModBlockE
 
     fun getItem(slot: Int): ItemStack = items[slot]
 
-    fun insertItem(slot: Int, stack: ItemStack): Boolean {
-        if (stack.isEmpty || !items[slot].isEmpty) return false
-        items[slot] = stack.copy()
+    fun insertItem(slot: Int, stack: ItemStack, count: Int = stack.count): Int {
+        if (stack.isEmpty) return 0
+        val stored = items[slot]
+        if (!stored.isEmpty && !ItemStack.isSameItemSameTags(stored, stack)) return 0
+        val inserted = minOf(count, stack.count, stack.maxStackSize - stored.count)
+        if (inserted <= 0) return 0
+        if (stored.isEmpty) items[slot] = stack.copyWithCount(inserted) else stored.grow(inserted)
         markUpdated()
-        return true
+        return inserted
+    }
+
+    fun takeItem(slot: Int, inventory: Inventory, count: Int): Int {
+        val stored = items[slot]
+        if (stored.isEmpty || count <= 0) return 0
+        val amount = minOf(count, stored.count, stored.maxStackSize)
+        val offered = stored.copyWithCount(amount)
+        inventory.add(offered)
+        val taken = amount - offered.count
+        if (taken > 0) removeItem(slot, taken)
+        return taken
     }
 
     fun removeItem(slot: Int, count: Int): ItemStack {
