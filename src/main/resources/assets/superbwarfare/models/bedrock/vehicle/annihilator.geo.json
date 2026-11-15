@@ -21,6 +21,16 @@
 					"pivot": [0, 7.25, 0]
 				},
 				{
+					"name": "driver_camera",
+					"parent": "turret",
+					"pivot": [0, 85.968, -24]
+				},
+				{
+					"name": "driver_zoom_camera",
+					"parent": "turret",
+					"pivot": [0, 64.432, -73.6]
+				},
+				{
 					"name": "barrel",
 					"parent": "turret",
 					"pivot": [0, 36, -79.2],

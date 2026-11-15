@@ -8333,6 +8333,16 @@
 					}
 				},
 				{
+					"name": "driver_camera",
+					"parent": "barrel",
+					"pivot": [-9.744, 66.0017, 94.9943]
+				},
+				{
+					"name": "driver_zoom_camera",
+					"parent": "barrel",
+					"pivot": [0, 46.0945, -32.8777]
+				},
+				{
 					"name": "move_yeya",
 					"parent": "barrel",
 					"pivot": [14.325, 46.50686, 82.05758],

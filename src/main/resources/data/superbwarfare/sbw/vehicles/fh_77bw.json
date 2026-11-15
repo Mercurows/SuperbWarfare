@@ -35,6 +35,11 @@
         "ZoomPosition": [0, 0.5618, 9.195],
         "Direction": "Barrel"
       },
+      "CameraBone": {
+        "Bone": "driver_camera",
+        "Direction": "barrel",
+        "ZoomBone": "driver_zoom_camera"
+      },
       "MinPitch": 0,
       "MaxPitch": 55,
       "Sensitivity": [0.42, 0.55, 0.9],

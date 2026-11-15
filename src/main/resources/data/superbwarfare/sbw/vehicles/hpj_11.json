@@ -18,6 +18,11 @@
       "Position": [-1.0625, 3, -1.0625],
       "ZoomDirection": "Barrel"
     },
+    "CameraBone": {
+      "Bone": "driver_camera",
+      "Direction": "barrel",
+      "ZoomBone": "driver_zoom_camera"
+    },
     "Weapons": ["Main"],
     "HasThermalImaging": true
   },

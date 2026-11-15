@@ -1190,6 +1190,16 @@
 					"pivot": [0, 58, -8]
 				},
 				{
+					"name": "driver_camera",
+					"parent": "barrel",
+					"pivot": [8, 77.25, -6.4]
+				},
+				{
+					"name": "driver_zoom_camera",
+					"parent": "barrel",
+					"pivot": [0, 73.25, -8]
+				},
+				{
 					"name": "laser",
 					"parent": "barrel",
 					"pivot": [0, 62.5018, -8]

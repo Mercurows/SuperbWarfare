@@ -51,6 +51,11 @@
         "ZoomPosition": [-0.36, 0.36, 0],
         "Direction": "Barrel"
       },
+      "CameraBone": {
+        "Bone": "driver_camera",
+        "Direction": "barrel",
+        "ZoomBone": "driver_zoom_camera"
+      },
       "Weapons": ["Cannon", "MachineGun", "Missile"],
       "Sensitivity": [0.53, 0.71, 0.9],
       "DismountInfo": {

@@ -61,6 +61,9 @@ class SeatInfo {
     @SerialName("CameraPos")
     var cameraPos: CameraPos? = null
 
+    @SerialName("CameraBone")
+    var cameraBone: CameraBone? = null
+
     @SerialName("BanHand")
     var banHand: Boolean = false
 

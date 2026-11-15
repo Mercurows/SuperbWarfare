@@ -131,18 +131,7 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         this.rotateVehicleAxis(entity, poseStack, yaw, partialTick)
         poseStack.scale(renderScale(), renderScale(), renderScale())
 
-        if (entity.getAnimationInstance() != null && !isLOD && !entity.sympatheticDetonated) {
-            val ani = entity.getAnimationInstance()!!
-            ani.context.partialTick = partialTick
-            ani.tick()
-            instance.resetPose()
-            instance.applyPose(BLENDER.blend(instance.bindPose, ani.getPose()))
-        } else {
-            instance.resetPose()
-        }
-
-        this.tickVariables(entity, yaw, partialTick)
-        this.transformCustomModelPart(entity, instance, poseStack, yaw, partialTick)
+        this.poseModel(entity, instance, partialTick, yaw, poseStack, animate = true, isLOD = isLOD, tickAnimation = true)
 
         val waterMask = instance.getBone("waterMask")
         val waterFlag = waterMask != null
@@ -693,6 +682,61 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     ) {
         val func = VehicleResource.getDefault(entity).getScript() ?: return
         VehicleScriptManager.invokeTransform(func, entity, model, poseStack, entityYaw, partialTicks, this)
+    }
+
+    /**
+     * 统一的模型姿态应用：render() 与骨骼相机共用同一份代码，保证渲染出来的骨骼变换与相机取到的完全一致。
+     *
+     * @param animate       是否应用动画（LOD / 解体时是 false）
+     * @param tickAnimation 是否推进动画；相机传 false，直接使用上一帧 tick 的结果，避免与渲染器重复 tick
+     */
+    protected fun poseModel(
+        entity: T,
+        instance: VehicleModelInstance,
+        partialTicks: Float,
+        entityYaw: Float,
+        poseStack: PoseStack,
+        animate: Boolean,
+        isLOD: Boolean,
+        tickAnimation: Boolean
+    ) {
+        val animation = entity.getAnimationInstance()
+        if (animate && animation != null && !isLOD && !entity.sympatheticDetonated) {
+            if (tickAnimation) {
+                animation.context.partialTick = partialTicks
+                animation.tick()
+            }
+            instance.resetPose()
+            instance.applyPose(BLENDER.blend(instance.bindPose, animation.getPose()))
+        } else {
+            instance.resetPose()
+        }
+
+        this.tickVariables(entity, entityYaw, partialTicks)
+        this.transformCustomModelPart(entity, instance, poseStack, entityYaw, partialTicks)
+    }
+
+    /**
+     * 相机专用：把模型摆到与 render() 完全一致的姿态（动画取上一帧 tick 的结果）
+     *
+     * 会同时刷新 [tickVariables] 的渲染器状态，因此必须在实体渲染之前调用（相机 setup 阶段），
+     * 之后渲染器会以同样的值重新计算，不会互相污染。
+     */
+    @Suppress("UNCHECKED_CAST")
+    fun poseModelForCamera(entity: VehicleEntity, instance: VehicleModelInstance, partialTicks: Float, entityYaw: Float) {
+        poseModel(entity as T, instance, partialTicks, entityYaw, PoseStack(), animate = true, isLOD = false, tickAnimation = false)
+    }
+
+    /**
+     * 相机专用：与 render() 中 rotateVehicleAxis + scale 完全一致的「模型空间 → 世界」变换（不含实体自身位置）
+     */
+    @Suppress("UNCHECKED_CAST")
+    fun buildCameraModelTransform(entity: VehicleEntity, partialTicks: Float, entityYaw: Float): Matrix4f {
+        val poseStack = PoseStack()
+        rotateVehicleAxis(entity as T, poseStack, entityYaw, partialTicks)
+        val scale = renderScale()
+        poseStack.scale(scale, scale, scale)
+        return Matrix4f(poseStack.last().pose())
     }
 
     open fun rotateVehicleAxis(entity: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {

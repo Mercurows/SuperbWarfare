@@ -1698,6 +1698,16 @@
 					"pivot": [-0.74452, 45.9092, 2.282]
 				},
 				{
+					"name": "driver_camera",
+					"parent": "barrel",
+					"pivot": [4.992, 49.984, -2.016]
+				},
+				{
+					"name": "driver_zoom_camera",
+					"parent": "barrel",
+					"pivot": [-0.752, 45.888, -1.728]
+				},
+				{
 					"name": "barrelRot",
 					"parent": "barrel",
 					"pivot": [-0.7445, 45.9092, 2.282],

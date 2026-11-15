@@ -45,6 +45,10 @@ object VehicleClientUtils {
         val seat = vehicle.computed().seats().getOrNull(index)
         val gunData = vehicle.getGunData(player)
         if (seat != null) {
+            // 骨骼视角（新系统）：由 VehicleBoneCamera 在更底层直接接管 Camera 的位置与四元数朝向，
+            // 这里不再返回任何欧拉角/手写相机数据，避免旧链路参与
+            if (VehicleCameraBoneUtils.getCameraBone(seat) != null) return null
+
             val data = seat.cameraPos
             if (data != null) {
                 if (zoom && gunData != null && gunData.get(GunProp.SHOOT_POS).viewDirection != null) {
@@ -106,6 +110,9 @@ object VehicleClientUtils {
         val index = vehicle.getSeatIndex(player)
         val seat = vehicle.computed().seats().getOrNull(index)
         if (seat != null) {
+            // 骨骼视角（新系统）：由 VehicleBoneCamera 底层接管，这里直接交给原版/旧链路
+            if (VehicleCameraBoneUtils.getCameraBone(seat) != null) return null
+
             val data = seat.cameraPos
             val gunData = vehicle.getGunData(player)
             if (data != null) {
