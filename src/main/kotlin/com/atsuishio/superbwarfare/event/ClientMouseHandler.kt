@@ -170,7 +170,10 @@ object ClientMouseHandler {
                 directVehicle.usesDirectTurretControl() &&
                 directVehicle.turretControllerIndex == directVehicle.getSeatIndex(player)
             ) {
-                sendPacketToServer(TurretAngleMessage(directVehicle.turretYRot, directVehicle.turretXRot))
+                val directMode = mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle
+                sendPacketToServer(
+                    TurretAngleMessage(directMode, directVehicle.turretYRot, directVehicle.turretXRot)
+                )
             }
         }
     }
@@ -178,7 +181,10 @@ object ClientMouseHandler {
     private var directTurretLastPos: Vec2? = null
     private fun accumulateDirectTurretInput(player: Player) {
         val vehicle = player.vehicle as? VehicleEntity
+        // 第三人称非瞄准不累积：回归旧“炮塔追随视线”瞄准
+        val directMode = mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle
         val active = vehicle != null &&
+                directMode &&
                 vehicle.usesDirectTurretControl() &&
                 vehicle.turretControllerIndex == vehicle.getSeatIndex(player) &&
                 !vehicle.isWreck &&

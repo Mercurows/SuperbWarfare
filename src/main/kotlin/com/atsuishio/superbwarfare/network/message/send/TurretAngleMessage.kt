@@ -8,7 +8,12 @@ import kotlinx.serialization.Serializable
 
 @RegisterPacket
 @Serializable
-data class TurretAngleMessage(val yRot: Float, val xRot: Float) : ServerPacketPayload() {
+data class TurretAngleMessage(
+    /** 是否处于“直接控制”模式（第一人称/瞄准）；第三人称为 false，回归旧视线追随 */
+    val active: Boolean,
+    val yRot: Float,
+    val xRot: Float
+) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
         val entity = player.vehicle
@@ -17,7 +22,7 @@ data class TurretAngleMessage(val yRot: Float, val xRot: Float) : ServerPacketPa
             entity.usesDirectTurretControl() &&
             entity.turretControllerIndex == entity.getSeatIndex(player)
         ) {
-            entity.applyDirectTurretAngles(yRot, xRot)
+            entity.applyDirectTurretRequest(active, yRot, xRot)
         }
     }
 }

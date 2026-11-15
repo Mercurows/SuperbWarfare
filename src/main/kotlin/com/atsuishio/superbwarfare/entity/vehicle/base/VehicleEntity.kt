@@ -38,6 +38,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.aircr
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getYRotFromVector
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleWeaponUtils.reloadDecoy
+import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.event.GunEventHandler
 import com.atsuishio.superbwarfare.init.*
@@ -610,6 +611,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     @JvmField
     var directAimInitialized = false
 
+    /** 服务端：客户端当前是否处于“第一人称/瞄准的直接控制”模式（第三人称=false，走旧视线追随） */
+    @JvmField
+    var directTurretRequested = false
+
     open fun usesDirectTurretControl(): Boolean =
         this.vehicleType != VehicleType.AIRPLANE &&
                 this.vehicleType != VehicleType.HELICOPTER &&
@@ -1043,6 +1048,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             define(MOUSE_SPEED_Y, 0f)
             define(SYNCHED_TURRET_Y_ROT, 0f)
             define(SYNCHED_TURRET_X_ROT, 0f)
+            define(DIRECT_TURRET_ACTIVE, false)
 
             define(TURRET_HEALTH, getTurretMaxHealth())
             define(L_WHEEL_HEALTH, getLeftWheelMaxHealth())
@@ -2638,19 +2644,64 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         if (hasTurret()) {
             val turretController = getNthEntity(this.turretControllerIndex)
-            val directControl = turretController is Player && this.usesDirectTurretControl()
+            val playerDirect = turretController is Player && this.usesDirectTurretControl()
 
-            if (directControl) {
+            if (playerDirect) {
                 if (level().isClientSide) {
+                    // 第一人称/瞄准：鼠标直接控制 + 双向稳定器；
+                    // 第三人称非瞄准：回归旧“炮塔追随视线”（准星自动归中）
+                    val directMode = mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle
                     if (turretController === mc.player) {
-                        this.applyDirectTurretInput()
+                        if (directMode) {
+                            this.applyDirectTurretInput()
+                        } else {
+                            val wasDirect = this.directAimInitialized
+                            this.directAimInitialized = false
+                            this.directTurretYawInput = 0f
+                            this.directTurretPitchInput = 0f
+                            // 从第一人称/瞄准切回第三人称：先把视线对准炮管，
+                            // 避免镜头回摆到上次自由视角、炮塔再慢慢追赶
+                            if (wasDirect) {
+                                val barrelVec = getBarrelVector(1f)
+                                if (barrelVec.lengthSqr() > 1e-6) {
+                                    val viewYaw = Math.toDegrees(Math.atan2(-barrelVec.x, barrelVec.z)).toFloat()
+                                    val viewPitch = Math.toDegrees(-Math.asin(barrelVec.y.coerceIn(-1.0, 1.0))).toFloat()
+                                    val player = turretController as Player
+                                    player.yRot = viewYaw
+                                    player.yRotO = viewYaw
+                                    player.xRot = viewPitch
+                                    player.xRotO = viewPitch
+                                }
+                            }
+                            // 第三人称非瞄准：限制视线俯仰到 ±80°，
+                            // 使炮管世界俯仰不超过 ±80°，规避旧世界反解在近垂直处的死锁
+                            val player = turretController as Player
+                            val clampedXRot = Mth.clamp(player.xRot, -79.5f, 79.5f)
+                            if (clampedXRot != player.xRot) {
+                                player.xRotO += clampedXRot - player.xRot
+                                player.xRot = clampedXRot
+                            }
+                            this.adjustTurretAngleFromView()
+                        }
                     } else {
-                        this.directAimInitialized = false
-                        val prevYRot = turretYRot
-                        val prevXRot = turretXRot
-                        this.turretYRot = this.turretYRotO + Mth.wrapDegrees(this.synchedTurretYRot - this.turretYRotO)
-                        this.turretXRot = this.turretXRotO + Mth.wrapDegrees(this.synchedTurretXRot - this.turretXRotO)
-                        this.turretTurnSound(turretXRot - prevXRot, turretYRot - prevYRot, 0.95f)
+                        if (this.synchedDirectTurretActive) {
+                            // 其他客户端：直接模式下读取服务端同步的角度
+                            this.directAimInitialized = false
+                            val prevYRot = turretYRot
+                            val prevXRot = turretXRot
+                            this.turretYRot = this.turretYRotO + Mth.wrapDegrees(this.synchedTurretYRot - this.turretYRotO)
+                            this.turretXRot = this.turretXRotO + Mth.wrapDegrees(this.synchedTurretXRot - this.turretXRotO)
+                            this.turretTurnSound(turretXRot - prevXRot, turretYRot - prevYRot, 0.95f)
+                        } else {
+                            // 第三人称：与控制器端一样在本地追随视线（稳定版反解）
+                            this.directAimInitialized = false
+                            this.adjustTurretAngleFromView()
+                        }
+                    }
+                } else {
+                    // 服务端：直接模式下角度由客户端包写入；第三人称时走稳定的视线跟随
+                    if (!this.directTurretRequested) {
+                        this.adjustTurretAngleFromView()
                     }
                 }
 
@@ -2663,10 +2714,12 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 }
 
                 if (!level().isClientSide) {
+                    this.synchedDirectTurretActive = this.directTurretRequested
                     this.synchedTurretYRot = turretYRot
                     this.synchedTurretXRot = turretXRot
                 }
             } else {
+                // 非“玩家直接控制”载具（飞行器/其他控制器等）：保持旧逻辑不变
                 directTurretYawInput = 0f
                 directTurretPitchInput = 0f
                 directAimInitialized = false
@@ -2676,10 +2729,18 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 } else if (turretController is Mob) {
                     this.turretAutoAimFromUuid(aiTurretTargetUUID, turretController)
                 }
+
+                if (!level().isClientSide) {
+                    this.synchedDirectTurretActive = false
+                }
             }
 
             if (turretController == null) {
                 turretYRotLock = 0f
+            }
+            if (!level().isClientSide && turretController !is Player) {
+                this.directTurretRequested = false
+                this.synchedDirectTurretActive = false
             }
         }
         if (hasPassengerWeaponStation()) {
@@ -3401,8 +3462,156 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
     }
 
-    open fun applyDirectTurretAngles(yRot: Float, xRot: Float) {
+    /**
+     * 第三人称（非瞄准）视线跟随：以“视线方向（俯仰钳制 ±80°）”为世界目标，
+     * 用车体旋转逆解成炮塔局部角后按原转速追随，最后硬限制炮管世界俯仰 ±80°。
+     * 相比旧的 turretAutoAimFromVector（世界 yaw/pitch 反馈 + 枪口视差），
+     * 这个实现在 roll 坡上不会出现极限环/死锁，也能保证世界俯仰不超限。
+     */
+    open fun adjustTurretAngleFromView() {
         if (isWreck) return
+        val player = getNthEntity(this.turretControllerIndex) as? Player ?: return
+        val pitchRad = Math.toRadians(Mth.clamp(player.xRot, -79.5f, 79.5f).toDouble())
+        val yawRad = Math.toRadians(player.yRot.toDouble())
+        val viewVec = Vec3(
+            -Math.sin(yawRad) * Math.cos(pitchRad),
+            -Math.sin(pitchRad),
+            Math.cos(yawRad) * Math.cos(pitchRad)
+        )
+
+        val hullRot = Matrix4d(getVehicleTransformWithCustomPitch(1f))
+        hullRot.setTranslation(0.0, 0.0, 0.0)
+        val invHull = Matrix4d(hullRot).invert()
+        val local = invHull.transformDirection(Vector3d(viewVec.x, viewVec.y, viewVec.z))
+
+        val horizontal = Math.sqrt(local.x * local.x + local.z * local.z)
+        val damageScale = if (entityData.get(TURRET_DAMAGED)) 0.2f else 1f
+        val prevYRot = turretYRot
+        val prevXRot = turretXRot
+
+        var targetYaw = turretYRot
+        var targetPitch = turretXRot
+        if (horizontal > 1.0E-4) {
+            val rawTargetYaw = Math.toDegrees(Math.atan2(local.x, local.z)).toFloat()
+            val continuousTargetYaw = turretYRot + Mth.wrapDegrees(rawTargetYaw - turretYRot)
+            targetYaw = Mth.clamp(continuousTargetYaw, -turretMaxYaw, -turretMinYaw)
+        }
+        val rawTargetPitch = Math.toDegrees(Math.asin((-local.y).coerceIn(-1.0, 1.0))).toFloat()
+        val minPitch = -turretMaxPitch + customTurretMaxPitch
+        val maxPitch = -turretMinPitch - customTurretMinPitch
+        targetPitch = Mth.clamp(rawTargetPitch, minPitch, maxPitch)
+
+        // 目标方向因局部俯仰限位 / roll 而让世界俯仰超过 79.5° 时，
+        // 在局部俯仰范围内所归一扫，选择“世界俯仰不超限且最接近原目标”的角度，避免后续限幅器与追随相互抢夺
+        if (horizontal > 1.0E-4 && Math.abs(targetPitch) <= 90f) {
+            val targetYawRad = Math.toRadians(targetYaw.toDouble())
+            val targetPitchRad = Math.toRadians(targetPitch.toDouble())
+            val targetWorld = hullRot.transformDirection(
+                Vector3d(
+                    Math.sin(targetYawRad) * Math.cos(targetPitchRad),
+                    -Math.sin(targetPitchRad),
+                    Math.cos(targetYawRad) * Math.cos(targetPitchRad)
+                )
+            )
+            val targetElevation = Math.toDegrees(Math.asin(targetWorld.y.coerceIn(-1.0, 1.0))).toFloat()
+            if (Math.abs(targetElevation) > 79.5f) {
+                var bestTx = targetPitch
+                var bestDist = Float.MAX_VALUE
+                var found = false
+                var scan = minPitch
+                while (scan <= maxPitch) {
+                    val scanRad = Math.toRadians(scan.toDouble())
+                    val scanWorld = hullRot.transformDirection(
+                        Vector3d(
+                            Math.sin(targetYawRad) * Math.cos(scanRad),
+                            -Math.sin(scanRad),
+                            Math.cos(targetYawRad) * Math.cos(scanRad)
+                        )
+                    )
+                    val scanElevation =
+                        Math.toDegrees(Math.asin(scanWorld.y.coerceIn(-1.0, 1.0))).toFloat()
+                    if (Math.abs(scanElevation) <= 79.5f) {
+                        val dist = Math.abs(scan - targetPitch)
+                        if (!found || dist < bestDist) {
+                            found = true
+                            bestDist = dist
+                            bestTx = scan
+                        }
+                    }
+                    scan += 1.5f
+                }
+                if (found) {
+                    targetPitch = bestTx
+                }
+            }
+        }
+
+        if (turretTurnYSpeed > 0f && horizontal > 1.0E-4) {
+            turretYRot += Mth.clamp(
+                Mth.wrapDegrees(targetYaw - turretYRot),
+                -turretTurnYSpeed * damageScale,
+                turretTurnYSpeed * damageScale
+            )
+        }
+        if (turretTurnXSpeed > 0f) {
+            turretXRot += Mth.clamp(
+                targetPitch - turretXRot,
+                -turretTurnXSpeed * damageScale,
+                turretTurnXSpeed * damageScale
+            )
+        }
+        clampTurretAngles()
+        limitBarrelWorldPitch()
+
+        if (turretYRot != prevYRot || turretXRot != prevXRot) {
+            turretTurnSound(turretXRot - prevXRot, turretYRot - prevYRot, 0.95f)
+        }
+    }
+
+    private fun limitBarrelWorldPitch() {
+        // 目标视线已钳到 79.5°；limiter 阈值取 79.9°（留 0.4° 死区，
+        // 避免“目标 79.5°”与“限幅器 79.5°”互相拉扯形成极限环），实际保证 ≤ 80°
+        val limit = 79.9f
+        val minPitch = -turretMaxPitch + customTurretMaxPitch
+        val maxPitch = -turretMinPitch - customTurretMinPitch
+        repeat(8) {
+            val dir = getBarrelVector(1f)
+            val elevation = Math.toDegrees(Math.asin(dir.y.coerceIn(-1.0, 1.0))).toFloat()
+            val currentAbs = Math.abs(elevation)
+            if (currentAbs <= limit) return
+
+            // 方向自适应：当目标在局部系越过天顶时，
+            // 增大局部俯角反而会抬高世界俯仰，因此分别试 ±3° 取更优者
+            var bestAbs = currentAbs
+            var bestTx = turretXRot
+            for (sign in intArrayOf(1, -1)) {
+                val candidate = Mth.clamp(turretXRot + sign * 1f, minPitch, maxPitch)
+                if (candidate == turretXRot) continue
+                val saved = turretXRot
+                turretXRot = candidate
+                val candidateDir = getBarrelVector(1f)
+                val candidateAbs = Math.abs(
+                    Math.toDegrees(Math.asin(candidateDir.y.coerceIn(-1.0, 1.0))).toFloat()
+                )
+                turretXRot = saved
+                if (candidateAbs < bestAbs - 1.0E-4f) {
+                    bestAbs = candidateAbs
+                    bestTx = candidate
+                }
+            }
+            if (bestTx == turretXRot) return
+            turretXRot = bestTx
+        }
+        clampTurretAngles()
+    }
+
+    /**
+     * 服务端接受客户端上报的炮塔控制模式与角度：
+     * active=true（第一人称/瞄准）时角度由客户端直接写入；active=false（第三人称）时走旧视线追随。
+     */
+    open fun applyDirectTurretRequest(active: Boolean, yRot: Float, xRot: Float) {
+        this.directTurretRequested = active
+        if (!active || isWreck) return
         if (!yRot.isFinite() || !xRot.isFinite()) return
         if (turretTurnYSpeed > 0f) {
             this.turretYRot = yRot
@@ -5057,6 +5266,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var gearUp by GEAR_UP
     open var synchedTurretYRot by SYNCHED_TURRET_Y_ROT
     open var synchedTurretXRot by SYNCHED_TURRET_X_ROT
+    open var synchedDirectTurretActive by DIRECT_TURRET_ACTIVE
 
     open var subEngineDamaged by SUB_ENGINE_DAMAGED
     open var subEngineHealth by SUB_ENGINE_HEALTH
@@ -5372,6 +5582,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         @JvmField
         val SYNCHED_TURRET_X_ROT: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
+
+        /** 服务端 -> 客户端：当前是否处于“第一人称/瞄准的直接控制”模式（第三人称为 false） */
+        @JvmField
+        val DIRECT_TURRET_ACTIVE: EntityDataAccessor<Boolean> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
 
         @JvmField
         @ExcludeBvrSync("SelectedWeapon")
