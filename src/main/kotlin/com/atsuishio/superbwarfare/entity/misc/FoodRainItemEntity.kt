@@ -5,6 +5,7 @@ import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.item.ItemEntity
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import java.util.*
@@ -14,6 +15,10 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 open class FoodRainItemEntity(type: EntityType<out FoodRainItemEntity>, level: Level) : ItemEntity(type, level) {
+    init {
+        setNeverPickUp()
+    }
+
     private val path by lazy { Path(id) }
     private var released = false
     val hidden: Boolean
@@ -44,8 +49,17 @@ open class FoodRainItemEntity(type: EntityType<out FoodRainItemEntity>, level: L
 
     override fun tick() {
         super.tick()
+        if (isRemoved) return
         val cloud = entityData.get(CLOUD)
-        if (released || cloud.isEmpty || isRemoved) return
+        if (released || cloud.isEmpty) {
+            if (!level().isClientSide && onGround()) {
+                val droppedItem = ItemEntity(level(), x, y, z, item.copy())
+                droppedItem.deltaMovement = deltaMovement
+                droppedItem.setNoPickUpDelay()
+                if (level().addFreshEntity(droppedItem)) discard()
+            }
+            return
+        }
         val age = age(cloud)
         val center = Vec3(cloud.getDouble("CenterX"), cloud.getDouble("CenterY"), cloud.getDouble("CenterZ"))
         val offset = path.offset(age)
@@ -55,7 +69,6 @@ open class FoodRainItemEntity(type: EntityType<out FoodRainItemEntity>, level: L
         } else if (age >= path.release) {
             released = true
             isNoGravity = false
-            setPickUpDelay(20)
             val at = path.offset(path.release)!!
             setPos(center.add(at))
             deltaMovement = at.subtract(path.offset(path.release - 0.05) ?: at)
@@ -66,11 +79,13 @@ open class FoodRainItemEntity(type: EntityType<out FoodRainItemEntity>, level: L
         }
     }
 
+    override fun playerTouch(player: Player) {}
+
     override fun readAdditionalSaveData(tag: CompoundTag) {
         super.readAdditionalSaveData(tag)
         released = true
         isNoGravity = false
-        setPickUpDelay(10)
+        setNeverPickUp()
     }
 
     override fun getBoundingBoxForCulling() = super.getBoundingBoxForCulling().inflate(2.0)
