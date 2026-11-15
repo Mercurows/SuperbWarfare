@@ -72,6 +72,7 @@ open class CustomExplosion @JvmOverloads constructor(
     private var beast = false
     private var excludeDirectSource = true
     private var sphericalBlockDestruction = false
+    private var deferredBlockDrops: ObjectArrayList<Pair<ItemStack, BlockPos>>? = null
 
     init {
         this.damageSource = source ?: level.damageSources().explosion(this)
@@ -155,14 +156,19 @@ open class CustomExplosion @JvmOverloads constructor(
     }
 
     override fun explode() {
-        if (ExplosionConfig.EXPLOSION_DESTROY.get() && this.interactsWithBlocks()) {
-            this.level.gameEvent(this.entity, GameEvent.EXPLODE, Vec3(this.x, this.y, this.z))
-
-            if (this.interactsWithBlocks()) {
+        this.level.gameEvent(this.entity, GameEvent.EXPLODE, Vec3(this.x, this.y, this.z))
+        val drops = ObjectArrayList<Pair<ItemStack, BlockPos>>()
+        deferredBlockDrops = drops
+        try {
+            if (ExplosionConfig.EXPLOSION_DESTROY.get() && this.interactsWithBlocks()) {
                 explodeBlocks()
             }
-
             damageEntities()
+        } finally {
+            deferredBlockDrops = null
+            for ((stack, pos) in drops) {
+                Block.popResource(this.level, pos, stack)
+            }
         }
     }
 
@@ -541,8 +547,13 @@ open class CustomExplosion @JvmOverloads constructor(
             }
         }
 
-        for (pair in dropList) {
-            Block.popResource(this.level, pair.second, pair.first)
+        val deferred = deferredBlockDrops
+        if (deferred != null) {
+            deferred.addAll(dropList)
+        } else {
+            for ((stack, pos) in dropList) {
+                Block.popResource(this.level, pos, stack)
+            }
         }
 
         this.level.profiler.pop()
