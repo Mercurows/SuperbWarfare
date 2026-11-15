@@ -8,6 +8,15 @@
     "minecraft:carrot",
     "minecraft:cookie",
     "minecraft:pumpkin_pie",
-    "minecraft:melon_slice"
+    "minecraft:melon_slice",
+    "minecraft:cake",
+    "minecraft:mushroom_stew",
+    "minecraft:golden_carrot",
+    "minecraft:golden_apple",
+    "minecraft:cooked_porkchop",
+    "minecraft:cooked_mutton",
+    "minecraft:cooked_rabbit",
+    "minecraft:cooked_cod",
+    "minecraft:cooked_salmon"
   ]
 }

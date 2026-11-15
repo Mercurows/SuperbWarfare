@@ -888,7 +888,10 @@ class ModItemTagProvider(
 
         this.tag(ModTags.Items.FOOD_RAIN_FOODS).add(
             Items.BREAD, Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.BAKED_POTATO,
-            Items.APPLE, Items.CARROT, Items.COOKIE, Items.PUMPKIN_PIE, Items.MELON_SLICE
+            Items.APPLE, Items.CARROT, Items.COOKIE, Items.PUMPKIN_PIE, Items.MELON_SLICE,
+            Items.CAKE, Items.MUSHROOM_STEW, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE,
+            Items.COOKED_PORKCHOP, Items.COOKED_MUTTON, Items.COOKED_RABBIT,
+            Items.COOKED_COD, Items.COOKED_SALMON
         )
     }
 
