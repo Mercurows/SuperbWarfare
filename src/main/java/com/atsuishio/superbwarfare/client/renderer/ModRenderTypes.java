@@ -167,20 +167,17 @@ public class ModRenderTypes extends RenderType {
     public static final Function<ResourceLocation, RenderType> MUZZLE_FLASH_TYPE = Util.memoize((location) -> {
         TextureStateShard shard = new TextureStateShard(location, false, false);
         CompositeState state = RenderType.CompositeState.builder()
-                // 关键：使用位置-颜色-贴图着色器
-                .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader))
-                // 启用半透明混合
+                // Iris routes this shader through its full-bright entity program.
+                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
                 .setTransparencyState(TEST_TRANSPARENCY)
                 .setCullState(RenderStateShard.NO_CULL)
-                // 绑定贴图（替换为你的路径）
                 .setTextureState(shard)
-                // 禁用光照和覆盖颜色
                 .setLightmapState(RenderStateShard.NO_LIGHTMAP)
-                .setOverlayState(RenderStateShard.NO_OVERLAY)
-                // 深度测试配置
-                .setWriteMaskState(RenderStateShard.COLOR_WRITE)   // 允许颜色写入
+                // Match entityTranslucentEmissive's overlay sampler; vertices use NO_OVERLAY.
+                .setOverlayState(RenderStateShard.OVERLAY)
+                .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                 .createCompositeState(false);
-        return RenderType.create("muzzle_flash", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 256, false, true, state);
+        return RenderType.create("muzzle_flash", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, state);
     });
 
     public static final Function<ResourceLocation, RenderType> TOW_CHAIN = Util.memoize((location) -> {
