@@ -83,12 +83,11 @@
       "Transform": "Vehicle",
       "Position": [0, 1.003, 2.859],
       "Sensitivity": [0.59, 0.8, 0.9],
-      "CameraPos": {
-        "Transform": "Vehicle",
-        "UseFixedCameraPos": true,
-        "Position": [0, 2.203, 2.859],
-        "ZoomPosition": [0, 0.797, 4.219],
-        "ZoomDirection": "Barrel"
+      "CameraBone": {
+        "Bone": "gunner_camera",
+        "ZoomBone": "gunner_zoom_camera",
+        "Direction": "barrel",
+        "ZoomDirection": "barrel"
       },
       "MinPitch": -60,
       "MaxPitch": 10,
@@ -232,6 +231,7 @@
         "ShootPositionForHud": [0, 0.797, 4.219],
         "Positions": [[1.694, 1.449, 0], [1.694, 1.253, 0], [1.834, 1.449, 0], [1.834, 1.253, 0], [2.105, 1.449, 0], [2.105, 1.253, 0], [2.245, 1.449, 0], [2.245, 1.253, 0]],
         "BoundUpWithAmmoAmount": true,
+        "Directions": ["Barrel"],
         "ViewDirection": "Barrel"
       }
     },
@@ -297,6 +297,7 @@
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.797, 4.219],
         "Positions": [[-1.98, 0.89, 0], [1.98, 0.89, 0]],
+        "Directions": ["Barrel"],
         "ViewDirection": "Barrel",
         "BoundUpWithAmmoAmount": true
       },

@@ -118,11 +118,6 @@
     "MinPitch": -5,
     "MaxPitch": 45,
     "Sensitivity": [0.5, 0.7, 0.9],
-    "CameraPos": {
-      "Transform": "Turret",
-      "ZoomPosition": [0, 3.574, 4.6],
-      "ZoomDirection": "Barrel"
-    },
     "CameraBone": {
       "Bone": "driver_camera",
       "Direction": "barrel",

@@ -279,7 +279,7 @@
       "ShootPos": {
         "Transform": "Turret",
         "Positions": [[1.795, 1.122, 0.218], [1.451, 0.465, 0.218]],
-        "Directions": ["Turret"],
+        "Directions": ["Barrel"],
         "ViewDirection": "Barrel"
       },
       "Crosshair": "@VehicleCommonMissile",

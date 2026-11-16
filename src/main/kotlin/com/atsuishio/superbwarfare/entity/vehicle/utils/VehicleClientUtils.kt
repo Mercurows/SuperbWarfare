@@ -76,6 +76,15 @@ object VehicleClientUtils {
                     }
                 }
                 if (zoom || isFirstPerson) {
+                    if (vehicle.hasTurret() && vehicle.turretControllerIndex == index) {
+                        val barrelVector = vehicle.getBarrelVector(partialTicks)
+                        if (barrelVector.lengthSqr() > 1.0E-8) {
+                            return Vec2(
+                                -getYRotFromVector(barrelVector).toFloat(),
+                                -getXRotFromVector(barrelVector).toFloat()
+                            )
+                        }
+                    }
                     return Vec2(
                         -getYRotFromVector(vehicle.cameraDirection(player, partialTicks)).toFloat(),
                         -getXRotFromVector(vehicle.cameraDirection(player, partialTicks)).toFloat()

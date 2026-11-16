@@ -9781,6 +9781,16 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "gunner_camera",
+					"parent": "root",
+					"pivot": [0, 35.248, -45.744]
+				},
+				{
+					"name": "gunner_zoom_camera",
+					"parent": "root",
+					"pivot": [0, 12.752, -67.504]
 				}
 			]
 		}

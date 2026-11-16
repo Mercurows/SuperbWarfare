@@ -15,8 +15,8 @@ data class VehicleFireMessage(
     val uuid: SerializedUUID?,
     val targetPos: SerializedVector3f?,
     val weaponName: String? = null,
-    /** 非骑乘遥控发射时，指定发射载具的实体 ID */
     val shooterVehicleId: Int? = null,
+    val shootDirection: SerializedVector3f? = null,
 ) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
@@ -26,15 +26,30 @@ data class VehicleFireMessage(
             player.vehicle as? VehicleEntity
         } ?: return
 
-        if (targetPos != null) {
-            // Map strike: fire a specific weapon by name
-            if (weaponName != null) {
-                vehicle.vehicleShoot(player, weaponName, uuid, Vec3(targetPos))
+        applyClientShotDirection(vehicle, player)
+        try {
+            if (targetPos != null) {
+                // Map strike: fire a specific weapon by name
+                if (weaponName != null) {
+                    vehicle.vehicleShoot(player, weaponName, uuid, Vec3(targetPos))
+                } else {
+                    vehicle.vehicleShoot(player, uuid, Vec3(targetPos))
+                }
             } else {
-                vehicle.vehicleShoot(player, uuid, Vec3(targetPos))
+                vehicle.vehicleShoot(player, uuid, null)
             }
-        } else {
-            vehicle.vehicleShoot(player, uuid, null)
+        } finally {
+            vehicle.clientShotDirection = null
         }
+    }
+
+    private fun applyClientShotDirection(vehicle: VehicleEntity, player: net.minecraft.world.entity.player.Player) {
+        val dir = shootDirection ?: return
+        if (!vehicle.hasTurret() || vehicle.turretControllerIndex != vehicle.getSeatIndex(player)) return
+        if (!dir.x.isFinite() || !dir.y.isFinite() || !dir.z.isFinite()) return
+        val lenSqr = dir.x * dir.x + dir.y * dir.y + dir.z * dir.z
+        if (lenSqr < 0.25f || lenSqr > 4.0f) return
+        val v = Vec3(dir.x.toDouble(), dir.y.toDouble(), dir.z.toDouble()).normalize()
+        vehicle.clientShotDirection = v
     }
 }

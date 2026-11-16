@@ -53,13 +53,6 @@
         -0.6,
         0
       ],
-      "CameraPos": {
-        "Transform": "Barrel",
-        "UseFixedCameraPos": true,
-        "Position": [0.5, 1.2, -0.1],
-        "ZoomPosition": [0, 0.95, 0],
-        "Direction": "Barrel"
-      },
       "CameraBone": {
         "Bone": "driver_camera",
         "Direction": "barrel",

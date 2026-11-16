@@ -19,7 +19,7 @@ data class TurretAngleMessage(
         val entity = player.vehicle
 
         if (entity is VehicleEntity &&
-            entity.usesDirectTurretControl() &&
+            entity.hasTurret() &&
             entity.turretControllerIndex == entity.getSeatIndex(player)
         ) {
             entity.applyDirectTurretRequest(active, yRot, xRot)

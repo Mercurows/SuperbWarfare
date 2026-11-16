@@ -91,6 +91,18 @@ object ClientMouseHandler {
         val moveSpeedX = Mth.clamp(posN.x - posO.x, -speed, speed)
         val moveSpeedY = Mth.clamp(posN.y - posO.y, -speed, speed)
 
+        if (!notInGame) {
+            val directVehicle = player.vehicle as? VehicleEntity
+            if (directVehicle != null &&
+                directVehicle.hasTurret() &&
+                directVehicle.turretControllerIndex == directVehicle.getSeatIndex(player)
+            ) {
+                val directMode = mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle
+                sendPacketToServer(
+                    TurretAngleMessage(directMode, directVehicle.turretYRot, directVehicle.turretXRot)
+                )
+            }
+        }
 
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity && (vehicle.vehicleType == VehicleType.AIRPLANE || vehicle.vehicleType == VehicleType.HELICOPTER)) {
@@ -139,7 +151,7 @@ object ClientMouseHandler {
                 i *= (1 - (Mth.abs(vehicle.roll) - 90) / 90)
             }
 
-            if (player != vehicle.firstPassenger) return
+            if (player != vehicle.firstPassenger || vehicle.getSeatIndex(player) != 0) return
 
             if (notInGame) {
                 sendPacketToServer(MouseMoveMessage(0.0, 0.0))
@@ -164,18 +176,6 @@ object ClientMouseHandler {
 
         }
 
-        if (!notInGame) {
-            val directVehicle = player.vehicle as? VehicleEntity
-            if (directVehicle != null &&
-                directVehicle.usesDirectTurretControl() &&
-                directVehicle.turretControllerIndex == directVehicle.getSeatIndex(player)
-            ) {
-                val directMode = mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle
-                sendPacketToServer(
-                    TurretAngleMessage(directMode, directVehicle.turretYRot, directVehicle.turretXRot)
-                )
-            }
-        }
     }
 
     private var directTurretLastPos: Vec2? = null
@@ -185,7 +185,7 @@ object ClientMouseHandler {
         val directMode = mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle
         val active = vehicle != null &&
                 directMode &&
-                vehicle.usesDirectTurretControl() &&
+                vehicle.hasTurret() &&
                 vehicle.turretControllerIndex == vehicle.getSeatIndex(player) &&
                 !vehicle.isWreck &&
                 !notInGame &&

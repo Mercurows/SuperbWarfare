@@ -2492,10 +2492,22 @@ object ClientEventHandler {
     }
 
     fun clientShootVehicle(player: Player, vehicle: VehicleEntity, gunData: GunData) {
+        // 直接控制炮塔时，把当前渲染帧的炮管方向（与相机/准星同一插值源）一并发给服务端，
+        // 否则服务端用“当前刻”角生成子弹，会比玩家所见的炮管提前 0~1 tick（回摆时 15~20°）。
+        val shootDirection = if (vehicle.hasTurret() && vehicle.turretControllerIndex == vehicle.getSeatIndex(player)) {
+            // 用客户端当前渲染帧解析出的真实开火方向（与相机/准星同一插值源；
+            // 包括 Barrel 字符串、向量方向、Turret 等）。服务端会做合法性与角度校验后使用。
+            val v = com.atsuishio.superbwarfare.client.camera.VehicleBoneCamera
+                .renderedShootDirection(vehicle, player, mc.frameTime)
+            if (v.lengthSqr() > 1.0E-8) {
+                Vector3f(v.x.toFloat(), v.y.toFloat(), v.z.toFloat()).normalize()
+            } else null
+        } else null
         sendPacketToServer(
             VehicleFireMessage(
                 if (lockingEntityVehicle != null) lockingEntityVehicle!!.uuid else null,
-                if (lockingPosVehicle != null) lockingPosVehicle!!.toVector3f() else (if (gunData.get(GunProp.SEEK_WEAPON_INFO)?.inputBlockPos == true) missileLockingPos?.center?.toVector3f() else null)
+                if (lockingPosVehicle != null) lockingPosVehicle!!.toVector3f() else (if (gunData.get(GunProp.SEEK_WEAPON_INFO)?.inputBlockPos == true) missileLockingPos?.center?.toVector3f() else null),
+                shootDirection = shootDirection
             )
         )
         if (mc.options.cameraType == CameraType.FIRST_PERSON || zoomVehicle) {

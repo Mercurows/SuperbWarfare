@@ -25,11 +25,6 @@
       "HidePassenger": true,
       "Transform": "Turret",
       "Position": [1.152, 0.234, 1.214],
-      "CameraPos": {
-        "Transform": "Barrel",
-        "ZoomPosition": [0, 0.626, 1.526],
-        "Direction": "Barrel"
-      },
       "CameraBone": {
         "Bone": "driver_camera",
         "Direction": "barrel",

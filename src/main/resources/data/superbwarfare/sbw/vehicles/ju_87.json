@@ -88,11 +88,10 @@
       "MaxYaw": 55,
       "MinPitch": -10,
       "MaxPitch": 55,
-      "CameraPos": {
-        "Transform": "Barrel",
-        "Direction": "Barrel",
-        "UseFixedCameraPos": true,
-        "Position": [0, 0.105, -0.25]
+      "CameraBone": {
+        "Bone": "gunner_camera",
+        "Direction": "barrel",
+        "ZoomBone": "gunner_zoom_camera"
       },
       "DismountInfo": {
         "Transform": "Vehicle",

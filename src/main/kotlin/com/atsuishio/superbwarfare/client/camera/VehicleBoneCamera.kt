@@ -20,8 +20,10 @@ import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import org.joml.Matrix3f
+import org.joml.Matrix4d
 import org.joml.Quaternionf
 import org.joml.Vector3f
+import org.joml.Vector3d
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = [Dist.CLIENT])
@@ -40,6 +42,23 @@ object VehicleBoneCamera {
     private val TMP_UP = Vector3f()
 
     data class RigidView(val position: Vec3, val orientation: Quaternionf)
+
+    /** Convert a logical weapon direction using the same hull pose as the visible model. */
+    @JvmStatic
+    fun renderedShootDirection(vehicle: VehicleEntity, player: Player, partialTicks: Float): Vec3 {
+        val logical = vehicle.getShootVec(player, partialTicks)
+        val renderer = mc.entityRenderDispatcher.getRenderer(vehicle) as? GeoVehicleRenderer<*> ?: return logical
+        val local = vehicle.getVehicleTransform(partialTicks).invert().transformDirection(
+            Vector3d(logical.x, logical.y, logical.z)
+        )
+        // The model faces -Z; the logical vehicle faces +Z. Include the renderer's
+        // inertial pitch/roll here, just as the bone camera and visible barrel do.
+        val renderedHull = Matrix4d(renderer.buildCameraModelTransform(
+            vehicle, partialTicks, Mth.lerp(partialTicks, vehicle.yRotO, vehicle.yRot)
+        )).rotateY(Math.PI)
+        val direction = renderedHull.transformDirection(local).normalize()
+        return Vec3(direction.x, direction.y, direction.z)
+    }
 
     @JvmStatic
     fun shouldNailCamera(vehicle: VehicleEntity?, player: Player?): Boolean {
