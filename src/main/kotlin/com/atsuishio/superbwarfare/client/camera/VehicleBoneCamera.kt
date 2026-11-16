@@ -98,15 +98,20 @@ object VehicleBoneCamera {
             Quaternionf(boneWorldRotation).mul(CAMERA_TO_MODEL)
         } else {
             val directionBone = VehicleCameraBoneUtils.resolveBoneRotation(instance, directionSource)
+            var directionWorld: Quaternionf? = null
             val forward = if (directionBone != null) {
-                val directionWorld = Quaternionf(modelToWorldRotation)
+                directionWorld = Quaternionf(modelToWorldRotation)
                     .mul(Quaternionf().setFromUnnormalized(Matrix3f(directionBone)))
-                val f = directionWorld.transform(Vector3f(0f, 0f, -1f))
+                val f = directionWorld!!.transform(Vector3f(0f, 0f, -1f))
                 Vec3(f.x.toDouble(), f.y.toDouble(), f.z.toDouble())
             } else {
                 vehicle.getVectorFromString(directionSource, partialTicks, seatIndex)
             }
-            val upHint = boneWorldRotation.transform(Vector3f(0f, 1f, 0f))
+            var upHint = boneWorldRotation.transform(Vector3f(0f, 1f, 0f))
+            val verticalDot = forward.x * upHint.x + forward.y * upHint.y + forward.z * upHint.z
+            if (Math.abs(verticalDot) > 0.9999 && directionWorld != null) {
+                upHint = directionWorld!!.transform(Vector3f(0f, 1f, 0f))
+            }
             lookRotation(forward, upHint)
         }
 
