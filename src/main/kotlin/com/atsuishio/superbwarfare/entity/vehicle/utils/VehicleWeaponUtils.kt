@@ -37,8 +37,7 @@ object VehicleWeaponUtils {
         val damageScale = if (vehicle.turretDamaged) 0.2f else 1f
         val oldYaw = vehicle.turretYRot
         val oldPitch = vehicle.turretXRot
-        val minYaw = -vehicle.turretMaxYaw
-        val maxYaw = -vehicle.turretMinYaw
+        val (minYaw, maxYaw) = vehicle.effectiveTurretYawRange()
         val minPitch = -vehicle.turretMaxPitch + vehicle.customTurretMaxPitch
         val maxPitch = -vehicle.turretMinPitch - vehicle.customTurretMinPitch
 
@@ -49,7 +48,11 @@ object VehicleWeaponUtils {
             Mth.clamp(oldYaw, minYaw, maxYaw)
         }
         val yawSpeed = vehicle.turretTurnYSpeed * damageScale
-        vehicle.turretYRot = Mth.clamp(oldYaw + Mth.clamp(targetYaw - oldYaw, -yawSpeed, yawSpeed), minYaw, maxYaw)
+        vehicle.turretYRot = Mth.clamp(
+            oldYaw + Mth.clamp(targetYaw - oldYaw, -yawSpeed, yawSpeed),
+            -vehicle.turretMaxYaw,
+            -vehicle.turretMinYaw
+        )
 
         val pitchSpeed = vehicle.turretTurnXSpeed * damageScale
         if (pitchSpeed > 0f) {

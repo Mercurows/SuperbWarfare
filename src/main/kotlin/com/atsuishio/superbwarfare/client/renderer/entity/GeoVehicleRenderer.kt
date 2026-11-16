@@ -127,8 +127,7 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
         poseStack.pushPose()
 
-        this.rotateVehicleAxis(entity, poseStack, yaw, partialTick)
-        poseStack.scale(renderScale(), renderScale(), renderScale())
+        applyModelTransform(entity, poseStack, yaw, partialTick)
 
         this.poseModel(entity, instance, partialTick, yaw, poseStack, isLOD = isLOD, tickAnimation = true)
 
@@ -703,11 +702,22 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         entityYaw: Float
     ): Matrix4f {
         val poseStack = PoseStack()
-        rotateVehicleAxis(entity as T, poseStack, entityYaw, partialTicks)
-        val scale = renderScale()
-        poseStack.scale(scale, scale, scale)
+        applyModelTransform(entity as T, poseStack, entityYaw, partialTicks)
         poseModel(entity, instance, partialTicks, entityYaw, poseStack, isLOD = false, tickAnimation = false)
         return Matrix4f(poseStack.last().pose())
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun buildCameraModelTransform(entity: VehicleEntity, partialTicks: Float, entityYaw: Float): Matrix4f {
+        val poseStack = PoseStack()
+        applyModelTransform(entity as T, poseStack, entityYaw, partialTicks)
+        return Matrix4f(poseStack.last().pose())
+    }
+
+    private fun applyModelTransform(entity: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
+        rotateVehicleAxis(entity, poseStack, entityYaw, partialTicks)
+        val scale = renderScale()
+        poseStack.scale(scale, scale, scale)
     }
 
     open fun rotateVehicleAxis(entity: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {

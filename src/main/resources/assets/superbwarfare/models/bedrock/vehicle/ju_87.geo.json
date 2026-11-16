@@ -552,6 +552,11 @@
 					"pivot": [0, 37.67343, 3.35238]
 				},
 				{
+					"name": "gunner_camera",
+					"parent": "machineGun",
+					"pivot": [0, 40.23466, -5.25]
+				},
+				{
 					"name": "turret",
 					"parent": "machineGun",
 					"pivot": [0, 37.67343, 3.35238]
@@ -1291,6 +1296,11 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "gunner_zoom_camera",
+					"parent": "barrel",
+					"pivot": [0, 39.23466, 7]
 				},
 				{
 					"name": "icon",

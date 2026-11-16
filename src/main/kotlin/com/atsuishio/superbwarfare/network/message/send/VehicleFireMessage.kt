@@ -17,6 +17,7 @@ data class VehicleFireMessage(
     val weaponName: String? = null,
     /** 非骑乘遥控发射时，指定发射载具的实体 ID */
     val shooterVehicleId: Int? = null,
+    val shootDirection: SerializedVector3f? = null,
 ) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
@@ -26,15 +27,15 @@ data class VehicleFireMessage(
             player.vehicle as? VehicleEntity
         } ?: return
 
-        if (targetPos != null) {
-            // Map strike: fire a specific weapon by name
-            if (weaponName != null) {
-                vehicle.vehicleShoot(player, weaponName, uuid, Vec3(targetPos))
-            } else {
-                vehicle.vehicleShoot(player, uuid, Vec3(targetPos))
+        val target = targetPos?.let { Vec3(it) }
+        if (target != null && weaponName != null) {
+            vehicle.vehicleShoot(player, weaponName, uuid, target)
+        } else if (shooterVehicleId == null && shootDirection != null) {
+            vehicle.withClientShotDirection(player, Vec3(shootDirection)) {
+                vehicle.vehicleShoot(player, uuid, target)
             }
         } else {
-            vehicle.vehicleShoot(player, uuid, null)
+            vehicle.vehicleShoot(player, uuid, target)
         }
     }
 }
