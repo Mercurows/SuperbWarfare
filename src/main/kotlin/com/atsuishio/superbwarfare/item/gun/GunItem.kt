@@ -212,7 +212,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         var map = super.getAttributeModifiers(slot, stack)
         val uuid = UUID(slot.toString().hashCode().toLong(), 0)
         if (slot != EquipmentSlot.MAINHAND) return map
-        // 手持副武器时只返回 super：不加移速惩罚（按 Weight）、也不加近战伤害属性
+        // 手持副武器时只返回 super：不加移速惩罚（按 Weight）
         if (!useAsWeaponInHand()) return map
 
         val data = GunData.from(stack)
@@ -227,15 +227,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             )
         )
 
-        if (data.get(GunProp.MELEE_DAMAGE) > 0) {
-            map.put(
-                Attributes.ATTACK_DAMAGE, AttributeModifier(
-                    BASE_ATTACK_DAMAGE_UUID, Mod.ATTRIBUTE_MODIFIER,
-                    data.get(GunProp.MELEE_DAMAGE) - 1.0,
-                    AttributeModifier.Operation.ADDITION
-                )
-            )
-        }
+        // 近战伤害不写进 `ATTACK_DAMAGE` 属性：枪械近战是数据驱动的独立结算（`MeleeAttackMessage`），
+        // 属性里只保留玩家自身的攻击伤害，近战伤害 = 面板 + `ATTACK_DAMAGE` - 1（基础攻击伤害修正）。
         return map
     }
 

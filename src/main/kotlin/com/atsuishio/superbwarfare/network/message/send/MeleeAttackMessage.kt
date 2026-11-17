@@ -32,7 +32,6 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.stats.Stats
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.damagesource.DamageSource
-import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.ai.attributes.Attributes
@@ -175,10 +174,11 @@ data class MeleeAttackMessage(
         val level = attacker.level()
         // 刺刀冲锋那一击的伤害基数由 `BayonetCharge.StrikeDamage` 给（绝对值），不写就还是那一段的伤害
         val chargeDamage = data.get(GunProp.BAYONET_CHARGE).strikeDamage
-        val strength = attacker.getEffect(MobEffects.DAMAGE_BOOST)
-        val strengthBonus = if (strength != null) 3.0 * (strength.amplifier + 1) else 0.0
-        val baseDamage =
-            (if (chargeStrike && chargeDamage > 0) chargeDamage else action.damage) + strengthBonus
+        // 近战伤害 = 面板伤害 + 玩家自身的攻击伤害属性 - 1（初始基础攻击伤害修正）。
+        // 枪械面板不写进 `ATTACK_DAMAGE`（见 `GunItem.getAttributeModifiers`），属性里只有玩家自己的攻击伤害：
+        // 初始基础攻击伤害为 1，减 1 后基础状态下正好打出面板值；基础攻击伤害被提高到 10 时打出 面板 + 10 - 1。
+        val baseDamage = (if (chargeStrike && chargeDamage > 0) chargeDamage else action.damage) +
+                attacker.getAttributeValue(Attributes.ATTACK_DAMAGE) - 1.0
         var hurtCount = 0
         var hitCount = 0
         var landedHit = false
