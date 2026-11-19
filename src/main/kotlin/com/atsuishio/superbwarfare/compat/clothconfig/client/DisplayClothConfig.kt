@@ -36,6 +36,34 @@ object DisplayClothConfig {
         category.addEntry(
             entryBuilder
                 .startIntSlider(
+                    Component.translatable("config.superbwarfare.client.display.lens_zoom_ratio"),
+                    (DisplayConfig.LENS_ZOOM_RATIO.get() * 100).toInt(),
+                    0,
+                    100
+                )
+                .setDefaultValue((DisplayConfig.LENS_ZOOM_RATIO.default * 100).toInt())
+                .setSaveConsumer { DisplayConfig.LENS_ZOOM_RATIO.set(it / 100.0) }
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.lens_zoom_ratio.des"))
+                .build()
+        )
+
+        category.addEntry(
+            entryBuilder
+                .startIntSlider(
+                    Component.translatable("config.superbwarfare.client.display.lens_hard_edge"),
+                    (DisplayConfig.LENS_HARD_EDGE.get() * 100).toInt(),
+                    0,
+                    100
+                )
+                .setDefaultValue((DisplayConfig.LENS_HARD_EDGE.default * 100).toInt())
+                .setSaveConsumer { DisplayConfig.LENS_HARD_EDGE.set(it / 100.0) }
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.lens_hard_edge.des"))
+                .build()
+        )
+
+        category.addEntry(
+            entryBuilder
+                .startIntSlider(
                     Component.translatable("config.superbwarfare.client.display.vehicle_lod_distance"),
                     DisplayConfig.VEHICLE_LOD_DISTANCE.get(),
                     -1,
@@ -148,6 +176,20 @@ object DisplayClothConfig {
                 .setDefaultValue(true)
                 .setSaveConsumer { DisplayConfig.ADVANCED_AMMO_HUD.set(it) }
                 .setTooltip(Component.translatable("config.superbwarfare.client.display.advanced_ammo_hud.des"))
+                .build()
+        )
+
+        category.addEntry(
+            entryBuilder
+                .startIntField(
+                    Component.translatable("config.superbwarfare.client.display.max_displayed_reserve_ammo"),
+                    DisplayConfig.MAX_DISPLAYED_RESERVE_AMMO.get()
+                )
+                .setDefaultValue(DisplayConfig.MAX_DISPLAYED_RESERVE_AMMO.default)
+                .setMin(0)
+                .setMax(Int.MAX_VALUE)
+                .setSaveConsumer { DisplayConfig.MAX_DISPLAYED_RESERVE_AMMO.set(it) }
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.max_displayed_reserve_ammo.des"))
                 .build()
         )
 
