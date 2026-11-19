@@ -41,12 +41,8 @@ object MeleeClientHandler {
      */
     private var subWeaponKeyWasDown: Boolean = false
 
-    /** 被上一段挡下的蓄势请求还剩多少 tick；右键松开即作废 */
-    private var pendingHeavyHoldTicks: Int = 0
-
     fun clear() {
         subWeaponKeyWasDown = false
-        pendingHeavyHoldTicks = 0
         // swingSerial 保持递增，避免动画实例保留旧序号后漏播复活后的新挥击。
     }
 
@@ -82,9 +78,6 @@ object MeleeClientHandler {
         if (!player.isAlive || player.isRemoved || player.isSpectator) return false
         val subWeaponJustPressed = subWeaponFireKeyDown && !subWeaponKeyWasDown
         subWeaponKeyWasDown = subWeaponFireKeyDown
-        // 右键一松，排队中的蓄势请求就作废（放在所有提前 return 之前，别让它卡住）
-        if (!useKeyDown) pendingHeavyHoldTicks = 0
-
         // 切换请求的兜底超时也要在任何提前 return 之前推进（丢一次包不该把 G 永久锁死）
         SubWeaponClientHandler.tick(data = null)
 
@@ -93,6 +86,7 @@ object MeleeClientHandler {
 
         val data = GunData.from(stack)
         val state = GunActionLock.of(data)
+        if (!useKeyDown || !canOperate) state.heavyHoldBufferTicks = 0
 
         val operated = ActiveGun.dataOf(data, player.level().isClientSide)
 
@@ -100,15 +94,6 @@ object MeleeClientHandler {
         syncServerDrivenLocks(operated, state)
 
         if (!skipStateTick) state.tick()
-
-        // 被上一段挡下的蓄势请求：按键还按着就等到能抬手的那一刻再兑现
-        if (pendingHeavyHoldTicks > 0) {
-            if (beginHeavyHold(player, stack, queueIfLocked = false)) {
-                pendingHeavyHoldTicks = 0
-                return false
-            }
-            pendingHeavyHoldTicks--
-        }
 
         // 蓄势期间不接受其它近战输入；松开由右键释放事件收尾
         if (state.meleeHolding) {
@@ -121,6 +106,14 @@ object MeleeClientHandler {
         if (state.meleeTicks > 0) {
             tickActiveSwing(player, data, state)
         }
+        // 先结算当前挥击，末次命中完成的这一 tick 就能接蓄势。
+        if (state.heavyHoldBufferTicks > 0) {
+            if (beginHeavyHold(player, stack, queueIfLocked = false)) {
+                return false
+            }
+            state.heavyHoldBufferTicks--
+        }
+
         // 收尾窗口内不再吞输入，剩下的几 tick 直接用来起下一段
         val chaining = state.canChainMelee(data.get(GunProp.MELEE_CHAIN_WINDOW))
         if (state.meleeTicks > 0 && !chaining) return false
@@ -185,11 +178,12 @@ object MeleeClientHandler {
         if (data.busyForMelee()) return false
 
         val state = GunActionLock.of(data)
-        val chaining = state.canChainMelee(data.get(GunProp.MELEE_CHAIN_WINDOW))
-        if (!chaining && (state.isLocked || state.meleeTicks > 0 || state.meleeHolding)) {
-            // 上一段还没走完：先记下这次按下，等计时走到窗口再抬手
-            if (queueIfLocked && !state.meleeHolding) {
-                pendingHeavyHoldTicks = maxOf(HEAVY_HOLD_BUFFER_TICKS, state.meleeTicks)
+        if (state.meleeHolding) return false
+        val chainWindow = data.get(GunProp.MELEE_CHAIN_WINDOW)
+        val chaining = state.canChainMelee(chainWindow)
+        if (!chaining && (state.isLocked || state.meleeTicks > 0)) {
+            if (queueIfLocked && state.heavyHoldBufferTicks == 0) {
+                state.heavyHoldBufferTicks = state.meleeInputBufferTicks(chainWindow)
             }
             return false
         }
@@ -198,6 +192,7 @@ object MeleeClientHandler {
         if (GunActionLock.of(operated).blocks(GunAction.MELEE)) return false
 
         if (chaining) state.releaseMeleeForChain()
+        state.heavyHoldBufferTicks = 0
         state.meleeActionIndex = indexOfHeavy(data)
         state.beginHeavyHold(player)
         // 抬刀也是一段新动画：让动画侧换 clip 并从上一段淡入
@@ -213,6 +208,7 @@ object MeleeClientHandler {
 
         val data = GunData.from(stack)
         val state = GunActionLock.of(data)
+        state.heavyHoldBufferTicks = 0
         if (!state.meleeHolding) return false
 
         val heldEnough = canReleaseHeavyHold(data)
@@ -497,9 +493,6 @@ object MeleeClientHandler {
     /** `Attributes.ATTACK_SPEED` 的玩家默认值 */
     private const val DEFAULT_ATTACK_SPEED = 4.0
     private const val MAX_ATTACK_SPEED_MULTIPLIER = 4.0
-
-    // 右键被上一段挡下时，这次按下最多保留多少 tick 等窗口
-    private const val HEAVY_HOLD_BUFFER_TICKS = 30
 
     // 蓄势到这个百分比就允许松手打出（不必按满）
     private const val HEAVY_HOLD_RELEASE_PERCENT = 90

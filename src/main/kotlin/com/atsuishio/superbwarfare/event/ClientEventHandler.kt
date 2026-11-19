@@ -606,15 +606,6 @@ object ClientEventHandler {
     @JvmField
     var lerpShake: Double = 0.0
 
-    // 右键重击（`RightClickAction: "HeavyStrike"`）按下后置位，被 `handleGunMelee` 消费一次
-    @JvmField
-    var heavyStrikeRequested: Boolean = false
-
-    // 重击请求的缓冲：上一段还在计时时按下的右键留到连招窗口再兑现，不用重按
-    private var heavyStrikeBuffer: Int = 0
-
-    private const val HEAVY_STRIKE_BUFFER_TICKS = 30
-
     // 智慧芯片锁定的实体
     @JvmField
     var lockedEntity: Entity? = null
@@ -1821,8 +1812,6 @@ object ClientEventHandler {
         GunActionLock.clearAll()
         MeleeClientHandler.clear()
         GunChargeHandler.clear()
-        heavyStrikeRequested = false
-        heavyStrikeBuffer = 0
         wasChargeKeyDown = false
         holdingFireKey = false
         fireCooldown = 0.0
@@ -1841,34 +1830,35 @@ object ClientEventHandler {
         // 动作锁计时：只要有活跃的动作状态就推进（帧率无关，每客户端 tick 一次）
         val gunData = if (GunItem.isHeldWeapon(stack)) GunData.from(stack) else null
         GunActionLock.updateHeld(gunData)
-        val actionState = gunData?.let { GunActionLock.of(it) }
-        actionState?.tick()
-
-        if (gunData != null) {
-            val operated = ActiveGun.dataOf(gunData, player.level().isClientSide)
-            if (operated !== gunData) {
-                GunActionLock.of(operated).tick()
-            }
-        }
 
         if (gunData == null) {
             // 手里换成别的东西也要把窗口收掉（状态得立刻同步回去）
             GunChargeHandler.cancelIfItemChanged(stack)
-            heavyStrikeBuffer = 0
             clearYsmCompatState()
             return
         }
 
+        val actionState = GunActionLock.of(gunData)
+        actionState.tick()
+        val operated = ActiveGun.dataOf(gunData, player.level().isClientSide)
+        if (operated !== gunData) GunActionLock.of(operated).tick()
+
         // 切换请求的兜底超时（丢一次包不该把 G 永久锁死，也不能让动作锁一直挂着）
         SubWeaponClientHandler.tick(gunData)
 
-        // 右键行为：重击指定段，冲锋撞到东西时打第 0 段（撞上的那个目标会被强行算进命中）
-        if (heavyStrikeRequested) {
-            heavyStrikeRequested = false
-            // 至少要活到这一段走完、连招窗口打开
-            heavyStrikeBuffer = maxOf(HEAVY_STRIKE_BUFFER_TICKS, GunActionLock.of(gunData).meleeTicks)
+        val canOperate = !holdFireVehicle
+                && !notInGame
+                && !isEditing
+                && !(player.vehicle is VehicleEntity && (player.vehicle as VehicleEntity).banHand(player))
+
+        if (actionState.heavyStrikeBufferTicks > 0 &&
+            (!canOperate || operated.get(GunProp.RIGHT_CLICK_ACTION) != RightClickAction.HEAVY_STRIKE)
+        ) {
+            actionState.heavyStrikeBufferTicks = 0
         }
-        val heavyStrike = heavyStrikeBuffer > 0
+
+        // 右键行为：重击指定段，冲锋撞到东西时打第 0 段（撞上的那个目标会被强行算进命中）
+        val heavyStrike = actionState.heavyStrikeBufferTicks > 0
         val chargeTarget = if (heavyStrike) null else GunChargeHandler.tick(player, stack)
         val bayonetCharge = chargeTarget != null
         val heavyIndex = if (heavyStrike) MeleeClientHandler.indexOfHeavy(gunData) else -1
@@ -1877,11 +1867,6 @@ object ClientEventHandler {
             bayonetCharge -> GunChargeHandler.STRIKE_ACTION_INDEX
             else -> -1
         }
-
-        val canOperate = !holdFireVehicle
-                && !notInGame
-                && !isEditing
-                && !(player.vehicle is VehicleEntity && (player.vehicle as VehicleEntity).banHand(player))
 
         // 疾跑中单击冲锋键起刺刀冲锋（只在地面上、不在载具里）
         val chargeKeyDown = ModKeyMappings.BAYONET_CHARGE.isDown()
@@ -1916,10 +1901,9 @@ object ClientEventHandler {
             GunChargeHandler.reset()
         }
 
-        // 缓冲的重击：打出去了就收掉，没打出去就继续等（这一段计时还没走到窗口）
+        // 缓冲的重击只消费一次，截止 tick 仍允许尝试出招。
         if (heavyStrike) {
-            val heavyFired = swung && GunActionLock.of(gunData).meleeActionIndex == heavyIndex
-            heavyStrikeBuffer = if (heavyFired) 0 else (heavyStrikeBuffer - 1).coerceAtLeast(0)
+            actionState.heavyStrikeBufferTicks = if (swung) 0 else (actionState.heavyStrikeBufferTicks - 1).coerceAtLeast(0)
         }
 
         // 把新状态同步给 YSM 读取的兼容字段
@@ -2022,8 +2006,14 @@ object ClientEventHandler {
         return GunActionLock.of(stack).meleeFromBayonetCharge
     }
 
-    fun requestHeavyStrike() {
-        heavyStrikeRequested = true
+    fun requestHeavyStrike(player: Player) {
+        if (!player.isAlive || player.isRemoved || player.isSpectator || drawTime >= 0.01) return
+        val data = ActiveGun.mainGun(player) ?: return
+        syncMeleePlayer(player)
+        val state = GunActionLock.of(data)
+        if (state.heavyStrikeBufferTicks == 0) {
+            state.heavyStrikeBufferTicks = state.meleeInputBufferTicks(data.get(GunProp.MELEE_CHAIN_WINDOW))
+        }
     }
 
     @SubscribeEvent
@@ -3652,8 +3642,6 @@ object ClientEventHandler {
     @Suppress("DEPRECATION")
     fun resetUseActionStatus() {
         GunChargeHandler.reset()
-        heavyStrikeRequested = false
-        heavyStrikeBuffer = 0
 
         // YSM联动保留字段，不要删除：旧版切枪时会把刺雷的 draw 窗口重置成 30 tick
         lungeSprint = 0

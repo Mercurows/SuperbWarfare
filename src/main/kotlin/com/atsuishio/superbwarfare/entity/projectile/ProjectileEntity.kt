@@ -78,7 +78,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
     // ===== IBulletProperties 属性（使用 getter/setter 方法） =====
     protected var damageValue = 1f
-    protected var allyHealRatio = 0f
+    protected var allyHealRatioValue = 0f
     protected var headShotValue = 1f
     protected var legShotValue = 0.5f
     protected var beastValue = false
@@ -118,9 +118,9 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         damageValue = value
     }
 
-    override fun getAllyHealRatio(): Float = allyHealRatio
+    override fun getAllyHealRatio(): Float = allyHealRatioValue
     override fun setAllyHealRatio(value: Float) {
-        allyHealRatio = if (value.isFinite()) value.coerceAtLeast(0f) else 0f
+        allyHealRatioValue = if (value.isFinite()) value.coerceAtLeast(0f) else 0f
     }
 
     override fun getHeadShot(): Float = headShotValue
@@ -771,7 +771,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         damageValue * (deltaMovement.length() / velocityValue).coerceIn(0.0, 1.0).toFloat()
 
     open fun tryHealAlly(hit: EntityResult): Boolean {
-        if (allyHealRatio <= 0f) return false
+        if (allyHealRatioValue <= 0f) return false
         val shooter = owner ?: return false
         val target = hit.entity.multipartRoot as? LivingEntity ?: return false
         if (!target.isAlive || target === shooter || (shooter is Player && target.hasIndirectPassenger(shooter))) return false
@@ -783,7 +783,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             hit.legShot -> legShotValue
             else -> 1f
         }
-        val healing = damageAtCurrentSpeed() * hitMultiplier * allyHealRatio
+        val healing = damageAtCurrentSpeed() * hitMultiplier * allyHealRatioValue
         if (healing.isFinite() && healing > 0f) target.heal(healing)
         discard()
         return true
