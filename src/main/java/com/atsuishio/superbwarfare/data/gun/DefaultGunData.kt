@@ -113,7 +113,7 @@ data class DefaultGunData(
     @SerialName("Projectile")
     val projectile: StringOrObject<ProjectileInfo> = StringOrObject(ProjectileInfo()),
     @SerialName("ProjectileBone")
-    val projectileBone: SingleOrList<String> = SingleOrList<String>(),
+    val projectileBone: SingleOrList<String> = SingleOrList(),
     @SerialName("ShootPos")
     val shootPos: ShootPos = ShootPos(),
     @SerialName("SeekWeaponInfo")
@@ -322,6 +322,8 @@ data class DefaultGunData(
     val projectilePenetrating: Boolean = false,
     @SerialName("AimAssist")
     val aimAssist: Int = 0,
+    @SerialName("AllyHealRatio")
+    val allyHealRatio: Double = 0.0,
     // 投射物分裂次数：爆炸消失后分裂出的产物再减一，0 表示不分裂
     @SerialName("ProjectileSplitCount")
     val projectileSplitCount: Int = 0,

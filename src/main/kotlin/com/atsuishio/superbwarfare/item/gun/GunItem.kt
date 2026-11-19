@@ -1004,6 +1004,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             if (entity is IBulletProperties) {
                 with(entity) {
                     setDamage(damage.toFloat())
+                    setAllyHealRatio(data.get(GunProp.ALLY_HEAL_RATIO).toFloat())
                     setCustomGravity(data.get(GunProp.GRAVITY).toFloat())
                     setExplosionDamage(data.get(GunProp.EXPLOSION_DAMAGE).toFloat())
                     setExplosionRadius(data.get(GunProp.EXPLOSION_RADIUS).toFloat())

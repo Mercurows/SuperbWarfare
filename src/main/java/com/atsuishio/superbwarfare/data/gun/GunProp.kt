@@ -514,6 +514,9 @@ class GunProp<T, R>(
         val AIM_ASSIST = plainProp(DefaultGunData::aimAssist)
 
         @JvmField
+        val ALLY_HEAL_RATIO = plainProp(DefaultGunData::allyHealRatio)
+
+        @JvmField
         val PROJECTILE_SPLIT_COUNT = plainProp(DefaultGunData::projectileSplitCount)
 
         @JvmField
@@ -587,6 +590,7 @@ class GunProp<T, R>(
             modify(FUEL_PER_AMMO) { it.coerceAtLeast(0) }
             modify(PROJECTILE_AMOUNT) { it.coerceAtLeast(0) }
             modify(AIM_ASSIST) { it.coerceIn(-100, 100) }
+            modify(ALLY_HEAL_RATIO) { if (it.isFinite()) it.coerceAtLeast(0.0) else 0.0 }
             modify(PROJECTILE_SPLIT_COUNT) { it.coerceAtLeast(0) }
             modify(PROJECTILE_SPLIT_AMOUNT) { it.coerceAtLeast(0) }
             modify(WEIGHT) { it.coerceAtLeast(1.0) }
