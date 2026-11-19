@@ -264,12 +264,7 @@ object ModPerks {
         TURBO_CHARGER = autoRegistryObjects["turbo_charger"] ?: registerFuncPerk("turbo_charger") { TurboCharger }
         POWERFUL_ATTRACTION =
             autoRegistryObjects["powerful_attraction"] ?: registerFuncPerk("powerful_attraction") { PowerfulAttraction }
-        INTELLIGENT_CHIP = autoRegistryObjects["intelligent_chip"] ?: registerFuncPerk("intelligent_chip") {
-            Perk(
-                "intelligent_chip",
-                Perk.Type.FUNCTIONAL
-            )
-        }
+        INTELLIGENT_CHIP = autoRegistryObjects["intelligent_chip"] ?: registerFuncPerk("intelligent_chip") { IntelligentChip }
         BACKPACK_LINKED_MAGAZINE = autoRegistryObjects["backpack_linked_magazine"]
             ?: registerFuncPerk("backpack_linked_magazine") { BackpackLinkedMagazine }
         POWERFUL_COOLER =

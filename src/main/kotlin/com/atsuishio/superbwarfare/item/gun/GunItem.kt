@@ -976,6 +976,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             // SBW子弹弹射物专属属性
             if (entity is ProjectileEntity) {
                 entity.setGunItemId(stack)
+                entity.aimAssist = data.get(GunProp.AIM_ASSIST)
             }
 
             // SBW弹射物专属属性
