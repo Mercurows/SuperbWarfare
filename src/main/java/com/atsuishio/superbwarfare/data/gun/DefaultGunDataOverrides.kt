@@ -113,6 +113,9 @@ fun DefaultGunData.withOverrides(diff: Map<out Prop<*, *, *, *, *>, Any?>): Defa
         drawTime = int(GunProp.DRAW_TIME, drawTime),
         zoomTime = int(GunProp.ZOOM_TIME, zoomTime),
         underwaterMotionScale = flt(GunProp.UNDERWATER_MOTION_SCALE, underwaterMotionScale),
+        underwaterLaunchSpeedMultiplier = (
+            diff.getOrDefault(GunProp.UNDERWATER_LAUNCH_SPEED_MULTIPLIER, underwaterLaunchSpeedMultiplier) as? Number
+        )?.toFloat(),
         soundInfo = if (diff.containsKey(GunProp.SOUND_INFO)) {
             diff[GunProp.SOUND_INFO] as? SoundInfo ?: soundInfo
         } else {

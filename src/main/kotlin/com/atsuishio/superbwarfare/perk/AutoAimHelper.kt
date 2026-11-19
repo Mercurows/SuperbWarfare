@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.data.gun.melee.normalizeProjectileMarker
 import com.atsuishio.superbwarfare.entity.OBBEntity
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.init.ModTags
+import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.tools.HitboxHelper
 import com.atsuishio.superbwarfare.tools.RangeTool
 import com.atsuishio.superbwarfare.tools.SeekTool
@@ -86,9 +87,11 @@ object AutoAimHelper {
         val corrected = if (isInstant) {
             direction
         } else {
-            val muzzleVelocity = data.get(GunProp.VELOCITY) * shot.power.coerceAtLeast(0.0)
-            if (muzzleVelocity <= 0.0 || !muzzleVelocity.isFinite()) return null
-            val velocity = if (VectorTool.isInLiquid(shot.level, origin)) 2.0 + 0.05 * muzzleVelocity else muzzleVelocity
+            val vehicleSpeed = shooter.rootVehicle.deltaMovement.length().takeIf { data.get(GunProp.ADD_SHOOTER_DELTA_MOVEMENT) }
+            val velocity = GunItem.projectileLaunchSpeed(
+                data, shot.power, VectorTool.isInLiquid(shot.level, origin), vehicleSpeed
+            ).toDouble()
+            if (velocity <= 0.0 || !velocity.isFinite()) return null
             val targetVelocity = if (target is ServerPlayer) {
                 HitboxHelper.getVelocity(target, if (usesCompensatedBox) rewind else 0)
             } else {

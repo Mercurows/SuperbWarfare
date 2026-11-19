@@ -107,6 +107,7 @@ void main() {
     float forward = dot(delta / max(distanceToLight, 0.0001), LightDirection);
     float angular = mix(0.65, 1.0, smoothstep(-0.3, 0.8, forward));
     float energy = 2.2 * LightStrength * falloff * falloff * diffuse * angular * visibility(p + n * 0.035, lightView);
+    if (!(energy > 0.0) || isinf(energy)) discard;
     vec3 scene = texture(SceneColor, texCoord).rgb;
     // Scene colour already contains ambient darkness. Lift that attenuation before
     // applying a new light, retaining texture contrast instead of multiplying darkness twice.

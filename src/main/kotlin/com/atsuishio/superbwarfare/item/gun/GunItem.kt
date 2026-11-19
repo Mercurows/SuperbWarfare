@@ -951,14 +951,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         val headshot = data.get(GunProp.HEADSHOT)
         val damage = data.get(GunProp.DAMAGE) * parameters.power.coerceAtLeast(0.0)
-        var velocity = (data.get(GunProp.VELOCITY) * parameters.power.coerceAtLeast(0.0)).toFloat()
         val bypassArmorRate = data.get(GunProp.BYPASSES_ARMOR)
-
-        if (VectorTool.isInLiquid(level, shootPosition)) {
-            velocity = 2 + 0.05f * velocity
-        }
-
-        val finalVelocity = velocity
+        val inLiquid = VectorTool.isInLiquid(level, shootPosition)
+        val initialVelocity = projectileLaunchSpeed(data, parameters.power, inLiquid)
 
         val entityHolder = AtomicReference<Entity?>()
 
@@ -992,7 +987,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                     setHeadShot(headshot.toFloat())
                     setZoom(zoom)
                     setBypassArmorRate(bypassArmorRate.toFloat())
-                    setVelocity(finalVelocity)
+                    setVelocity(initialVelocity)
                     setKnockback(data.get(GunProp.KNOCKBACK))
                     setUnderwaterMotionScale(data.get(GunProp.UNDERWATER_MOTION_SCALE))
                     setPenetrating(data.get(GunProp.PROJECTILE_PENETRATING))
@@ -1126,8 +1121,10 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
 
         val vehicle = shooter?.rootVehicle
-        if (vehicle != null && data.get(GunProp.ADD_SHOOTER_DELTA_MOVEMENT)) {
-            velocity = (vehicle.deltaMovement.length() * data.get(GunProp.VELOCITY)).toFloat()
+        val velocity = if (vehicle != null && data.get(GunProp.ADD_SHOOTER_DELTA_MOVEMENT)) {
+            projectileLaunchSpeed(data, parameters.power, inLiquid, vehicle.deltaMovement.length())
+        } else {
+            initialVelocity
         }
 
         // 发射任意实体
@@ -1422,6 +1419,23 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
     companion object {
         private val SPEED_ID = Mod.loc("gun_movement_speed")
+
+        internal fun projectileLaunchSpeed(
+            data: GunData,
+            power: Double,
+            inLiquid: Boolean,
+            vehicleSpeed: Double? = null
+        ): Float {
+            val speed = (data.get(GunProp.VELOCITY) * (vehicleSpeed ?: power.coerceAtLeast(0.0))).toFloat()
+            if (!inLiquid) return speed
+
+            val multiplier = data.get(GunProp.UNDERWATER_LAUNCH_SPEED_MULTIPLIER)?.takeIf { it.isFinite() }
+            return when {
+                multiplier != null -> speed * multiplier.coerceIn(0f, 1f)
+                vehicleSpeed != null -> speed
+                else -> 2f + 0.05f * speed
+            }
+        }
 
         /**
          * 这个物品算不算一把枪

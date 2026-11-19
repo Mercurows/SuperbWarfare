@@ -460,20 +460,17 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             }
 
             for (entityResult in entityResults) {
-                if (tryHealAlly(entityResult)) return
+                val hit = ExtendedEntityRayTraceResult(entityResult)
+                val resEntity = hit.entity
+                val shooter = owner
+                val canDamage = resEntity !is Player || shooter !is Player || shooter.canHarmPlayer(resEntity)
+                result = hit.takeIf { canDamage }
 
-                result = ExtendedEntityRayTraceResult(entityResult)
-
-                val resEntity = result.entity
-                val shooter = this.owner
-                if (resEntity is Player) {
-                    if (shooter is Player && !shooter.canHarmPlayer(resEntity)) {
-                        result = null
-                    }
-                }
-                if (result != null) {
-                    if (!EventHooks.onProjectileImpact(this, result)) this.onHit(result)
-                    else continue  // 命中事件被取消则检查下一个命中结果
+                // A protected teammate can still receive healing, subject to the same impact hook.
+                if (canDamage || allyHealingTarget(entityResult) != null) {
+                    if (EventHooks.onProjectileImpact(this, hit)) continue
+                    if (tryHealAlly(entityResult)) return
+                    if (canDamage) onHit(hit)
                 }
 
                 if (!this.isBeast()) {
@@ -750,13 +747,17 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     private fun damageAtCurrentSpeed(): Float =
         damageValue * (deltaMovement.length() / velocityValue).coerceIn(0.0, 1.0).toFloat()
 
+    private fun allyHealingTarget(hit: EntityResult): LivingEntity? {
+        if (isRemoved || allyHealRatioValue <= 0f) return null
+        val shooter = owner ?: return null
+        val target = hit.entity.multipartRoot as? LivingEntity ?: return null
+        if (!target.isAlive || target === shooter || (shooter is Player && target.hasIndirectPassenger(shooter))) return null
+        val attacker = (shooter as? OwnableEntity)?.owner as? ServerPlayer ?: shooter as? LivingEntity ?: return null
+        return target.takeIf { it !== attacker && it.isAlliedTo(attacker) }
+    }
+
     open fun tryHealAlly(hit: EntityResult): Boolean {
-        if (allyHealRatioValue <= 0f) return false
-        val shooter = owner ?: return false
-        val target = hit.entity.multipartRoot as? LivingEntity ?: return false
-        if (!target.isAlive || target === shooter || (shooter is Player && target.hasIndirectPassenger(shooter))) return false
-        val attacker = (shooter as? OwnableEntity)?.owner as? ServerPlayer ?: shooter as? LivingEntity ?: return false
-        if (target === attacker || !target.isAlliedTo(attacker)) return false
+        val target = allyHealingTarget(hit) ?: return false
 
         val hitMultiplier = when {
             hit.headshot -> headShotValue

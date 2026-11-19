@@ -74,11 +74,7 @@ vec4 lensAt(int index) {
 }
 
 void main() {
-    vec4 original = texture(SceneColor, texCoord);
-    if (handPixel(texCoord)) {
-        fragColor = original;
-        return;
-    }
+    if (handPixel(texCoord)) discard;
     vec2 halfTexel = 0.5 / vec2(textureSize(SceneColor, 0));
     vec3 nearPoint = viewPosition(texCoord, 0.0);
     vec3 ray = normalize(viewPosition(texCoord, 1.0) - nearPoint);
@@ -119,7 +115,8 @@ void main() {
         float outside = max(impact - HORIZON_RADIUS, 0.0);
         // Match blackHoleCore's fallback: hot white inside, broad gold outside, then a soft fade.
         float whiteBand = exp(-pow(outside / 0.032, 2.0)) * 1.65;
-        float goldBand = exp(-pow((outside - 0.052) / 0.05, 2.0)) * 0.85;
+        float goldDistance = (outside - 0.052) / 0.05;
+        float goldBand = exp(-goldDistance * goldDistance) * 0.85;
         float softHalo = exp(-pow(outside / 0.15, 2.0)) * 0.12;
         haloColor += (vec3(1.0, 0.98, 0.93) * whiteBand +
             vec3(1.0, 0.75, 0.2) * (goldBand + softHalo)) * visibility;
@@ -183,9 +180,10 @@ void main() {
         displacement += (sourceUv - texCoord) * contribution;
     }
 
+    if (coreOpacity == 0.0 && dot(displacement, displacement) == 0.0 && dot(haloColor, haloColor) == 0.0) discard;
     vec2 uv = clamp(texCoord + displacement, halfTexel, vec2(1.0) - halfTexel);
     if (dot(displacement, displacement) > 0.0 && (handPixel(uv) || entityPixel(uv))) uv = texCoord;
     vec3 color = texture(SceneColor, uv).rgb;
     color = mix(color, vec3(0.0), coreOpacity) + haloColor * (1.0 - coreOpacity);
-    fragColor = vec4(color, original.a);
+    fragColor = vec4(color, texture(SceneColor, texCoord).a);
 }

@@ -54,7 +54,6 @@ public abstract class GameRendererMixin {
             target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V",
             shift = At.Shift.AFTER))
     private void superbWarfare$renderScopeLenses(DeltaTracker deltaTracker, CallbackInfo ci) {
-        GunMuzzleLightRenderer.render();
         NuclearExplosionRenderer.render(deltaTracker.getGameTimeDeltaPartialTick(true));
         ScopeThermalRenderer.captureWorldDepth();
         if (ShaderCompat.isShaderPackActive()) ScopeThermalRenderer.renderFullScreen();

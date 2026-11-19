@@ -295,7 +295,7 @@ open class ReforgingGravityBallEntity(type: EntityType<out ReforgingGravityBallE
     /** Shared by server attraction, living-target damage and client-side player attraction. */
     fun canAffect(target: Entity): Boolean {
         val shooter = shooter()
-        val shooterUUID = getOwnerUUID()
+        val shooterUUID = getOwnerUUID() ?: shooter?.uuid
         return target !== this && target !is HangingEntity && target.isAlive && !target.isSpectator && target !== shooter
                 && target !is ReforgingGravityBallEntity
                 && (shooterUUID == null || target.uuid != shooterUUID)
@@ -313,8 +313,13 @@ open class ReforgingGravityBallEntity(type: EntityType<out ReforgingGravityBallE
         if (attackRadius <= 0.0) return
         val targets = level().getEntities(this, boundingBox.inflate(attackRadius), ::canAffect)
         if (targets.isEmpty()) return
+        val shooterUUID = getOwnerUUID() ?: owner?.uuid
         for (target in targets) {
-            if (target is Projectile && canConsume(target.boundingBox, position(), coreRadius)) target.discard()
+            if (target is Projectile && canConsume(target.boundingBox, position(), coreRadius) &&
+                (shooterUUID == null || target.owner?.uuid != shooterUUID)
+            ) {
+                target.discard()
+            }
         }
         val regularDamage = fieldActive && damageTick
         val damagedTargets = targets.filterIsInstance<LivingEntity>().filter {

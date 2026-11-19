@@ -872,7 +872,8 @@ object ClientEventHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    fun renderGravityLensing(event: RenderLevelStageEvent) {
+    fun renderWorldPostEffects(event: RenderLevelStageEvent) {
+        if (event.stage === RenderLevelStageEvent.Stage.AFTER_LEVEL) GunMuzzleLightRenderer.render()
         ReforgingGravityBallRenderer.renderLensing(event)
     }
 
@@ -3495,8 +3496,13 @@ object ClientEventHandler {
                     playerVec.vectorTo(targetVec)
                 } else {
                     val hasGravity = data.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0
+                    val vehicleSpeed = player.rootVehicle.deltaMovement.length().takeIf { data.get(GunProp.ADD_SHOOTER_DELTA_MOVEMENT) }
+                    val velocity = GunItem.projectileLaunchSpeed(
+                        data, 1.0, VectorTool.isInLiquid(player.level(), playerVec), vehicleSpeed
+                    ).toDouble()
+                    if (velocity <= 0.0 || !velocity.isFinite()) return@let
                     RangeTool.calculateFiringSolution(
-                        playerVec, targetVec, target.deltaMovement.scale(0.5), data.get(GunProp.VELOCITY),
+                        playerVec, targetVec, target.deltaMovement.scale(0.5), velocity,
                         if (hasGravity) data.get(GunProp.GRAVITY) else 0.0
                     )
                 }

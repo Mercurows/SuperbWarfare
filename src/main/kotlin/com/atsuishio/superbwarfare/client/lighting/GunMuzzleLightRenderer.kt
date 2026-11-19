@@ -74,7 +74,6 @@ object GunMuzzleLightRenderer {
         if (worldState != null) worldProjection = worldState.first
         if (worldState != null && !GL11.glIsTexture(worldState.second)) return
 
-        val previousShader = RenderSystem.getShader()
         val program = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM)
         val drawFbo = GL11.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING)
         val readFbo = GL11.glGetInteger(GL30.GL_READ_FRAMEBUFFER_BINDING)
@@ -145,10 +144,7 @@ object GunMuzzleLightRenderer {
             RenderSystem.disableDepthTest()
             RenderSystem.depthMask(false)
             RenderSystem.disableCull()
-            RenderSystem.enableBlend()
-            GL20.glBlendEquationSeparate(GL14.GL_FUNC_ADD, GL14.GL_FUNC_ADD)
-            RenderSystem.blendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO, GL11.GL_ONE)
-            RenderSystem.setShader { custom }
+            RenderSystem.colorMask(true, true, true, false)
             val camera = mc.gameRenderer.mainCamera.position
             for (light in lights) {
                 val point = light.position.subtract(camera)
@@ -159,12 +155,20 @@ object GunMuzzleLightRenderer {
                 custom.safeGetUniform("LightDirection").set(light.direction.x.toFloat(), light.direction.y.toFloat(), light.direction.z.toFloat())
                 custom.safeGetUniform("LightRadius").set(light.radius)
                 custom.safeGetUniform("LightStrength").set(GunMuzzleLightHandler.intensity(light))
-                val builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION)
-                builder.addVertex(-1f, -1f, 0f)
-                builder.addVertex(1f, -1f, 0f)
-                builder.addVertex(1f, 1f, 0f)
-                builder.addVertex(-1f, 1f, 0f)
-                BufferUploader.drawWithShader(builder.buildOrThrow())
+                try {
+                    custom.apply()
+                    GL11.glEnable(GL11.GL_BLEND)
+                    GL20.glBlendEquationSeparate(GL14.GL_FUNC_ADD, GL14.GL_FUNC_ADD)
+                    GL14.glBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO, GL11.GL_ONE)
+                    val builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION)
+                    builder.addVertex(-1f, -1f, 0f)
+                    builder.addVertex(1f, -1f, 0f)
+                    builder.addVertex(1f, 1f, 0f)
+                    builder.addVertex(-1f, 1f, 0f)
+                    BufferUploader.draw(builder.buildOrThrow())
+                } finally {
+                    custom.clear()
+                }
             }
         } catch (exception: Exception) {
             failed = true
@@ -183,8 +187,8 @@ object GunMuzzleLightRenderer {
             if (scissor) RenderSystem.enableScissor(scissorBox[0], scissorBox[1], scissorBox[2], scissorBox[3])
             else RenderSystem.disableScissor()
             GL20.glBlendEquationSeparate(blendEquationRgb, blendEquationAlpha)
-            RenderSystem.blendFuncSeparate(blendSrc, blendDst, blendSrcAlpha, blendDstAlpha)
-            if (blend) RenderSystem.enableBlend() else RenderSystem.disableBlend()
+            GL14.glBlendFuncSeparate(blendSrc, blendDst, blendSrcAlpha, blendDstAlpha)
+            if (blend) GL11.glEnable(GL11.GL_BLEND) else GL11.glDisable(GL11.GL_BLEND)
             textures.forEachIndexed { unit, texture ->
                 RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
                 GlStateManager._bindTexture(texture)
@@ -193,7 +197,6 @@ object GunMuzzleLightRenderer {
             RenderSystem.activeTexture(activeTexture)
             RenderSystem.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3])
             RenderSystem.clearDepth(clearDepth)
-            RenderSystem.setShader { previousShader }
             GlStateManager._glUseProgram(program)
         }
     }
