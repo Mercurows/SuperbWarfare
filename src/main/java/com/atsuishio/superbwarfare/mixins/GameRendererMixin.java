@@ -51,7 +51,6 @@ public class GameRendererMixin {
     // Iris has completed its composite at this point; its final colour-space conversion is later.
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V", ordinal = 2))
     private void superbWarfare$renderScopeLenses(float partialTicks, long finishTime, PoseStack poseStack, CallbackInfo ci) {
-        GunMuzzleLightRenderer.render();
         NuclearExplosionRenderer.render(partialTicks);
         ScopeThermalRenderer.captureWorldDepth();
         if (ShaderCompat.isShaderPackActive()) ScopeThermalRenderer.renderFullScreen();

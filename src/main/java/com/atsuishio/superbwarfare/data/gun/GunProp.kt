@@ -529,6 +529,9 @@ class GunProp<T, R>(
         val UNDERWATER_MOTION_SCALE = plainProp(DefaultGunData::underwaterMotionScale)
 
         @JvmField
+        val UNDERWATER_LAUNCH_SPEED_MULTIPLIER = plainProp(DefaultGunData::underwaterLaunchSpeedMultiplier)
+
+        @JvmField
         val EXPLOSION_DESTROY = plainProp(DefaultGunData::explosionDestroy)
 
         @JvmField

@@ -972,14 +972,17 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         val headshot = data.get(GunProp.HEADSHOT)
         val damage = data.get(GunProp.DAMAGE) * parameters.power.coerceAtLeast(0.0)
-        var velocity = (data.get(GunProp.VELOCITY) * parameters.power.coerceAtLeast(0.0)).toFloat()
+        val airVelocity = (data.get(GunProp.VELOCITY) * parameters.power.coerceAtLeast(0.0)).toFloat()
         val bypassArmorRate = data.get(GunProp.BYPASSES_ARMOR)
-
-        if (VectorTool.isInLiquid(level, shootPosition)) {
-            velocity = 2 + 0.05f * velocity
+        val inLiquid = VectorTool.isInLiquid(level, shootPosition)
+        val launchSpeedMultiplier = if (inLiquid) {
+            data.get(GunProp.UNDERWATER_LAUNCH_SPEED_MULTIPLIER)?.coerceIn(0f, 1f)
+        } else null
+        val initialVelocity = when {
+            launchSpeedMultiplier != null -> airVelocity * launchSpeedMultiplier
+            inLiquid -> 2 + 0.05f * airVelocity
+            else -> airVelocity
         }
-
-        val finalVelocity = velocity
 
         val entityHolder = AtomicReference<Entity?>()
 
@@ -1013,7 +1016,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                     setHeadShot(headshot.toFloat())
                     setZoom(zoom)
                     setBypassArmorRate(bypassArmorRate.toFloat())
-                    setVelocity(finalVelocity)
+                    setVelocity(initialVelocity)
                     setKnockback(data.get(GunProp.KNOCKBACK))
                     setUnderwaterMotionScale(data.get(GunProp.UNDERWATER_MOTION_SCALE))
                     setPenetrating(data.get(GunProp.PROJECTILE_PENETRATING))
@@ -1147,8 +1150,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
 
         val vehicle = shooter?.rootVehicle
-        if (vehicle != null && data.get(GunProp.ADD_SHOOTER_DELTA_MOVEMENT)) {
-            velocity = (vehicle.deltaMovement.length() * data.get(GunProp.VELOCITY)).toFloat()
+        val velocity = if (vehicle != null && data.get(GunProp.ADD_SHOOTER_DELTA_MOVEMENT)) {
+            val vehicleVelocity = (vehicle.deltaMovement.length() * data.get(GunProp.VELOCITY)).toFloat()
+            vehicleVelocity * (launchSpeedMultiplier ?: 1f)
+        } else {
+            initialVelocity
         }
 
         // 发射任意实体

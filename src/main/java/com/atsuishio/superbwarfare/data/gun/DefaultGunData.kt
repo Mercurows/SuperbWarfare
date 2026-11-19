@@ -353,6 +353,9 @@ data class DefaultGunData(
     val name: String? = null,
     @SerialName("UnderwaterMotionScale")
     val underwaterMotionScale: Float = 0.75f,
+    // 水下发射初速度倍率，设置成null就是旧版的写法
+    @SerialName("UnderwaterLaunchSpeedMultiplier")
+    val underwaterLaunchSpeedMultiplier: Float? = null,
     @SerialName("ExplosionDestroy")
     val explosionDestroy: Boolean = true,
     @SerialName("Knockback")

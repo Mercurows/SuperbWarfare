@@ -870,7 +870,8 @@ object ClientEventHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    fun renderGravityLensing(event: RenderLevelStageEvent) {
+    fun renderWorldPostEffects(event: RenderLevelStageEvent) {
+        if (event.stage === RenderLevelStageEvent.Stage.AFTER_LEVEL) GunMuzzleLightRenderer.render()
         ReforgingGravityBallRenderer.renderLensing(event)
     }
 
