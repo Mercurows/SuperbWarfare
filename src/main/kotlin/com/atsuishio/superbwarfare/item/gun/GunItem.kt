@@ -198,7 +198,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 Attributes.MOVEMENT_SPEED,
                 AttributeModifier(
                     SPEED_ID,
-                    -0.01f - 0.005f * data.get(GunProp.WEIGHT),
+                    -heldMovementSpeedPenalty(data),
                     AttributeModifier.Operation.ADD_MULTIPLIED_BASE
                 ),
                 EquipmentSlotGroup.MAINHAND
@@ -416,6 +416,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
      */
     open fun getHandlingWeight(data: GunData): Double =
         data.get(GunProp.WEIGHT) + (HANDLING_WEIGHT_SCALE - 1.0) * getCustomWeight(data)
+
+    internal fun heldMovementSpeedPenalty(data: GunData): Double = 0.01f + 0.005f * data.get(GunProp.WEIGHT)
+
+    internal fun handlingDrawDuration(data: GunData): Double =
+        data.get(GunProp.DRAW_TIME).coerceAtLeast(1) + 0.5 * getHandlingCustomWeight(data)
 
     /**
      * 获取额外弹速加成
