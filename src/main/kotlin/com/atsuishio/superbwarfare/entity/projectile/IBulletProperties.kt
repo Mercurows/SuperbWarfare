@@ -13,6 +13,10 @@ interface IBulletProperties {
     fun getDamage(): Float
     fun setDamage(value: Float)
 
+    // 命中队友时将伤害转为治疗的倍率，0 表示关闭
+    fun getAllyHealRatio(): Float = 0f
+    fun setAllyHealRatio(value: Float) {}
+
     // 爆炸伤害
     fun getExplosionDamage(): Float = 0f
     fun setExplosionDamage(value: Float) {}

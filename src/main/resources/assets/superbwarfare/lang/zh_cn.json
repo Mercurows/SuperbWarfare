@@ -1869,6 +1869,7 @@
   "prop.superbwarfare.fuel_per_ammo": "开火能量消耗",
   "prop.superbwarfare.bolt_action_time": "拉栓时间",
   "prop.superbwarfare.aim_assist": "辅助瞄准",
+  "prop.superbwarfare.ally_heal_ratio": "队友治疗倍率",
 
   "gun_type.superbwarfare.rifle": "步枪",
   "gun_type.superbwarfare.shotgun": "霰弹枪",

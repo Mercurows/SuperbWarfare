@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.living.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
+import com.atsuishio.superbwarfare.entity.multipartRoot
 import com.atsuishio.superbwarfare.entity.projectile.IAdvancedHitDetection.Companion.rayTraceBlocks
 import com.atsuishio.superbwarfare.entity.projectile.IAdvancedHitDetection.Companion.rayTraceBlocksWithFluid
 import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties.Companion.DEFAULT_B
@@ -55,6 +56,7 @@ import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.item.ItemStack
@@ -78,6 +80,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
     // ===== IBulletProperties 属性（使用 getter/setter 方法） =====
     protected var damageValue = 1f
+    protected var allyHealRatio = 0f
     protected var headShotValue = 1f
     protected var legShotValue = 0.5f
     protected var beastValue = false
@@ -115,6 +118,11 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     override fun getDamage(): Float = damageValue
     override fun setDamage(value: Float) {
         damageValue = value
+    }
+
+    override fun getAllyHealRatio(): Float = allyHealRatio
+    override fun setAllyHealRatio(value: Float) {
+        allyHealRatio = if (value.isFinite()) value.coerceAtLeast(0f) else 0f
     }
 
     override fun getHeadShot(): Float = headShotValue
@@ -452,6 +460,8 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             }
 
             for (entityResult in entityResults) {
+                if (tryHealAlly(entityResult)) return
+
                 result = ExtendedEntityRayTraceResult(entityResult)
 
                 val resEntity = result.entity
@@ -737,6 +747,28 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     fun randomVec(vec3: Vec3, spread: Double): Vec3 =
         randomSpreadVec(this.random, vec3, spread)
 
+    private fun damageAtCurrentSpeed(): Float =
+        damageValue * (deltaMovement.length() / velocityValue).coerceIn(0.0, 1.0).toFloat()
+
+    open fun tryHealAlly(hit: EntityResult): Boolean {
+        if (allyHealRatio <= 0f) return false
+        val shooter = owner ?: return false
+        val target = hit.entity.multipartRoot as? LivingEntity ?: return false
+        if (!target.isAlive || target === shooter || (shooter is Player && target.hasIndirectPassenger(shooter))) return false
+        val attacker = (shooter as? OwnableEntity)?.owner as? ServerPlayer ?: shooter as? LivingEntity ?: return false
+        if (target === attacker || !target.isAlliedTo(attacker)) return false
+
+        val hitMultiplier = when {
+            hit.headshot -> headShotValue
+            hit.legShot -> legShotValue
+            else -> 1f
+        }
+        val healing = damageAtCurrentSpeed() * hitMultiplier * allyHealRatio
+        if (healing.isFinite() && healing > 0f) target.heal(healing)
+        discard()
+        return true
+    }
+
     override fun onHitEntity(result: EntityHitResult) {
         if (result !is ExtendedEntityRayTraceResult) return
 
@@ -768,7 +800,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             hitShield(entity, result.location)
         }
 
-        this.damageValue *= (deltaMovement.length() / velocityValue).coerceIn(0.0, 1.0).toFloat()
+        this.damageValue = damageAtCurrentSpeed()
 
         this.damageValue -= shieldAbsorb(entity, result.location, this.damageValue)
         if (this.damageValue <= 0f) {

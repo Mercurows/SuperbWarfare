@@ -84,6 +84,7 @@ fun DefaultGunData.withOverrides(diff: Map<out Prop<*, *, *, *, *>, Any?>): Defa
         projectileAmount = int(GunProp.PROJECTILE_AMOUNT, projectileAmount),
         projectilePenetrating = (diff[GunProp.PROJECTILE_PENETRATING] as? Boolean) ?: projectilePenetrating,
         aimAssist = int(GunProp.AIM_ASSIST, aimAssist),
+        allyHealRatio = num(GunProp.ALLY_HEAL_RATIO, allyHealRatio),
         projectileSplitCount = int(GunProp.PROJECTILE_SPLIT_COUNT, projectileSplitCount),
         projectileSplitAmount = int(GunProp.PROJECTILE_SPLIT_AMOUNT, projectileSplitAmount),
         spreadPattern = if (diff.containsKey(GunProp.SPREAD_PATTERN)) {

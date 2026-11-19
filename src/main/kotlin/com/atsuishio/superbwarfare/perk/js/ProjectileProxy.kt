@@ -58,6 +58,13 @@ class ProjectileProxy(private val entity: Entity) {
     fun setDamage(damage: Number) {
         projectile?.setDamage(damage.toFloat())
     }
+
+    fun getAllyHealRatio(): Float = projectile?.getAllyHealRatio() ?: 0f
+
+    fun setAllyHealRatio(ratio: Number) {
+        projectile?.setAllyHealRatio(ratio.toFloat())
+    }
+
     fun getVolt(): Int = taser?.volt ?: (entity as? ReforgingLightningBallEntity)?.volt ?: 0
     fun getOwner(): EntityProxy = EntityProxy((entity as? net.minecraft.world.entity.projectile.Projectile)?.owner)
 
