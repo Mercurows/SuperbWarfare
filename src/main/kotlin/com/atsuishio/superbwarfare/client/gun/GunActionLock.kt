@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import java.util.*
+import kotlin.math.roundToInt
 
 /**
  * 动作类型。任一动作占用期间，其它入口全部拒绝。
@@ -33,6 +34,9 @@ enum class GunAction {
  * 动作互斥层
  */
 object GunActionLock {
+
+    private const val MELEE_INPUT_BUFFER_FRACTION = 0.25
+    private const val MELEE_INPUT_BUFFER_MAX_TICKS = 2
 
     /**
      * 一把枪在客户端本地的动作状态
@@ -72,6 +76,9 @@ object GunActionLock {
 
         /** 本段挥击是蓄势松开打出来的（决定用 `MeleeAction.ReleaseAnimation` 换掉本段 clip） */
         var meleeHeavyRelease: Boolean = false
+
+        var heavyStrikeBufferTicks: Int = 0
+        var heavyHoldBufferTicks: Int = 0
 
         /** 冲锋撞上的目标：本段无论如何都要打中它；结算后清掉 */
         var meleeChargeTarget: Entity? = null
@@ -120,6 +127,22 @@ object GunActionLock {
             activeAction == GunAction.MELEE &&
                     meleeTicks in 1..window &&
                     meleeHitIndex >= meleeHitTicks.size
+
+        fun meleeInputBufferTicks(chainWindow: Int): Int {
+            if (meleeHolding) return 0
+            if (meleeTicks <= 0) return if (isLocked) 0 else 1
+            if (activeAction != GunAction.MELEE) return 0
+
+            // The next swing can start at the chain window once the last hit has resolved.
+            val chainReadyAt = if (meleeHitIndex < meleeHitTicks.size) {
+                minOf(chainWindow, meleeHitTicks.last())
+            } else {
+                chainWindow
+            }
+            val bufferTicks = (meleeDuration * MELEE_INPUT_BUFFER_FRACTION).roundToInt()
+                .coerceIn(1, MELEE_INPUT_BUFFER_MAX_TICKS)
+            return if (meleeTicks - chainReadyAt <= bufferTicks) bufferTicks else 0
+        }
 
         // 只拆当前这一段，连招下标与窗口留给下一段
         fun releaseMeleeForChain() {
@@ -170,6 +193,8 @@ object GunActionLock {
         /** 切走武器时取消挥击和连招，不影响换弹/拉栓等其它动作锁。 */
         fun cancelMelee() {
             release(GunAction.MELEE)
+            heavyStrikeBufferTicks = 0
+            heavyHoldBufferTicks = 0
             meleeHolding = false
             meleeHoldTicks = 0
             meleeTicks = 0

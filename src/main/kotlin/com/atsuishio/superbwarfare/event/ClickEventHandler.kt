@@ -787,7 +787,7 @@ object ClickEventHandler {
         if (item != null && item.onUseActionPress(player, gunStack, data)) return
 
         when (data.get(GunProp.RIGHT_CLICK_ACTION)) {
-            RightClickAction.HEAVY_STRIKE -> ClientEventHandler.requestHeavyStrike()
+            RightClickAction.HEAVY_STRIKE -> ClientEventHandler.requestHeavyStrike(player)
             RightClickAction.HEAVY_HOLD -> MeleeClientHandler.beginHeavyHold(player, gunStack)
             RightClickAction.BAYONET_CHARGE -> GunChargeHandler.start(gunStack, data)
             else -> handleWeaponAimPress(player, gunStack, data)
