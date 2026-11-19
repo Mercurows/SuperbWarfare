@@ -79,6 +79,7 @@ object AircraftHud {
         val vehicle = player.vehicle
         if (vehicle !is VehicleEntity) return
         if (vehicle.computed().hudType != ID) return
+        if (vehicle.getGunData(player)?.get(GunProp.CROSSHAIR) == "@AirBomb") return
 
         val shootPos = vehicle.getShootPosForHud(player, 1f)
 
@@ -142,18 +143,12 @@ object AircraftHud {
         diffX = Mth.lerp(partialTick.toDouble(), diffX.toDouble(), ClientMouseHandler.lerpSpeedY).toFloat()
         val speed = vehicle.absoluteSpeed * 72
 
-        val shootPos = vehicle.getShootPosForHud(player, partialTick)
-
         val pos = cameraPos.add(vehicle.getViewVector(partialTick).scale(512.0))
-        var posCross = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis))
-
-        if (bomb) {
-            val bombHitPosO = ClientEventHandler.bombHitPosO
-            val bombHitPos = ClientEventHandler.bombHitPos
-            val bombHitPosX = Mth.lerp(partialTick.toDouble(), bombHitPosO.x, bombHitPos.x)
-            val bombHitPosY = Mth.lerp(partialTick.toDouble(), bombHitPosO.y, bombHitPos.y)
-            val bombHitPosZ = Mth.lerp(partialTick.toDouble(), bombHitPosO.z, bombHitPos.z)
-            posCross = Vec3(bombHitPosX, bombHitPosY, bombHitPosZ)
+        val posCross = if (bomb) {
+            ClientEventHandler.interpolatedBombHitPos(partialTick)
+        } else {
+            val shootPos = vehicle.getShootPosForHud(player, partialTick)
+            shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis))
         }
 
         val p = pos.worldToScreen()

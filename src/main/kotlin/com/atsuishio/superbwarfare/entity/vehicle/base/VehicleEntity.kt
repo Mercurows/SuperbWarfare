@@ -29,7 +29,10 @@ import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.misc.CatapultShuttleEntity
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
 import com.atsuishio.superbwarfare.entity.setValue
-import com.atsuishio.superbwarfare.entity.vehicle.*
+import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
+import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity
+import com.atsuishio.superbwarfare.entity.vehicle.VehicleModelEntry
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.Companion.ENV_RATE_RECOMPUTE_INTERVAL
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.Companion.OBB_GROUND_CACHE_TICKS
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier
@@ -3956,7 +3959,15 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open fun getVectorFromString(string: String, ticks: Float, seatIndex: Int): Vec3 {
         val entity = getNthEntity(seatIndex)
         return when (string) {
-            "Bomb" -> bombHitPos(getNthEntity(seatIndex)).subtract(getShootPosForHud(getNthEntity(seatIndex), 1f))
+            "Bomb" -> {
+                val cached = if (level().isClientSide && entity is Player) {
+                    ClientEventHandler.cachedBombHitPos(this, entity, ticks)
+                } else {
+                    null
+                }
+                val origin = getShootPosForHud(entity, if (cached == null) 1f else ticks)
+                origin.vectorTo(cached ?: bombHitPos(entity)).normalize()
+            }
             "Passenger" -> if (entity != null) entity.getViewVector(ticks) else getViewVector(ticks)
             "ClientCamera" -> if (entity != null && entity.level().isClientSide) cameraDirection() else getViewVector(
                 ticks

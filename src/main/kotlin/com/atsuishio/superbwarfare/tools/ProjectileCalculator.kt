@@ -2,12 +2,12 @@ package com.atsuishio.superbwarfare.tools
 
 import com.atsuishio.superbwarfare.tools.ProjectileCalculator.HORIZONTAL_STEP
 import net.minecraft.core.BlockPos
+import net.minecraft.util.Mth
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
-import kotlin.math.max
 import kotlin.math.sqrt
 
 object ProjectileCalculator {
@@ -44,6 +44,15 @@ object ProjectileCalculator {
         val vy = dir.y * velocity
         val vz = dir.z * velocity
 
+        val minY = level.minBuildHeight.toDouble()
+        val maxY = level.maxBuildHeight.toDouble()
+        if (startPos.y < minY) return fallbackToWorldBottom(startPos, level.minBuildHeight)
+        val entryTime = if (startPos.y >= maxY) {
+            descendingTimeAtHeight(startPos.y, vy, gravity, maxY) ?: return startPos
+        } else {
+            0.0
+        }
+
         val horizontalSpeed = sqrt(vx * vx + vz * vz)
 
         // 纯垂直运动（无水平位移）：直接检测脚下地形
@@ -53,11 +62,10 @@ object ProjectileCalculator {
 
         // 水平步进的时间增量：每前进 HORIZONTAL_STEP 方块水平距离所需的时间
         val dt = HORIZONTAL_STEP / horizontalSpeed
-
-        var t = 0.0
-        var prevX = startPos.x
-        var prevY = startPos.y
-        var prevZ = startPos.z
+        var t = entryTime
+        var prevX = startPos.x + vx * t
+        var prevY = minOf(startPos.y, maxY)
+        var prevZ = startPos.z + vz * t
 
         for (step in 0 until MAX_STEPS) {
             t += dt
@@ -66,24 +74,33 @@ object ProjectileCalculator {
             val y = startPos.y + vy * t + 0.5 * gravity * t * t
             val z = startPos.z + vz * t
 
-            // 掉出世界底部：对最后一段做精确射线检测
-            if (y < level.minBuildHeight) {
-                return raycastOrClamp(
-                    level,
-                    Vec3(prevX, prevY, prevZ),
-                    Vec3(x, y, z),
-                    level.minBuildHeight.toDouble()
-                )
+            if (y > maxY) {
+                val previous = Vec3(prevX, prevY, prevZ)
+                val exit = positionAtHeight(previous, Vec3(x, y, z), maxY)
+                raycastBlock(level, previous, exit)?.let { return it }
+                val reentry = descendingTimeAtHeight(startPos.y, vy, gravity, maxY)
+                    ?.takeIf { it > t } ?: return exit
+                t = reentry
+                prevX = startPos.x + vx * t
+                prevY = maxY
+                prevZ = startPos.z + vz * t
+                continue
             }
 
-            val blockX = x.toInt()
-            val blockZ = z.toInt()
+            if (y < minY) {
+                val previous = Vec3(prevX, prevY, prevZ)
+                val exit = positionAtHeight(previous, Vec3(x, y, z), minY)
+                return raycastBlock(level, previous, exit) ?: exit
+            }
+
+            val blockX = Mth.floor(x)
+            val blockZ = Mth.floor(z)
 
             if (level.hasChunk(blockX shr 4, blockZ shr 4)) {
                 // 判断弹丸当前位置能否看到天空：
                 // - 能看到 → 室外开阔地带，高度图可靠，使用高度图优化
                 // - 看不到 → 室内/遮挡环境，高度图显示的是天花板，回归射线检测
-                val checkY = y.toInt().coerceIn(level.minBuildHeight, level.maxBuildHeight - 1)
+                val checkY = Mth.floor(y).coerceIn(level.minBuildHeight, level.maxBuildHeight - 1)
                 if (level.canSeeSky(BlockPos(blockX, checkY, blockZ))) {
                     // 室外：通过高度图快速检测是否已抵达地形表面
                     val terrainHeight = level.getHeight(Heightmap.Types.MOTION_BLOCKING, blockX, blockZ).toDouble()
@@ -98,16 +115,7 @@ object ProjectileCalculator {
                     }
                 } else {
                     // 室内/遮挡：高度图显示的是天花板高度，回归原始的射线检测
-                    val hit = level.clip(
-                        ClipContext(
-                            Vec3(prevX, prevY, prevZ),
-                            Vec3(x, y, z),
-                            ClipContext.Block.COLLIDER,
-                            ClipContext.Fluid.ANY,
-                            null
-                        )
-                    )
-                    if (hit.type == HitResult.Type.BLOCK) return hit.location
+                    raycastBlock(level, Vec3(prevX, prevY, prevZ), Vec3(x, y, z))?.let { return it }
                 }
             }
 
@@ -120,80 +128,46 @@ object ProjectileCalculator {
         return Vec3(prevX, prevY, prevZ)
     }
 
-    // ---- 纯垂直运动 ----
+    private fun calculateVerticalImpact(level: Level, startPos: Vec3): Vec3 {
+        val blockX = Mth.floor(startPos.x)
+        val blockZ = Mth.floor(startPos.z)
+        val bottom = fallbackToWorldBottom(startPos, level.minBuildHeight)
+        if (!level.hasChunk(blockX shr 4, blockZ shr 4)) return bottom
 
-    /**
-     * 处理无水平速度分量的纯垂直运动。
-     * 从弹丸位置上方垂直向下做一次射线检测即可获得精确落点。
-     */
-    private fun calculateVerticalImpact(
-        level: Level,
-        startPos: Vec3
-    ): Vec3 {
-        val bx = startPos.x.toInt()
-        val bz = startPos.z.toInt()
+        val top = Vec3(startPos.x, minOf(startPos.y, level.maxBuildHeight.toDouble()), startPos.z)
+        raycastBlock(level, top, bottom)?.let { return it }
 
-        if (!level.hasChunk(bx shr 4, bz shr 4)) {
-            return fallbackToWorldBottom(startPos, level.minBuildHeight)
+        val checkY = Mth.floor(top.y).coerceIn(level.minBuildHeight, level.maxBuildHeight - 1)
+        if (level.canSeeSky(BlockPos(blockX, checkY, blockZ))) {
+            val terrainHeight = level.getHeight(Heightmap.Types.MOTION_BLOCKING, blockX, blockZ).toDouble()
+            return Vec3(startPos.x, minOf(terrainHeight, top.y), startPos.z)
         }
-
-        // 判断弹丸下方位置能否看到天空，决定是否使用高度图优化
-        val checkY = startPos.y.toInt().coerceIn(level.minBuildHeight, level.maxBuildHeight - 1)
-        if (level.canSeeSky(BlockPos(bx, checkY, bz))) {
-            // 室外：高度图可靠，使用高度图辅助的垂直射线
-            val terrainHeight = level.getHeight(Heightmap.Types.MOTION_BLOCKING, bx, bz).toDouble()
-
-            // 从地形上方垂直向下射线，精准捕获地形表面
-            val aboveY = max(startPos.y, terrainHeight) + 2
-            val belowY = level.minBuildHeight.toDouble() - 1
-            val hit = level.clip(
-                ClipContext(
-                    Vec3(startPos.x, aboveY, startPos.z),
-                    Vec3(startPos.x, belowY, startPos.z),
-                    ClipContext.Block.COLLIDER,
-                    ClipContext.Fluid.ANY,
-                    null
-                )
-            )
-            if (hit.type == HitResult.Type.BLOCK) return hit.location
-
-            return Vec3(startPos.x, terrainHeight, startPos.z)
-        } else {
-            // 室内/遮挡：高度图显示的是天花板，直接从弹丸位置垂直向下做射线检测
-            val belowY = level.minBuildHeight.toDouble() - 1
-            val hit = level.clip(
-                ClipContext(
-                    startPos,
-                    Vec3(startPos.x, belowY, startPos.z),
-                    ClipContext.Block.COLLIDER,
-                    ClipContext.Fluid.ANY,
-                    null
-                )
-            )
-            if (hit.type == HitResult.Type.BLOCK) return hit.location
-
-            return Vec3(startPos.x, level.minBuildHeight.toDouble(), startPos.z)
-        }
+        return bottom
     }
 
-    // ---- 辅助方法 ----
+    private fun descendingTimeAtHeight(startY: Double, verticalSpeed: Double, gravity: Double, height: Double): Double? {
+        val offset = startY - height
+        val time = if (gravity == 0.0) {
+            if (verticalSpeed >= 0.0) return null
+            -offset / verticalSpeed
+        } else {
+            val discriminant = verticalSpeed * verticalSpeed - 2.0 * gravity * offset
+            if (discriminant < 0.0) return null
+            val root = sqrt(discriminant)
+            if (verticalSpeed < 0.0) 2.0 * offset / (root - verticalSpeed)
+            else (-verticalSpeed - root) / gravity
+        }
+        return time.takeIf { it.isFinite() && it >= 0.0 }
+    }
 
-    /**
-     * 对弹丸离开世界底部前最后一段轨迹做精确射线检测。
-     */
-    private fun raycastOrClamp(
-        level: Level,
-        start: Vec3,
-        end: Vec3,
-        minY: Double
-    ): Vec3 {
-        // 确保射线终点不低于世界底部
-        val clampedEnd = Vec3(end.x, max(end.y, minY - 1), end.z)
-        val hit = level.clip(
-            ClipContext(start, clampedEnd, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null)
-        )
-        if (hit.type == HitResult.Type.BLOCK) return hit.location
-        return Vec3(end.x, minY, end.z)
+    private fun positionAtHeight(start: Vec3, end: Vec3, height: Double): Vec3 {
+        val fraction = (height - start.y) / (end.y - start.y)
+        return Vec3(Mth.lerp(fraction, start.x, end.x), height, Mth.lerp(fraction, start.z, end.z))
+    }
+
+    private fun raycastBlock(level: Level, start: Vec3, end: Vec3): Vec3? {
+        val hit = level.clip(ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null))
+        return if (hit.type == HitResult.Type.BLOCK) hit.location else null
     }
 
     /**
@@ -210,18 +184,12 @@ object ProjectileCalculator {
         terrainHeight: Double
     ): Vec3 {
         // 策略1：从地形表面上方垂直向下射线
-        val above = Vec3(current.x, terrainHeight + 2, current.z)
-        val below = Vec3(current.x, terrainHeight - 2, current.z)
-        val hit = level.clip(
-            ClipContext(above, below, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null)
-        )
-        if (hit.type == HitResult.Type.BLOCK) return hit.location
+        val above = Vec3(current.x, minOf(terrainHeight + 2, level.maxBuildHeight.toDouble()), current.z)
+        val below = Vec3(current.x, maxOf(terrainHeight - 2, level.minBuildHeight.toDouble()), current.z)
+        raycastBlock(level, above, below)?.let { return it }
 
         // 策略2：沿弹道方向检测（处理地形垂直面）
-        val hit2 = level.clip(
-            ClipContext(prev, current, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null)
-        )
-        if (hit2.type == HitResult.Type.BLOCK) return hit2.location
+        raycastBlock(level, prev, current)?.let { return it }
 
         // 无碰撞方块时回退到高度图位置
         return Vec3(current.x, terrainHeight, current.z)
