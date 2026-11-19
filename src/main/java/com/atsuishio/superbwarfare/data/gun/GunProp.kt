@@ -511,6 +511,9 @@ class GunProp<T, R>(
         val PROJECTILE_PENETRATING = plainProp(DefaultGunData::projectilePenetrating)
 
         @JvmField
+        val AIM_ASSIST = plainProp(DefaultGunData::aimAssist)
+
+        @JvmField
         val PROJECTILE_SPLIT_COUNT = plainProp(DefaultGunData::projectileSplitCount)
 
         @JvmField
@@ -583,6 +586,7 @@ class GunProp<T, R>(
             modify(AMMO_COST_PER_SHOOT) { it.coerceAtLeast(0) }
             modify(FUEL_PER_AMMO) { it.coerceAtLeast(0) }
             modify(PROJECTILE_AMOUNT) { it.coerceAtLeast(0) }
+            modify(AIM_ASSIST) { it.coerceIn(-100, 100) }
             modify(PROJECTILE_SPLIT_COUNT) { it.coerceAtLeast(0) }
             modify(PROJECTILE_SPLIT_AMOUNT) { it.coerceAtLeast(0) }
             modify(WEIGHT) { it.coerceAtLeast(1.0) }

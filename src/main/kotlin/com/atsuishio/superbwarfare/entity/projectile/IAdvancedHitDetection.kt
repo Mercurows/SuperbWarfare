@@ -38,6 +38,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
+import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
@@ -59,16 +60,39 @@ interface IAdvancedHitDetection {
     /**
      * 在路径上查找所有可命中实体
      */
-    fun findEntitiesOnPath(startVec: Vec3, endVec: Vec3): MutableList<EntityResult> {
+    fun findEntitiesOnPath(startVec: Vec3, endVec: Vec3): MutableList<EntityResult> =
+        findEntitiesOnPath(startVec, endVec, 0.0)
+
+    fun findEntitiesOnPath(
+        startVec: Vec3,
+        endVec: Vec3,
+        extraSearchRadius: Double,
+        includeCompensatedPlayers: Boolean = false
+    ): MutableList<EntityResult> {
         if (this !is Projectile) return mutableListOf()
         val hitEntities: MutableList<EntityResult> = arrayListOf()
-        val entities = this.level().getEntities(
+        val level = this.level()
+        val currentEntities = level.getEntities(
             this,
             this.boundingBox
                 .expandTowards(this.deltaMovement)
-                .inflate(1.0),
+                .inflate(1.0 + extraSearchRadius),
             PROJECTILE_TARGETS
         )
+        val entities = if (includeCompensatedPlayers && level is ServerLevel) {
+            val compensatedSearch = AABB(startVec, endVec).inflate(extraSearchRadius + 1e-7)
+            val candidates = LinkedHashSet(currentEntities)
+            val shooter = this.owner
+            for (player in level.players()) {
+                if (player === shooter || player in candidates || !PROJECTILE_TARGETS.test(player)) continue
+                if (compensatedSearch.intersects(HitboxHelper.getCompensatedBoundingBox(player, shooter))) {
+                    candidates.add(player)
+                }
+            }
+            candidates
+        } else {
+            currentEntities
+        }
         for (entity in entities) {
             if (entity == this.owner || this.owner != null
                 && (entity == this.owner!!.vehicle || entity.getRootVehicle() === this.owner!!.getRootVehicle())
