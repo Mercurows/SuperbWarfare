@@ -3654,8 +3654,7 @@ object ClientEventHandler {
     private fun handleWeaponDraw(entity: LivingEntity) {
         val times = getDelta()
         val handling = ActiveGun.handlingData(entity) ?: return
-        val weight = handling.item.getHandlingCustomWeight(handling)
-        val duration = handling.get(GunProp.DRAW_TIME).coerceAtLeast(1) + 0.5 * weight
+        val duration = handling.item.handlingDrawDuration(handling)
         val decay = ln(100.0) / duration
         drawTime = (drawTime - decay * times * drawTime).coerceAtLeast(0.0)
     }

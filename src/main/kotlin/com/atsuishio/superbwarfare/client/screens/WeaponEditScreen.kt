@@ -2153,6 +2153,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val key: String, val reference: Double, val decimals: Int = 3,
         val unit: String = "", val higherIsBetter: Boolean = true,
         val optional: Boolean = false, val firearmOnly: Boolean = false,
+        val meleeRequired: Boolean = false, val minimum: Double = 0.0,
         val read: (GunData) -> Double,
     ) {
         RPM("rpm", 1200.0, 0, " rpm", firearmOnly = true,
@@ -2162,11 +2163,19 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             }),
         DAMAGE("damage", 100.0, firearmOnly = true, read = { it.get(GunProp.DAMAGE) }),
         HEADSHOT("headshot", 4.0, unit = "×", firearmOnly = true, read = { it.get(GunProp.HEADSHOT) }),
+        AIM_ASSIST("aim_assist", 100.0, 0, firearmOnly = true, minimum = -100.0,
+            read = { it.get(GunProp.AIM_ASSIST).toDouble() }),
         RECOIL_X("recoil_x", 0.005, 5, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.RECOIL_X) }),
         RECOIL_Y("recoil_y", 0.04, 5, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.RECOIL_Y) }),
+        SNEAK_KNOCKBACK_RESISTANCE("sneak_knockback_resistance", 100.0, unit = "%", firearmOnly = true,
+            read = { if (it.get(GunProp.RECOIL) != 0.0) it.get(GunProp.SNEAK_KNOCKBACK_RESISTANCE) * 100.0 else Double.NaN }),
+        CRAWL_KNOCKBACK_RESISTANCE("crawl_knockback_resistance", 100.0, unit = "%", firearmOnly = true,
+            read = { if (it.get(GunProp.RECOIL) != 0.0) it.get(GunProp.CRAWL_KNOCKBACK_RESISTANCE) * 100.0 else Double.NaN }),
         MAGAZINE("magazine", 100.0, 0, optional = true, firearmOnly = true, read = { it.get(GunProp.MAGAZINE).toDouble() }),
         ARMOR_BYPASS("bypasses_armor", 100.0, unit = "%", optional = true, firearmOnly = true, read = { it.get(GunProp.BYPASSES_ARMOR) * 100.0 }),
         VELOCITY("velocity", 1000.0, unit = " m/s", optional = true, firearmOnly = true, read = { it.get(GunProp.VELOCITY) * 20.0 }),
+        UNDERWATER_LAUNCH_SPEED("underwater_launch_speed_multiplier", 100.0, unit = "%", firearmOnly = true,
+            read = { it.get(GunProp.UNDERWATER_LAUNCH_SPEED_MULTIPLIER)?.coerceIn(0f, 1f)?.times(100.0) ?: Double.NaN }),
         SPREAD("spread", 10.0, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.SPREAD) }),
         AIMED_SPREAD("zoom_spread_rate", 1.0, unit = "×", higherIsBetter = false, firearmOnly = true,
             read = { it.get(GunProp.ZOOM_SPREAD_RATE) }),
@@ -2176,12 +2185,27 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             read = { it.get(GunProp.NORMAL_RELOAD_TIME) / 20.0 }),
         EMPTY_RELOAD("empty_reload_time", 8.0, unit = " s", higherIsBetter = false, optional = true, firearmOnly = true,
             read = { it.get(GunProp.EMPTY_RELOAD_TIME) / 20.0 }),
+        BOLT_ACTION_TIME("bolt_action_time", 2.0, unit = " s", higherIsBetter = false, optional = true, firearmOnly = true,
+            read = { it.get(GunProp.BOLT_ACTION_TIME) / 20.0 }),
         WEIGHT("weight", 15.0, higherIsBetter = false, read = { it.get(GunProp.WEIGHT) }),
+        MELEE_DAMAGE("melee_damage", 100.0, optional = true, read = { it.get(GunProp.MELEE_DAMAGE) }),
+        HELD_MOVEMENT_SPEED_PENALTY("held_movement_speed_penalty", 10.0, unit = "%", higherIsBetter = false,
+            read = { it.item.heldMovementSpeedPenalty(it) * 100.0 }),
+        DRAW_TIME("draw_time", 2.0, unit = " s", higherIsBetter = false,
+            read = { it.item.handlingDrawDuration(it).coerceAtLeast(0.0) / 20.0 }),
+        SPRINT_TRANSITION_SPEED("sprint_transition_speed", 2.0, unit = "×",
+            read = { it.get(GunProp.SPRINT_TRANSITION_SPEED) }),
         SWAY("sway", 2.0, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.SWAY) }),
         // 原始单位为区块；数值和横条量程一起换算成米。
         SOUND_RADIUS("sound_radius", 24.0 * 16.0, unit = " m", higherIsBetter = false, optional = true, firearmOnly = true,
             read = { it.get(GunProp.SOUND_RADIUS) * 16.0 }),
         PROJECTILES("projectile_amount", 16.0, 0, optional = true, firearmOnly = true, read = { it.get(GunProp.PROJECTILE_AMOUNT).toDouble() }),
+        PROJECTILE_SPLIT_COUNT("projectile_split_count", 5.0, 0, optional = true, firearmOnly = true,
+            read = { it.get(GunProp.PROJECTILE_SPLIT_COUNT).toDouble() }),
+        PROJECTILE_SPLIT_AMOUNT("projectile_split_amount", 16.0, 0, optional = true, firearmOnly = true,
+            read = { if (it.get(GunProp.PROJECTILE_SPLIT_COUNT) > 0) it.get(GunProp.PROJECTILE_SPLIT_AMOUNT).toDouble() else 0.0 }),
+        KNOCKBACK("knockback", 1.0, optional = true, firearmOnly = true, minimum = -1.0,
+            read = { it.get(GunProp.KNOCKBACK).toDouble() }),
         EXPLOSION_DAMAGE("explosion_damage", 200.0, optional = true, read = { it.get(GunProp.EXPLOSION_DAMAGE) }),
         EXPLOSION_RADIUS("explosion_radius", 12.0, unit = " m", optional = true, read = { it.get(GunProp.EXPLOSION_RADIUS) }),
         EXPLOSION_PENETRATION_RATIO("explosion_penetration_ratio", 100.0, unit = " %", optional = true,
@@ -2192,7 +2216,18 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             }),
         MAX_ENERGY("max_energy", 100000.0, 0, " FE", optional = true, read = { it.get(GunProp.MAX_ENERGY).toDouble() }),
         ENERGY_REGEN("energy_regeneration", 100.0, unit = " FE/s", optional = true, read = { it.get(GunProp.ENERGY_REGENERATION) * 20.0 }),
-        MELEE_DAMAGE("melee_damage", 100.0, optional = true, read = { it.get(GunProp.MELEE_DAMAGE) });
+        ALLY_HEAL_RATIO("ally_heal_ratio", 100.0, unit = "%", optional = true, firearmOnly = true,
+            read = { it.get(GunProp.ALLY_HEAL_RATIO) * 100.0 }),
+        EXP_MULTIPLIER("exp_multiplier", 2.0, unit = "×",
+            read = { it.get(GunProp.EXP_MULTIPLIER) }),
+        PROJECTILE_LIFESTEAL("projectile_lifesteal", 100.0, unit = "%", optional = true, firearmOnly = true,
+            read = { it.get(GunProp.PROJECTILE_LIFESTEAL) * 100.0 }),
+        MELEE_CHAIN_WINDOW("melee_chain_window", 1.0, unit = " s", meleeRequired = true,
+            read = { it.get(GunProp.MELEE_CHAIN_WINDOW) / 20.0 }),
+        MELEE_LIFESTEAL("melee_lifesteal", 100.0, unit = "%", optional = true, meleeRequired = true,
+            read = { it.get(GunProp.MELEE_LIFESTEAL) * 100.0 });
+
+        fun accepts(value: Double) = value.isFinite() && (minimum < 0.0 || value >= 0.0)
 
         fun format(value: Double): String {
             val number = String.format(Locale.ROOT, "%.${decimals}f", value)
@@ -2201,14 +2236,15 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     }
 
     /** 固定量程；超出部分从左侧用金条覆盖，配件差值仍以实际数值计算。 */
-    private data class StatComparison(val value: Double, val baseline: Double, val reference: Double, val higherIsBetter: Boolean) {
+    private data class StatComparison(val value: Double, val baseline: Double, val stat: WeaponStat) {
         val delta = value - baseline
-        private val currentFraction get() = (value / reference).coerceIn(0.0, 1.0)
-        private val baselineFraction get() = (baseline / reference).coerceIn(0.0, 1.0)
+        private fun fraction(amount: Double) = (amount - stat.minimum) / (stat.reference - stat.minimum)
+        private val currentFraction get() = fraction(value).coerceIn(0.0, 1.0)
+        private val baselineFraction get() = fraction(baseline).coerceIn(0.0, 1.0)
         val commonFraction get() = min(currentFraction, baselineFraction)
         val deltaFraction get() = abs(currentFraction - baselineFraction)
-        val overflowFraction get() = (value / reference - 1.0).coerceIn(0.0, 1.0)
-        val beneficial get() = if (higherIsBetter) delta > 0 else delta < 0
+        val overflowFraction get() = (fraction(value) - 1.0).coerceIn(0.0, 1.0)
+        val beneficial get() = if (stat.higherIsBetter) delta > 0 else delta < 0
     }
 
     private data class StatRow(
@@ -2381,19 +2417,21 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         }
         val baseline = statsBaseline ?: return bounds
         val hasFirearm = !data.meleeOnly() || !baseline.meleeOnly()
+        val hasMelee = data.hasMeleeAttack() || baseline.hasMeleeAttack()
         for (row in statRows) {
             val stat = row.stat
             val current = stat.read(data)
-            val original = stat.read(baseline)
-            val visible = current.isFinite() && original.isFinite() && current >= 0.0 && original >= 0.0 &&
-                (!stat.firearmOnly || hasFirearm) && (!stat.optional || max(current, original) > 0.0) &&
+            val original = stat.read(baseline).takeIf(stat::accepts) ?: current
+            val visible = stat.accepts(current) &&
+                (!stat.firearmOnly || hasFirearm) && (!stat.meleeRequired || hasMelee) &&
+                (!stat.optional || current != 0.0 || original != 0.0) &&
                 (stat != WeaponStat.PROJECTILES || max(current, original) > 1.0)
             row.visible = visible
             setStyle(row.element, "display", if (visible) "block" else "none")
             if (!visible || (row.lastValue == current && row.lastBaseline == original)) continue
             row.lastValue = current
             row.lastBaseline = original
-            val comparison = StatComparison(current, original, stat.reference, stat.higherIsBetter)
+            val comparison = StatComparison(current, original, stat)
             row.value.textContent = stat.format(current)
             // 低于显示精度的真实变化仍保留方向，不能把微小的后坐力增减显示成零。
             val precision = 10.0.pow(stat.decimals)
