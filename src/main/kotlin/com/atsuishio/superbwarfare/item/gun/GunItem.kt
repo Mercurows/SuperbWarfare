@@ -1111,6 +1111,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             return false
         }
 
+        if (entity is PerkAwareProjectile) entity.captureShotPerks(data)
         for (type in GunData.PERK_TYPES) {
             val instance = data.perk.getInstances(type)
             instance.forEach {
