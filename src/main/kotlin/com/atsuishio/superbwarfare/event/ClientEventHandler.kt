@@ -38,6 +38,7 @@ import com.atsuishio.superbwarfare.item.LungeMine
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.*
+import com.atsuishio.superbwarfare.perk.AutoAimHelper
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.*
@@ -3489,48 +3490,28 @@ object ClientEventHandler {
             currentFov = event.fov
 
             // 智慧芯片
-            if (zoom && !notInGame && drawTime < 0.01 && !isEditing) {
-                if (player.isShiftKeyDown) {
-                    lockedEntity = null
+            val intelligentChipLevel = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP)
+            lockedEntity = if (zoom && !notInGame && drawTime < 0.01 && !isEditing &&
+                !player.isShiftKeyDown && intelligentChipLevel > 0
+            ) {
+                val seekRange = 32.0 + 8.0 * (intelligentChipLevel - 1)
+                AutoAimHelper.findTarget(player, data, lockedEntity, seekRange, 16 / customZoom)
+            } else null
+
+            lockedEntity?.let { target ->
+                val targetVec = target.getEyePosition(event.partialTick.toFloat())
+                val playerVec = player.getEyePosition(event.partialTick.toFloat())
+                val toVec = if (AutoAimHelper.isInstant(data)) {
+                    playerVec.vectorTo(targetVec)
                 } else {
-                    val intelligentChipLevel = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP)
-                    val seekRange = 32.0 + 8.0 * (intelligentChipLevel - 1)
-
-                    if (intelligentChipLevel > 0) {
-                        if (lockedEntity == null || !lockedEntity!!.isAlive) {
-                            lockedEntity = if (data.perk.has(ModPerks.PHASE_PENETRATING_BULLET.get())
-                                || data.perk.has(ModPerks.BEAST_BULLET.get())
-                            ) {
-                                SeekTool.seekEntityThroughWall(player, seekRange, 16 / customZoom)
-                            } else {
-                                SeekTool.seekLivingEntity(player, seekRange, 16 / customZoom)
-                            }
-                        }
-                        if (lockedEntity != null && lockedEntity!!.isAlive) {
-                            val targetVec = lockedEntity!!.getEyePosition(event.partialTick.toFloat())
-                            val playerVec = player.getEyePosition(event.partialTick.toFloat())
-
-                            val hasGravity = data.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0
-                            val velocity = data.get(GunProp.VELOCITY)
-
-                            val toVec = RangeTool.calculateFiringSolution(
-                                playerVec,
-                                targetVec,
-                                lockedEntity!!.deltaMovement.scale(0.5),
-                                velocity,
-                                if (hasGravity) data.get(GunProp.GRAVITY) else 0.0
-                            )
-
-                            look(player, toVec)
-
-                            if (player.distanceTo(lockedEntity!!) > seekRange) {
-                                lockedEntity = null
-                            }
-                        }
-                    }
+                    val hasGravity = data.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0
+                    RangeTool.calculateFiringSolution(
+                        playerVec, targetVec, target.deltaMovement.scale(0.5), data.get(GunProp.VELOCITY),
+                        if (hasGravity) data.get(GunProp.GRAVITY) else 0.0
+                    )
                 }
-            } else {
-                lockedEntity = null
+                val lengthSqr = toVec.lengthSqr()
+                if (lengthSqr.isFinite() && lengthSqr > 0.0) look(player, toVec)
             }
 
             lastX = player.xRot

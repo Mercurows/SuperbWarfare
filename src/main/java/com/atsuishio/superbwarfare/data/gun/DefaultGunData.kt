@@ -318,6 +318,8 @@ data class DefaultGunData(
     val shellType: String = "Default",
     @SerialName("ProjectileLife")
     val projectileLife: Int = 400,
+    @SerialName("ProjectilePenetrating")
+    val projectilePenetrating: Boolean = false,
     // 投射物分裂次数：爆炸消失后分裂出的产物再减一，0 表示不分裂
     @SerialName("ProjectileSplitCount")
     val projectileSplitCount: Int = 0,

@@ -37,6 +37,8 @@ class ProjectileProxy(private val entity: Entity) {
         projectile?.setPenetrating(penetrating)
     }
 
+    fun isPenetrating(): Boolean = projectile?.isPenetrating() ?: false
+
     fun setNoGravity(noGravity: Boolean) {
         entity.isNoGravity = noGravity
     }
