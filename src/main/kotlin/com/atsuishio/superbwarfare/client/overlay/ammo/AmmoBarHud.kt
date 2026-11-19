@@ -302,7 +302,7 @@ object AmmoBarHud {
         if (consumer.type == AmmoConsumeType.ENERGY) return getEnergyPercentString(data)
         if (data.meleeOnly() || data.useBackpackAmmo() && data.hasInfiniteBackupAmmo(player)) return "∞"
         if (data.useBackpackAmmo()) {
-            return displayAmmoCount(data, data.countBackupAmmo(player) - data.virtualAmmo.get()).toString()
+            return getInventoryAmmoString(data, player)
         }
         return data.ammo.get().toString()
     }
@@ -312,12 +312,15 @@ object AmmoBarHud {
         val consumer = data.selectedAmmoConsumer()
         if (data.meleeOnly() || data.useBackpackAmmo() || consumer.type == AmmoConsumeType.ENERGY) return ""
         if (data.hasInfiniteBackupAmmo(player)) return "∞"
-        return displayAmmoCount(data, data.countBackupAmmo(player) - data.virtualAmmo.get()).toString()
+        return getInventoryAmmoString(data, player)
     }
 
-    private fun displayAmmoCount(data: GunData, count: Int): Int {
+    private fun getInventoryAmmoString(data: GunData, player: Player): String {
+        val count = data.countBackupAmmo(player) - data.virtualAmmo.get()
         val source = data.selectedAmmoConsumer().primary
-        return source.strategy.getDisplayCount(data, source, count)
+        val displayedCount = source.strategy.getDisplayCount(data, source, count)
+        val limit = DisplayConfig.MAX_DISPLAYED_RESERVE_AMMO.get()
+        return if (limit in 1..<displayedCount) "$limit+" else displayedCount.toString()
     }
 
     private fun reset() {

@@ -113,6 +113,13 @@ object DisplayConfig {
     }
 
     @JvmField
+    val MAX_DISPLAYED_RESERVE_AMMO = buildClientConfig {
+        comment("Maximum reserve or backpack ammo count shown on the weapon HUD. Counts above the limit are shown with a + suffix. Set to 0 to disable the limit")
+        comment("武器 HUD 上备弹数或背包弹药数的显示上限。超过上限时显示上限值加 +，设为 0 则不限制")
+        defineInRange("max_displayed_reserve_ammo", 99999, 0, Int.MAX_VALUE)
+    }
+
+    @JvmField
     val PERK_HUD = buildClientConfig {
         comment("Show active weapon perks, remaining durations and stacks on HUD")
         comment("显示当前武器的模组状态、剩余时间和层数HUD")
