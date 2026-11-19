@@ -15,6 +15,7 @@ import com.atsuishio.superbwarfare.data.gun.value.ReloadState
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.mixin.ExplosionAccess
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
+import com.atsuishio.superbwarfare.entity.projectile.PerkAwareProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.*
@@ -599,16 +600,17 @@ object LivingEventHandler {
 
         if (attacker == null) return
 
-        val stack = attacker.mainHandItem
-        if (stack.item !is GunItem) return
-
+        val shot = (directEntity as? PerkAwareProjectile)?.shotPerks
+        val data = shot?.data ?: run {
+            val stack = attacker.mainHandItem
+            if (stack.item !is GunItem) return
+            GunData.from(stack)
+        }
         var damage = event.amount
-
-        val data = GunData.from(stack)
         // 本段动作 + 来源：由 `MeleeAttackMessage` 在同 tick 写入（近战伤害的因果链就在一个 tick 内）
         val meleeContext = if (attacker is Player) MeleeAttackContext.get(attacker.uuid) else null
         for (type in Perk.Type.entries) {
-            val instance = data.perk.getInstances(type)
+            val instance = shot?.instances?.get(type) ?: data.perk.getInstances(type)
 
             instance.forEach {
                 if (DamageTypeTool.isGunDamage(source)) {
@@ -648,12 +650,14 @@ object LivingEventHandler {
 
         if (attacker == null) return
 
-        val stack = attacker.mainHandItem
-        if (stack.item !is GunItem) return
-
-        val data = GunData.from(stack)
+        val shot = (directEntity as? PerkAwareProjectile)?.shotPerks
+        val data = shot?.data ?: run {
+            val stack = attacker.mainHandItem
+            if (stack.item !is GunItem) return
+            GunData.from(stack)
+        }
         for (type in Perk.Type.entries) {
-            val instance = data.perk.getInstances(type)
+            val instance = shot?.instances?.get(type) ?: data.perk.getInstances(type)
             instance.forEach { it.perk.onKill(data, it, event.entity, source) }
         }
     }
@@ -828,7 +832,12 @@ object LivingEventHandler {
                             if (isCustom) (impactStrength * impactStrength + impactStrength) / 2.0 * explosion.damage
                             else (impactStrength * impactStrength + impactStrength) / 2.0 * 7.0 * explosionRadius + 1.0
 
-                        entity.hurt(explosion.damageSource, damage.toFloat())
+                        val amount = damage.toFloat()
+                        if (isCustom) {
+                            explosion.applyDamageWithPerks(entity, amount) { entity.hurt(explosion.damageSource, amount) }
+                        } else {
+                            entity.hurt(explosion.damageSource, amount)
+                        }
                     }
                 }
             }

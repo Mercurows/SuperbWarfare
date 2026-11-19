@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.compat.valkyrienskies.ValkyrienSkiesCompat
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.OBBEntity
 import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties
+import com.atsuishio.superbwarfare.entity.projectile.PerkAwareProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -76,6 +77,7 @@ open class CustomExplosion(
     private val damageSource: DamageSource
     private val damageCalculator: ExplosionDamageCalculator
     private var fireTime = 0
+    private var projectilePerkSource: PerkAwareProjectile? = null
     private var beast = false
     private var excludeDirectSource = true
     private var sphericalBlockDestruction = false
@@ -90,6 +92,20 @@ open class CustomExplosion(
     fun setPenetrationRatio(value: Float): CustomExplosion {
         this.penetrationRatio = value.coerceIn(0f, MAX_PENETRATION_RATIO)
         return this
+    }
+
+    internal inline fun applyDamageWithPerks(target: Entity, damage: Float, applyDamage: () -> Boolean): Boolean {
+        val projectile = projectilePerkSource
+        if (projectile == null) {
+            applyDamage()
+            return true
+        }
+        val attacker = damageSource.entity
+        if (damage <= 0f || !projectile.dispatchEntityHit(target, target.boundingBox.center, damage, attacker = attacker)) {
+            return false
+        }
+        if (applyDamage()) projectile.applyAmmoEffects(target, attacker)
+        return true
     }
 
     init {
@@ -390,7 +406,10 @@ open class CustomExplosion(
 
                         val applyShockwaveDamage = Runnable {
                             if (!entity.isRemoved) {
-                                entity.forceHurt(capturedDamageSource, capturedDamageFinal.toFloat())
+                                val amount = capturedDamageFinal.toFloat()
+                                if (!applyDamageWithPerks(entity, amount) { entity.forceHurt(capturedDamageSource, amount) }) {
+                                    return@Runnable
+                                }
 
                                 if (this.beast && entity != this.damageSource.entity) {
                                     beastKill(this.damageSource.entity, entity)
@@ -679,6 +698,7 @@ open class CustomExplosion(
         private var dropBlocks = true
         private var fireTime = 0
         private var damageSource: DamageSource? = null
+        private var projectilePerkSource: PerkAwareProjectile? = null
         private var particlePosition: Vec3? = null
         private var beast = false
         private var includeDirectSource = false
@@ -746,6 +766,11 @@ open class CustomExplosion(
             return this
         }
 
+        internal fun withProjectilePerks(projectile: PerkAwareProjectile): Builder {
+            projectilePerkSource = projectile
+            return this
+        }
+
         fun position(position: Vec3): Builder {
             this.position = position
             return this
@@ -803,6 +828,7 @@ open class CustomExplosion(
                         ?: DEFAULT_PENETRATION_RATIO
                 )
 
+            customExplosion.projectilePerkSource = projectilePerkSource
             customExplosion.explode()
             ForgeEventFactory.onExplosionStart(directSource.level(), customExplosion)
             customExplosion.finalizeExplosion(false)

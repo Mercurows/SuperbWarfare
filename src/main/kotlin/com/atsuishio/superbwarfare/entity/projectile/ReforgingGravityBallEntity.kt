@@ -35,7 +35,7 @@ import java.util.function.Consumer
 import kotlin.math.sqrt
 
 open class ReforgingGravityBallEntity(type: EntityType<out ReforgingGravityBallEntity>, level: Level) :
-    Projectile(type, level), IBulletProperties, BasicGeoProjectileEntity {
+    PerkAwareProjectile(type, level), BasicGeoProjectileEntity {
 
     private val animation = if (level.isClientSide) BasicProjectileAnimationInstance(this, true) else null
     private var damageValue = 12f
@@ -247,8 +247,16 @@ open class ReforgingGravityBallEntity(type: EntityType<out ReforgingGravityBallE
             )
             val hit = entityHit ?: blockHit
             if (hit.type != HitResult.Type.MISS && !ForgeEventFactory.onProjectileImpact(this, hit)) {
-                onHit(hit)
-                return
+                val attacker = shooter()
+                val accepted = when (hit) {
+                    is EntityHitResult -> dispatchEntityHit(hit.entity, hit.location, 0f, attacker = attacker)
+                    is BlockHitResult -> dispatchBlockHit(hit, attacker)
+                    else -> false
+                }
+                if (accepted) {
+                    onHit(hit)
+                    return
+                }
             }
         }
         setPos(nextPosition)
@@ -265,6 +273,7 @@ open class ReforgingGravityBallEntity(type: EntityType<out ReforgingGravityBallE
     override fun onHitEntity(hit: EntityHitResult) {
         if (level().isClientSide || anchored) return
         super.onHitEntity(hit)
+        applyAmmoEffects(hit.entity, shooter())
         anchorAt(hit.location)
     }
 
@@ -328,7 +337,8 @@ open class ReforgingGravityBallEntity(type: EntityType<out ReforgingGravityBallE
     }
 
     private fun damageTargets(targets: List<LivingEntity>, finalPulse: Boolean = false) {
-        val source = ModDamageTypes.causeGravityDamage(level().registryAccess(), this, shooter())
+        val attacker = shooter()
+        val source = ModDamageTypes.causeGravityDamage(level().registryAccess(), this, attacker)
         for (target in targets) {
             if (!target.isAlive) continue
             val damage = if (canConsume(target.boundingBox, position(), coreRadius)) {
@@ -347,14 +357,14 @@ open class ReforgingGravityBallEntity(type: EntityType<out ReforgingGravityBallE
                     coreRadius
                 )
             }
-            if (damage <= 0f) continue
+            if (damage <= 0f || !dispatchEntityHit(target, target.boundingBox.center, damage, attacker = attacker)) continue
 
             val knockback = ICustomKnockback.getInstance(target)
             val previousStrength = knockback.`superbWarfare$getKnockbackStrength`()
             knockback.`superbWarfare$setKnockbackStrength`(0.0)
             try {
                 target.invulnerableTime = 0
-                target.forceHurt(source, damage)
+                if (target.forceHurt(source, damage)) applyAmmoEffects(target, attacker)
             } finally {
                 knockback.`superbWarfare$setKnockbackStrength`(previousStrength)
             }
