@@ -508,6 +508,9 @@ class GunProp<T, R>(
         val PROJECTILE_LIFE = plainProp(DefaultGunData::projectileLife)
 
         @JvmField
+        val PROJECTILE_PENETRATING = plainProp(DefaultGunData::projectilePenetrating)
+
+        @JvmField
         val PROJECTILE_SPLIT_COUNT = plainProp(DefaultGunData::projectileSplitCount)
 
         @JvmField

@@ -307,6 +307,9 @@ object ModTags {
         val AA_MISSILE = modEntityTag("aa_missile")
 
         @JvmField
+        val BEAM = modEntityTag("beam")
+
+        @JvmField
         val SEEK_BLACKLIST = modEntityTag("seek_blacklist")
 
         @JvmField

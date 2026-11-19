@@ -806,7 +806,7 @@ object ClickEventHandler {
         if (level > 0) {
             if (ClientEventHandler.lockedEntity == null) {
                 ClientEventHandler.lockedEntity =
-                    if (data.perk.has(ModPerks.PHASE_PENETRATING_BULLET.get()) || data.perk.has(ModPerks.BEAST_BULLET.get())) {
+                    if (data.get(GunProp.PROJECTILE_PENETRATING)) {
                         SeekTool.seekEntityThroughWall(player, 32 + 8 * (level - 1).toDouble(), 20.0)
                     } else {
                         SeekTool.seekLivingEntity(player, 32 + 8 * (level - 1).toDouble(), 20.0)
