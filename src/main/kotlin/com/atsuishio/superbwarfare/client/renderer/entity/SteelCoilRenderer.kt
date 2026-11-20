@@ -24,6 +24,8 @@ class SteelCoilRenderer(renderManager: EntityRendererProvider.Context) :
         packedLight: Int
     ) {
         val instance = entity.modelInstance ?: return
+        // Render and shadow passes must apply the absolute angle to the bind pose, never accumulate it.
+        instance.resetPose()
         val bone = instance.getBone("move_main") ?: return
 
         poseStack.pushPose()
