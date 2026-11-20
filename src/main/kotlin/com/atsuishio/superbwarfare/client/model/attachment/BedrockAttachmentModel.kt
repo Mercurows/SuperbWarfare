@@ -65,6 +65,7 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
     private val modeScopeBodyGroups = mutableMapOf<Int, List<Int>>()
     private val divisionGroups = mutableMapOf<String, List<Int>>()
     private val bindGlobalTransformCache = mutableMapOf<String, Matrix4f?>()
+    private val bindInstance: TreeModelInstance by lazy { baseModel.createInstance() }
     private val illuminatedBoneIndices: IntArray = baseModel.bones()
         .asSequence()
         .filter { it.name().endsWith(ILLUMINATED_SUFFIX) }
@@ -187,14 +188,9 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
     }
 
     fun getBindGlobalTransform(boneName: String): Matrix4f? {
-        bindGlobalTransformCache[boneName]?.let { return it }
+        if (bindGlobalTransformCache.containsKey(boneName)) return bindGlobalTransformCache[boneName]
         val index = baseModel.getIndex(boneName)
-        if (index < 0) return null
-
-        val currentPose = instance.pose
-        instance.resetPose()
-        val transform = Matrix4f(instance.getGlobalTransform(index))
-        instance.applyPose(currentPose)
+        val transform = if (index >= 0) Matrix4f(bindInstance.getGlobalTransform(index)) else null
         bindGlobalTransformCache[boneName] = transform
         return transform
     }
