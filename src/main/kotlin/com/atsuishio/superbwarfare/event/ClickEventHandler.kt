@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.event
 
+import com.atsuishio.superbwarfare.block.ShelfBlock
 import com.atsuishio.superbwarfare.client.gun.GunChargeHandler
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
@@ -36,6 +37,8 @@ import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
+import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
@@ -124,6 +127,11 @@ object ClickEventHandler {
             return
         }
 
+        if (mc.options.keyAttack.matchesMouse(event.button) && handleShelfAttack(true)) {
+            event.isCanceled = true
+            return
+        }
+
         val stack = player.mainHandItem
         val button = event.button
 
@@ -191,6 +199,30 @@ object ClickEventHandler {
             }
             ClientEventHandler.burstFireAmount = 0
         }
+    }
+
+    @SubscribeEvent
+    fun onShelfAttack(event: InputEvent.InteractionKeyMappingTriggered) {
+        if (!event.isAttack || !handleShelfAttack(false)) return
+        event.isCanceled = true
+        event.setSwingHand(false)
+    }
+
+    private fun handleShelfAttack(take: Boolean): Boolean {
+        if (notInGame) return false
+        val player = localPlayer ?: return false
+        if (player.isSpectator || player.isUsingItem || player.isHandsBusy) return false
+        val hit = mc.hitResult as? BlockHitResult ?: return false
+        if (hit.type != HitResult.Type.BLOCK) return false
+        val state = player.level().getBlockState(hit.blockPos)
+        if (state.block !is ShelfBlock || hit.direction != state.getValue(ShelfBlock.FACING)) return false
+        val gameMode = mc.gameMode ?: return false
+        gameMode.stopDestroyBlock()
+        if (take) {
+            gameMode.startDestroyBlock(hit.blockPos, hit.direction)
+            player.swing(InteractionHand.MAIN_HAND)
+        }
+        return true
     }
 
     /**
@@ -290,6 +322,9 @@ object ClickEventHandler {
 
         if (player.isSpectator) return
         if (player.hasEffect(ModMobEffects.SHOCK)) return
+
+        if (event.action == InputConstants.PRESS && mc.options.keyAttack.matches(key, event.scanCode)
+            && handleShelfAttack(true)) return
 
         val stack = player.mainHandItem
         val vehicle = player.vehicle

@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.core.registries.Registries
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.damagesource.DamageSource
@@ -38,12 +37,9 @@ object BurnMobEffect : MobEffect(MobEffectCategory.HARMFUL, -12708330) {
         )
         entity.invulnerableTime = 0
 
-        val level = attacker?.level() ?: return false
-        val player = attacker as? ServerPlayer ?: return false
-        if (level is ServerLevel) {
-            level.playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1f, 1f)
-
-            player.sendPacket(ClientIndicatorMessage(0, 5))
+        if (attacker is ServerPlayer) {
+            attacker.serverLevel().playSound(null, attacker.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1f, 1f)
+            attacker.sendPacket(ClientIndicatorMessage(0, 5))
         }
         return true
     }

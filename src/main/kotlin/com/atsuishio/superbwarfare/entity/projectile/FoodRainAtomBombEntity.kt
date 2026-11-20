@@ -31,6 +31,10 @@ open class FoodRainAtomBombEntity(type: EntityType<out FoodRainAtomBombEntity>, 
 
     override fun isFastMoving() = false
 
+    override fun getDamage() = 0f
+
+    override fun getExplosionDamage() = 0f
+
     override fun hasExplosionDestroy() = false
 
     override fun onHitBlock(result: BlockHitResult) = causeExplode(result.location)

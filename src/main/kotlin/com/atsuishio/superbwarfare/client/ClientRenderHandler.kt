@@ -269,11 +269,6 @@ object ClientRenderHandler {
     }
 
     @SubscribeEvent
-    fun modifyShelfItemModel(event: ModelEvent.ModifyBakingResult) {
-        ShelfBlockEntityRenderer.modifyItemModel(event)
-    }
-
-    @SubscribeEvent
     fun registerOverlays(event: RegisterGuiLayersEvent) {
         event.registerBelowAll(KillMessageOverlay.ID, KillMessageOverlay)
         event.registerBelow(KillMessageOverlay.ID, ArmorPlateOverlay.ID, ArmorPlateOverlay)
