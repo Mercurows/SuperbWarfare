@@ -247,6 +247,14 @@ class GunData private constructor(
     var cachedBackupAmmoTick: Long = -BACKUP_AMMO_CACHE_TICKS
 
     /**
+     * UUID of the entity [cachedBackupAmmo] was computed for. The cache is only valid for that entity:
+     * vehicle weapons are ticked with the vehicle as the shooter, but hand-loaded ones (e.g. TOW) are
+     * reloaded with the player as the ammo source — sharing one cache returned the vehicle's count to the player.
+     */
+    @JvmField
+    var cachedBackupAmmoOwner: UUID? = null
+
+    /**
      * Gets or creates a child [CompoundTag] with the given [name] inside [tag].
      *
      * @param name the child tag key name.
@@ -848,7 +856,9 @@ class GunData private constructor(
         if (hasInfiniteBackupAmmo(entity)) return Int.MAX_VALUE
 
         val currentTick = entity.level().gameTime
-        if (cachedBackupAmmo >= 0 && (currentTick - cachedBackupAmmoTick) < BACKUP_AMMO_CACHE_TICKS) {
+        if (cachedBackupAmmo >= 0 && cachedBackupAmmoOwner == entity.uuid
+            && (currentTick - cachedBackupAmmoTick) < BACKUP_AMMO_CACHE_TICKS
+        ) {
             return cachedBackupAmmo
         }
 
@@ -862,6 +872,7 @@ class GunData private constructor(
         )
         cachedBackupAmmo = computed
         cachedBackupAmmoTick = currentTick
+        cachedBackupAmmoOwner = entity.uuid
         return computed
     }
 
