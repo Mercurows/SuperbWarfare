@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.compat.acceleratedrendering.AcceleratedRender
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper
 import com.atsuishio.superbwarfare.compat.coldsweat.ColdSweatCompatHandler
 import com.atsuishio.superbwarfare.compat.ponder.SBWPonderPlugin
+import com.atsuishio.superbwarfare.compat.tacz.TACZGunEventHandler
 import com.atsuishio.superbwarfare.config.CLIENT_CONFIG
 import com.atsuishio.superbwarfare.config.COMMON_CONFIG
 import com.atsuishio.superbwarfare.config.SERVER_CONFIG
@@ -94,6 +95,10 @@ class Mod(bus: IEventBus, container: ModContainer) {
 
         if (ColdSweatCompatHandler.hasMod()) {
             NeoForge.EVENT_BUS.addListener(ColdSweatCompatHandler::onPlayerInVehicle)
+        }
+
+        if (TACZGunEventHandler.compatCondition()) {
+            NeoForge.EVENT_BUS.addListener(TACZGunEventHandler::entityHurtByTACZGun)
         }
 
         NeoForge.EVENT_BUS.register(this)

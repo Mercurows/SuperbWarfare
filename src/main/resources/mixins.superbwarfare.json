@@ -3,6 +3,7 @@
   "package": "com.atsuishio.superbwarfare.mixins",
   "compatibilityLevel": "JAVA_21",
   "refmap": "mixins.superbwarfare.refmap.json",
+  "plugin": "com.atsuishio.superbwarfare.mixins.plugin.MixinPlugin",
   "mixins": [
     "BeastMixin",
     "BlockStateMixin",
@@ -19,7 +20,8 @@
     "PlayerMixin",
     "ProjectileUtilMixin",
     "SteelPipeFallMixin",
-    "VillagerMixin"
+    "VillagerMixin",
+    "tacz.EntityUtilMixin"
   ],
   "client": [
     "BlockLightEngineMixin",

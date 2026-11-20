@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.screens.DogTagEditorScreen
 import com.atsuishio.superbwarfare.client.tooltip.ClientDogTagImageTooltip
+import com.atsuishio.superbwarfare.compat.tacz.TACZGunEventHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.client.KillMessageConfig
 import com.atsuishio.superbwarfare.config.client.KillMessageConfig.KillMessagePosition
@@ -299,6 +300,9 @@ object KillMessageOverlay : CommonOverlay("kill_message") {
                 } else if (record.damageType === ModDamageTypes.LASER || record.damageType === ModDamageTypes.LASER_HEADSHOT) {
                     icon = LASER
                 }
+                if (TACZGunEventHandler.hasMod() && !TACZGunEventHandler.compatCondition()) {
+                    icon = GENERIC
+                }
             } else {
                 // 如果是其他伤害，则渲染对应图标
                 if (record.damageType === DamageTypes.EXPLOSION || record.damageType === DamageTypes.PLAYER_EXPLOSION
@@ -381,12 +385,16 @@ object KillMessageOverlay : CommonOverlay("kill_message") {
             } else {
                 if (item is GunItem) {
                     return item.getGunIcon(record.stack)
+                } else if (TACZGunEventHandler.compatCondition()) {
+                    return TACZGunEventHandler.getTaczCompatIcon(record.stack)
                 }
             }
         } else {
             // 如果是枪械击杀，则渲染枪械图标
             if (item is GunItem) {
                 return item.getGunIcon(record.stack)
+            } else if (TACZGunEventHandler.compatCondition()) {
+                return TACZGunEventHandler.getTaczCompatIcon(record.stack)
             }
         }
         return null

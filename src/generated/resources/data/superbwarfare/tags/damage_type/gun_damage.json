@@ -17,6 +17,22 @@
     "superbwarfare:super_star_slash",
     "superbwarfare:phosphorus_fire",
     "superbwarfare:custom_explosion",
-    "superbwarfare:radiation"
+    "superbwarfare:radiation",
+    {
+      "id": "tacz:bullet",
+      "required": false
+    },
+    {
+      "id": "tacz:bullet_void",
+      "required": false
+    },
+    {
+      "id": "tacz:bullet_ignore_armor",
+      "required": false
+    },
+    {
+      "id": "tacz:bullet_void_ignore_armor",
+      "required": false
+    }
   ]
 }

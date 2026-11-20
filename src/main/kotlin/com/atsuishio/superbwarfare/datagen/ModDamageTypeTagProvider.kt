@@ -76,6 +76,10 @@ class ModDamageTypeTagProvider(
             ModDamageTypes.CUSTOM_EXPLOSION,
             ModDamageTypes.RADIATION
         )
+            .addOptional(ResourceLocation.fromNamespaceAndPath("tacz", "bullet"))
+            .addOptional(ResourceLocation.fromNamespaceAndPath("tacz", "bullet_void"))
+            .addOptional(ResourceLocation.fromNamespaceAndPath("tacz", "bullet_ignore_armor"))
+            .addOptional(ResourceLocation.fromNamespaceAndPath("tacz", "bullet_void_ignore_armor"))
         this.tag(ModTags.DamageTypes.SBW_GUN_FIRE_DAMAGE).add(
             ModDamageTypes.GUN_FIRE,
             ModDamageTypes.GUN_FIRE_HEADSHOT,
