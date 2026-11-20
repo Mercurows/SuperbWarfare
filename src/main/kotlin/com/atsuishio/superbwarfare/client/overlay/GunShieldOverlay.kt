@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ShieldRuntime
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.BufferUploader
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.Tesselator
 import com.mojang.blaze3d.vertex.VertexFormat
@@ -120,5 +121,8 @@ object GunShieldOverlay : CommonOverlay("gun_shield") {
             buffer.addVertex(matrix, inner * x, OUTER_RADIUS + inner * y, 0f)
                 .setColor(red, green, blue, alpha)
         }
+        // 1.21 的 Tesselator.begin 只返回未上传的 BufferBuilder；必须 build 后交给
+        // BufferUploader 才会真正画出来（1.20 的 tesselator.end() 在 1.21 已移除）。
+        BufferUploader.drawWithShader(buffer.buildOrThrow())
     }
 }

@@ -46,6 +46,12 @@ object BedrockBoneCoordinateTool {
     private const val CLIP_EPSILON = 1.0e-5f
 
     /**
+     * 1.21 专属写法
+     */
+    private fun firstPersonModelMatrix(poseStack: PoseStack): Matrix4f =
+        Matrix4f(RenderSystem.getModelViewMatrix()).mul(poseStack.last().pose())
+
+    /**
      * Transforms a point in SBM model space into first-person view space.
      * View space uses camera position as the origin, +X right, +Y up and +Z back.
      */
@@ -54,7 +60,7 @@ object BedrockBoneCoordinateTool {
         poseStack: PoseStack,
         modelPoint: Vector3f
     ): Vec3 {
-        return transformPosition(poseStack.last().pose(), modelPoint)
+        return transformPosition(firstPersonModelMatrix(poseStack), modelPoint)
     }
 
     /**
@@ -67,7 +73,7 @@ object BedrockBoneCoordinateTool {
         boneTransform: Matrix4f,
         boneLocalPoint: Vector3f
     ): Vec3 {
-        val modelMatrix = Matrix4f(poseStack.last().pose()).mul(boneTransform)
+        val modelMatrix = Matrix4f(firstPersonModelMatrix(poseStack)).mul(boneTransform)
         return transformPosition(modelMatrix, boneLocalPoint)
     }
 

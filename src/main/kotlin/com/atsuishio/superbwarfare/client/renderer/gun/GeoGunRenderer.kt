@@ -153,9 +153,12 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     override fun createAnimationInstance(
         stack: ItemStack,
-        entity: Entity,
+        entity: Entity?,
         hand: InteractionHand
     ): IFPAnimationInstance {
+        // SBM 1.21 的 FirstPersonRenderHandler.createInstance 传的是
+        // Minecraft.getCameraEntity()，在切维度/重生/世界未就绪的 client tick 里可能为 null；
+        // GeoGunAnimationInstance 本身不依赖这个 entity，直接透传即可，不能声明成非空。
         return GeoGunAnimationInstance(stack, entity, hand)
     }
 
