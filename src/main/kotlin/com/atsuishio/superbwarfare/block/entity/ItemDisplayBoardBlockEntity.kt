@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.init.ModBlockEntities
 import net.minecraft.core.BlockPos
 import net.minecraft.core.HolderLookup
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.Connection
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.Block
@@ -82,5 +83,13 @@ open class ItemDisplayBoardBlockEntity(pos: BlockPos, state: BlockState) :
 
     override fun getUpdatePacket(): ClientboundBlockEntityDataPacket {
         return ClientboundBlockEntityDataPacket.create(this)
+    }
+
+    override fun onDataPacket(
+        connection: Connection,
+        packet: ClientboundBlockEntityDataPacket,
+        registries: HolderLookup.Provider
+    ) {
+        this.handleUpdateTag(packet.tag, registries)
     }
 }
