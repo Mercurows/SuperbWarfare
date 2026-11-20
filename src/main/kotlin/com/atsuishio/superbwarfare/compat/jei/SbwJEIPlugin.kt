@@ -91,6 +91,7 @@ class SbwJEIPlugin : IModPlugin {
             ResearchingCategory.TYPE,
             recipeManager.getAllRecipesFor(ModRecipes.RESEARCHING_TYPE.get())
                 .map { it.value }
+                .filterNot { it.result.getResult().isEmpty }
         )
 
         registration.addItemStackInfo(
