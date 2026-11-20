@@ -518,6 +518,11 @@
 					}
 				},
 				{
+					"name": "driver_camera",
+					"parent": "turret",
+					"pivot": [5.76, 57.955556, 2.293333]
+				},
+				{
 					"name": "barrel",
 					"parent": "turret",
 					"pivot": [0, 40.8656, -1.78073],
@@ -565,6 +570,11 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "driver_zoom_camera",
+					"parent": "barrel",
+					"pivot": [-0.604444, 47.093333, -7.644444]
 				},
 				{
 					"name": "maingun",

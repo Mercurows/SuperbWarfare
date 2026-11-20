@@ -46,6 +46,11 @@
         "ZoomPosition": [0, 0.25, 0.25],
         "Direction": "Barrel"
       },
+      "CameraBone": {
+        "Bone": "driver_camera",
+        "Direction": "Barrel",
+        "ZoomBone": "driver_zoom_camera"
+      },
       "Transform": "Turret",
       "Position": [
         0.625, -0.413, 1.063

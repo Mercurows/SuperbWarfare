@@ -27,7 +27,8 @@ object VehicleModelReloadListener : BasicModelReloadListener("vehicle") {
         "^turret$",
         "^barrel$",
         "^passengerWeaponStationYaw$",
-        "^passengerWeaponStationPitch$"
+        "^passengerWeaponStationPitch$",
+        "^.*camera.*",
     )
 
     override fun apply(

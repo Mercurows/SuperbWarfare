@@ -54,6 +54,11 @@
         "ZoomPosition": [0.0, 0.188, 0.760],
         "Direction": "Barrel"
       },
+      "CameraBone": {
+        "Bone": "driver_camera",
+        "Direction": "barrel",
+        "ZoomBone": "driver_zoom_camera"
+      },
       "Transform": "Turret",
       "Position": [1.016, -0.17, 1.164],
       "Weapons": ["Cannon", "MachineGun"],

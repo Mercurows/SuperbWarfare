@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.client.camera.VehicleBoneCamera;
 import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightRenderer;
 import com.atsuishio.superbwarfare.client.overlay.FlashbangOverlay;
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensPostProcessor;
@@ -45,6 +46,7 @@ public abstract class GameRendererMixin {
         GunMuzzleLightRenderer.beginFrame();
         ScopeLensPostProcessor.beginFrame();
         ScopeThermalRenderer.beginFrame();
+        VehicleBoneCamera.clearFrame();
     }
 
     // Iris has completed its composite at this point; its final colour-space conversion is later.
@@ -89,6 +91,7 @@ public abstract class GameRendererMixin {
     public void superbWarfare$renderWorld(PoseStack matrices, float tickDelta, CallbackInfo ci) {
         // Reset pushed stack from previous frame in case hand event didn't fire
         ClientEventHandler.vehiclePoseStack = null;
+        if (VehicleBoneCamera.activeThisFrame) return;
 
         Entity entity = mainCamera.getEntity();
         matrices.mulPose(Axis.ZP.rotationDegrees(ClientEventHandler.cameraRoll));
@@ -159,6 +162,8 @@ public abstract class GameRendererMixin {
             at = @At(value = "INVOKE",
                     target = "Lorg/joml/Matrix4f;rotation(Lorg/joml/Quaternionfc;)Lorg/joml/Matrix4f;"))
     private Matrix4f superbWarfare$applyGunCameraAnimation(Matrix4f viewRotation) {
+        if (VehicleBoneCamera.activeThisFrame) return viewRotation;
+
         Quaternionf rotation = ClientEventHandler.firstPersonCameraRotation();
         if (rotation == null) {
             return viewRotation;

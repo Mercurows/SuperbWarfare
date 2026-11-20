@@ -26,6 +26,16 @@
 					"pivot": [-2.42952, 35.776, 2.04492]
 				},
 				{
+					"name": "driver_camera",
+					"parent": "turret",
+					"pivot": [-4.464, 50.064, -11.52]
+				},
+				{
+					"name": "driver_zoom_camera",
+					"parent": "turret",
+					"pivot": [-2.832, 46.096, -17.216]
+				},
+				{
 					"name": "paota",
 					"parent": "turret",
 					"pivot": [-2.42952, 35.776, 2.04492]

@@ -119,6 +119,11 @@
 					"pivot": [0, 6, 0]
 				},
 				{
+					"name": "driver_camera",
+					"parent": "turret",
+					"pivot": [0, 89.92, 32]
+				},
+				{
 					"name": "body_left_dogTag_21x21",
 					"parent": "turret",
 					"pivot": [58.04575, 40.27981, -3.70425],
@@ -152,6 +157,11 @@
 					"name": "barrel",
 					"parent": "turret",
 					"pivot": [0.009, 42, 6.3]
+				},
+				{
+					"name": "driver_zoom_camera",
+					"parent": "barrel",
+					"pivot": [0, 50, 6.3]
 				},
 				{
 					"name": "xroll",
