@@ -112,6 +112,28 @@ public class ModRenderTypes extends RenderType {
         return SCOPE_RETICLE_MESH.apply(location);
     }
 
+    private record SightReticleKey(ResourceLocation texture, VertexFormat.Mode mode, boolean illuminated) {}
+
+    private static final Function<SightReticleKey, RenderType> SIGHT_RETICLE = Util.memoize(key ->
+            create("sight_reticle_" + key.mode + "_" + key.illuminated,
+                    DefaultVertexFormat.NEW_ENTITY, key.mode, 256, false, true,
+                    CompositeState.builder()
+                    .setShaderState(key.illuminated ? SCOPE_RETICLE_SHADER : RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
+                    .setTextureState(new TextureStateShard(key.texture, false, false))
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setLightmapState(key.illuminated ? NO_LIGHTMAP : LIGHTMAP)
+                    .setOverlayState(key.illuminated ? NO_OVERLAY : OVERLAY)
+                    .setDepthTestState(NO_DEPTH_TEST)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(false)));
+
+    /** Caller disables depth testing; these materials never enable it or write reticle depth. */
+    public static RenderType sightReticle(ResourceLocation texture, boolean mesh, boolean illuminated) {
+        return SIGHT_RETICLE.apply(new SightReticleKey(texture,
+                mesh ? VertexFormat.Mode.TRIANGLES : VertexFormat.Mode.QUADS, illuminated));
+    }
+
     public static final Function<ResourceLocation, RenderType> ILLUMINATED = Util.memoize((location) -> {
         TextureStateShard shard = new RenderStateShard.TextureStateShard(location, false, false);
         RenderType.CompositeState state = RenderType.CompositeState.builder().setTextureState(shard)
