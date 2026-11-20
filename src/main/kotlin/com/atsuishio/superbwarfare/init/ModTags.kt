@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.init
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
+import com.atsuishio.superbwarfare.init.ModTags.DamageTypes.GUN_DAMAGE
 import com.atsuishio.superbwarfare.perk.Perk
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
@@ -55,6 +56,8 @@ object ModTags {
         @JvmField val SHOTGUN = modItemTag("shotgun")
         @JvmField val MACHINE_GUN = modItemTag("machine_gun")
         @JvmField val LAUNCHER = modItemTag("launcher")
+
+        @JvmField val FOOD_RAIN_FOODS = modItemTag("food_rain_foods")
 
         @JvmField val MILITARY_ARMOR = modItemTag("military_armor")
         @JvmField val MILITARY_ARMOR_HEAVY = modItemTag("military_armor_heavy")

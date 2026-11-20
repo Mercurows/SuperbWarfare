@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.overlay
 
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.overlay.ammo.AmmoHudText
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
@@ -25,16 +26,15 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ResourceManager
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener
 import net.minecraft.util.profiling.ProfilerFiller
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent
-import net.minecraftforge.event.TickEvent
-import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.registries.RegistryManager
+import net.neoforged.api.distmarker.Dist
+import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.client.event.ClientTickEvent
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent
 import java.util.*
 import kotlin.math.sin
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 object PerkOverlay : CommonOverlay("perks") {
     private const val LIMIT = 5
     private const val ROW_HEIGHT = 12
@@ -55,8 +55,7 @@ object PerkOverlay : CommonOverlay("perks") {
         val effect: Effect = Effect.BUFF
     ) {
         val icon: ResourceLocation
-            get() = ResourceLocation(
-                "superbwarfare",
+            get() = loc(
                 "textures/overlay/perk/${type.typeName.lowercase(Locale.ROOT)}_perk_${effect.name.lowercase(Locale.ROOT)}.png"
             )
     }
@@ -141,7 +140,7 @@ object PerkOverlay : CommonOverlay("perks") {
     }
 
     private fun collect(data: GunData): List<Entry> = buildList {
-        val registry = RegistryManager.ACTIVE.getRegistry(ModPerks.PERK_KEY)
+        val registry = ModPerks.PERK_REGISTRY
         for (type in Perk.Type.entries) {
             for (instance in data.perk.getInstances(type)) {
                 val perk = instance.perk
@@ -353,7 +352,7 @@ object PerkOverlay : CommonOverlay("perks") {
                     it.setInlineStyleProperty("opacity", if (available) "1" else "0")
                 }
             }
-            val perkId = ResourceLocation(entry.id)
+            val perkId = ResourceLocation.parse(entry.id)
             val name = I18n.get("item.${perkId.namespace}.${perkId.path}")
             label("name-$index", if (entry.detail.isEmpty()) name else "$name  ${entry.detail}")
         }
@@ -383,8 +382,8 @@ object PerkOverlay : CommonOverlay("perks") {
     }
 
     @SubscribeEvent
-    fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || document == null) return
+    fun onClientTick(event: ClientTickEvent.Post) {
+        if (document == null) return
         if (!shouldRender() || Minecraft.getInstance().level == null || currentData() == null) close()
     }
 }

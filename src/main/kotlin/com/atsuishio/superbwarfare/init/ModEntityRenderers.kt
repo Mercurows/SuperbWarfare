@@ -122,6 +122,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.J_16.get(), ::J16Renderer)
             registerEntityRenderer(ModEntities.FIM_92_MISSILE.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.FOOD_RAIN_ATOM_BOMB.get(), ::BasicProjectileRenderer)
+            registerEntityRenderer(ModEntities.FOOD_RAIN_ITEM.get(), ::FoodRainItemRenderer)
             registerEntityRenderer(ModEntities.SMELLY_BOY.get()) { BasicProjectileRenderer(it, modelScale = 2f) }
         }
     }

@@ -54,7 +54,7 @@ import kotlin.math.min
 object ClientRenderHandler {
 
     @SubscribeEvent
-    fun registerPerkHudRules(event: net.minecraftforge.client.event.RegisterClientReloadListenersEvent) {
+    fun registerPerkHudRules(event: RegisterClientReloadListenersEvent) {
         PerkOverlay.registerReloadListener(event)
     }
 
