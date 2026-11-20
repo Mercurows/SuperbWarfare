@@ -31,6 +31,9 @@ object GunMuzzleLightHandler {
     private const val MAX_SOURCES = 64
     private const val WALL_CLEARANCE = 0.12
 
+    /** 枪口到持枪者眼睛的合理上限；超过说明取到了别的坐标空间里的枪口位置。 */
+    private const val MAX_MUZZLE_DISTANCE = 32.0
+
     private data class SourceKey(val holder: Int, val barrel: Any)
     private data class MuzzleSample(val position: Vec3, val direction: Vec3, val time: Double)
 
@@ -140,7 +143,16 @@ object GunMuzzleLightHandler {
         val eye = if (firstPerson) camera.position else light.holder.getEyePosition(mc.timer.getGameTimeDeltaPartialTick(true))
         val viewDirection = if (firstPerson) Vec3(camera.lookVector).normalize()
             else light.holder.getViewVector(mc.timer.getGameTimeDeltaPartialTick(true)).normalize()
-        val muzzleDepth = position.subtract(eye).dot(viewDirection)
+
+        val muzzleOffset = position.subtract(eye)
+        if (!muzzleOffset.x.isFinite() || !muzzleOffset.y.isFinite() || !muzzleOffset.z.isFinite() ||
+            muzzleOffset.lengthSqr() > MAX_MUZZLE_DISTANCE * MAX_MUZZLE_DISTANCE
+        ) {
+            light.blocked = true
+            return
+        }
+
+        val muzzleDepth = muzzleOffset.dot(viewDirection)
         val viewHit = OverlayTraceHandler.traceViewBlocks(light.holder, eye, viewDirection, muzzleDepth)
         val limited = clampToViewDistance(eye, position, viewDirection, viewHit)
         // 视线与偏在一侧的模型枪口不在同一条射线上，缩回之后仍需检查侧墙。

@@ -16,14 +16,50 @@ import java.util.function.Predicate
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sqrt
 
 object TraceTool {
+    /** 单次视线检测允许的最大距离；外部传入的超长距离会被截断，避免几百万格的体素遍历。 */
+    private const val MAX_TRACE_DISTANCE = 1024.0
+
+    /** 实体碰撞箱单边上限；超过这个尺寸通常不是正常实体（物理结构/投影代理等），不参与视线检测。 */
+    private const val MAX_SANE_ENTITY_SIZE = 512.0
+
+    private fun isFinite(vec: Vec3): Boolean =
+        vec.x.isFinite() && vec.y.isFinite() && vec.z.isFinite()
+
+    /**
+     * 归一化视线方向
+     */
+    private fun safeDirection(direction: Vec3): Vec3? {
+        if (!isFinite(direction)) return null
+        val lengthSqr = direction.lengthSqr()
+        if (!lengthSqr.isFinite() || lengthSqr < 1.0E-8) return null
+        return direction.scale(1.0 / sqrt(lengthSqr))
+    }
+
+    private fun isSaneTraceTarget(entity: Entity, origin: Vec3, maxDistance: Double): Boolean {
+        val pos = entity.position()
+        if (!isFinite(pos)) return false
+
+        val box = entity.boundingBox
+        if (!box.minX.isFinite() || !box.minY.isFinite() || !box.minZ.isFinite() ||
+            !box.maxX.isFinite() || !box.maxY.isFinite() || !box.maxZ.isFinite()
+        ) return false
+
+        val maxSize = max(max(box.xsize, box.ysize), box.zsize)
+        if (maxSize > MAX_SANE_ENTITY_SIZE) return false
+        val limit = maxDistance + maxSize
+        return pos.distanceToSqr(origin) <= limit * limit
+    }
+
     @JvmStatic
     fun findLookingEntity(entity: Entity?, entityReach: Double): Entity? {
         if (entity == null) return null
-        var distance = entityReach * entityReach
+        val reach = entityReach.coerceIn(0.0, MAX_TRACE_DISTANCE)
+        var distance = reach * reach
         val eyePos = entity.getEyePosition(1.0f)
-        var hitResult = entity.pick(entityReach, 1.0f, false)
+        var hitResult = entity.pick(reach, 1.0f, false)
         if (hitResult.type != HitResult.Type.MISS) {
             distance = hitResult.getLocation().distanceToSqr(eyePos)
             val blockReach = 5.0
@@ -37,17 +73,20 @@ object TraceTool {
             }
         }
         val viewVec = entity.getViewVector(1f)
-        val toVec = eyePos.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach)
-        val aabb = entity.boundingBox.expandTowards(viewVec.scale(entityReach)).inflate(1.0)
+        val toVec = eyePos.add(viewVec.x * reach, viewVec.y * reach, viewVec.z * reach)
+        val aabb = entity.boundingBox.expandTowards(viewVec.scale(reach)).inflate(1.0)
         val entityHitResult = ProjectileUtil.getEntityHitResult(
             entity, eyePos, toVec, aabb,
-            { !it.isSpectator && entity.vehicle !== it && it.isAlive && SeekTool.NOT_IN_SMOKE.test(it) },
+            {
+                !it.isSpectator && entity.vehicle !== it && it.isAlive &&
+                        isSaneTraceTarget(it, eyePos, reach) && SeekTool.NOT_IN_SMOKE.test(it)
+            },
             distance
         )
         if (entityHitResult != null) {
             val targetPos = entityHitResult.getLocation()
             val distanceToTarget = eyePos.distanceToSqr(targetPos)
-            if (distanceToTarget > distance || distanceToTarget > entityReach * entityReach) {
+            if (distanceToTarget > distance || distanceToTarget > reach * reach) {
                 hitResult = BlockHitResult.miss(
                     targetPos,
                     Direction.getNearest(viewVec.x, viewVec.y, viewVec.z),
@@ -65,19 +104,20 @@ object TraceTool {
 
     @JvmStatic
     fun findMeleeEntity(entity: Entity, entityReach: Double): Entity? {
-        val distance = entityReach * entityReach
+        val reach = entityReach.coerceIn(0.0, MAX_TRACE_DISTANCE)
+        val distance = reach * reach
         val eyePos = entity.getEyePosition(1.0f)
-        var hitResult = entity.pick(entityReach, 1.0f, false)
+        var hitResult = entity.pick(reach, 1.0f, false)
 
         val viewVec = entity.getViewVector(1f)
-        val toVec = eyePos.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach)
-        val aabb = entity.boundingBox.expandTowards(viewVec.scale(entityReach)).inflate(1.0)
+        val toVec = eyePos.add(viewVec.x * reach, viewVec.y * reach, viewVec.z * reach)
+        val aabb = entity.boundingBox.expandTowards(viewVec.scale(reach)).inflate(1.0)
         val entityHitResult = ProjectileUtil.getEntityHitResult(
             entity,
             eyePos,
             toVec,
             aabb,
-            { !it.isSpectator && entity.vehicle !== it && it.isAlive },
+            { !it.isSpectator && entity.vehicle !== it && it.isAlive && isSaneTraceTarget(it, eyePos, reach) },
             distance
         )
         if (entityHitResult != null) {
@@ -123,16 +163,20 @@ object TraceTool {
 
     @JvmStatic
     fun playerFindLookingPos(player: Entity, target: Entity, entityReach: Double): Vec3? {
-        val distance = entityReach * entityReach
-        var hitResult = player.pick(entityReach, 1.0f, false)
+        val reach = entityReach.coerceIn(0.0, MAX_TRACE_DISTANCE)
+        val eyePos = player.eyePosition
+        if (!isSaneTraceTarget(target, eyePos, reach)) return null
 
-        val viewVec = player.getViewVector(1f)
-        val toVec = player.eyePosition.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach)
-        val aabb = target.boundingBox.expandTowards(viewVec.scale(entityReach)).inflate(1.0)
+        val distance = reach * reach
+        var hitResult = player.pick(reach, 1.0f, false)
+
+        val viewVec = safeDirection(player.getViewVector(1f)) ?: return null
+        val toVec = eyePos.add(viewVec.x * reach, viewVec.y * reach, viewVec.z * reach)
+        val aabb = target.boundingBox.expandTowards(viewVec.scale(reach)).inflate(1.0)
         val entityHitResult = ProjectileUtil.getEntityHitResult(
             player.level(),
             player,
-            player.eyePosition,
+            eyePos,
             toVec,
             aabb,
             { true },
@@ -149,8 +193,10 @@ object TraceTool {
 
     @JvmStatic
     fun cameraFindLookingEntity(player: Player, pos: Vec3, viewVec: Vec3, entityReach: Double): Entity? {
-        var distance = entityReach * entityReach
-        var hitResult = pickNew(pos, entityReach, viewVec, player)
+        val reach = entityReach.coerceIn(0.0, MAX_TRACE_DISTANCE)
+        val view = safeDirection(viewVec) ?: return null
+        var distance = reach * reach
+        var hitResult = pickNew(pos, reach, view, player)
 
         if (hitResult.type != HitResult.Type.MISS) {
             distance = hitResult.getLocation().distanceToSqr(pos)
@@ -164,21 +210,22 @@ object TraceTool {
             }
         }
 
-        val toVec = pos.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach)
-        val aabb = player.boundingBox.expandTowards(viewVec.scale(entityReach)).inflate(1.0)
+        val toVec = pos.add(view.x * reach, view.y * reach, view.z * reach)
+        val aabb = player.boundingBox.expandTowards(view.scale(reach)).inflate(1.0)
         val entityHitResult = ProjectileUtil.getEntityHitResult(
             player, pos, toVec, aabb,
             {
                 !it.isSpectator && it.isAlive
                         && (it !is Projectile) && SeekTool.BASIC_FILTER.test(it)
-                        && !it.type.`is`(ModTags.EntityTypes.DECOY) && SeekTool.NOT_IN_SMOKE.test(it)
+                        && !it.type.`is`(ModTags.EntityTypes.DECOY) && isSaneTraceTarget(it, pos, reach)
+                        && SeekTool.NOT_IN_SMOKE.test(it)
                         && it !== player && it !== player.vehicle
             }, distance
         )
         if (entityHitResult != null) {
             val targetPos = entityHitResult.getLocation()
             val distanceToTarget = pos.distanceToSqr(targetPos)
-            if (distanceToTarget > distance || distanceToTarget > entityReach * entityReach) {
+            if (distanceToTarget > distance || distanceToTarget > reach * reach) {
                 hitResult = BlockHitResult.miss(
                     targetPos,
                     Direction.getNearest(viewVec.x, viewVec.y, viewVec.z),
@@ -196,8 +243,10 @@ object TraceTool {
 
     @JvmStatic
     fun findLookDecoy(player: Player, pos: Vec3, viewVec: Vec3, entityReach: Double): Entity? {
-        var distance = entityReach * entityReach
-        var hitResult = pickNew(pos, entityReach, viewVec, player)
+        val reach = entityReach.coerceIn(0.0, MAX_TRACE_DISTANCE)
+        val view = safeDirection(viewVec) ?: return null
+        var distance = reach * reach
+        var hitResult = pickNew(pos, reach, view, player)
 
         if (hitResult.type != HitResult.Type.MISS) {
             distance = hitResult.getLocation().distanceToSqr(pos)
@@ -211,23 +260,23 @@ object TraceTool {
             }
         }
 
-        val toVec = pos.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach)
-        val aabb = player.boundingBox.expandTowards(viewVec.scale(entityReach)).inflate(2.0)
+        val toVec = pos.add(view.x * reach, view.y * reach, view.z * reach)
+        val aabb = player.boundingBox.expandTowards(view.scale(reach)).inflate(2.0)
         val entityHitResult = ProjectileUtil.getEntityHitResult(
             player,
             pos,
             toVec,
             aabb,
-            { it.type.`is`(ModTags.EntityTypes.DECOY) },
+            { it.type.`is`(ModTags.EntityTypes.DECOY) && isSaneTraceTarget(it, pos, reach) },
             distance
         )
         if (entityHitResult != null) {
             val targetPos = entityHitResult.getLocation()
             val distanceToTarget = pos.distanceToSqr(targetPos)
-            if (distanceToTarget > distance || distanceToTarget > entityReach * entityReach) {
+            if (distanceToTarget > distance || distanceToTarget > reach * reach) {
                 hitResult = BlockHitResult.miss(
                     targetPos,
-                    Direction.getNearest(viewVec.x, viewVec.y, viewVec.z),
+                    Direction.getNearest(view.x, view.y, view.z),
                     BlockPos.containing(targetPos)
                 )
             } else if (distanceToTarget < distance) {
@@ -242,14 +291,19 @@ object TraceTool {
 
     @JvmStatic
     fun pickNew(pos: Vec3, pHitDistance: Double, vehicle: VehicleEntity): HitResult {
-        val vec31 = vehicle.getBarrelVector(1f)
-        val vec32 = pos.add(vec31.x * pHitDistance, vec31.y * pHitDistance, vec31.z * pHitDistance)
+        val direction = safeDirection(vehicle.getBarrelVector(1f))
+            ?: return BlockHitResult.miss(pos, Direction.DOWN, BlockPos.containing(pos))
+        val distance = pHitDistance.coerceIn(0.0, MAX_TRACE_DISTANCE)
+        val vec32 = pos.add(direction.scale(distance))
         return vehicle.level().clip(ClipContext(pos, vec32, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, vehicle))
     }
 
     @JvmStatic
     fun pickNew(pos: Vec3, pHitDistance: Double, viewVec: Vec3, entity: Entity): HitResult {
-        val vec32 = pos.add(viewVec.x * pHitDistance, viewVec.y * pHitDistance, viewVec.z * pHitDistance)
+        val direction = safeDirection(viewVec)
+            ?: return BlockHitResult.miss(pos, Direction.DOWN, BlockPos.containing(pos))
+        val distance = pHitDistance.coerceIn(0.0, MAX_TRACE_DISTANCE)
+        val vec32 = pos.add(direction.scale(distance))
         return entity.level().clip(ClipContext(pos, vec32, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, entity))
     }
 
