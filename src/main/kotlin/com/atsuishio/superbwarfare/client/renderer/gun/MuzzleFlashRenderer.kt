@@ -14,7 +14,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource
 import com.atsuishio.superbwarfare.resource.gun.GunResource
-import com.atsuishio.superbwarfare.tools.BedrockBoneCoordinateTool
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.LightTexture
@@ -150,13 +149,22 @@ object MuzzleFlashRenderer {
         val duration = (fx?.flash?.duration ?: 0.045f).coerceIn(0.015f, 0.09f)
         val silenced = GunData.from(barrel).isBarrelSilenced()
         val matrix = Matrix4f(poseStack.last().pose()).mul(anchor)
-        if (!firstPerson) {
+        // 第三人称的 PoseStack 已经是“相机相对世界坐标”：位置直接加上相机坐标即可。
+        // 这里以前用了 viewPointToWorld/viewPointToWorldOffset，它们会再套一次相机逆旋转，
+        // 导致枪口光点随视角绕圈偏移（第一人称的手部 PoseStack 才是 view 空间，不能混用）。
+        val billboard = if (firstPerson) {
+            null
+        } else {
             val camera = Minecraft.getInstance().gameRenderer.mainCamera
             val point = matrix.getTranslation(Vector3f())
             val axis = matrix.transformDirection(0f, 0f, -1f, Vector3f())
-            GunMuzzleLightHandler.sample(holder, barrel,
-                BedrockBoneCoordinateTool.viewPointToWorld(Vec3(point.x.toDouble(), point.y.toDouble(), point.z.toDouble()), camera),
-                BedrockBoneCoordinateTool.viewPointToWorldOffset(Vec3(axis.x.toDouble(), axis.y.toDouble(), axis.z.toDouble()), camera))
+            GunMuzzleLightHandler.sample(
+                holder, barrel,
+                camera.position.add(point.x.toDouble(), point.y.toDouble(), point.z.toDouble()),
+                Vec3(axis.x.toDouble(), axis.y.toDouble(), axis.z.toDouble())
+            )
+            // 枪口焰的正面片需要面向相机；第三人称的世界矩阵没有相机旋转，得单独补上。
+            Matrix4f().rotation(camera.rotation())
         }
         for (shot in queue) {
             if (shot.firstPerson != firstPerson || shot.host != hostId || shot.barrel != barrelId) continue
@@ -174,7 +182,7 @@ object MuzzleFlashRenderer {
             val vanillaAcceleration = AcceleratedRenderingCompat.shouldAccelerate
             if (vanillaAcceleration) AcceleratedRenderingCompat.beginVanillaAcceleration()
             try {
-                drawFlash(buffers, matrix, resource, flashScale, shot, phase)
+                drawFlash(buffers, matrix, billboard, resource, flashScale, shot, phase)
             } finally {
                 if (vanillaAcceleration) AcceleratedRenderingCompat.endVanillaAcceleration()
             }
@@ -182,7 +190,7 @@ object MuzzleFlashRenderer {
     }
 
     private fun drawFlash(
-        buffers: MultiBufferSource, matrix: Matrix4f, resource: DefaultGunResource,
+        buffers: MultiBufferSource, matrix: Matrix4f, billboard: Matrix4f?, resource: DefaultGunResource,
         flashScale: Float, shot: Shot, phase: Float,
     ) {
         val fx = resource.muzzleFx
@@ -196,7 +204,11 @@ object MuzzleFlashRenderer {
         val du = if (legacy) 1f else 0.125f
         val center = matrix.getTranslation(Vector3f())
         val radius = size * matrix.getScale(Vector3f()).x * (if (legacy) 0.5f else 0.26f)
-        val core = Matrix4f().translation(center).rotateZ(shot.angle).scale(radius)
+        val core = Matrix4f().translation(center)
+        // 第一人称的矩阵已经带相机旋转，正面片天然面向相机；
+        // 第三人称不加这一下的话，正面片永远朝向世界 +Z，换角度就看不见了。
+        if (billboard != null) core.mul(billboard)
+        core.rotateZ(shot.angle).scale(radius)
         fun quadPoint(m: Matrix4f, x: Float, y: Float, z: Float, tx: Float, ty: Float, opacity: Int,
                       nx: Float = 0f, ny: Float = 0f, nz: Float = 1f) {
             consumer.addVertex(m, x, y, z).setColor(255, 255, 255, opacity).setUv(tx, ty)

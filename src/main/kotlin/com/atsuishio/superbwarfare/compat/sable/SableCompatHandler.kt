@@ -9,6 +9,7 @@ import dev.ryanhcode.sable.sublevel.SubLevel
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.Position
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.ClipContext
@@ -29,9 +30,61 @@ import java.util.function.Predicate
 
 object SableCompatHandler {
 
+    /** 枪口到持枪者眼睛的合理上限。 */
+    private const val MAX_MUZZLE_DISTANCE = 32.0
+
+    /**
+     * 枪口光照在 sublevel 上的坐标适配结果。
+     *
+     * 只包含 [Vec3]，调用方即使不加载 Sable 也能安全地持有这个类型；
+     * Sable 的 Pose 等类型只存在于本对象内部。
+     */
+    class MuzzleLightFrame(val eye: Vec3, val muzzle: Vec3, val direction: Vec3)
+
     @JvmStatic
     fun hasMod(): Boolean {
         return ModList.get().isLoaded(CompatHolder.SABLE)
+    }
+
+    /**
+     * 把枪口、眼睛和视线换算到 sublevel 的 plot 空间，供结构内部的方块碰撞检测使用。
+     *
+     * 实体/相机位于逻辑世界空间，而 sublevel 的方块位于 plot 空间。枪口采样点可能来自
+     * 任一空间（第三人称模型矩阵、服务端同步等来源不同），这里按“离眼睛更近”判定实际空间；
+     * 两个候选都远离眼睛时返回 null，让调用方回退到安全的默认路径。
+     */
+    @JvmStatic
+    fun muzzleLightFrame(holder: Entity, eye: Vec3, muzzle: Vec3, direction: Vec3): MuzzleLightFrame? {
+        val subLevel = SableCompanion.INSTANCE.getTrackingOrVehicleSubLevel(holder) ?: return null
+        val pose = subLevel.logicalPose() ?: return null
+
+        val eyePlot = pose.transformPositionInverse(eye)
+        val muzzleAsLogical = pose.transformPositionInverse(muzzle)
+        val plotMuzzle = if (muzzleAsLogical.distanceToSqr(eyePlot) <= muzzle.distanceToSqr(eyePlot)) {
+            muzzleAsLogical
+        } else {
+            muzzle
+        }
+        if (plotMuzzle.distanceToSqr(eyePlot) > MAX_MUZZLE_DISTANCE * MAX_MUZZLE_DISTANCE) return null
+
+        val plotDirection = pose.transformNormalInverse(direction)
+        if (plotDirection.lengthSqr() < 1.0E-8) return null
+        return MuzzleLightFrame(eyePlot, plotMuzzle, plotDirection.normalize())
+    }
+
+    /** 把 plot 空间中的点转回渲染用的逻辑世界空间。 */
+    @JvmStatic
+    fun muzzleLightPointToWorld(holder: Entity, point: Vec3): Vec3? {
+        val pose = SableCompanion.INSTANCE.getTrackingOrVehicleSubLevel(holder)?.logicalPose() ?: return null
+        return pose.transformPosition(point)
+    }
+
+    /** 把 plot 空间中的方向转回渲染用的逻辑世界空间。 */
+    @JvmStatic
+    fun muzzleLightDirectionToWorld(holder: Entity, direction: Vec3): Vec3? {
+        val pose = SableCompanion.INSTANCE.getTrackingOrVehicleSubLevel(holder)?.logicalPose() ?: return null
+        val worldDirection = pose.transformNormal(direction)
+        return if (worldDirection.lengthSqr() < 1.0E-8) null else worldDirection.normalize()
     }
 
     @JvmStatic

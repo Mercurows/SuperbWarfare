@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.lighting
 
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer
+import com.atsuishio.superbwarfare.compat.sable.SableCompatHandler
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
@@ -144,7 +145,20 @@ object GunMuzzleLightHandler {
         val viewDirection = if (firstPerson) Vec3(camera.lookVector).normalize()
             else light.holder.getViewVector(mc.timer.getGameTimeDeltaPartialTick(true)).normalize()
 
-        val muzzleOffset = position.subtract(eye)
+        // Sable 适配
+        val sableFrame = if (SableCompatHandler.hasMod()) {
+            SableCompatHandler.muzzleLightFrame(light.holder, eye, position, viewDirection)
+        } else {
+            null
+        }
+        val clipEye = sableFrame?.eye ?: eye
+        val clipMuzzle = sableFrame?.muzzle ?: position
+        val clipDirection = sableFrame?.direction ?: viewDirection
+        if (sableFrame != null) {
+            light.direction = SableCompatHandler.muzzleLightDirectionToWorld(light.holder, clipDirection) ?: clipDirection
+        }
+
+        val muzzleOffset = clipMuzzle.subtract(clipEye)
         if (!muzzleOffset.x.isFinite() || !muzzleOffset.y.isFinite() || !muzzleOffset.z.isFinite() ||
             muzzleOffset.lengthSqr() > MAX_MUZZLE_DISTANCE * MAX_MUZZLE_DISTANCE
         ) {
@@ -152,20 +166,26 @@ object GunMuzzleLightHandler {
             return
         }
 
-        val muzzleDepth = muzzleOffset.dot(viewDirection)
-        val viewHit = OverlayTraceHandler.traceViewBlocks(light.holder, eye, viewDirection, muzzleDepth)
-        val limited = clampToViewDistance(eye, position, viewDirection, viewHit)
+        val muzzleDepth = muzzleOffset.dot(clipDirection)
+        val viewHit = OverlayTraceHandler.traceViewBlocks(light.holder, clipEye, clipDirection, muzzleDepth)
+        val limited = clampToViewDistance(clipEye, clipMuzzle, clipDirection, viewHit)
         // 视线与偏在一侧的模型枪口不在同一条射线上，缩回之后仍需检查侧墙。
-        val hit = level.clip(ClipContext(eye, limited, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, light.holder))
-        val candidate = if (hit.type == HitResult.Type.MISS) limited else offsetFromWall(eye, hit)
+        val hit = level.clip(ClipContext(clipEye, limited, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, light.holder))
+        val candidate = if (hit.type == HitResult.Type.MISS) limited else offsetFromWall(clipEye, hit)
         // 射线只验证中心；再验证光源周围的体积，覆盖斜墙、墙角与半砖边缘。
-        val point = retreatToClearPosition(eye, candidate) { center ->
+        val point = retreatToClearPosition(clipEye, candidate) { center ->
             val box = AABB(center.x - WALL_CLEARANCE, center.y - WALL_CLEARANCE, center.z - WALL_CLEARANCE,
                 center.x + WALL_CLEARANCE, center.y + WALL_CLEARANCE, center.z + WALL_CLEARANCE)
             !level.getBlockCollisions(light.holder, box).iterator().hasNext()
         }
         light.blocked = point == null
-        if (point != null) light.position = point
+        if (point != null) {
+            light.position = if (sableFrame != null) {
+                SableCompatHandler.muzzleLightPointToWorld(light.holder, point) ?: point
+            } else {
+                point
+            }
+        }
     }
 
     /** 按视线深度取最小值；侧向和高度偏移同比缩回，保持原枪口方向上的位置关系。 */
