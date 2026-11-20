@@ -147,4 +147,9 @@ object ModBlockEntities {
             ModBlocks.BIOGAS_GENERATOR.get()
         ).build(null)
     }
+
+    @JvmField
+    val SHELF = registerBlockEntity("shelf") {
+        BlockEntityType.Builder.of(::ShelfBlockEntity, ModBlocks.SHELF.get()).build(null)
+    }
 }

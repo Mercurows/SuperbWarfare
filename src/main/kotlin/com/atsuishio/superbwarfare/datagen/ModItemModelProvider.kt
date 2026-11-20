@@ -489,7 +489,8 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         evenSimplerBlockItem(ModBlocks.HIGH_ENERGY_EXPLOSIVES_BLOCK)
         evenSimplerBlockItem(ModBlocks.BOOBY_TRAP)
         evenSimplerBlockItem(ModBlocks.REFORGING_TABLE)
-        getBuilder("resonance_base").parent(ModelFile.UncheckedModelFile(modLoc("displaysettings/resonance_base")))
+        evenSimplerBlockItem(ModBlocks.SHELF)
+        getBuilder("resonance_base").parent(UncheckedModelFile(modLoc("displaysettings/resonance_base")))
         evenSimplerBlockItem(ModBlocks.CHARGING_STATION)
         evenSimplerBlockItem(ModBlocks.WEAPON_REPAIR_STATION)
         evenSimplerBlockItem(ModBlocks.CREATIVE_CHARGING_STATION)
@@ -574,7 +575,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
 
     fun gunItem(item: DeferredHolder<Item, out Item>) {
         getBuilder(item.id.path)
-            .parent(ModelFile.UncheckedModelFile("builtin/entity"))
+            .parent(UncheckedModelFile("builtin/entity"))
             .guiLight(BlockModel.GuiLight.FRONT)
     }
 }

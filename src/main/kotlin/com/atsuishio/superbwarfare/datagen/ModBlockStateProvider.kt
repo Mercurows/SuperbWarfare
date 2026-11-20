@@ -32,6 +32,8 @@ class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper
         horizontalBlock(ModBlocks.WEAPON_REPAIR_STATION.get(), UncheckedModelFile(modLoc("block/weapon_repair_station")))
         simpleBlock(ModBlocks.RESONANCE_BASE.get(), models().getBuilder("resonance_base")
             .texture("particle", mcLoc("block/gray_glazed_terracotta")))
+        simpleBlock(ModBlocks.SHELF.get(), models().cubeAll("shelf", modLoc("bedrock/block/shelf_top"))
+            .texture("particle", mcLoc("block/white_concrete")))
         horizontalBlock(ModBlocks.CONTAINER.get(), UncheckedModelFile(modLoc("block/container")))
         horizontalBlock(ModBlocks.SMALL_CONTAINER.get(), UncheckedModelFile(modLoc("block/small_container")))
         horizontalBlock(ModBlocks.LUCKY_CONTAINER.get(), UncheckedModelFile(modLoc("block/container")))

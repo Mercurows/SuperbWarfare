@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "superbwarfare:bedrock/block/shelf_top",
+    "particle": "minecraft:block/white_concrete"
+  }
+}
