@@ -189,12 +189,8 @@ object VehicleVecUtils {
             return vehicle.getShootVec(entity, partialTicks)
         } else if (stringOrVec3.isString) {
             if (stringOrVec3.string == "Bomb") {
-                val bombHitPosO = ClientEventHandler.bombHitPosO
-                val bombHitPos = ClientEventHandler.bombHitPos
-                val bombHitPosX = Mth.lerp(partialTicks.toDouble(), bombHitPosO.x, bombHitPos.x)
-                val bombHitPosY = Mth.lerp(partialTicks.toDouble(), bombHitPosO.y, bombHitPos.y)
-                val bombHitPosZ = Mth.lerp(partialTicks.toDouble(), bombHitPosO.z, bombHitPos.z)
-                return getViewPos(vehicle, entity, partialTicks).vectorTo(Vec3(bombHitPosX, bombHitPosY, bombHitPosZ))
+                val hitPos = ClientEventHandler.interpolatedBombHitPos(partialTicks)
+                return getViewPos(vehicle, entity, partialTicks).vectorTo(hitPos).normalize()
             }
             return vehicle.getVectorFromString(stringOrVec3.string!!, partialTicks, vehicle.getSeatIndex(entity))
         } else {

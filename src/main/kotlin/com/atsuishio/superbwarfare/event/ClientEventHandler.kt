@@ -818,6 +818,9 @@ object ClientEventHandler {
     @JvmField
     var bombHitPos: Vec3 = Vec3.ZERO
 
+    private var bombHitVehicle: VehicleEntity? = null
+    private var bombHitWeapon: GunData? = null
+
     @JvmField
     var missileLockingPos: BlockPos? = null
 
@@ -912,6 +915,7 @@ object ClientEventHandler {
         NuclearExplosionRenderer.tick()
         val player = localPlayer ?: run {
             syncMeleePlayer(null)
+            calculateBombHitPos(null)
             RadiationShaderHandler.setDosage(0f)
             return
         }
@@ -1105,16 +1109,25 @@ object ClientEventHandler {
         }
     }
 
-    fun calculateBombHitPos(player: Player) {
-        val vehicle = player.vehicle as? VehicleEntity ?: return
-        val gunData = vehicle.getGunData(player)
+    fun calculateBombHitPos(player: Player?) {
+        val vehicle = player?.vehicle as? VehicleEntity
+        val weapon = vehicle?.getGunData(player)?.takeIf { it.get(GunProp.CROSSHAIR) == "@AirBomb" }
+        val nextPos = if (vehicle != null && weapon != null) vehicle.bombHitPos(player) else Vec3.ZERO
 
-        bombHitPosO = bombHitPos
-        bombHitPos = if (gunData != null && gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
-            vehicle.bombHitPos(player)
-        } else {
-            Vec3.ZERO
-        }
+        bombHitPosO = if (vehicle === bombHitVehicle && weapon === bombHitWeapon) bombHitPos else nextPos
+        bombHitPos = nextPos
+        bombHitVehicle = if (weapon != null) vehicle else null
+        bombHitWeapon = weapon
+    }
+
+    fun interpolatedBombHitPos(partialTick: Float): Vec3 =
+        bombHitPosO.lerp(bombHitPos, partialTick.toDouble())
+
+    fun cachedBombHitPos(vehicle: VehicleEntity, player: Player, partialTick: Float): Vec3? {
+        if (player !== localPlayer || player.vehicle !== vehicle || vehicle !== bombHitVehicle) return null
+        val weapon = bombHitWeapon ?: return null
+        if (vehicle.getGunData(player) !== weapon) return null
+        return interpolatedBombHitPos(partialTick)
     }
 
     fun handleControlVehicle(player: Player, stack: ItemStack) {

@@ -19,7 +19,6 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import org.joml.Math
@@ -65,12 +64,7 @@ object KirovHud {
         )
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-        val bombHitPosO = ClientEventHandler.bombHitPosO
-        val bombHitPos = ClientEventHandler.bombHitPos
-        val bombHitPosX = Mth.lerp(partialTick.toDouble(), bombHitPosO.x, bombHitPos.x)
-        val bombHitPosY = Mth.lerp(partialTick.toDouble(), bombHitPosO.y, bombHitPos.y)
-        val bombHitPosZ = Mth.lerp(partialTick.toDouble(), bombHitPosO.z, bombHitPos.z)
-        val posCross = Vec3(bombHitPosX, bombHitPosY, bombHitPosZ)
+        val posCross = ClientEventHandler.interpolatedBombHitPos(partialTick)
         val pCross = posCross.worldToScreen()
 
         // 投弹准星
