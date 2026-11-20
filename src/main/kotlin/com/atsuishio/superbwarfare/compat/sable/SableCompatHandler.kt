@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.compat.sable
 
 import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.entity.projectile.IAdvancedHitDetection
+import com.atsuishio.superbwarfare.tools.CustomExplosion
 import dev.ryanhcode.sable.companion.SableCompanion
 import dev.ryanhcode.sable.companion.math.BoundingBox3d
 import dev.ryanhcode.sable.sublevel.SubLevel
@@ -13,9 +14,9 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.ClipContext.Block
 import net.minecraft.world.level.ClipContext.Fluid
-import net.minecraft.world.level.Explosion
 import net.minecraft.world.level.ExplosionDamageCalculator
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.BlockHitResult
@@ -203,13 +204,18 @@ object SableCompatHandler {
         center: Vec3,
         radius: Float,
         damage: Float,
-        explosion: Explosion,
-        damageCalculator: ExplosionDamageCalculator
+        explosion: CustomExplosion,
+        damageCalculator: ExplosionDamageCalculator,
+        blockDestructionRadius: Float?,
+        spherical: Boolean,
+        dropBlocks: Boolean
     ) {
         try {
+            val reach = blockDestructionRadius ?: (0.6f * radius)
+            val verticalScale = if (spherical) 1f else 3f
             val searchAABB = AABB(
-                center.x - radius, center.y - radius, center.z - radius,
-                center.x + radius, center.y + radius, center.z + radius
+                center.x - reach, center.y - reach, center.z - reach,
+                center.x + reach, center.y + reach, center.z + reach
             )
             val searchBounds = BoundingBox3d(
                 searchAABB.minX, searchAABB.minY, searchAABB.minZ,
@@ -228,68 +234,62 @@ object SableCompatHandler {
                 )
                 val localCenter = Vec3(localCenterJOML.x, localCenterJOML.y, localCenterJOML.z)
 
-                // 在局部空间中确定搜索范围（扩大一点以覆盖旋转带来的偏差）
-                val searchRadius = radius * 1.3
-                val localMinPos = BlockPos.containing(
-                    localCenter.x - searchRadius,
-                    localCenter.y - searchRadius,
-                    localCenter.z - searchRadius
-                )
-                val localMaxPos = BlockPos.containing(
-                    localCenter.x + searchRadius,
-                    localCenter.y + searchRadius,
-                    localCenter.z + searchRadius
-                )
+                // Intersect the explosion bounds with this plot before reading any block states.
+                val bounds = subLevel.plot.boundingBox ?: continue
+                val min = BlockPos.containing(localCenter.x - reach, localCenter.y - reach, localCenter.z - reach)
+                val max = BlockPos.containing(localCenter.x + reach, localCenter.y + reach, localCenter.z + reach)
+                val minX = maxOf(min.x, bounds.minX())
+                val minY = maxOf(min.y, bounds.minY())
+                val minZ = maxOf(min.z, bounds.minZ())
+                val maxX = minOf(max.x, bounds.maxX())
+                val maxY = minOf(max.y, bounds.maxY())
+                val maxZ = minOf(max.z, bounds.maxZ())
+                if (minX > maxX || minY > maxY || minZ > maxZ) continue
 
                 val random = subLevelWorld.random
-
-                // 收集需要通过判定的方块（BlockPos在局部空间，value是计算出的force）
-                val qualified = mutableListOf<Pair<BlockPos, Float>>()
-
-                BlockPos.betweenClosedStream(localMinPos, localMaxPos).forEach { localBlockPos ->
-                    // 将方块中心变换到世界空间，用于距离判定
-                    val localBlockCenter = Vector3d(
-                        localBlockPos.x + 0.5, localBlockPos.y + 0.5, localBlockPos.z + 0.5
-                    )
-                    val worldBlockCenter = pose.transformPosition(localBlockCenter)
-
-                    val dx = (worldBlockCenter.x - center.x).toFloat()
-                    val dy = (worldBlockCenter.y - center.y).toFloat()
-                    val dz = (worldBlockCenter.z - center.z).toFloat()
-                    val flattenedDistSqr = (dx * dx + dz * dz) + dy * dy * 3.0f
-                    val distanceSqr = dx * dx + dy * dy + dz * dz
-
-                    // 复用与CustomExplosion一致的抗力/距离判定
-                    var effectiveRadius = 0.4 * radius
-                    if (distanceSqr > radius * radius * 0.15) {
-                        effectiveRadius += (random.nextDouble() - 0.5).toFloat() * radius * 0.2f
-                    }
-                    val flattenedRadius = effectiveRadius * 1.2f
-                    if (flattenedDistSqr > flattenedRadius * flattenedRadius) return@forEach
-
+                val qualified = mutableListOf<BlockPos>()
+                for (localBlockPos in BlockPos.betweenClosed(minX, minY, minZ, maxX, maxY, maxZ)) {
                     val blockState = subLevelWorld.getBlockState(localBlockPos)
-                    if (blockState.isAir) return@forEach
+                    if (blockState.isAir) continue
+                    var resistance = blockState.block.defaultDestroyTime()
+                    if (resistance < 0f) continue
+                    val soundType = blockState.getSoundType(subLevelWorld, localBlockPos, explosion.directSourceEntity)
+                    if (soundType === SoundType.METAL || soundType === SoundType.COPPER ||
+                        soundType === SoundType.NETHERITE_BLOCK) resistance *= 3f
 
-                    val resistance = blockState.block.defaultDestroyTime()
-                    var force = radius * (0.25f + random.nextFloat() * 0.15f) * 0.02f * damage
-                    force *= ((1f - (flattenedDistSqr / (flattenedRadius * flattenedRadius))).coerceIn(
-                        0.0,
-                        1.0
-                    )).toFloat()
-
-                    if (resistance != -1f && force > resistance
-                        && damageCalculator.shouldBlockExplode(
+                    val worldBlockCenter = pose.transformPosition(
+                        Vector3d(localBlockPos.x + 0.5, localBlockPos.y + 0.5, localBlockPos.z + 0.5)
+                    )
+                    val dx = worldBlockCenter.x - center.x
+                    val dy = worldBlockCenter.y - center.y
+                    val dz = worldBlockCenter.z - center.z
+                    val distanceSquared = dx * dx + dy * dy + dz * dz
+                    val blockDistanceSquared = distanceSquared + (verticalScale - 1f) * dy * dy
+                    val effectiveRadius = blockDestructionRadius?.toDouble() ?: run {
+                        var legacy = 0.4 * radius
+                        if (distanceSquared > radius * radius * 0.15) {
+                            legacy += (random.nextDouble() - 0.5) * radius * 0.2
+                        }
+                        legacy * 1.2
+                    }
+                    val falloff = 1.0 - blockDistanceSquared / (effectiveRadius * effectiveRadius)
+                    if (falloff <= 0.0) continue
+                    val force = (radius * (0.25f + random.nextFloat() * 0.15f) * 0.02f * damage * falloff).toFloat()
+                    if (force > resistance && damageCalculator.shouldBlockExplode(
                             explosion, subLevelWorld, localBlockPos, blockState, force
-                        )
-                    ) {
-                        qualified.add(localBlockPos.immutable() to force)
+                        )) {
+                        qualified.add(localBlockPos.immutable())
                     }
                 }
 
                 // 摧毁SubLevel上的方块，并将掉落物生成在主世界中
-                for ((localBlockPos, _) in qualified) {
+                for (localBlockPos in qualified) {
                     val blockState = subLevelWorld.getBlockState(localBlockPos)
                     if (blockState.isAir) continue
+                    if (!dropBlocks) {
+                        explosion.removeBlockWithoutDrops(subLevelWorld, localBlockPos, blockState)
+                        continue
+                    }
 
                     // 计算掉落物应生成的世界坐标
                     val localDropCenter = Vector3d(

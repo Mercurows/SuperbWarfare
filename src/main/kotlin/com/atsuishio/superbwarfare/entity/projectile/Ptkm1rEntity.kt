@@ -291,6 +291,7 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
         CustomExplosion.Builder(this)
             .damage(ExplosionConfig.PTKM_1R_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.PTKM_1R_EXPLOSION_RADIUS.get().toFloat())
+            .penetrationRatio(ExplosionConfig.PTKM_1R_EXPLOSION_PENETRATION_RATIO.get().toFloat())
             .attacker(this.owner)
             .explode()
 

@@ -243,6 +243,7 @@ open class Tm62Entity : Entity, OwnableEntity {
             .attacker(this.owner)
             .damage(ExplosionConfig.TM_62_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.TM_62_EXPLOSION_RADIUS.get().toFloat())
+            .penetrationRatio(ExplosionConfig.TM_62_EXPLOSION_PENETRATION_RATIO.get().toFloat())
             .explode()
 
         this.discard()

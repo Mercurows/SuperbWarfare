@@ -234,6 +234,7 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
             CustomExplosion.Builder(attacker ?: this)
                 .damage(ExplosionConfig.CLAYMORE_EXPLOSION_DAMAGE.get().toFloat() / 5)
                 .radius(ExplosionConfig.CLAYMORE_EXPLOSION_RADIUS.get().toFloat())
+                .penetrationRatio(ExplosionConfig.CLAYMORE_EXPLOSION_PENETRATION_RATIO.get().toFloat())
                 .position(this.position())
                 .explode()
 
@@ -246,6 +247,7 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
             .attacker(this.owner)
             .damage(ExplosionConfig.CLAYMORE_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.CLAYMORE_EXPLOSION_RADIUS.get().toFloat())
+            .penetrationRatio(ExplosionConfig.CLAYMORE_EXPLOSION_PENETRATION_RATIO.get().toFloat())
             .explode()
     }
 

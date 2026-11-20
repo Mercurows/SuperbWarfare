@@ -218,7 +218,8 @@ open class BoobyTrapBlock : BaseEntityBlock(
                 pos.z + 0.5,
                 radius,
                 interaction
-            ).setSphericalBlockDestruction(true)
+            ).setPenetrationRatio(ExplosionConfig.BOOBY_TRAP_EXPLOSION_PENETRATION_RATIO.get().toFloat())
+                .setSphericalBlockDestruction(true)
             if (EventHooks.onExplosionStart(level, explosion)) return
             // Respect cancellation, then remove before the blast can trigger further neighbor updates.
             if (level.getBlockEntity(pos) !== entity || !level.removeBlock(pos, false)) return

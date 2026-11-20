@@ -654,6 +654,7 @@ open class C4Entity : Entity, OwnableEntity {
             .attacker(this.owner)
             .damage(ExplosionConfig.C4_EXPLOSION_DAMAGE.get().toFloat())
             .radius(radius)
+            .penetrationRatio(ExplosionConfig.C4_EXPLOSION_PENETRATION_RATIO.get().toFloat())
             .position(pos)
             .explode()
 

@@ -231,6 +231,9 @@ data class DefaultGunData(
     val explosionDamage: Double = 0.0,
     @SerialName("ExplosionRadius")
     val explosionRadius: Double = 0.0,
+    // 爆炸的掩体穿透比例（百分比）：躲在掩体后仍会受到的爆炸伤害比例
+    @SerialName("ExplosionPenetrationRatio")
+    val explosionPenetrationRatio: Double = 15.0,
     @SerialName("Gravity")
     val gravity: Double = 0.03,
     @SerialName("ShootDelay")

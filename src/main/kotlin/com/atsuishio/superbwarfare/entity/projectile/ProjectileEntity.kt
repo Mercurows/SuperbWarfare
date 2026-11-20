@@ -86,6 +86,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     protected var isZoomValue: Boolean = false
     protected var explosionDamageValue = 0.0f
     protected var explosionRadiusValue by EXPLOSION_RADIUS
+    protected var explosionPenetrationRatioValue: Float = CustomExplosion.DEFAULT_PENETRATION_RATIO
     protected var fireLevelValue = 0
     protected var dragonBreathValue = false
     protected var knockbackValue = 0.05f
@@ -138,6 +139,11 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     override fun getExplosionRadius(): Float = explosionRadiusValue
     override fun setExplosionRadius(value: Float) {
         explosionRadiusValue = value
+    }
+
+    override fun getExplosionPenetrationRatio(): Float = explosionPenetrationRatioValue
+    override fun setExplosionPenetrationRatio(value: Float) {
+        explosionPenetrationRatioValue = value.coerceIn(0f, CustomExplosion.MAX_PENETRATION_RATIO)
     }
 
     override fun getFireLevel(): Int = fireLevelValue

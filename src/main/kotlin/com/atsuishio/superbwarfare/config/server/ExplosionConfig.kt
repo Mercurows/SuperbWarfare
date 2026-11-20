@@ -5,16 +5,9 @@ import com.atsuishio.superbwarfare.config.buildServerConfig
 object ExplosionConfig {
 
     @JvmField
-    val EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+    val EXPLOSION_DESTROY = buildServerConfig {
         push("explosion")
 
-        comment("The percentage of explosion damage you take behind cover")
-        comment("躲在掩体后时受到的爆炸伤害比例")
-        defineInRange("explosion_penetration_ratio", 15, 0, 100)
-    }
-
-    @JvmField
-    val EXPLOSION_DESTROY = buildServerConfig {
         comment("Set true to allow Explosion to destroy blocks")
         comment("是否开启爆炸破坏方块")
         define("explosion_destroy", true)
@@ -44,6 +37,13 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val RGO_GRENADE_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from RGO grenade")
+        comment("RGO手榴弹：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("rgo_grenade_explosion_penetration_ratio", 15, 0, 100)
+    }
+
+    @JvmField
     val RGO_GRENADE_EXPLOSION_RADIUS = buildServerConfig {
         comment("The explosion radius of RGO grenade")
         comment("RGO手榴弹的爆炸半径")
@@ -57,6 +57,13 @@ object ExplosionConfig {
         comment("The explosion damage of M67 grenade")
         comment("M67手榴弹的爆炸伤害")
         defineInRange("m67_grenade_explosion_damage", 120, 1, 10000000)
+    }
+
+    @JvmField
+    val M67_GRENADE_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from M67 grenade")
+        comment("M67手榴弹：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("m67_grenade_explosion_penetration_ratio", 15, 0, 100)
     }
 
     @JvmField
@@ -83,6 +90,13 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val C4_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from C4")
+        comment("C4炸弹：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("c4_explosion_penetration_ratio", 15, 0, 100)
+    }
+
+    @JvmField
     val C4_EXPLOSION_RADIUS = buildServerConfig {
         comment("The explosion radius of C4")
         comment("C4炸弹的爆炸半径")
@@ -96,6 +110,13 @@ object ExplosionConfig {
         comment("The explosion damage of Claymore")
         comment("阔剑地雷的爆炸伤害")
         defineInRange("claymore_explosion_damage", 140, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val CLAYMORE_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from Claymore")
+        comment("阔剑地雷：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("claymore_explosion_penetration_ratio", 15, 0, 100)
     }
 
     @JvmField
@@ -115,6 +136,13 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val BLU_43_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from Blu 43")
+        comment("蝴蝶雷：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("blu_43_explosion_penetration_ratio", 15, 0, 100)
+    }
+
+    @JvmField
     val BLU_43_EXPLOSION_RADIUS = buildServerConfig {
         comment("The explosion radius of Blu 43")
         comment("蝴蝶雷的爆炸半径")
@@ -128,6 +156,13 @@ object ExplosionConfig {
         comment("The explosion damage of EDD")
         comment("防止攻入装置的爆炸伤害")
         defineInRange("edd_explosion_damage", 60, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val EDD_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from EDD")
+        comment("EDD地雷：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("edd_explosion_penetration_ratio", 15, 0, 100)
     }
 
     @JvmField
@@ -154,6 +189,13 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val TM_62_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from TM62")
+        comment("TM62地雷：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("tm_62_explosion_penetration_ratio", 15, 0, 100)
+    }
+
+    @JvmField
     val TM_62_EXPLOSION_RADIUS = buildServerConfig {
         comment("The explosion radius of Tm 62")
         comment("TM62反坦克地雷的爆炸半径")
@@ -167,6 +209,13 @@ object ExplosionConfig {
         comment("The explosion damage of Type 88 cluster grenades")
         comment("88式集束手雷的爆炸伤害")
         defineInRange("type_88_cluster_grenade_explosion_damage", 200, 1, 10000000)
+    }
+
+    @JvmField
+    val TYPE_88_CLUSTER_GRENADE_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from Type 88 cluster grenade")
+        comment("88式集束手榴弹：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("type_88_cluster_grenade_explosion_penetration_ratio", 15, 0, 100)
     }
 
     @JvmField
@@ -200,6 +249,13 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val SPLIT_TYPE_88_GRENADE_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from split Type 88 grenade")
+        comment("88式集束手榴弹破片：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("split_type_88_grenade_explosion_penetration_ratio", 15, 0, 100)
+    }
+
+    @JvmField
     val SPLIT_TYPE_88_GRENADE_EXPLOSION_RADIUS = buildServerConfig {
         comment("The explosion radius of split Type 88 grenades")
         comment("88式集束手雷子弹药的爆炸半径")
@@ -222,6 +278,13 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val SEA_MINE_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from sea mine")
+        comment("水雷：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("sea_mine_explosion_penetration_ratio", 15, 0, 100)
+    }
+
+    @JvmField
     val SEA_MINE_EXPLOSION_RADIUS = buildServerConfig {
         comment("Sea mine explosion radius in blocks")
         comment("水雷爆炸半径（格）")
@@ -234,6 +297,13 @@ object ExplosionConfig {
         comment("高能炸药块爆炸伤害")
         comment("High energy explosives block damage")
         defineInRange("high_energy_explosives_block_explosion_damage", 180.0, 0.0, 10000000.0)
+    }
+
+    @JvmField
+    val HIGH_ENERGY_EXPLOSIVES_BLOCK_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from high energy explosives block")
+        comment("高能炸药块：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("high_energy_explosives_block_explosion_penetration_ratio", 15, 0, 100)
     }
 
     @JvmField
@@ -252,10 +322,26 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val BOOBY_TRAP_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from booby trap")
+        comment("诡雷：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("booby_trap_explosion_penetration_ratio", 15, 0, 100)
+    }
+
+    @JvmField
     val BOOBY_TRAP_EXPLOSION_RADIUS = buildServerConfig {
         comment("伪装诡雷爆炸半径（格）")
         comment("Booby trap explosion radius in blocks")
         defineInRange("booby_trap_explosion_radius", 10.0, 0.0, 256.0).also { pop() }
+    }
+
+    @JvmField
+    val NUCLEAR_BOMB_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        push("Nuclear Bomb")
+
+        comment("The percentage of explosion damage you take behind cover from nuclear bomb")
+        comment("核弹：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("nuclear_bomb_explosion_penetration_ratio", 50, 0, 100).also { pop() }
     }
 
     @JvmField
@@ -265,6 +351,13 @@ object ExplosionConfig {
         comment("The explosion damage of Ptkm 1r")
         comment("PTKM1R地雷的爆炸伤害")
         defineInRange("ptkm_1r_explosion_damage", 100, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val PTKM_1R_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from PTKM1R mine")
+        comment("PTKM1R地雷：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("ptkm_1r_explosion_penetration_ratio", 15, 0, 100)
     }
 
     @JvmField
@@ -286,6 +379,13 @@ object ExplosionConfig {
         comment("The explosion damage of projectile launched by Ptkm 1r")
         comment("PTKM1R地雷发射的投射物的爆炸伤害")
         defineInRange("ptkm_1r_projectile_explosion_damage", 80, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val PTKM_1R_PROJECTILE_EXPLOSION_PENETRATION_RATIO = buildServerConfig {
+        comment("The percentage of explosion damage you take behind cover from PTKM1R projectile")
+        comment("PTKM1R地雷的投射物：躲在掩体后时仍会受到的爆炸伤害比例")
+        defineInRange("ptkm_1r_projectile_explosion_penetration_ratio", 15, 0, 100)
     }
 
     @JvmField

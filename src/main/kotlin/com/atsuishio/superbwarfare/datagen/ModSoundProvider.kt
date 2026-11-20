@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.datagen
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.datagen.ModSoundProvider.Companion.subKey
 import net.minecraft.data.PackOutput
 import net.neoforged.neoforge.common.data.ExistingFileHelper
 import net.neoforged.neoforge.common.data.SoundDefinition
@@ -179,6 +180,17 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
             "explosion/mini_explosion_03", "explosion/mini_explosion_04", "explosion/mini_explosion_05",
             subtitle = EXPLOSION_SUBTITLE,
         )
+
+        register(
+            "nuke_explosion_close", "explosion/nuke_explosion_close_01", "explosion/nuke_explosion_close_02",
+            "explosion/nuke_explosion_close_03", subtitle = EXPLOSION_SUBTITLE,
+        )
+        register(
+            "nuke_explosion_far", "explosion/nuke_explosion_far_01", "explosion/nuke_explosion_far_02",
+            "explosion/nuke_explosion_far_03", subtitle = EXPLOSION_SUBTITLE,
+        )
+        register(
+            "nuke_explosion_very_far", "explosion/nuke_explosion_very_far", subtitle = EXPLOSION_SUBTITLE)
 
         // -------------------- gpws --------------------
         group("gpws", "pull_up", "sink_rate", "terrain", "terrain_ahead", "too_low_gear", "too_low_terrain")

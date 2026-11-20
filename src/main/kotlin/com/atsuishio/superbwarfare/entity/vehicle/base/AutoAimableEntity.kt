@@ -487,6 +487,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : VehicleEntity(
         createCustomExplosion()
             .damage(gunData.get(GunProp.EXPLOSION_DAMAGE).toFloat())
             .radius(radius)
+            .penetrationRatio(gunData.get(GunProp.EXPLOSION_PENETRATION_RATIO).toFloat())
             .attacker(living)
             .position(vec3)
             .explode()

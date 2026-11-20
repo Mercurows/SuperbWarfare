@@ -65,6 +65,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     protected var damageValue: Float = 0f
     protected var explosionDamageValue: Float = 0f
     protected var explosionRadiusValue: Float = 0f
+    protected var explosionPenetrationRatioValue: Float = CustomExplosion.DEFAULT_PENETRATION_RATIO
     protected var headShotValue = 1f
     protected var legShotValue = 1f
     protected var velocityValue = 4f
@@ -93,6 +94,11 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     override fun getExplosionRadius(): Float = explosionRadiusValue
     override fun setExplosionRadius(value: Float) {
         explosionRadiusValue = value
+    }
+
+    override fun getExplosionPenetrationRatio(): Float = explosionPenetrationRatioValue
+    override fun setExplosionPenetrationRatio(value: Float) {
+        explosionPenetrationRatioValue = value.coerceIn(0f, CustomExplosion.MAX_PENETRATION_RATIO)
     }
 
     override fun getLife(): Int = lifeValue
@@ -189,6 +195,9 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         if (compound.contains("Radius")) {
             this.explosionRadiusValue = compound.getFloat("Radius")
         }
+        if (compound.contains("ExplosionPenetrationRatio")) {
+            this.explosionPenetrationRatioValue = compound.getFloat("ExplosionPenetrationRatio")
+        }
         if (compound.contains("Durability")) {
             this.durability = compound.getInt("Durability")
         }
@@ -232,6 +241,9 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         }
         if (this.explosionRadiusValue > 0) {
             compound.putFloat("Radius", this.explosionRadiusValue)
+        }
+        if (this.explosionPenetrationRatioValue != CustomExplosion.DEFAULT_PENETRATION_RATIO) {
+            compound.putFloat("ExplosionPenetrationRatio", this.explosionPenetrationRatioValue)
         }
         if (this.durability > 0) {
             compound.putInt("Durability", this.durability)
@@ -704,6 +716,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
             child.setDamage(getDamage() * SPLIT_INHERIT_RATE)
             child.setExplosionDamage(getExplosionDamage() * SPLIT_INHERIT_RATE)
             child.setExplosionRadius(getExplosionRadius() * SPLIT_INHERIT_RATE)
+            child.setExplosionPenetrationRatio(getExplosionPenetrationRatio())
             child.setLife(getLife())
             child.setExplosionDestroy(hasExplosionDestroy())
             child.setBeast(isBeast())

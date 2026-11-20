@@ -265,6 +265,7 @@ open class Blu43Entity : Entity, OwnableEntity {
             .attacker(this.owner)
             .damage(ExplosionConfig.BLU_43_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.BLU_43_EXPLOSION_RADIUS.get().toFloat())
+            .penetrationRatio(ExplosionConfig.BLU_43_EXPLOSION_PENETRATION_RATIO.get().toFloat())
             .keepBlock()
             .explode()
 

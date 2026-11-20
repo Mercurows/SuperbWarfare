@@ -131,6 +131,7 @@ open class DecoyGrenadeEntity(type: EntityType<out DecoyGrenadeEntity>, level: L
         CustomExplosion.Builder(this).attacker(owner)
             .damage(ProjectileConfig.DECOY_GRENADE_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ProjectileConfig.DECOY_GRENADE_EXPLOSION_RADIUS.get().toFloat())
+            .penetrationRatio(ProjectileConfig.DECOY_GRENADE_EXPLOSION_PENETRATION_RATIO.get().toFloat())
             .keepBlock().explode()
         discard()
     }

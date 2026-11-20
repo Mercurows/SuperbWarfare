@@ -53,6 +53,11 @@ open class SplitType88GrenadeEntity : BounceProjectile, BasicGeoProjectileEntity
         this.explosionRadiusValue = ExplosionConfig.SPLIT_TYPE_88_GRENADE_EXPLOSION_RADIUS.get().toFloat()
     }
 
+    override fun getExplosionPenetrationRatio() =
+        ExplosionConfig.SPLIT_TYPE_88_GRENADE_EXPLOSION_PENETRATION_RATIO.get().toFloat()
+
+    override fun setExplosionPenetrationRatio(value: Float) {}
+
     override fun addAdditionalSaveData(compound: CompoundTag) {
         super.addAdditionalSaveData(compound)
         compound.putInt("Fuse", this.fuse)

@@ -20,7 +20,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 
-open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
+open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context, private val modelScale: Float = 1f) :
     EntityRenderer<T>(manager) where T : Entity, T : BasicGeoProjectileEntity {
     override fun getTextureLocation(entity: T): ResourceLocation {
         val (_, namespace, id) = entity.type.descriptionId.split(".")
@@ -60,6 +60,7 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
         poseStack.pushPose()
 
         poseStack.translate(0f, entity.bbHeight / 2, 0f)
+        poseStack.scale(modelScale, modelScale, modelScale)
 
         // 十分鬼畜而神秘的写法，直接用yaw的话会导致弹体在+-180°偏航时抽搐，遂采用这种脱裤子放屁的写法
         poseStack.mulPose(Axis.YP.rotationDegrees(VehicleVecUtils.getYRotFromVector(entity.lookAngle).toFloat()))

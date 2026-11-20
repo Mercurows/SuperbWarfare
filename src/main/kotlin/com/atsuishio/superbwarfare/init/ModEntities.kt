@@ -293,6 +293,14 @@ object ModEntities {
     @JvmField
     val BOR_57 = register("bor_57", fastProjectile(::Bor57Entity).sized(0.8f, 0.8f))
 
+    @JvmField
+    val FOOD_RAIN_ATOM_BOMB = register("food_rain_atom_bomb", fastProjectile(::NuclearBombEntity).sized(0.8f, 0.8f))
+
+    @JvmField
+    val SMELLY_BOY = register("smelly_boy", fastProjectile<NuclearBombEntity>({ type, level ->
+        NuclearBombEntity(type, level, animated = false)
+    }).sized(0.8f, 0.8f))
+
     // Vehicles
     // Turrets
     @JvmField

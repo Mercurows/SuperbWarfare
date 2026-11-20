@@ -1,0 +1,18 @@
+{
+  "vertex": "superbwarfare:nuclear_explosion",
+  "fragment": "superbwarfare:nuclear_explosion",
+  "attributes": ["Position"],
+  "blend": {"func":"add","srcrgb":"1","dstrgb":"1-srcalpha","srcalpha":"1","dstalpha":"1-srcalpha"},
+  "samplers": [{"name":"SceneColor"}, {"name":"SceneDepth"}, {"name":"WorldDepth"}],
+  "uniforms": [
+    {"name":"InverseProjection","type":"matrix4x4","count":16,"values":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]},
+    {"name":"InverseView","type":"matrix4x4","count":16,"values":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]},
+    {"name":"ExplosionPosition","type":"float","count":3,"values":[0,0,0]},
+    {"name":"Age","type":"float","count":1,"values":[0]},
+    {"name":"FlowTime","type":"float","count":1,"values":[0]},
+    {"name":"EffectScale","type":"float","count":3,"values":[1,1,1]},
+    {"name":"Seed","type":"float","count":1,"values":[0]},
+    {"name":"FlashVisibility","type":"float","count":1,"values":[0]},
+    {"name":"ShaderPackMode","type":"int","count":1,"values":[0]}
+  ]
+}

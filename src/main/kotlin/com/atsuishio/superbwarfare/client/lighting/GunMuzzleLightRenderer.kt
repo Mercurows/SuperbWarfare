@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.lighting
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.renderer.matchDepthFormat
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
 import com.mojang.blaze3d.pipeline.TextureTarget
@@ -195,25 +196,6 @@ object GunMuzzleLightRenderer {
             RenderSystem.setShader { previousShader }
             GlStateManager._glUseProgram(program)
         }
-    }
-
-    /** Depth blits require matching storage formats, including Iris's floating-point/stencil targets. */
-    private fun matchDepthFormat(source: Int, target: Int) {
-        GlStateManager._bindTexture(source)
-        val format = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_INTERNAL_FORMAT)
-        GlStateManager._bindTexture(target)
-        if (GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_INTERNAL_FORMAT) == format) return
-        val width = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH)
-        val height = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT)
-        val stencil = format == GL30.GL_DEPTH24_STENCIL8 || format == GL30.GL_DEPTH32F_STENCIL8
-        val type = when (format) {
-            GL30.GL_DEPTH32F_STENCIL8 -> GL30.GL_FLOAT_32_UNSIGNED_INT_24_8_REV
-            GL30.GL_DEPTH24_STENCIL8 -> GL30.GL_UNSIGNED_INT_24_8
-            GL30.GL_DEPTH_COMPONENT32F -> GL11.GL_FLOAT
-            else -> GL11.GL_UNSIGNED_INT
-        }
-        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, format, width, height, 0,
-            if (stencil) GL30.GL_DEPTH_STENCIL else GL11.GL_DEPTH_COMPONENT, type, 0L)
     }
 
     /** 投影包围盒而非枪口中心，因此屏幕外枪口仍能照到画面内的墙。近裁剪相交时保守覆盖全屏。 */

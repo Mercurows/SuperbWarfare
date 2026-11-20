@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightRenderer;
 import com.atsuishio.superbwarfare.client.overlay.FlashbangOverlay;
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensPostProcessor;
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer;
+import com.atsuishio.superbwarfare.client.renderer.special.NuclearExplosionRenderer;
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
@@ -52,6 +53,7 @@ public abstract class GameRendererMixin {
             shift = At.Shift.AFTER))
     private void superbWarfare$renderScopeLenses(DeltaTracker deltaTracker, CallbackInfo ci) {
         GunMuzzleLightRenderer.render();
+        NuclearExplosionRenderer.render(deltaTracker.getGameTimeDeltaPartialTick(true));
         ScopeThermalRenderer.captureWorldDepth();
         if (ShaderCompat.isShaderPackActive()) ScopeThermalRenderer.renderFullScreen();
         ScopeLensPostProcessor.render();

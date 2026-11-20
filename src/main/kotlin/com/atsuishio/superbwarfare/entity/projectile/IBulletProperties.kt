@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
+import com.atsuishio.superbwarfare.tools.CustomExplosion
 import net.minecraft.world.effect.MobEffectInstance
 
 /**
@@ -19,6 +20,10 @@ interface IBulletProperties {
     // 爆炸半径
     fun getExplosionRadius(): Float = 0f
     fun setExplosionRadius(value: Float) {}
+
+    // 爆炸的掩体穿透比例（百分比）：躲在掩体后仍会受到的爆炸伤害比例
+    fun getExplosionPenetrationRatio(): Float = CustomExplosion.DEFAULT_PENETRATION_RATIO
+    fun setExplosionPenetrationRatio(value: Float) {}
 
     // 弹射物存活时间
     fun getLife(): Int = 40

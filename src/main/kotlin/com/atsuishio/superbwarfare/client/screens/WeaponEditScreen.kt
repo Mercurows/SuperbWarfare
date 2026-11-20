@@ -1435,6 +1435,12 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         if (explosionRadius > 0.0) {
             add(propLabel("explosion_radius") to WeaponStat.EXPLOSION_RADIUS.format(explosionRadius))
         }
+        if (explosionDamage > 0.0 || explosionRadius > 0.0) {
+            add(
+                propLabel("explosion_penetration_ratio") to
+                        WeaponStat.EXPLOSION_PENETRATION_RATIO.format(data.get(GunProp.EXPLOSION_PENETRATION_RATIO))
+            )
+        }
         add(propLabel("bypasses_armor") to WeaponStat.ARMOR_BYPASS.format(data.get(GunProp.BYPASSES_ARMOR) * 100.0))
         add(propLabel("velocity") to WeaponStat.VELOCITY.format(data.get(GunProp.VELOCITY) * 20.0))
     }
@@ -1908,6 +1914,14 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             if (explosionRadius > 0.0) {
                 add(ammoPropertyLine("explosion_radius", WeaponStat.EXPLOSION_RADIUS.format(explosionRadius)))
             }
+            if (explosionDamage > 0.0 || explosionRadius > 0.0) {
+                add(
+                    ammoPropertyLine(
+                        "explosion_penetration_ratio",
+                        WeaponStat.EXPLOSION_PENETRATION_RATIO.format(probe.get(GunProp.EXPLOSION_PENETRATION_RATIO))
+                    )
+                )
+            }
 
             ammoDeltaLine(
                 "bypasses_armor",
@@ -2379,6 +2393,16 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             unit = " m",
             optional = true,
             read = { it.get(GunProp.EXPLOSION_RADIUS) }),
+        EXPLOSION_PENETRATION_RATIO(
+            "explosion_penetration_ratio",
+            100.0,
+            unit = " %",
+            optional = true,
+            read = {
+                if (it.get(GunProp.EXPLOSION_DAMAGE) > 0.0 || it.get(GunProp.EXPLOSION_RADIUS) > 0.0) {
+                    it.get(GunProp.EXPLOSION_PENETRATION_RATIO)
+                } else 0.0
+            }),
         MAX_ENERGY("max_energy", 100000.0, 0, " FE", optional = true, read = { it.get(GunProp.MAX_ENERGY).toDouble() }),
         ENERGY_REGEN(
             "energy_regeneration",

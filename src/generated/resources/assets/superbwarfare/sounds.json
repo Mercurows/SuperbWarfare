@@ -2382,6 +2382,28 @@
       "superbwarfare:gun/ntw_20/ntw_20_veryfar"
     ]
   },
+  "nuke_explosion_close": {
+    "sounds": [
+      "superbwarfare:explosion/nuke_explosion_close_01",
+      "superbwarfare:explosion/nuke_explosion_close_02",
+      "superbwarfare:explosion/nuke_explosion_close_03"
+    ],
+    "subtitle": "subtitle.superbwarfare.explosion"
+  },
+  "nuke_explosion_far": {
+    "sounds": [
+      "superbwarfare:explosion/nuke_explosion_far_01",
+      "superbwarfare:explosion/nuke_explosion_far_02",
+      "superbwarfare:explosion/nuke_explosion_far_03"
+    ],
+    "subtitle": "subtitle.superbwarfare.explosion"
+  },
+  "nuke_explosion_very_far": {
+    "sounds": [
+      "superbwarfare:explosion/nuke_explosion_very_far"
+    ],
+    "subtitle": "subtitle.superbwarfare.explosion"
+  },
   "open": {
     "sounds": [
       "superbwarfare:open"
