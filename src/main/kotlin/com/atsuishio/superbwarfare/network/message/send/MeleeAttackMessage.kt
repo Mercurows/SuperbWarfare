@@ -31,7 +31,6 @@ import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.stats.Stats
 import net.minecraft.world.damagesource.DamageSource
-import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
@@ -175,10 +174,8 @@ data class MeleeAttackMessage(
         val level = attacker.level()
         // 刺刀冲锋那一击的伤害基数由 `BayonetCharge.StrikeDamage` 给（绝对值），不写就还是那一段的伤害
         val chargeDamage = data.get(GunProp.BAYONET_CHARGE).strikeDamage
-        val strength = attacker.getEffect(MobEffects.DAMAGE_BOOST)
-        val strengthBonus = if (strength != null) 3.0 * (strength.amplifier + 1) else 0.0
-        val baseDamage =
-            (if (chargeStrike && chargeDamage > 0) chargeDamage else action.damage) + strengthBonus
+        val baseDamage = (if (chargeStrike && chargeDamage > 0) chargeDamage else action.damage) +
+                attacker.getAttributeValue(Attributes.ATTACK_DAMAGE) - 1.0
         var hurtCount = 0
         var hitCount = 0
         var landedHit = false
