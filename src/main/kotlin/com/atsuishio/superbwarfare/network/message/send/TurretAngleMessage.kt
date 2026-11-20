@@ -8,9 +8,9 @@ import kotlinx.serialization.Serializable
 
 @RegisterPacket
 @Serializable
-data class TurretAngleMessage(val yRot: Float, val xRot: Float) : ServerPacketPayload() {
+data class TurretAngleMessage(val direct: Boolean, val yRot: Float, val xRot: Float) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
-        (player.vehicle as? VehicleEntity)?.queueDirectTurretAngles(player, yRot, xRot)
+        (player.vehicle as? VehicleEntity)?.queueTurretControl(player, direct, yRot, xRot)
     }
 }

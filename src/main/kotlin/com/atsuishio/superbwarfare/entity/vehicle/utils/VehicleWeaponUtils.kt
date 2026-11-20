@@ -16,11 +16,87 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
+import org.joml.Matrix4d
+import org.joml.Vector3d
+import kotlin.math.*
 
 /**
  * 用于处理载具武器瞄准或其他战斗相关方法的工具类
  */
 object VehicleWeaponUtils {
+    private const val TURRET_VIEW_PITCH_LIMIT = 79.5f
+    private val turretViewElevationLimit = sin(Math.toRadians(TURRET_VIEW_PITCH_LIMIT.toDouble()))
+    private val barrelElevationLimit = sin(Math.toRadians(79.9))
+
+    fun clampTurretViewPitch(pitch: Float): Float = Mth.clamp(pitch, -TURRET_VIEW_PITCH_LIMIT, TURRET_VIEW_PITCH_LIMIT)
+
+    fun followTurretView(vehicle: VehicleEntity, player: Player) {
+        val view = Vec3.directionFromRotation(clampTurretViewPitch(player.xRot), player.yRot)
+        val hull = vehicle.getVehicleTransformWithCustomPitch(1f)
+        val local = Matrix4d(hull).invert().transformDirection(Vector3d(view.x, view.y, view.z))
+        val damageScale = if (vehicle.turretDamaged) 0.2f else 1f
+        val oldYaw = vehicle.turretYRot
+        val oldPitch = vehicle.turretXRot
+        val minYaw = -vehicle.turretMaxYaw
+        val maxYaw = -vehicle.turretMinYaw
+        val minPitch = -vehicle.turretMaxPitch + vehicle.customTurretMaxPitch
+        val maxPitch = -vehicle.turretMinPitch - vehicle.customTurretMinPitch
+
+        val targetYaw = if (local.x * local.x + local.z * local.z > 1e-8) {
+            val localYaw = Math.toDegrees(atan2(local.x, local.z)).toFloat()
+            Mth.clamp(oldYaw + Mth.wrapDegrees(localYaw - oldYaw), minYaw, maxYaw)
+        } else {
+            Mth.clamp(oldYaw, minYaw, maxYaw)
+        }
+        val yawSpeed = vehicle.turretTurnYSpeed * damageScale
+        vehicle.turretYRot = Mth.clamp(oldYaw + Mth.clamp(targetYaw - oldYaw, -yawSpeed, yawSpeed), minYaw, maxYaw)
+
+        val pitchSpeed = vehicle.turretTurnXSpeed * damageScale
+        if (pitchSpeed > 0f) {
+            val localPitch = Math.toDegrees(asin((-local.y).coerceIn(-1.0, 1.0))).toFloat()
+            val targetPitch = limitBarrelElevation(
+                hull, targetYaw, Mth.clamp(localPitch, minPitch, maxPitch), minPitch, maxPitch, turretViewElevationLimit
+            )
+            val pitch = Mth.clamp(oldPitch + Mth.clamp(targetPitch - oldPitch, -pitchSpeed, pitchSpeed), minPitch, maxPitch)
+            // 用实际偏航检查世界俯仰，给视线目标留出 0.4° 余量。
+            val limitedPitch = limitBarrelElevation(hull, vehicle.turretYRot, pitch, minPitch, maxPitch, barrelElevationLimit)
+            vehicle.turretXRot = pitch + Mth.clamp(limitedPitch - pitch, -8f, 8f)
+        }
+
+        if (vehicle.turretYRot != oldYaw || vehicle.turretXRot != oldPitch) {
+            vehicle.turretTurnSound(vehicle.turretXRot - oldPitch, vehicle.turretYRot - oldYaw, 0.95f)
+        }
+    }
+
+    private fun limitBarrelElevation(
+        hull: Matrix4d, yaw: Float, pitch: Float, minPitch: Float, maxPitch: Float, elevationLimit: Double
+    ): Float {
+        val yawRadians = Math.toRadians(yaw.toDouble())
+        val cosPitchWeight = hull.m01() * sin(yawRadians) + hull.m21() * cos(yawRadians)
+        val sinPitchWeight = -hull.m11()
+        val amplitude = hypot(cosPitchWeight, sinPitchWeight)
+        if (amplitude <= elevationLimit) return pitch
+
+        // 炮管世界 Y 分量为 A cos(pitch) + B sin(pitch)，求最近的允许俯仰角。
+        val phase = atan2(sinPitchWeight, cosPitchWeight)
+        val angle = Math.toRadians(pitch.toDouble())
+        val offset = Math.IEEEremainder(angle - phase, Math.PI)
+        val forbiddenHalfWidth = acos(elevationLimit / amplitude)
+        if (abs(offset) >= forbiddenHalfWidth) return pitch
+
+        val lower = Math.toDegrees(angle - offset - forbiddenHalfWidth).toFloat()
+        val upper = Math.toDegrees(angle - offset + forbiddenHalfWidth).toFloat()
+        val lowerPitch = lower.coerceAtLeast(minPitch)
+        val upperPitch = upper.coerceAtMost(maxPitch)
+        if (lower >= minPitch && upper <= maxPitch) {
+            return if (pitch - lower <= upper - pitch) lower else upper
+        }
+        if (lower >= minPitch) return lower
+        if (upper <= maxPitch) return upper
+        // 机械限位挡住了两个交点，使用更接近安全范围的一侧。
+        return if (lowerPitch - lower <= upper - upperPitch) lowerPitch else upperPitch
+    }
+
     /**
      * 根据操控者调整载具炮塔角度
      * 

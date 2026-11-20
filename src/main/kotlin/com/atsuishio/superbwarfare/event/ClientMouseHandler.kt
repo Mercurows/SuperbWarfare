@@ -162,10 +162,13 @@ object ClientMouseHandler {
 
         }
 
-        if (!notInGame) {
-            val directVehicle = player.vehicle as? VehicleEntity
-            if (directVehicle?.isDirectTurretController(player) == true) {
-                sendPacketToServer(TurretAngleMessage(directVehicle.turretYRot, directVehicle.turretXRot))
+        val directVehicle = player.vehicle as? VehicleEntity
+        if (directVehicle?.isDirectTurretController(player) == true) {
+            val directMode = isDirectTurretMode()
+            if (!notInGame || directMode != directVehicle.entityData.get(VehicleEntity.DIRECT_TURRET_ACTIVE)) {
+                sendPacketToServer(
+                    TurretAngleMessage(directMode, directVehicle.turretYRot, directVehicle.turretXRot)
+                )
             }
         }
     }
@@ -173,10 +176,12 @@ object ClientMouseHandler {
     private var directTurretLastPos: Vec2? = null
     private var directTurretVehicle: VehicleEntity? = null
 
+    fun isDirectTurretMode(): Boolean = mc.options.cameraType.isFirstPerson || ClientEventHandler.zoomVehicle
+
     private fun accumulateDirectTurretInput(player: Player?) {
         val vehicle = player?.vehicle as? VehicleEntity
         if (player == null || vehicle == null || !vehicle.isDirectTurretController(player) ||
-            notInGame || ClientEventHandler.isFreeCam(player) || ClientEventHandler.isNacelleCam(player)
+            !isDirectTurretMode() || notInGame || ClientEventHandler.isFreeCam(player) || ClientEventHandler.isNacelleCam(player)
         ) {
             directTurretVehicle = null
             directTurretLastPos = null
