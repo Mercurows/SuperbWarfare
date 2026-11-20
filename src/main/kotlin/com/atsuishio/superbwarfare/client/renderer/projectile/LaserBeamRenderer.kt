@@ -54,7 +54,7 @@ open class LaserBeamRenderer<T : LaserBeamEntity>(context: EntityRendererProvide
         // `bulletRenderOffset` 在这条路径上是当**固定的初始位置**用的，不做淡出
         // （见 [ClientRenderHandler.muzzleOffsetFor]）—— 整根光束只有十来 tick 寿命，
         // 中途把起点挪回眼位就是让线横移、落点跟着爬，比起点略偏还难看。
-        val muzzleOffset = ClientRenderHandler.muzzleOffsetFor(entity)
+        val muzzleOffset = if (mc.options.cameraType.isFirstPerson) ClientRenderHandler.muzzleOffsetFor(entity) else null
         val origin = cached?.start ?: sampled?.position ?: muzzleOffset?.let { entity.position().add(it) } ?: run {
             // Allow the gun render pass to provide its animated locator before choosing a fallback.
             if (entity.tickCount < 2) return
@@ -183,18 +183,19 @@ open class LaserBeamRenderer<T : LaserBeamEntity>(context: EntityRendererProvide
             if (!firstPerson && context != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND
                 && context != ItemDisplayContext.THIRD_PERSON_LEFT_HAND) return
             val bone = model.getGlobalTransform("muzzle_pos") ?: return
-            val matrix = pose.last().pose()
+            val poseMatrix = pose.last().pose()
+            val matrix = if (firstPerson) BedrockBoneCoordinateTool.modelToView(poseMatrix) else poseMatrix
             val point = Matrix4f(matrix).mul(bone).getTranslation(Vector3f())
-            if (tailBackBone != null) {
+            if (firstPerson && tailBackBone != null) {
                 model.getGlobalTransform(tailBackBone)?.let {
                     point.z = Matrix4f(matrix).mul(it).getTranslation(Vector3f()).z
                 }
             }
-            val view = Vec3(point.x.toDouble(), point.y.toDouble(), point.z.toDouble())
+            val offset = Vec3(point.x.toDouble(), point.y.toDouble(), point.z.toDouble())
             val camera = mc.gameRenderer.mainCamera
             val position = if (firstPerson) BedrockBoneCoordinateTool.viewPointToWorld(
-                view, camera, ClientEventHandler.handFov.toFloat(), ClientEventHandler.fov.toFloat()
-            ) else BedrockBoneCoordinateTool.viewPointToWorld(view, camera)
+                offset, camera, ClientEventHandler.handFov.toFloat(), ClientEventHandler.fov.toFloat()
+            ) else camera.position.add(offset)
             muzzles[holder] = Muzzle(position, firstPerson)
         }
     }

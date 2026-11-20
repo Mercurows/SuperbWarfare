@@ -4,10 +4,12 @@ import com.atsuishio.superbwarfare.Mod.Companion.LOGGER
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
+import com.atsuishio.superbwarfare.client.renderer.matchDepthFormat
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.entity.projectile.ReforgingGravityBallEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.tools.BedrockBoneCoordinateTool
 import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.pipeline.TextureTarget
 import com.mojang.blaze3d.platform.GlStateManager
@@ -432,14 +434,14 @@ class ReforgingGravityBallRenderer(context: EntityRendererProvider.Context) :
                 entityMaskReady = false
                 canLensThisFrame = DisplayConfig.ENABLE_SPECIAL_PROJECTILE_EFFECTS.get() && lensShader != null && !lensFailed &&
                     !ClientEventHandler.activeThermalImaging &&
-                    // Fabulous composites additional entity targets later; a single-color mask is incomplete there.
-                    !Minecraft.useShaderTransparency() &&
                     (!shaderPackActive || ShaderCompat.getPostProcessWorldState(false) != null)
                 if (!canLensThisFrame && (lensScene != null || entityBefore != null)) clearLensing()
                 worldRendering = true
-                captureEntities = canLensThisFrame && Minecraft.getInstance().level?.entitiesForRendering()?.any {
-                    it is ReforgingGravityBallEntity && it.anchored && !it.collapseVisualPlayed
-                } == true
+                // Fabulous composites entities from multiple targets, so only use the depth test there.
+                captureEntities = canLensThisFrame && !Minecraft.useShaderTransparency() &&
+                    Minecraft.getInstance().level?.entitiesForRendering()?.any {
+                        it is ReforgingGravityBallEntity && it.anchored && !it.collapseVisualPlayed
+                    } == true
             } else if (event.stage === RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS && captureEntities) {
                 entityBeforeReady = captureEntityScene(true)
             } else if (event.stage === RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES && entityBeforeReady) {
@@ -450,11 +452,6 @@ class ReforgingGravityBallRenderer(context: EntityRendererProvider.Context) :
             } else if (event.stage === RenderLevelStageEvent.Stage.AFTER_LEVEL) {
                 try {
                     if (canLensThisFrame && lenses.isNotEmpty()) {
-                        if (!entityMaskReady) {
-                            // Never use an incomplete/stale mask on an unsupported framebuffer path.
-                            renderDeferredCores(false)
-                            return
-                        }
                         if (shaderPackThisFrame) {
                             val worldState = ShaderCompat.getPostProcessWorldState()
                             if (worldState == null) {
@@ -489,7 +486,7 @@ class ReforgingGravityBallRenderer(context: EntityRendererProvider.Context) :
         private fun queueLensing(entity: ReforgingGravityBallEntity, pose: Matrix4f, expansion: Double): Boolean {
             if (!canLensThisFrame || !entity.anchored || expansion < 0.025) return false
             // Capture the actual view-space render position, including the virtual muzzle offset.
-            val center = pose.transform(Vector4f(0f, 0f, 0f, 1f))
+            val center = BedrockBoneCoordinateTool.modelToView(pose).transform(Vector4f(0f, 0f, 0f, 1f))
             val radius = (entity.attackRadius * 0.3 * expansion).toFloat()
             if (radius <= 0f || center.z >= -radius * 0.25f) return false
             val projection = RenderSystem.getProjectionMatrix()
@@ -655,8 +652,10 @@ class ReforgingGravityBallRenderer(context: EntityRendererProvider.Context) :
                     scene.setFilterMode(GL11.GL_LINEAR)
                 }
                 // Copy once for all lenses; never sample from an attachment being written to.
+                matchDepthFormat(main.depthTextureId, scene.depthTextureId)
                 GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, main.frameBufferId)
                 GlStateManager._glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, scene.frameBufferId)
+                if (GL30.glCheckFramebufferStatus(GL30.GL_DRAW_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) return false
                 GL30.glBlitFramebuffer(
                     0, 0, main.width, main.height, 0, 0, main.width, main.height,
                     GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST
@@ -667,9 +666,11 @@ class ReforgingGravityBallRenderer(context: EntityRendererProvider.Context) :
                 shader.setSampler("SceneDepth", scene.depthTextureId)
                 // Iris renders hands before final compositing. depthtex2 identifies those pixels.
                 shader.setSampler("WorldDepth", if (preHandDepth != 0) preHandDepth else scene.depthTextureId)
-                shader.setSampler("EntitiesBefore", entityBefore!!.colorTextureId)
-                shader.setSampler("EntitiesAfter", entityAfter!!.colorTextureId)
-                shader.safeGetUniform("EntityImageMask").set(1)
+                val before = entityBefore?.takeIf { entityMaskReady }
+                val after = entityAfter?.takeIf { entityMaskReady }
+                shader.setSampler("EntitiesBefore", before?.colorTextureId ?: scene.colorTextureId)
+                shader.setSampler("EntitiesAfter", after?.colorTextureId ?: scene.colorTextureId)
+                shader.safeGetUniform("EntityImageMask").set(if (before != null && after != null) 1 else 0)
                 shader.safeGetUniform("ShaderPackMode").set(if (preHandDepth != 0) 1 else 0)
                 shader.safeGetUniform("LensProjection").set(projection)
                 shader.safeGetUniform("InverseProjection").set(Matrix4f(projection).invert())

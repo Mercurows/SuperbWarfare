@@ -623,7 +623,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             val rootTransform = model.getRootBone()?.let { model.getGlobalTransform(it.index()) } ?: Matrix4f()
             // 准星 roll 是屏幕空间的：1.21 的手部 pose 预乘了相机旋转，必须先还原成 1.20 的
             // view 空间，否则 atan2 算出来的是世界朝向，准星转动会随玩家偏航角变化。
-            val rootUp = Matrix4f(viewPoseMatrix(poseStack.last().pose())).mul(rootTransform)
+            val rootUp = BedrockBoneCoordinateTool.modelToView(poseStack.last().pose()).mul(rootTransform)
                 .transformDirection(0f, 1f, 0f, Vector3f())
             ClientRenderHandler.gunRoll = atan2(rootUp.x, rootUp.y)
 
@@ -722,7 +722,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             packedOverlay,
             handForContext(transformType)
         )
-        LaserBeamRenderer.captureMuzzle(poseStack, model, transformType, scopedBeamTailBone)
+        if (!transformType.firstPerson() || localFirstPersonHand == InteractionHand.MAIN_HAND) {
+            LaserBeamRenderer.captureMuzzle(poseStack, model, transformType, scopedBeamTailBone)
+        }
     }
 
     /**
@@ -1760,7 +1762,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val end = clip.specifiedEndTimeS
         if (end <= 0f) return
 
-        val data = GunData.from(stack)
+        val data = from(stack)
         val local = holder === Minecraft.getInstance().player
         val spinning = if (local) ClientEventHandler.isBarrelSpinTriggered(stack)
         else PlayerSpinState.isSpinning(holder)
@@ -1951,7 +1953,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             if (data.effect() == MuzzleParticles.smoke) {
                 if (resource.muzzleFx?.trigger == "shot") continue
                 val anchor = if (MuzzleParticles.ANCHOR in boneTransforms) MuzzleParticles.ANCHOR else resolveMuzzleLocator(data, boneTransforms)
-                MuzzleParticles.layers(resource, true, false, 0.0) { spawn(it, anchor) }
+                MuzzleParticles.layers(resource, true, includeSparks = false, distance = 0.0) { spawn(it, anchor) }
             } else {
                 spawn(data.effect(), resolveMuzzleLocator(data, boneTransforms))
             }
@@ -2165,12 +2167,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         ClientRenderHandler.scopeReticleScreen = Vector2f(screen.x, screen.y)
     }
 
-    /**
-     * 1.21专用旋转处理
-     */
-    private fun viewPoseMatrix(poseMatrix: Matrix4f): Matrix4f =
-        Matrix4f(RenderSystem.getModelViewMatrix()).mul(poseMatrix)
-
     private fun submitMuzzleSample(
         poseMatrix: Matrix4f,
         model: GeoGunModel,
@@ -2187,7 +2183,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             ClientRenderHandler.muzzleDirection = null
             return
         }
-        val muzzleTransform = Matrix4f(viewPoseMatrix(poseMatrix)).mul(flareTransform)
+        val muzzleTransform = BedrockBoneCoordinateTool.modelToView(poseMatrix).mul(flareTransform)
         val axis = muzzleTransform.transformDirection(0f, 0f, -1f, Vector3f())
         val axisScale = axis.length()
         if (axisScale < 1e-6f) {
