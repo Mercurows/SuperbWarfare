@@ -1,9 +1,11 @@
 package com.atsuishio.superbwarfare.network.message.send
 
+import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.capability.player.PlayerChargeState
+import com.atsuishio.superbwarfare.data.gun.BayonetChargeInfo
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.RightClickAction
-import com.atsuishio.superbwarfare.event.ChargeWindowHandler
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
@@ -11,6 +13,8 @@ import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import kotlinx.serialization.Serializable
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
+import net.minecraft.world.entity.ai.attributes.AttributeModifier
+import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.player.Player
 
 /** 右键行为里需要服务端权威的那部分；收窗口（`active = false`）时带上客户端折算好的冷却长度 */
@@ -27,7 +31,7 @@ data class UseActionMessage(
 
         // 收窗口跟手里拿着什么无关：换枪取消时手上已经不是那把枪了，所以冷却长度由客户端带过来
         if (action == RightClickAction.BAYONET_CHARGE && !active) {
-            ChargeWindowHandler.clear(player)
+            clear(player)
             if (cooldownTicks > 0) {
                 player.persistentData.putInt(CHARGE_COOLDOWN, player.tickCount + cooldownTicks)
             }
@@ -54,7 +58,7 @@ data class UseActionMessage(
                     SoundSource.PLAYERS, CHARGE_SOUND_VOLUME, 1f
                 )
             }
-            ChargeWindowHandler.start(player, charge)
+            start(player, charge)
         }
     }
 
@@ -63,6 +67,7 @@ data class UseActionMessage(
         private const val CHARGE_COOLDOWN = "BayonetChargeCooldown"
         private const val CHARGE_SOUND_RANGE = 32f
         private const val CHARGE_SOUND_VOLUME = 4f
+        private val SPEED_MODIFIER = loc("bayonet_speed_modifier")
 
         @JvmStatic
         fun clearChargeCooldown(player: Player) {
@@ -73,6 +78,24 @@ data class UseActionMessage(
         // tickCount 不落盘、重登/重生会归零，所以剩余比冷却本身还长只可能是上一局的残留，放行
         private fun onChargeCooldown(player: Player, cooldown: Int): Boolean {
             return player.persistentData.getInt(CHARGE_COOLDOWN) - player.tickCount in 1..cooldown
+        }
+
+        // 移速加成和原版迅捷同源：等级 × 20%
+        @JvmStatic
+        fun start(player: Player, charge: BayonetChargeInfo) {
+            PlayerChargeState.modify(player) { it.copy(charging = true) }
+            player.getAttribute(Attributes.MOVEMENT_SPEED)?.addOrUpdateTransientModifier(
+                AttributeModifier(
+                    SPEED_MODIFIER,
+                    0.2 * (charge.speed + 1), AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+                )
+            )
+        }
+
+        @JvmStatic
+        fun clear(player: Player) {
+            PlayerChargeState.modify(player) { it.copy(charging = false) }
+            player.getAttribute(Attributes.MOVEMENT_SPEED)?.removeModifier(SPEED_MODIFIER)
         }
     }
 }

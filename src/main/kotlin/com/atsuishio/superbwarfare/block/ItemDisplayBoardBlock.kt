@@ -143,7 +143,7 @@ open class ItemDisplayBoardBlock(properties: Properties) : BaseEntityBlock(prope
             }
         }
 
-        // 空手和持物统一从这里取下；事件仅负责放行潜行时的方块交互。
+        // 潜行 + 右键取下物品，空手与持物共用这条路径。
         if (pPlayer.isShiftKeyDown) {
             if (!blockEntity.hasItem) return InteractionResult.PASS
 

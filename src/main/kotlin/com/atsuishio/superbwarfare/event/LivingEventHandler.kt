@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.event
 
 import com.atsuishio.superbwarfare.api.event.PreKillEvent.Indicator
 import com.atsuishio.superbwarfare.api.event.PreKillEvent.SendKillMessage
+import com.atsuishio.superbwarfare.block.ItemDisplayBoardBlock
+import com.atsuishio.superbwarfare.block.entity.ItemDisplayBoardBlockEntity
 import com.atsuishio.superbwarfare.config.common.GameplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
@@ -49,6 +51,7 @@ import net.neoforged.neoforge.common.util.TriState
 import net.neoforged.neoforge.event.entity.living.*
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent
 import net.neoforged.neoforge.event.level.ExplosionEvent
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent
 import java.util.*
@@ -821,5 +824,22 @@ object LivingEventHandler {
         if (event.affectedEntity is VehicleEntity) {
             event.knockbackVelocity = Vec3.ZERO
         }
+    }
+
+    @SubscribeEvent
+    fun onRightClickBlock(event: PlayerInteractEvent.RightClickBlock) {
+        val level = event.level
+        val pos = event.pos
+        if (level.getBlockState(pos).block !is ItemDisplayBoardBlock) return
+
+        val player = event.entity
+        if (player.isSpectator || !player.isShiftKeyDown) return
+
+        val board = level.getBlockEntity(pos) as? ItemDisplayBoardBlockEntity ?: return
+        if (!board.hasItem) return
+
+        // 允许潜行时执行展示板的交互，取下操作仍走方块本身的客户端预测和服务端逻辑。
+        event.useBlock = TriState.TRUE
+        event.useItem = TriState.FALSE
     }
 }
