@@ -86,7 +86,7 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
         if (isDeadOrDying) DEAD_DIMENSIONS.height * 0.85 else 0.65
 
     override fun getDefaultDimensions(pose: Pose): EntityDimensions =
-        if (isDeadOrDying) DEAD_DIMENSIONS.scale(scale) else super.getDimensions(pose)
+        if (isDeadOrDying) DEAD_DIMENSIONS else super.getDefaultDimensions(pose)
 
     override fun doPush(entityIn: Entity) {
         if (!isDeadOrDying) super.doPush(entityIn)
