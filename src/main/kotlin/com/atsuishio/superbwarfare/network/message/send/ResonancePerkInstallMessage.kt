@@ -78,7 +78,7 @@ data class ResonancePerkInstallMessage(
         if (costs.any { (item, count) -> (available[item] ?: 0) < count }) {
             return
         }
-        val result = stack.copy()
+        val result = GunData.stackStorage.copyStack(stack)
         applySelection(GunData.from(result), selections, selectedPerks.associateWith { levels.getValue(it.name) })
         val remaining = costs.toMutableMap()
         for (itemStack in player.inventory.items) {

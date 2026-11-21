@@ -20,6 +20,13 @@ object ItemStackStorage : GunStackStorage {
     private fun legacyTag(stack: ItemStack): CompoundTag? =
         stack.get(DataComponents.CUSTOM_DATA)?.unsafe
 
+    override fun copyStack(stack: ItemStack): ItemStack {
+        val copy = stack.copy()
+        // Vanilla stack copies share component values, including the mutable ItemTag.
+        if (!copy.isEmpty) component(stack)?.let { attach(copy, it.tag.copy()) }
+        return copy
+    }
+
     override fun rootTag(stack: ItemStack): CompoundTag {
         component(stack)?.let { return it.tag }
 

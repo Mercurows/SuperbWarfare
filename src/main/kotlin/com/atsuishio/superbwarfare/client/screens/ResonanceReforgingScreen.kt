@@ -13,6 +13,7 @@ import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.BufferUploader
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.Tesselator
 import com.mojang.blaze3d.vertex.VertexFormat
@@ -364,8 +365,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     }
 
     private fun syncDetails(doc: Document, stack: ItemStack) {
-        // All preview mutations operate on copies, never on the player's live ItemStack.
-        val baseline = GunData.from(stack.copy())
+        val baseline = GunData.from(GunData.stackStorage.copyStack(stack))
         val signature = ResonancePerkInstallMessage.signature(baseline)
         if (!draftReady || signature != baselineSignature) {
             slotSelected = false
@@ -396,7 +396,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         show(doc, "perk-choices-panel", slotSelected)
         if (slotSelected) renderChoices(doc, baseline) else shownChoices = emptyList()
         disable(doc, "reset-perks", pending || draft.values.all { it.isEmpty() })
-        val previewStack = stack.copy()
+        val previewStack = GunData.stackStorage.copyStack(stack)
         val preview = GunData.from(previewStack)
         ResonancePerkInstallMessage.applySelection(preview, draft, draft.values.flatten().associateWith { draftLevels[it] ?: 1 })
         text(doc, "weapon-upgrade-points", draftPoints(preview.level.get()).toString())
@@ -797,8 +797,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             val cy = height / 2f
             val scale = aperture.toFloat() * 2.5f
             val feather = 0.025f * min(1f, scale)
-            val tessellator = Tesselator.getInstance()
-            val buffer = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR)
+            val buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR)
             RenderSystem.enableBlend()
             RenderSystem.defaultBlendFunc()
             RenderSystem.disableDepthTest()
@@ -823,6 +822,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
                 vertex(next, r1 + feather, 255)
                 vertex(next, r1, 0)
             }
+            BufferUploader.drawWithShader(buffer.buildOrThrow())
             RenderSystem.enableCull()
             RenderSystem.enableDepthTest()
             RenderSystem.disableBlend()

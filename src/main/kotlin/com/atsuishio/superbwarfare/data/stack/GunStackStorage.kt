@@ -10,6 +10,9 @@ import net.minecraft.world.item.ItemStack
  */
 interface GunStackStorage {
 
+    /** Copies the stack with independent mutable gun data. */
+    fun copyStack(stack: ItemStack): ItemStack = stack.copy()
+
     /** 取（必要时创建）这份栈的根 compound */
     fun rootTag(stack: ItemStack): CompoundTag
 
