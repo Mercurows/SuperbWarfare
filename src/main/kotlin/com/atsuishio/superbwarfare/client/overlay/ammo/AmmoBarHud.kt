@@ -30,7 +30,6 @@ import kotlin.math.max
 object AmmoBarHud {
     private const val PATH = "superbwarfare/ammo_bar.html"
     private val FORMAT_CODE = Pattern.compile("§.")
-    private val LARGE_FIRE_MODE_ICONS = setOf("rpm600", "rpm1200", "rpm1800")
     // 与 ammo_bar.html 中 .sbw-muted 一致：备用弹药与不可切换的开火模式键共用此灰色。
     private const val MUTED_CLASS = "sbw-muted"
     private var document: Document? = null
@@ -139,14 +138,13 @@ object AmmoBarHud {
         wasReloading = reloading
 
         val fireMode = fireModeTextureName(data.selectedFireModeInfo().name)
-        val fireModeSize = if (fireMode in LARGE_FIRE_MODE_ICONS) 16 else 8
         if (fireMode != mode) {
             mode = fireMode
             modeAt = now
         }
         attr("fire-mode-icon", "src", "superbwarfare:textures/overlay/ammo_bar/fire_mode/$fireMode.png")
         val fade = if (reduced) 1.0 else progress(now, modeAt, 120)
-        attr("fire-mode-icon", "style", "width:${fireModeSize}px;height:${fireModeSize}px;opacity:$fade;")
+        style("fire-mode-icon", "opacity", fade.toString())
         val showModeIndex = DisplayConfig.ADVANCED_AMMO_HUD.get() && modes.size > 3
         ordinal("fire-mode-index", data.selectedFireMode.get(), if (showModeIndex) modes.size else 0)
         updateSources(data, player, now, reduced)
