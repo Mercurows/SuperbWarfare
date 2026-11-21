@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.renderer.gun
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.particle.MuzzleSmokeParticle
 import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource
-import com.atsuishio.superbwarfare.tools.BedrockBoneCoordinateTool
 import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.resource.ParticleDefinitionLoader
 import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.runtime.ParticleEmitterInstance
 import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.world.WorldEmitterManager
@@ -88,16 +87,18 @@ internal object MuzzleParticles {
         emitter.setVariable("smoke_drag", base.drag.coerceIn(0f, 30f))
     }
 
-    fun spawnWorld(view: Matrix4f, resource: DefaultGunResource, includeSmoke: Boolean, includeSparks: Boolean) {
+    fun spawnWorld(cameraRelativePose: Matrix4f, resource: DefaultGunResource, includeSmoke: Boolean, includeSparks: Boolean) {
         val mc = Minecraft.getInstance()
         val level = mc.level ?: return
         val camera = mc.gameRenderer.mainCamera
-        val origin = BedrockBoneCoordinateTool.viewPointToWorld(Vec3(view.m30().toDouble(), view.m31().toDouble(), view.m32().toDouble()), camera)
-        val axis = view.transformDirection(0f, 0f, -1f, Vector3f())
-        if (axis.lengthSquared() < 1e-10f) return
-        val direction = BedrockBoneCoordinateTool.viewPointToWorldOffset(Vec3(axis.x.toDouble(), axis.y.toDouble(), axis.z.toDouble()), camera).normalize()
+        // Third-person model poses are already aligned to the world axes in 1.21.
+        val position = cameraRelativePose.getTranslation(Vector3f())
+        val origin = camera.position.add(position.x.toDouble(), position.y.toDouble(), position.z.toDouble())
+        val direction = cameraRelativePose.transformDirection(0f, 0f, -1f, Vector3f())
+        if (direction.lengthSquared() < 1e-10f) return
+        direction.normalize()
         val anchor = Matrix4f().translation(origin.x.toFloat(), origin.y.toFloat(), origin.z.toFloat())
-            .rotate(Quaternionf().rotationTo(0f, 0f, -1f, direction.x.toFloat(), direction.y.toFloat(), direction.z.toFloat()))
+            .rotate(Quaternionf().rotationTo(0f, 0f, -1f, direction.x, direction.y, direction.z))
         val manager = WorldEmitterManager.getInstance()
         layers(resource, includeSmoke, includeSparks, camera.position.distanceTo(origin)) { effect ->
             if (manager.emitterCount >= 96) return@layers
@@ -107,6 +108,8 @@ internal object MuzzleParticles {
             bindSmokeDelivery(emitter, effect, false)
             manager.updateEmitterAnchor(emitter, anchor)
             configure(emitter, resource, effect)
+            // Emit before the manager's first 50 ms tick expires these instant effects.
+            emitter.tick(0f)
         }
     }
 }

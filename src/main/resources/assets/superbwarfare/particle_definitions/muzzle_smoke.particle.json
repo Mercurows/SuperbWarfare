@@ -41,8 +41,8 @@
       },
       "minecraft:particle_initial_speed": "variable.smoke_speed * (0.8 + 0.4 * variable.particle_random_1)",
       "minecraft:particle_initial_spin": {
-        "rotation": "math.random(0, 360)",
-        "rotation_rate": "math.random(-40, 40)"
+        "rotation": "-math.random(0, 360)",
+        "rotation_rate": "-math.random(-40, 40)"
       },
       "minecraft:particle_motion_dynamic": {
         "linear_drag_coefficient": "variable.smoke_drag",
@@ -55,7 +55,7 @@
       "minecraft:particle_appearance_lighting": {},
       "minecraft:particle_appearance_billboard": {
         "size": [
-          "(variable.smoke_size * (0.8 + 0.4 * variable.particle_random_1)) + (variable.smoke_growth * (0.8 + 0.4 * variable.particle_random_2) * (variable.particle_age / variable.particle_lifetime))",
+          "-(variable.smoke_size * (0.8 + 0.4 * variable.particle_random_1) + variable.smoke_growth * (0.8 + 0.4 * variable.particle_random_2) * (variable.particle_age / variable.particle_lifetime))",
           "(variable.smoke_size * (0.8 + 0.4 * variable.particle_random_1)) + (variable.smoke_growth * (0.8 + 0.4 * variable.particle_random_2) * (variable.particle_age / variable.particle_lifetime))"
         ],
         "facing_camera_mode": "rotate_xyz",

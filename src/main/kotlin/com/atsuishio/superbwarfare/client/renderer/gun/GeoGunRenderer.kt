@@ -1961,16 +1961,15 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
         if (locators.isEmpty()) return
 
-        val basePoseInv = Matrix4f(basePose).invert()
-        val cameraRotationInv = cameraRotationInverse()
-        val gunViewPose = poseStack.last().pose()
+        val gunPose = poseStack.last().pose()
+        val localGunPose = Matrix4f(basePose).invert().mul(gunPose)
+        val worldAlignedGunPose = cameraRotationInverse().mul(BedrockBoneCoordinateTool.modelToView(gunPose))
 
         for ((emitter, locator) in locators) {
             val boneTransform = boneTransforms[locator] ?: continue
-            val muzzleView = Matrix4f(gunViewPose).mul(boneTransform)
             emitter.setEmitterTransform(
-                Matrix4f(basePoseInv).mul(muzzleView),
-                Matrix4f(cameraRotationInv).mul(muzzleView)
+                Matrix4f(localGunPose).mul(boneTransform),
+                Matrix4f(worldAlignedGunPose).mul(boneTransform)
             )
         }
 
