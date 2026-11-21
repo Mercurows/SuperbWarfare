@@ -19,6 +19,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.neoforged.neoforge.energy.EnergyStorage
+import net.neoforged.neoforge.energy.IEnergyStorage
 import net.neoforged.neoforge.items.IItemHandler
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper
 import kotlin.jvm.optionals.getOrDefault
@@ -69,6 +70,8 @@ open class WeaponRepairStationBlockEntity(pos: BlockPos, state: BlockState) :
         private set
 
     private val itemHandlers = Direction.entries.associateWith { SidedInvWrapper(this, it) }
+
+    fun getEnergyStorage(): IEnergyStorage? = if (isRemoved) null else energyStorage
 
     fun getItemHandler(side: Direction?): IItemHandler? =
         if (isRemoved || side == null) null else itemHandlers[side]

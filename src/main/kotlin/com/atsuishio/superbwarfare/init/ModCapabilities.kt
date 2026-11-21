@@ -116,6 +116,10 @@ object ModCapabilities {
 
         // 武器维修站
         event.registerBlockEntity(
+            Capabilities.EnergyStorage.BLOCK, ModBlockEntities.WEAPON_REPAIR_STATION.get()
+        ) { obj, _ -> obj.getEnergyStorage() }
+
+        event.registerBlockEntity(
             Capabilities.ItemHandler.BLOCK, ModBlockEntities.WEAPON_REPAIR_STATION.get()
         ) { obj, side -> obj.getItemHandler(side) }
     }
