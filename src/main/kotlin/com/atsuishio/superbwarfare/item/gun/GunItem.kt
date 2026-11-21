@@ -269,7 +269,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         entity: T?,
         onBroken: Consumer<Item>
     ): Int {
-        damageWithoutBreaking(stack, amount)
+        if (entity?.hasInfiniteMaterials() != true) {
+            damageWithoutBreaking(stack, amount)
+        }
         return 0
     }
 

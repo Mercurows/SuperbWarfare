@@ -15,6 +15,7 @@ import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.common.CommonHooks
 import net.neoforged.neoforge.event.entity.player.PlayerEvent
 
 open class HammerItem(properties: Properties) : MeleeGunItem(properties) {
@@ -30,7 +31,7 @@ open class HammerItem(properties: Properties) : MeleeGunItem(properties) {
         tag.putInt("CraftCount", tag.getInt("CraftCount") + 1)
         NBTTool.saveTag(stack, tag)
 
-        if (!itemstack.isDamageableItem) return stack
+        if (CommonHooks.getCraftingPlayer().hasInfiniteMaterials() || !itemstack.isDamageableItem) return stack
 
         stack.damageValue = itemstack.damageValue + 1
 
