@@ -48,6 +48,8 @@ object ItemStackStorage : GunStackStorage {
         attach(stack, live)
     }
 
+    override fun bindRoot(stack: ItemStack, root: CompoundTag) = attach(stack, root)
+
     override fun carrierToken(stack: ItemStack): Long = GunStackStorage.tokenOf(rootTag(stack))
 
     override fun lastWrittenTagOrNull(stack: ItemStack): CompoundTag? = component(stack)?.written

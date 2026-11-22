@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.data.stack.GunStackStorage
 import com.atsuishio.superbwarfare.event.GunEventHandler
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.tools.playLocalSound
-import com.atsuishio.superbwarfare.tools.tag
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
@@ -134,6 +133,7 @@ object SubWeaponRuntime {
 
         cache.keys.retainAll(found.keys)
         cache.putAll(found)
+        if (!client && found.isNotEmpty()) gun.trackSharedTagChanges()
         return found.values.toList()
     }
 
@@ -156,10 +156,8 @@ object SubWeaponRuntime {
         root: CompoundTag,
         token: Long,
     ): Instance {
-        val stack = ItemStack(item, 1).apply {
-            tag = root
-        }
-        GunData.stackStorage.writeRoot(stack, root)
+        val stack = ItemStack(item, 1)
+        GunData.stackStorage.bindRoot(stack, root)
 
         // ⚠ 必须在 `GunData.from(stack)` **之前**：`GunData` 构造时就把 `defaultDataId` 解码进状态
         applyBaselineId(stack, attachmentId, info)

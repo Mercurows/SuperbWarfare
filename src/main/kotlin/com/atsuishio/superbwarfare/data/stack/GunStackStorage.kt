@@ -27,6 +27,9 @@ interface GunStackStorage {
      */
     fun writeRoot(stack: ItemStack, root: CompoundTag)
 
+    /** Binds a new sub-weapon stack to the host attachment's live [root] tag. */
+    fun bindRoot(stack: ItemStack, root: CompoundTag)
+
     /**
      * 载体身份令牌
      */

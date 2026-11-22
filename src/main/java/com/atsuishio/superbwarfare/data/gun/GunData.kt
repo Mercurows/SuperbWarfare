@@ -190,8 +190,13 @@ class GunData private constructor(
      */
     private var propertiesInvalidated: Boolean = false
 
-    /** Whether anything ever asked for a write, so [persist] cannot take its "never touched" shortcut. */
+    /** Whether this instance or a weapon sharing its tag can have state to write. */
     private var mutated: Boolean = false
+
+    /** Ensures the next [save] checks for changes written directly by installed sub-weapons. */
+    internal fun trackSharedTagChanges() {
+        mutated = true
+    }
 
     /**
      * Marks the cached computed properties stale.
