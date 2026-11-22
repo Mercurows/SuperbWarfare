@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.event
 import com.atsuishio.superbwarfare.block.ShelfBlock
 import com.atsuishio.superbwarfare.client.gun.GunChargeHandler
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
+import com.atsuishio.superbwarfare.client.lighting.FlashlightHandler
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.overlay.ammo.AmmoBarHud
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer
@@ -360,6 +361,14 @@ object ClickEventHandler {
                             player.playSound(ModSounds.CANNON_ZOOM_OUT.get())
                         }
                     }
+                }
+            }
+
+            if (key == ModKeyMappings.TOGGLE_FLASHLIGHT.key.value &&
+                ModKeyMappings.TOGGLE_FLASHLIGHT.keyModifier.isActive(KeyConflictContext.IN_GAME)
+            ) {
+                FlashlightHandler.toggleLocal()?.let {
+                    player.playSound(ModSounds.CANNON_ZOOM_OUT.get(), 1f, 1f)
                 }
             }
 

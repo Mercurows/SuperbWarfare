@@ -1,5 +1,5 @@
 {
-	"format_version": "1.12.0",
+	"format_version": "1.21.110",
 	"minecraft:geometry": [
 		{
 			"description": {
@@ -146,6 +146,11 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "light_pos",
+					"parent": "grip",
+					"pivot": [0, -1, -1]
 				},
 				{
 					"name": "bone",
