@@ -55,6 +55,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
@@ -65,6 +66,7 @@ import net.minecraftforge.items.IItemHandler
 import net.minecraftforge.registries.RegistryManager
 import java.util.*
 import java.util.function.Function
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -1383,6 +1385,33 @@ class GunData private constructor(
 
     /** 近战基础距离：`player.getEntityReach()` 由调用方加上 */
     fun meleeRange(): Double = get(GunProp.MELEE_RANGE)
+
+    internal class MeleeSwingTiming(val duration: Int, val hitTicks: IntArray)
+
+    internal fun meleeSwingTiming(player: Player, index: Int, chargeStrike: Boolean, releaseStrike: Boolean): MeleeSwingTiming? {
+        val action = resolveMeleeAction(index)
+        val source = meleeActions()[index]
+        val charge = if (chargeStrike) get(GunProp.BAYONET_CHARGE) else null
+        val rpmMultiplier = get(GunProp.RPM_MULTIPLIER)
+        val weaponSpeed = if (rpmMultiplier.isFinite()) rpmMultiplier.coerceAtLeast(0.0) else 1.0
+        val playerSpeed = (player.getAttributeValue(Attributes.ATTACK_SPEED) / 4.0).coerceIn(1.0, 4.0)
+        val speed = if (chargeStrike) 1.0 else playerSpeed * weaponSpeed
+        if (speed <= 0.0) return null
+
+        fun scaledTicks(ticks: Int): Int = if (ticks <= 0) 0 else ceil(ticks / speed).toInt().coerceAtLeast(1)
+
+        val rawDuration = if (releaseStrike) source.releaseDuration ?: action.duration
+        else charge?.strikeDuration?.takeIf { it > 0 } ?: action.duration
+        val duration = scaledTicks(rawDuration).coerceAtLeast(1)
+        val chargeHitTime = charge?.strikeHitTime?.takeIf { it >= 0 }
+        val hitTimes = when {
+            releaseStrike -> source.releaseHitTime?.list?.takeIf { it.isNotEmpty() } ?: action.hitTimes
+            chargeHitTime != null -> listOf(chargeHitTime)
+            else -> action.hitTimes
+        }
+
+        return MeleeSwingTiming(duration, hitTimes.map { scaledTicks(it).coerceIn(0, duration - 1) }.sorted().toIntArray())
+    }
 
     /** Checks if weapon is a shotgun (projectile count > 1). */
     val isShotgun: Boolean

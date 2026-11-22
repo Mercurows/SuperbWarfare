@@ -8,6 +8,9 @@ import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getPerkPriority
 import com.atsuishio.superbwarfare.data.gun.melee.isMeleeProjectileMarker
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.perk.Perk
+import net.minecraft.core.registries.Registries
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.tags.TagKey
 import net.minecraftforge.registries.RegistryManager
 import kotlin.math.min
 import kotlin.reflect.KProperty1
@@ -109,6 +112,21 @@ class GunProp<T, R>(
 
         @JvmField
         val MELEE_DAMAGE = plainProp(DefaultGunData::meleeDamage)
+
+        @JvmField
+        val CAN_HARVEST = plainProp(DefaultGunData::canHarvest)
+
+        @JvmField
+        val MINE_SPEED = plainProp(DefaultGunData::mineSpeed)
+
+        @JvmField
+        val MINEABLE_BLOCK_TAGS = complexProp(DefaultGunData::mineableBlockTags) { tags ->
+            tags.mapNotNull { ResourceLocation.tryParse(it.removePrefix("#")) }
+                .map { TagKey.create(Registries.BLOCK, it) }
+        }
+
+        @JvmField
+        val HARVEST_TIER = complexProp(DefaultGunData::harvestTier, ResourceLocation::tryParse)
 
         @JvmField
         val MELEE_DURATION = plainProp(DefaultGunData::meleeDuration)

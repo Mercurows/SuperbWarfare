@@ -20,10 +20,8 @@ import com.atsuishio.superbwarfare.tools.MeleeQuery
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
-import kotlin.math.ceil
 
 /**
  * 客户端近战执行器：输入判定 → 连招下标锁存 → 动作锁 → 按本段 `HitTime` 结算 → 发报文
@@ -235,17 +233,6 @@ object MeleeClientHandler {
         return 0
     }
 
-    /** 玩家攻速加成（最高 4 倍）与枪械全局射速倍率叠乘，挥击开始时锁存到计时中。 */
-    private fun meleeAttackSpeed(attackSpeed: Double, rpmMultiplier: Double): Double {
-        val playerSpeed = (attackSpeed / DEFAULT_ATTACK_SPEED).coerceIn(1.0, MAX_ATTACK_SPEED_MULTIPLIER)
-        val weaponSpeed = if (rpmMultiplier.isFinite()) rpmMultiplier.coerceAtLeast(0.0) else 1.0
-        return playerSpeed * weaponSpeed
-    }
-
-    /** 按同一个攻速倍率缩放时长与所有命中点；向上取整，正数至少保留 1 tick。 */
-    private fun scaledTicks(ticks: Int, speed: Double): Int =
-        if (ticks <= 0) ticks else ceil(ticks / speed).toInt().coerceAtLeast(1)
-
     /**
      * 这把枪现在**正忙**（换弹 / 拉栓 / 蓄力），近战入口必须被拒
      */
@@ -302,28 +289,8 @@ object MeleeClientHandler {
         if (action.cooldown > 0 && data.cooldown.isCoolingDown(Cooldown.meleeKey(index))) return false
 
         // ③ 冲锋/蓄势释放的时长与结算点独立于动作表（数据里没写就跟着那一段走）
-        val charge = if (chargeStrike) data.get(GunProp.BAYONET_CHARGE) else null
-        val source = actions.getOrNull(index)
-        val speed = if (chargeStrike) 1.0 else meleeAttackSpeed(
-            player.getAttributeValue(Attributes.ATTACK_SPEED), data.get(GunProp.RPM_MULTIPLIER)
-        )
-        if (speed <= 0.0) return false
-        val rawDuration = when {
-            releaseStrike -> source?.releaseDuration ?: action.duration
-            else -> charge?.strikeDuration?.takeIf { it > 0 } ?: action.duration
-        }
-        val duration = scaledTicks(rawDuration, speed)
-        val hitTimes = (when {
-            releaseStrike ->
-                source?.releaseHitTime?.list?.takeIf { it.isNotEmpty() } ?: action.hitTimes
-
-            chargeStrike -> {
-                val strikeHitTime = charge?.strikeHitTime?.takeIf { it >= 0 }
-                if (strikeHitTime != null) listOf(strikeHitTime) else action.hitTimes
-            }
-
-            else -> action.hitTimes
-        }).map { scaledTicks(it, speed) }
+        val timing = data.meleeSwingTiming(player, index, chargeStrike, releaseStrike) ?: return false
+        val duration = timing.duration
 
         // ④ 动作占用（时长 = 本段的 Duration）
         if (chaining) state.releaseMeleeForChain()
@@ -334,10 +301,7 @@ object MeleeClientHandler {
         state.meleeDuration = duration
         state.meleeTicks = duration
         // `meleeTicks` 递减方向：HitTime 越大越晚，换算成阈值后要从大到小排列
-        state.meleeHitTicks = hitTimes
-            .map { (duration - it).coerceIn(1, duration) }
-            .sortedDescending()
-            .toIntArray()
+        state.meleeHitTicks = timing.hitTicks.map { duration - it }.toIntArray()
         state.meleeHitIndex = 0
         state.meleeFromBayonetCharge = chargeStrike
         state.meleeHeavyRelease = releaseStrike
@@ -347,6 +311,11 @@ object MeleeClientHandler {
         // ⑤ 通知动画侧"新的一次挥击开始了"。按住 V 连续挥击时状态一直是 MELEE，
         //    光靠状态切换判断的话动画只会播第一段（见 [swingSerial] 的说明）。
         swingSerial++
+        state.meleeHarvestSwingId = swingSerial.takeIf { !player.isCreative && data.get(GunProp.CAN_HARVEST) }
+        state.meleeHarvestSwingId?.let { id ->
+            sendPacketToServer(MeleeAttackMessage(MeleeAttackMessage.SOURCE_MAIN, index, emptyList(),
+                chargeStrike = chargeStrike, harvestSwingId = id, releaseStrike = releaseStrike))
+        }
 
         if (action.cooldown > 0) {
             data.cooldown.set(Cooldown.meleeKey(index), action.cooldown)
@@ -357,10 +326,11 @@ object MeleeClientHandler {
 
         // ⑦ 与旧的帧驱动开火冷却对齐：挥击期间不该顺手打出一发
         ClientEventHandler.fireCooldown = (duration + 4).toDouble()
+        if (state.meleeHarvestSwingId != null && timing.hitTicks.firstOrNull() == 0) tickActiveSwing(player, data, state)
 
         debugLog {
             "melee swing: gun=${data.id} index=$index duration=$duration " +
-                    "hitTimes=$hitTimes comboWindow=$inComboWindow charge=${charge != null}"
+                    "hitTimes=${timing.hitTicks.contentToString()} comboWindow=$inComboWindow charge=$chargeStrike"
         }
 
         return true
@@ -385,7 +355,7 @@ object MeleeClientHandler {
             // 冲锋撞上的目标只有第一下强制命中
             val forced = if (state.meleeHitIndex == 0) state.meleeChargeTarget else null
             if (state.meleeHitIndex == 0) state.meleeChargeTarget = null
-            state.meleeHitIndex++
+            val hitIndex = state.meleeHitIndex++
 
             resolveHit(
                 player,
@@ -394,6 +364,8 @@ object MeleeClientHandler {
                 state.meleeActionIndex,
                 forced,
                 state.meleeFromBayonetCharge,
+                state.meleeHarvestSwingId,
+                hitIndex,
             )
         }
     }
@@ -405,6 +377,8 @@ object MeleeClientHandler {
         actionIndex: Int,
         forced: Entity? = null,
         chargeStrike: Boolean = false,
+        harvestSwingId: Int? = null,
+        hitIndex: Int = 0,
     ) {
         if (!player.isAlive || player.isRemoved || player.isSpectator) return
         val context = MeleeQuery.contextOf(player, action)
@@ -425,6 +399,8 @@ object MeleeClientHandler {
                 actionIndex = actionIndex,
                 targets = hits.map { it.toPayload() },
                 chargeStrike = chargeStrike,
+                harvestSwingId = harvestSwingId,
+                harvestHitIndex = hitIndex.takeIf { harvestSwingId != null },
             )
         )
 
@@ -490,9 +466,6 @@ object MeleeClientHandler {
     /** 换弹/拉栓占用的"安全上限"：真正的释放由状态机自己结束，这里只是别让锁永远占着 */
     private const val MELEE_SAFE_LOCK_TICKS = 400
 
-    /** `Attributes.ATTACK_SPEED` 的玩家默认值 */
-    private const val DEFAULT_ATTACK_SPEED = 4.0
-    private const val MAX_ATTACK_SPEED_MULTIPLIER = 4.0
 
     // 蓄势到这个百分比就允许松手打出（不必按满）
     private const val HEAVY_HOLD_RELEASE_PERCENT = 90

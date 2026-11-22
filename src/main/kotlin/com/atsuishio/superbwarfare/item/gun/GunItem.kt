@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.PropertyModifier
 import com.atsuishio.superbwarfare.data.gun.*
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeHarvest
 import com.atsuishio.superbwarfare.data.gun.melee.ProjectileMarker
 import com.atsuishio.superbwarfare.data.gun.melee.isEngineProjectileMarker
 import com.atsuishio.superbwarfare.data.gun.melee.normalizeProjectileMarker
@@ -74,6 +75,7 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import net.minecraftforge.common.TierSortingRegistry
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.common.util.LazyOptional
@@ -185,7 +187,36 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
      */
     open fun isInitialized(data: GunData) = data.uuid != null
 
-    override fun canAttackBlock(pState: BlockState, pLevel: Level, pPos: BlockPos, pPlayer: Player) = false
+    internal fun canHarvest(data: GunData): Boolean =
+        data.get(GunProp.CAN_HARVEST) && useAsWeaponInHand() && hasMeleeAttack(data) && !isBroken(data.stack)
+
+    private fun isHarvestToolFor(data: GunData, state: BlockState): Boolean =
+        canHarvest(data) && data.get(GunProp.MINEABLE_BLOCK_TAGS).any { state.`is`(it) }
+
+    override fun canAttackBlock(state: BlockState, level: Level, pos: BlockPos, player: Player): Boolean =
+        MeleeHarvest.isFinishing(player, pos, this)
+
+    override fun mineBlock(stack: ItemStack, level: Level, state: BlockState, pos: BlockPos, miner: LivingEntity): Boolean {
+        if (!canHarvest(GunData.from(stack))) return false
+        if (!level.isClientSide && state.getDestroySpeed(level, pos) != 0f) {
+            stack.hurtAndBreak(1, miner) { it.broadcastBreakEvent(InteractionHand.MAIN_HAND) }
+        }
+        return true
+    }
+
+    override fun getDestroySpeed(stack: ItemStack, state: BlockState): Float {
+        val data = GunData.from(stack)
+        return if (isHarvestToolFor(data, state)) data.get(GunProp.MINE_SPEED) else 1f
+    }
+
+    override fun isCorrectToolForDrops(stack: ItemStack, state: BlockState): Boolean {
+        val data = GunData.from(stack)
+        if (!isHarvestToolFor(data, state)) return false
+
+        val tierId = data.get(GunProp.HARVEST_TIER) ?: return false
+        val tier = TierSortingRegistry.byName(tierId) ?: return false
+        return TierSortingRegistry.isCorrectTierForDrops(tier, state)
+    }
 
     override fun inventoryTick(stack: ItemStack, level: Level, entity: Entity, slot: Int, selected: Boolean) {
         // 副武器物品（`useAsWeaponInHand() == false`）躺在背包/手上时不跑枪械状态机：

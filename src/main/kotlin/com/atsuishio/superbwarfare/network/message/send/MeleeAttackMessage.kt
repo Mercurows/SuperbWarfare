@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.MeleeSound
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeEffectDispatcher
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeHarvest
 import com.atsuishio.superbwarfare.data.gun.melee.ResolvedMeleeAction
 import com.atsuishio.superbwarfare.data.gun.subdata.Cooldown
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -57,6 +58,10 @@ data class MeleeAttackMessage(
     val targets: List<TargetPayload>,
     /** 这一击是不是刺刀冲锋撞人那一下（伤害基数改走 `BayonetCharge.StrikeDamage`） */
     val chargeStrike: Boolean = false,
+    /** A harvest swing start has an ID and no hit index; subsequent hit frames carry both. */
+    val harvestSwingId: Int? = null,
+    val harvestHitIndex: Int? = null,
+    val releaseStrike: Boolean = false,
 ) : ServerPacketPayload() {
 
     @Serializable
@@ -97,6 +102,22 @@ data class MeleeAttackMessage(
 
         val actions = data.meleeActions()
         val index = ((actionIndex % actions.size) + actions.size) % actions.size
+        if (harvestSwingId != null && harvestHitIndex == null) {
+            val action = data.resolveMeleeAction(index)
+            if (action.cooldown <= 0 || !data.cooldown.isCoolingDown(Cooldown.meleeKey(index))) {
+                MeleeHarvest.startSwing(player, data, harvestSwingId, actionIndex, chargeStrike, releaseStrike)
+            }
+            return
+        }
+
+        if (harvestSwingId != null && harvestHitIndex != null &&
+            MeleeHarvest.acceptHit(player, data, harvestSwingId, actionIndex, chargeStrike, harvestHitIndex) &&
+            (!chargeStrike || targets.isEmpty())
+        ) {
+            val action = data.resolveMeleeAction(index)
+            if (MeleeHarvest.hitBlock(player, data, baseDamage(player, data, action, chargeStrike))) return
+        }
+
 
         val bladeCharge = if (!chargeStrike && actions[index].isHeavy()) {
             InvisibleBladeShapeness.charge(data)
@@ -160,6 +181,12 @@ data class MeleeAttackMessage(
         }
     }
 
+    private fun baseDamage(attacker: Player, data: GunData, action: ResolvedMeleeAction, chargeStrike: Boolean): Double {
+        val chargeDamage = data.get(GunProp.BAYONET_CHARGE).strikeDamage
+        val weaponDamage = if (chargeStrike && chargeDamage > 0) chargeDamage else action.damage
+        return weaponDamage + attacker.getAttributeValue(Attributes.ATTACK_DAMAGE) - 1.0
+    }
+
     private fun attack(
         attacker: Player,
         data: GunData,
@@ -173,12 +200,10 @@ data class MeleeAttackMessage(
     ): Boolean {
         val level = attacker.level()
         // 刺刀冲锋那一击的伤害基数由 `BayonetCharge.StrikeDamage` 给（绝对值），不写就还是那一段的伤害
-        val chargeDamage = data.get(GunProp.BAYONET_CHARGE).strikeDamage
         // 近战伤害 = 面板伤害 + 玩家自身的攻击伤害属性 - 1（初始基础攻击伤害修正）。
         // 枪械面板不写进 `ATTACK_DAMAGE`（见 `GunItem.getAttributeModifiers`），属性里只有玩家自己的攻击伤害：
         // 初始基础攻击伤害为 1，减 1 后基础状态下正好打出面板值；基础攻击伤害被提高到 10 时打出 面板 + 10 - 1。
-        val baseDamage = (if (chargeStrike && chargeDamage > 0) chargeDamage else action.damage) +
-                attacker.getAttributeValue(Attributes.ATTACK_DAMAGE) - 1.0
+        val baseDamage = baseDamage(attacker, data, action, chargeStrike)
         var hurtCount = 0
         var hitCount = 0
         var landedHit = false
