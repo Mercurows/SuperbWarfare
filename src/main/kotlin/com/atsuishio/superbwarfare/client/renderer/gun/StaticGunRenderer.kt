@@ -328,7 +328,7 @@ object StaticGunRenderer : ResourceManagerReloadListener {
             renderScopeAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
             renderStock(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
             renderGripHandGuard(stack, model)
-            renderGripAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
+            renderGripAttachment(stack, model, transformType, poseStack, bufferSource, packedLight, packedOverlay)
             renderOemScope(stack, model)
             renderOemMuzzle(stack, model)
             renderMuzzleAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)

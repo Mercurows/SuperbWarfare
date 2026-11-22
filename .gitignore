@@ -145,3 +145,7 @@ bin/
 .mc-mcp-cache/
 .mc-mcp-cache-test/
 /.claude/
+/docs/research/notes-external-prior-art.md
+/docs/research/notes-muzzle-world-light.md
+/docs/research/notes-screen-light.md
+/docs/research/手电筒锥形光照可行性研究.md

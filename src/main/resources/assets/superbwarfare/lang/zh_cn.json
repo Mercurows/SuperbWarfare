@@ -1103,6 +1103,7 @@
   "key.superbwarfare.active_thermal_imaging": "热成像/热融合开关",
   "key.superbwarfare.loiter_config": "自动盘旋配置",
   "key.superbwarfare.toggle_tactical_map": "打开战术地图",
+  "key.superbwarfare.toggle_flashlight": "手电筒开关",
   "key.superbwarfare.change_seat": "切换座位(+数字)",
 
   "effect.superbwarfare.shock": "电击",

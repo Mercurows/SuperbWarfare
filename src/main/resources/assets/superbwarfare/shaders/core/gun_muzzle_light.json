@@ -14,6 +14,10 @@
     {"name":"LightPosition","type":"float","count":3,"values":[0,0,0]},
     {"name":"LightDirection","type":"float","count":3,"values":[0,0,-1]},
     {"name":"LightRadius","type":"float","count":1,"values":[1]},
-    {"name":"LightStrength","type":"float","count":1,"values":[0]}
+    {"name":"LightStrength","type":"float","count":1,"values":[0]},
+    {"name":"LightCone","type":"float","count":2,"values":[-2,-2]},
+    {"name":"LightColor","type":"float","count":3,"values":[1,0.64,0.28]},
+    {"name":"LightShadow","type":"float","count":1,"values":[1]},
+    {"name":"LightSelfMask","type":"float","count":1,"values":[0]}
   ]
 }

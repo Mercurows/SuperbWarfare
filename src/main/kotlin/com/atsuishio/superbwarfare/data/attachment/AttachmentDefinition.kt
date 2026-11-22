@@ -133,6 +133,9 @@ data class AttachmentDefinition(
     @SerialName("Laser")
     val laser: LaserInfo? = null,
 
+    @SerialName("Flashlight")
+    val flashlight: FlashlightInfo? = null,
+
     /**
      * 枪盾定义（见 [ShieldInfo]）：**带上它就说明这件配件会挡投射物**
      */
@@ -293,6 +296,20 @@ data class AttachmentDefinition(
             return result
         }
 
+        @JvmStatic
+        fun findFlashlights(gun: GunData?): List<FlashlightEmitter> {
+            if (gun == null) return emptyList()
+
+            val result = mutableListOf<FlashlightEmitter>()
+            for (slot in AttachmentSlots.ALL) {
+                val attachmentId = gun.attachment.id(slot.type) ?: continue
+                val definition = from(attachmentId) ?: continue
+                val info = definition.flashlight ?: continue
+                result += FlashlightEmitter(slot, definition, info)
+            }
+            return result
+        }
+
         /** 列出该枪上全部装了枪盾的槽位，按 [AttachmentType.entries] 的顺序，也就是吸收伤害的顺序 */
         @JvmStatic
         fun findShields(gun: GunData?): List<ShieldEmitter> {
@@ -325,6 +342,12 @@ data class LaserEmitter(
     val slot: AttachmentSlot,
     val definition: AttachmentDefinition,
     val info: LaserInfo,
+)
+
+data class FlashlightEmitter(
+    val slot: AttachmentSlot,
+    val definition: AttachmentDefinition,
+    val info: FlashlightInfo,
 )
 
 /**

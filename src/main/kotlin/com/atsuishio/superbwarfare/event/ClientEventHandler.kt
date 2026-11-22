@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
 import com.atsuishio.superbwarfare.client.animation.gun.GunDrawAnimation
 import com.atsuishio.superbwarfare.client.animation.gun.GunSprintAnimation
 import com.atsuishio.superbwarfare.client.gun.*
+import com.atsuishio.superbwarfare.client.lighting.FlashlightHandler
 import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightRenderer
 import com.atsuishio.superbwarfare.client.lighting.LightPositionRegistry
 import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
@@ -888,6 +889,7 @@ object ClientEventHandler {
         NuclearExplosionRenderer.clear()
         ScopeLensPostProcessor.close()
         GunMuzzleLightRenderer.close()
+        FlashlightHandler.clear()
         com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer.close()
     }
 

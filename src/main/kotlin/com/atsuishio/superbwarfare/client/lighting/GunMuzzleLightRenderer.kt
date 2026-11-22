@@ -64,7 +64,7 @@ object GunMuzzleLightRenderer {
         val worldView = view ?: return
         var worldProjection = projection ?: return
         if (failed || ShaderCompat.isRenderingShadowPass() || ScopeThermalRenderer.isFullScreenActive()) return
-        val lights = GunMuzzleLightHandler.visibleLights()
+        val lights = GunMuzzleLightHandler.visibleLights() + FlashlightHandler.visibleLights()
         if (lights.isEmpty()) return
         val mc = Minecraft.getInstance()
         val main = mc.mainRenderTarget
@@ -152,6 +152,12 @@ object GunMuzzleLightRenderer {
                 custom.safeGetUniform("LightDirection").set(light.direction.x.toFloat(), light.direction.y.toFloat(), light.direction.z.toFloat())
                 custom.safeGetUniform("LightRadius").set(light.radius)
                 custom.safeGetUniform("LightStrength").set(GunMuzzleLightHandler.intensity(light))
+                custom.safeGetUniform("LightCone").set(light.coneCosOuter, light.coneCosInner)
+                custom.safeGetUniform("LightColor").set(
+                    light.color.x.toFloat(), light.color.y.toFloat(), light.color.z.toFloat()
+                )
+                custom.safeGetUniform("LightShadow").set(light.shadowThickness)
+                custom.safeGetUniform("LightSelfMask").set(light.selfMask)
                 try {
                     custom.apply()
                     // Set the actual GL blend state after ShaderInstance applies its cached mode.

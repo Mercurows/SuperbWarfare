@@ -42,12 +42,23 @@ object GunMuzzleLightHandler {
         val radius: Float,
         var position: Vec3,
         var direction: Vec3,
+        val color: Vec3 = Vec3(1.0, 0.64, 0.28),
+        val coneCosOuter: Float = -2f,
+        val coneCosInner: Float = -2f,
+        val steady: Boolean = false,
+        val shadowThickness: Float = 0.65f,
+        /**
+         * 自身遮挡深度窗口（米）：遮挡步进会忽略"光源后方 + 光源前方该距离内"的深度，
+         * 用于排除发光者自己的枪械/握把/手臂/身体；0 = 关闭。
+         */
+        val selfMask: Float = 0f,
     ) {
         var requestedPosition: Vec3 = position
         var sampledAt = Double.NEGATIVE_INFINITY
         var blocked = false
 
-        fun intensity(time: Double): Float = strength * envelope(time - start, duration)
+        fun intensity(time: Double): Float =
+            if (steady) strength else strength * envelope(time - start, duration)
     }
 
     private var world: ClientLevel? = null

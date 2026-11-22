@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
 import com.atsuishio.superbwarfare.client.charm.CharmRuntime
 import com.atsuishio.superbwarfare.client.charm.CharmSnapshot
+import com.atsuishio.superbwarfare.client.lighting.FlashlightHandler
 import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightHandler
 import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
@@ -651,13 +652,15 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         } else if ((transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ||
                     transformType == ItemDisplayContext.THIRD_PERSON_LEFT_HAND) && GunRenderContext.isMainArm()) {
             val holder = GunRenderContext.entity()
-            if (holder != null && MuzzleFlashRenderer.hasShot(holder)) {
+            if (holder != null) {
                 val deployed = ActiveGun.isDeployed(from(stack), true)
                 val sub = if (deployed) resolveSubWeaponFlareTransform(stack, model) else null
                 val anchor = MuzzleFlashRenderer.resolveFlareTransform(model, stack, attachmentMuzzleTransform, sub, deployed)
-                MuzzleFlashRenderer.renderShot(holder, stack, false, poseStack, bufferSource, anchor,
-                    if (deployed) resolveSubWeaponMuzzleFlashScale(stack) else muzzleFlashScale, partialTick) { fx, smoke, sparks ->
-                    MuzzleParticles.spawnWorld(Matrix4f(poseStack.last().pose()).mul(anchor!!), fx, smoke, sparks)
+                if (MuzzleFlashRenderer.hasShot(holder)) {
+                    MuzzleFlashRenderer.renderShot(holder, stack, false, poseStack, bufferSource, anchor,
+                        if (deployed) resolveSubWeaponMuzzleFlashScale(stack) else muzzleFlashScale, partialTick) { fx, smoke, sparks ->
+                        MuzzleParticles.spawnWorld(Matrix4f(poseStack.last().pose()).mul(anchor!!), fx, smoke, sparks)
+                    }
                 }
             }
         }
@@ -698,6 +701,65 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         )
     }
 
+    private fun captureFlashlight(
+        transformType: ItemDisplayContext,
+        poseMatrix: Matrix4f,
+        attachmentModel: BedrockAttachmentModel,
+        definition: AttachmentDefinition,
+        stack: ItemStack,
+    ) {
+        val info = definition.flashlight ?: return
+        if (ShaderCompat.isRenderingShadowPass()) return
+
+        val firstPerson = transformType.firstPerson()
+        if (!firstPerson &&
+            transformType != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND &&
+            transformType != ItemDisplayContext.THIRD_PERSON_LEFT_HAND
+        ) return
+        if (firstPerson && localFirstPersonHand != handForContext(transformType)) return
+
+        // 定位点优先取模型里显式定义的 locator；若模型直接用骨骼当定位点（没有 locators 表），
+        // 退回该骨骼的全局变换——这样骨骼自身的旋转会直接驱动光轴向（Bedrock 约定 -Z 为前方）。
+        val emitterTransform = attachmentModel.getLocatorTransform(info.locator)
+            ?: attachmentModel.getGlobalTransform(info.locator)
+            ?: return
+        val matrix = Matrix4f(poseMatrix).mul(emitterTransform)
+        val point = matrix.getTranslation(Vector3f())
+        val axis = matrix.transformDirection(0f, 0f, -1f, Vector3f())
+        if (axis.lengthSquared() < 1e-8f) return
+        axis.normalize()
+
+        val holder = if (firstPerson) localPlayer else GunRenderContext.entity()
+        holder ?: return
+        val camera = Minecraft.getInstance().gameRenderer.mainCamera
+        val rotationInverse = cameraRotationInverse()
+
+        val worldOrigin: Vec3
+        val worldDirection: Vec3
+        if (firstPerson) {
+            // 与第一人称枪口采样一致：先修正手部 FOV 深度，再用相机旋转逆矩阵转到世界轴
+            val adjusted = BedrockBoneCoordinateTool.adjustViewDepthForFov(
+                Vec3(point.x.toDouble(), point.y.toDouble(), point.z.toDouble()),
+                ClientEventHandler.handFov.toFloat(),
+                ClientEventHandler.fov.toFloat()
+            )
+            val offset = rotationInverse.transformPosition(
+                Vector3f(adjusted.x.toFloat(), adjusted.y.toFloat(), adjusted.z.toFloat())
+            )
+            val worldAxis = rotationInverse.transformDirection(axis, Vector3f())
+            worldOrigin = camera.position.add(Vec3(offset.x.toDouble(), offset.y.toDouble(), offset.z.toDouble()))
+            worldDirection = Vec3(worldAxis.x.toDouble(), worldAxis.y.toDouble(), worldAxis.z.toDouble())
+        } else {
+            worldOrigin = BedrockBoneCoordinateTool.viewPointToWorld(
+                Vec3(point.x.toDouble(), point.y.toDouble(), point.z.toDouble()), camera
+            )
+            worldDirection = BedrockBoneCoordinateTool.viewPointToWorldOffset(
+                Vec3(axis.x.toDouble(), axis.y.toDouble(), axis.z.toDouble()), camera
+            )
+        }
+        FlashlightHandler.sample(holder, stack, worldOrigin, worldDirection)
+    }
+
     open fun renderAttachments(
         stack: ItemStack,
         model: GeoGunModel,
@@ -714,7 +776,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         renderScopeAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
         renderStock(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
         renderGripHandGuard(stack, model)
-        renderGripAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
+        renderGripAttachment(stack, model, transformType, poseStack, bufferSource, packedLight, packedOverlay)
         renderOemScope(stack, model)
         renderOemMuzzle(stack, model)
         renderMuzzleAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
@@ -1268,6 +1330,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     open fun renderGripAttachment(
         stack: ItemStack,
         model: GeoGunModel,
+        transformType: ItemDisplayContext,
         poseStack: PoseStack,
         bufferSource: MultiBufferSource,
         packedLight: Int,
@@ -1282,6 +1345,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             poseStack,
             Matrix4f(mountTransform).mul(attachmentTransform(stack, AttachmentType.GRIP, definition))
         )
+
+        captureFlashlight(transformType, poseStack.last().pose(), attachmentModel, definition, stack)
         attachmentModel.renderToBuffer(
             poseStack, bufferSource, texture, packedLight, packedOverlay,
             null, resolveAmmoReadout(stack, definition.ammoBar, definition.textShow)
@@ -2201,10 +2266,11 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             Vector3f(adjusted.x.toFloat(), adjusted.y.toFloat(), adjusted.z.toFloat())
         )
         localPlayer?.takeIf { localFirstPersonHand == InteractionHand.MAIN_HAND }?.let { holder ->
-            GunMuzzleLightHandler.sample(holder, ActiveGun.stackOf(holder),
-                Minecraft.getInstance().gameRenderer.mainCamera.position.add(
-                    Vec3(offset.x.toDouble(), offset.y.toDouble(), offset.z.toDouble())),
-                ClientRenderHandler.muzzleDirection ?: holder.lookAngle)
+            val worldPos = Minecraft.getInstance().gameRenderer.mainCamera.position.add(
+                Vec3(offset.x.toDouble(), offset.y.toDouble(), offset.z.toDouble())
+            )
+            val worldDir = ClientRenderHandler.muzzleDirection ?: holder.lookAngle
+            GunMuzzleLightHandler.sample(holder, ActiveGun.stackOf(holder), worldPos, worldDir)
         }
         if (!MuzzleFlashRenderer.isFiring()) return
         ClientRenderHandler.bulletRenderOffset =

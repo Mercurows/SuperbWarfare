@@ -1103,6 +1103,7 @@
   "key.superbwarfare.active_thermal_imaging": "Toggle Thermal Imaging / Fusion",
   "key.superbwarfare.loiter_config": "Auto-Orbit Config",
   "key.superbwarfare.toggle_tactical_map": "Open Tactical Map",
+  "key.superbwarfare.toggle_flashlight": "Toggle Flashlight",
   "key.superbwarfare.change_seat": "Change Seat (+Index)",
 
   "effect.superbwarfare.shock": "Shock",
