@@ -12,13 +12,12 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
+import net.neoforged.api.distmarker.Dist
+import net.neoforged.api.distmarker.OnlyIn
 
 @OnlyIn(Dist.CLIENT)
 object FlashlightHandler {
 
-    const val NBT_KEY = "FlashlightOn"
     private const val MAX_LIGHTS = 4
 
     /** 超过该距离的其他玩家手电不渲染（格）。 */
@@ -31,7 +30,7 @@ object FlashlightHandler {
 
     private fun time(): Double {
         val mc = Minecraft.getInstance()
-        return (mc.level?.gameTime ?: 0L).toDouble() + mc.frameTime
+        return (mc.level?.gameTime ?: 0L).toDouble() + mc.timer.getGameTimeDeltaPartialTick(true)
     }
 
     private fun gunOf(stack: ItemStack): GunData? =
@@ -44,7 +43,7 @@ object FlashlightHandler {
     @JvmStatic
     fun isOn(stack: ItemStack): Boolean {
         val gun = gunOf(stack) ?: return false
-        return AttachmentDefinition.findFlashlights(gun).isNotEmpty() && gun.data().getBoolean(NBT_KEY)
+        return gun.state.flashlightOn && AttachmentDefinition.findFlashlights(gun).isNotEmpty()
     }
     @JvmStatic
     fun toggleLocal(): Boolean? {
@@ -79,7 +78,7 @@ object FlashlightHandler {
         return if (holder === mc.player && mc.options.cameraType.isFirstPerson) {
             mc.gameRenderer.mainCamera.position
         } else {
-            holder.getEyePosition(mc.frameTime)
+            holder.getEyePosition(mc.timer.getGameTimeDeltaPartialTick(true))
         }
     }
 
@@ -110,9 +109,9 @@ object FlashlightHandler {
         for (player in level.players()) {
             if (player.position().distanceToSqr(camera) > MAX_DISTANCE * MAX_DISTANCE) continue
 
-            val stack = player.mainHandItem
-            if (!isOn(stack)) continue
-            val emitter = AttachmentDefinition.findFlashlights(GunData.from(stack)).firstOrNull() ?: continue
+            val gun = gunOf(player.mainHandItem) ?: continue
+            if (!gun.state.flashlightOn) continue
+            val emitter = AttachmentDefinition.findFlashlights(gun).firstOrNull() ?: continue
             val info = emitter.info
             if (info.safeIntensity <= 0f) continue
 

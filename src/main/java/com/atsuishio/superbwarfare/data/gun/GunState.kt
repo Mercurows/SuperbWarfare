@@ -141,6 +141,9 @@ data class GunState(
      */
     @SerialName("ActiveOwner")
     val activeOwner: String = "",
+
+    @SerialName("FlashlightOn")
+    val flashlightOn: Boolean = false,
 ) {
     data class Structural(
         val override: String,

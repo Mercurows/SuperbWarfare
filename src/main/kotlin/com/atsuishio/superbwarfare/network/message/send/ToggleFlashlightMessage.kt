@@ -17,8 +17,6 @@ object ToggleFlashlightMessage : ServerPacketPayload() {
         val gun = stack.toGunData() ?: return
         if (AttachmentDefinition.findFlashlights(gun).isEmpty()) return
 
-        val data = gun.data()
-        data.putBoolean("FlashlightOn", !data.getBoolean("FlashlightOn"))
-        gun.save()
+        gun.update { it.copy(flashlightOn = !it.flashlightOn) }
     }
 }

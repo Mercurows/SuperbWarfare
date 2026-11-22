@@ -23,6 +23,7 @@ import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelpe
 import com.atsuishio.superbwarfare.client.screens.WeaponEditMountTracker
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen
 import com.atsuishio.superbwarfare.compat.acceleratedrendering.AcceleratedRenderingCompat
+import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.attachment.*
 import com.atsuishio.superbwarfare.data.gun.*
@@ -706,11 +707,16 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         if (ShaderCompat.isRenderingShadowPass()) return
 
         val firstPerson = transformType.firstPerson()
-        if (!firstPerson &&
-            transformType != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND &&
-            transformType != ItemDisplayContext.THIRD_PERSON_LEFT_HAND
-        ) return
-        if (firstPerson && localFirstPersonHand != handForContext(transformType)) return
+        if (firstPerson) {
+            if (localFirstPersonHand != InteractionHand.MAIN_HAND ||
+                handForContext(transformType) != InteractionHand.MAIN_HAND
+            ) return
+        } else {
+            if (transformType != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND &&
+                transformType != ItemDisplayContext.THIRD_PERSON_LEFT_HAND
+            ) return
+            if (!GunRenderContext.isMainArm()) return
+        }
 
         // 定位点优先取模型里显式定义的 locator；若模型直接用骨骼当定位点（没有 locators 表），
         // 退回该骨骼的全局变换——这样骨骼自身的旋转会直接驱动光轴向（Bedrock 约定 -Z 为前方）。
@@ -726,12 +732,12 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val holder = if (firstPerson) localPlayer else GunRenderContext.entity()
         holder ?: return
         val camera = Minecraft.getInstance().gameRenderer.mainCamera
-        val rotationInverse = cameraRotationInverse()
 
         val worldOrigin: Vec3
         val worldDirection: Vec3
         if (firstPerson) {
             // 与第一人称枪口采样一致：先修正手部 FOV 深度，再用相机旋转逆矩阵转到世界轴
+            val rotationInverse = cameraRotationInverse()
             val adjusted = BedrockBoneCoordinateTool.adjustViewDepthForFov(
                 Vec3(point.x.toDouble(), point.y.toDouble(), point.z.toDouble()),
                 ClientEventHandler.handFov.toFloat(),
@@ -744,12 +750,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             worldOrigin = camera.position.add(Vec3(offset.x.toDouble(), offset.y.toDouble(), offset.z.toDouble()))
             worldDirection = Vec3(worldAxis.x.toDouble(), worldAxis.y.toDouble(), worldAxis.z.toDouble())
         } else {
-            worldOrigin = BedrockBoneCoordinateTool.viewPointToWorld(
-                Vec3(point.x.toDouble(), point.y.toDouble(), point.z.toDouble()), camera
-            )
-            worldDirection = BedrockBoneCoordinateTool.viewPointToWorldOffset(
-                Vec3(axis.x.toDouble(), axis.y.toDouble(), axis.z.toDouble()), camera
-            )
+            // 第三人称的 PoseStack 已对齐世界坐标轴，位置只需加上相机偏移。
+            worldOrigin = camera.position.add(point.x.toDouble(), point.y.toDouble(), point.z.toDouble())
+            worldDirection = Vec3(axis.x.toDouble(), axis.y.toDouble(), axis.z.toDouble())
         }
         FlashlightHandler.sample(holder, stack, worldOrigin, worldDirection)
     }

@@ -12,8 +12,12 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.Tesselator
 import com.mojang.blaze3d.vertex.VertexFormat
 import com.mojang.logging.LogUtils
+import net.minecraft.Util
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.ShaderInstance
+import net.minecraft.world.level.ClipContext
+import net.minecraft.world.phys.HitResult
+import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.neoforge.client.event.RegisterShadersEvent
@@ -23,13 +27,17 @@ import org.joml.Vector4f
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.*
 import kotlin.math.ceil
+import kotlin.math.exp
 import kotlin.math.floor
 
 /** 在世界合成后、镜片与热成像之前补光。场景只复制一次，各光源仅绘制覆盖的屏幕区域。 */
 @OnlyIn(Dist.CLIENT)
 object GunMuzzleLightRenderer {
 
+    private class FlashlightVisibility(var value: Float, var updatedAt: Long)
+
     private val logger = LogUtils.getLogger()
+    private val flashlightVisibility = mutableMapOf<Int, FlashlightVisibility>()
     private var shader: ShaderInstance? = null
     private var scene: TextureTarget? = null
     private var view: Matrix4f? = null
@@ -64,6 +72,8 @@ object GunMuzzleLightRenderer {
         val worldView = view ?: return
         var worldProjection = projection ?: return
         if (failed || ShaderCompat.isRenderingShadowPass() || ScopeThermalRenderer.isFullScreenActive()) return
+        val now = Util.getMillis()
+        flashlightVisibility.values.removeIf { now - it.updatedAt > 250L }
         val lights = GunMuzzleLightHandler.visibleLights() + FlashlightHandler.visibleLights()
         if (lights.isEmpty()) return
         val mc = Minecraft.getInstance()
@@ -161,6 +171,19 @@ object GunMuzzleLightRenderer {
                 )
                 custom.safeGetUniform("LightShadow").set(light.shadowThickness)
                 custom.safeGetUniform("LightSelfMask").set(light.selfMask)
+                val flashlightEffect = custom.safeGetUniform("FlashlightEffect")
+                if (light.coneCosInner > light.coneCosOuter &&
+                    !(light.holder === mc.player && mc.options.cameraType.isFirstPerson)
+                ) {
+                    val beamEnd = light.position.add(light.direction.scale(light.radius.toDouble()))
+                    val beamHit = clipFlashlight(light, beamEnd)
+                    val beamLength = light.position.distanceTo(beamHit.location).toFloat()
+                    val lensVisible = point.lengthSqr() < light.radius * light.radius &&
+                        clipFlashlight(light, camera).type == HitResult.Type.MISS
+                    flashlightEffect.set(beamLength, smoothFlashlightVisibility(light.holder.id, lensVisible, now))
+                } else {
+                    flashlightEffect.set(0f, 0f)
+                }
                 try {
                     custom.apply()
                     GL11.glEnable(GL11.GL_BLEND)
@@ -207,6 +230,22 @@ object GunMuzzleLightRenderer {
         }
     }
 
+    private fun smoothFlashlightVisibility(holderId: Int, visible: Boolean, now: Long): Float {
+        val target = if (visible) 1f else 0f
+        val state = flashlightVisibility.getOrPut(holderId) { FlashlightVisibility(target, now) }
+        // 方块边缘会使 raycast 在命中和未命中之间跳变，让可见度在几帧内过渡。
+        val elapsed = (now - state.updatedAt).coerceAtLeast(0L)
+        val fraction = (1.0 - exp(-elapsed / 45.0)).toFloat()
+        state.value += (target - state.value) * fraction
+        state.updatedAt = now
+        return state.value
+    }
+
+    private fun clipFlashlight(light: GunMuzzleLightHandler.Light, end: Vec3): HitResult =
+        light.holder.level().clip(
+            ClipContext(light.position, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, light.holder)
+        )
+
     /** 投影包围盒而非枪口中心，因此屏幕外枪口仍能照到画面内的墙。近裁剪相交时保守覆盖全屏。 */
     private fun screenBounds(view: Matrix4f, projection: Matrix4f, x: Float, y: Float, z: Float,
                              radius: Float, width: Int, height: Int): IntArray? {
@@ -233,6 +272,7 @@ object GunMuzzleLightRenderer {
 
     @JvmStatic
     fun close() {
+        flashlightVisibility.clear()
         scene?.destroyBuffers()
         scene = null
     }
