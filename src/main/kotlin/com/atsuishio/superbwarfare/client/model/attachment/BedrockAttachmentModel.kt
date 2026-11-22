@@ -655,9 +655,8 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         RenderSystem.depthMask(false)
 
         val progress = ClientEventHandler.aimingProgress(ClientEventHandler.zoomTime)
-        val rad = 80f * info.viewRadiusModifier * progress
-        val window = Minecraft.getInstance().window
-        val projectionMatrix = Matrix4f(RenderSystem.getProjectionMatrix())
+        // Match the 1.20 aperture: a radius of 80 at view depth 90, independent of GUI scale.
+        val radiusPerDepth = (80f / 90f) * info.viewRadiusModifier * progress
         val modelViewMatrix = Matrix4f(RenderSystem.getModelViewMatrix())
 
         val modelViewStack = RenderSystem.getModelViewStack()
@@ -673,10 +672,7 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
             val depth = -ocularCenter.z()
             if (!depth.isFinite() || depth <= 0f) continue
 
-            val radiusX = rad * depth * 2f /
-                    (projectionMatrix.m00() * window.guiScaledWidth)
-            val radiusY = rad * depth * 2f /
-                    (projectionMatrix.m11() * window.guiScaledHeight)
+            val radius = radiusPerDepth * depth
 
             val builder = Tesselator.getInstance().begin(
                 VertexFormat.Mode.TRIANGLE_FAN,
@@ -690,8 +686,8 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
                 val sin = Mth.sin(angle.toFloat())
                 val cos = Mth.cos(angle.toFloat())
                 builder.addVertex(
-                    ocularCenter.x() + cos * radiusX,
-                    ocularCenter.y() + sin * radiusY,
+                    ocularCenter.x() + cos * radius,
+                    ocularCenter.y() + sin * radius,
                     ocularCenter.z()
                 )
                     .setColor(255, 255, 255, 255)
