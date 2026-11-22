@@ -1936,7 +1936,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
 
     /** 用一份副本算出「装了这个弹种」时的有效属性；副本不会写回枪 */
     private fun ammoProbe(data: GunData, index: Int): GunData {
-        val probe = GunData.from(data.stack.copy())
+        val probe = GunData.from(GunData.stackStorage.copyStack(data.stack))
         probe.selectedAmmoType.set(index)
         probe.invalidateProperties()
         return probe
@@ -2644,7 +2644,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         ) {
             // 只操作副本。保留相同等级、Perk、弹种、覆写及运行状态，卸下全部配件后重新跑 PMC。
             // 不调用原 GunData 的 save/copy/flush，避免推进客户端 revision。
-            statsBaseline = GunData.from(data.stack.copy()).also { baseline ->
+            statsBaseline = GunData.from(GunData.stackStorage.copyStack(data.stack)).also { baseline ->
                 baseline.updateLocal { state }
                 baseline.attachmentTag.allKeys.toList().forEach(baseline.attachmentTag::remove)
                 baseline.invalidateProperties()

@@ -74,7 +74,7 @@ object GunModificationService {
     fun prepare(data: GunData, preset: GunModificationPreset, player: Player): Prepared {
         if (!data.item.canEditAttachments(data)) error("unavailable")
         if (GunModificationCode.fullId(preset.gun) != data.id) error("gun", GunModificationCode.fullId(preset.gun))
-        val preview = GunData.from(data.stack.copy())
+        val preview = GunData.from(GunData.stackStorage.copyStack(data.stack))
         slots.forEach { preview.attachment.clear(it) }
         // Validate against the final assembly, with the old configuration completely removed.
         for (slot in slots) {
