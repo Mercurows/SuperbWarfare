@@ -233,8 +233,10 @@ object ClickEventHandler {
     fun stopSwing(event: InputEvent.InteractionKeyMappingTriggered) {
         val player = localPlayer ?: return
         // 手持副武器时按普通物品处理
-        if (GunItem.isHeldWeapon(player.getItemInHand(event.hand))) {
+        val stack = player.getItemInHand(event.hand)
+        if (GunItem.isHeldWeapon(stack)) {
             event.setSwingHand(false)
+            if (event.isAttack && GunData.from(stack).get(GunProp.CAN_HARVEST)) event.isCanceled = true
         }
     }
 

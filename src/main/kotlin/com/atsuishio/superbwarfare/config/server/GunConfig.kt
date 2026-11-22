@@ -7,7 +7,6 @@ import net.minecraft.world.entity.player.Player
 import net.neoforged.neoforge.common.ModConfigSpec
 
 object GunConfig {
-
     @JvmField
     val FREE_ATTACHMENT_MODE = buildServerConfig {
         push("gun")
@@ -49,7 +48,14 @@ object GunConfig {
     val PERK_SLOT_UNLOCK_LEVELS = buildServerConfig {
         comment("Weapon levels required for each additional Perk slot of each type in advanced reforging; 0 unlocks all slots. Creative players are unrestricted")
         comment("高级重塑中，每种模组默认有1个槽位，每提升指定枪械等级再开放1个；设为0全部开放，创造模式不受限制")
-        defineInRange("perk_slot_unlock_levels", 10, 0, Int.MAX_VALUE).also { pop() }
+        defineInRange("perk_slot_unlock_levels", 10, 0, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val HARVEST_PROGRESS_TICKS = buildServerConfig {
+        comment("Ticks to retain melee harvest progress since the last hit.")
+        comment("近战挖掘进度在最后一次命中后保留的刻数")
+        defineInRange("harvest_progress_ticks", 60, 1, 1200).also { pop() }
     }
 
     @JvmStatic

@@ -192,6 +192,13 @@ object MiscConfig {
     }
 
     @JvmField
+    val HARVEST_HARDNESS_MULTIPLIER = buildServerConfig {
+        comment("Block health for melee harvesting is block hardness multiplied by this value.")
+        comment("近战挖掘时，方块生命值为方块硬度乘以此系数")
+        defineInRange("harvest_hardness_multiplier", 60.0, 0.01, 1000000.0)
+    }
+
+    @JvmField
     val THROW_MEDICAL_KIT = buildServerConfig {
         push("medical kit")
 

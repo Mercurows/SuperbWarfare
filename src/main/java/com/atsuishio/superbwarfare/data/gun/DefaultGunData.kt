@@ -85,6 +85,15 @@ data class DefaultGunData(
     val range: Int = 128,
     @SerialName("MeleeDamage")
     val meleeDamage: Double = 0.0,
+    // 是否允许近战挖掘方块
+    @SerialName("CanHarvest")
+    val canHarvest: Boolean = false,
+    @SerialName("MineSpeed")
+    val mineSpeed: Float = 1f,
+    @SerialName("MineableBlockTags")
+    val mineableBlockTags: List<String> = emptyList(),
+    @SerialName("HarvestTier")
+    val harvestTier: String = "minecraft:wood",
     @SerialName("MeleeDuration")
     val meleeDuration: Int = 16,
     @SerialName("MeleeDamageTime")

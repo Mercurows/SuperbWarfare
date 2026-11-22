@@ -55,6 +55,8 @@ fun DefaultGunData.withOverrides(diff: Map<out Prop<*, *, *, *, *>, Any?>): Defa
         meleeDuration = int(GunProp.MELEE_DURATION, meleeDuration),
         meleeAngle = int(GunProp.MELEE_ANGLE, meleeAngle),
         meleeDamage = num(GunProp.MELEE_DAMAGE, meleeDamage),
+        canHarvest = (diff[GunProp.CAN_HARVEST] as? Boolean) ?: canHarvest,
+        mineSpeed = flt(GunProp.MINE_SPEED, mineSpeed),
         meleeRange = num(GunProp.MELEE_RANGE, meleeRange),
         meleeHeadshot = num(GunProp.MELEE_HEADSHOT, meleeHeadshot),
         meleeLegshot = num(GunProp.MELEE_LEGSHOT, meleeLegshot),
