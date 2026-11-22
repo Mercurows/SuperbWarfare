@@ -1887,7 +1887,7 @@ object ClientEventHandler {
             stack = stack,
             // 冲锋窗口里 V 不再挥击：按住不放/再按一下都不能抢在冲锋那一击前面
             meleeKeyDown = ModKeyMappings.MELEE.isDown() && !GunChargeHandler.isCharging(),
-            subWeaponFireKeyDown = ModKeyMappings.SUBWEAPON_FIRE.isDown(),
+            subWeaponFireKeyDown = ModKeyMappings.SUBWEAPON_SWITCH.isDown(),
             holdingFireKey = holdingFireKey,
             drawTime = drawTime,
             canOperate = canOperate,
