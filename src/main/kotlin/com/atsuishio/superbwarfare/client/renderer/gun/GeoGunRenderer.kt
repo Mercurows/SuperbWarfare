@@ -758,9 +758,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             val mountTransform = model.getGlobalTransform(boneName) ?: continue
             val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: continue
 
-            // 副武器自己的换弹动画（由宿主枪的动画实例推进）：取姿态、应用、复位。
+            // 只在第一人称取副武器换弹姿态，与宿主枪的跟随动画使用同一视角条件。
             // 挂点变换取自宿主枪（不含附件姿态），姿态在挂点之内、按附件模型自己的骨骼应用
-            val subWeaponAnimation = if (slot.type == AttachmentType.SUBWEAPON) {
+            val subWeaponAnimation = if (transformType.firstPerson() && slot.type == AttachmentType.SUBWEAPON) {
                 FirstPersonRenderHandler.getActiveAnimationInstance(hand) as? GeoGunAnimationInstance
             } else {
                 null
