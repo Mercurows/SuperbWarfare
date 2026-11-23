@@ -1,5 +1,6 @@
 {
   "SlotIcon": "sbwloadertest:textures/item/ak_74_icon.png",
+  "AnimationController": "sbwloadertest:ak_74",
   "Animation": {
     "Idle": "animation.ak_74.idle",
     "Fire": "animation.ak_74.fire",

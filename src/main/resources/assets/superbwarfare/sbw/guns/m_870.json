@@ -1,5 +1,6 @@
 {
   "SlotIcon": "superbwarfare:textures/item/m_870_icon.png",
+  "AnimationController": "superbwarfare:m_870",
   "Animation": {
     "Idle": "animation.m_870.idle",
     "Fire": "animation.m_870.fire",

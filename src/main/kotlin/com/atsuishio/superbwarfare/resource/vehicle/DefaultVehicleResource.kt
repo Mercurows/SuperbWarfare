@@ -14,6 +14,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import org.apache.logging.log4j.Marker
 import org.apache.logging.log4j.MarkerManager
+import org.mozillaa.javascript.Context
 import org.mozillaa.javascript.NativeJavaClass
 import org.mozillaa.javascript.ScriptableObject
 
@@ -74,25 +75,27 @@ class DefaultVehicleResource : IDBasedData<DefaultVehicleResource> {
             if (resource.isEmpty) return null
 
             val source = resource.get().openAsReader().use { it.readText().trim() }
-            if (!VehicleScriptManager.RHINO_CONTEXT.stringIsCompilableUnit(source)) {
-                Mod.LOGGER.error(MARKER, "Failed to compile script: $source")
-                return null
+            Context.enter().use { cx ->
+                if (!cx.stringIsCompilableUnit(source)) {
+                    Mod.LOGGER.error(MARKER, "Failed to compile script: $source")
+                    return null
+                }
+
+                val script = cx.compileString(source, script.toString(), 1, null)
+
+                val scope = cx.newObject(VehicleScriptManager.SHARED_SCOPE)
+                scope.parentScope = VehicleScriptManager.SHARED_SCOPE
+
+                ScriptableObject.putProperty(scope, "JsMath", ScriptMath)
+                ScriptableObject.putProperty(scope, "Quaterniond", NativeJavaClass(scope, org.joml.Quaterniond::class.java))
+                ScriptableObject.putProperty(scope, "Quaternionf", NativeJavaClass(scope, org.joml.Quaternionf::class.java))
+
+                script.exec(cx, scope, scope)
+
+                val func = VehicleScriptManager.ScriptFunction(script, scope)
+                scriptCache = func
+                func
             }
-
-            val script = VehicleScriptManager.RHINO_CONTEXT.compileString(source, script.toString(), 1, null)
-
-            val scope = VehicleScriptManager.RHINO_CONTEXT.newObject(VehicleScriptManager.SHARED_SCOPE)
-            scope.parentScope = VehicleScriptManager.SHARED_SCOPE
-
-            ScriptableObject.putProperty(scope, "JsMath", ScriptMath)
-            ScriptableObject.putProperty(scope, "Quaterniond", NativeJavaClass(scope, org.joml.Quaterniond::class.java))
-            ScriptableObject.putProperty(scope, "Quaternionf", NativeJavaClass(scope, org.joml.Quaternionf::class.java))
-
-            script.exec(VehicleScriptManager.RHINO_CONTEXT, scope, scope)
-
-            val func = VehicleScriptManager.ScriptFunction(script, scope)
-            scriptCache = func
-            func
         } catch (e: Exception) {
             Mod.LOGGER.error(MARKER, "Failed to load script: $script", e)
             null

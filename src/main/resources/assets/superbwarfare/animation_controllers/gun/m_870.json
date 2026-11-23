@@ -1,0 +1,23 @@
+{
+  "FormatVersion": 1,
+  "Base": "superbwarfare:default",
+  "Script": "superbwarfare:m_870",
+  "Tracks": [
+    {
+      "Id": "insert",
+      "After": "action",
+      "ReplaceActions": ["ITERATIVE", "ITERATIVE_2"],
+      "InitialState": "loading",
+      "States": [
+        {
+          "Id": "loading",
+          "ClipSlot": "Iterative",
+          "Play": "Loop",
+          "Timing": "Reload.Iterative",
+          "RestartKey": "loadIndex",
+          "TakesHands": true
+        }
+      ]
+    }
+  ]
+}

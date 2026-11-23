@@ -23,6 +23,7 @@ import kotlinx.serialization.Transient
 import org.apache.logging.log4j.Marker
 import org.apache.logging.log4j.MarkerManager
 import org.joml.Vector3f
+import org.mozillaa.javascript.Context
 import org.mozillaa.javascript.ScriptableObject
 
 @Serializable
@@ -75,24 +76,26 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
             if (resource.isEmpty) return null
 
             val source = resource.get().openAsReader().use { it.readText().trim() }
-            if (!GunScriptManager.RHINO_CONTEXT.stringIsCompilableUnit(source)) {
-                Mod.LOGGER.error(MARKER, "Failed to compile gun script: $source")
-                return null
+            Context.enter().use { cx ->
+                if (!cx.stringIsCompilableUnit(source)) {
+                    Mod.LOGGER.error(MARKER, "Failed to compile gun script: $source")
+                    return null
+                }
+
+                val compiled = cx.compileString(source, script.toString(), 1, null)
+                val scope = cx.newObject(GunScriptManager.SHARED_SCOPE)
+                scope.parentScope = GunScriptManager.SHARED_SCOPE
+
+                ScriptableObject.putProperty(scope, "JsMath", ScriptMath)
+                // 需要跨帧记住某个值时用它，别用脚本顶层的 let：顶层变量是每个枪械 id 一份作用域，
+                // 会被世界上所有同型号的枪共用。
+                ScriptableObject.putProperty(scope, "JsState", ScriptState)
+                compiled.exec(cx, scope, scope)
+
+                val func = GunScriptManager.ScriptFunction(compiled, scope)
+                scriptCache = func
+                func
             }
-
-            val compiled = GunScriptManager.RHINO_CONTEXT.compileString(source, script.toString(), 1, null)
-            val scope = GunScriptManager.RHINO_CONTEXT.newObject(GunScriptManager.SHARED_SCOPE)
-            scope.parentScope = GunScriptManager.SHARED_SCOPE
-
-            ScriptableObject.putProperty(scope, "JsMath", ScriptMath)
-            // 需要跨帧记住某个值时用它，别用脚本顶层的 let：顶层变量是每个枪械 id 一份作用域，
-            // 会被世界上所有同型号的枪共用。
-            ScriptableObject.putProperty(scope, "JsState", ScriptState)
-            compiled.exec(GunScriptManager.RHINO_CONTEXT, scope, scope)
-
-            val func = GunScriptManager.ScriptFunction(compiled, scope)
-            scriptCache = func
-            func
         } catch (e: Exception) {
             Mod.LOGGER.error(MARKER, "Failed to load gun script: $script", e)
             null
@@ -102,6 +105,10 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     @JvmField
     @SerialName("Animation")
     var animation: GunAnimation? = GunAnimation()
+
+    @JvmField
+    @SerialName("AnimationController")
+    var animationController: String? = null
 
     @JvmField
     @SerialName("HasReflectionSound")

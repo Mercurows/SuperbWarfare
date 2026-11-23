@@ -8,8 +8,7 @@ import org.mozillaa.javascript.Scriptable
 import org.mozillaa.javascript.ScriptableObject
 
 object GunScriptManager {
-    val RHINO_CONTEXT: Context = Context.enter()
-    val SHARED_SCOPE: ScriptableObject = RHINO_CONTEXT.initStandardObjects()
+    val SHARED_SCOPE: ScriptableObject = Context.enter().use { it.initStandardObjects() }
 
     class ScriptFunction(val script: Script, val scope: Scriptable)
 
@@ -23,12 +22,9 @@ object GunScriptManager {
     ) {
         val func = scriptFunc.scope.get("transformCustomModelPart", scriptFunc.scope)
         if (func is JSFunction) {
-            func.call(
-                RHINO_CONTEXT,
-                scriptFunc.scope,
-                scriptFunc.scope,
-                arrayOf(stack, model, transformType, partialTick, renderer)
-            )
+            Context.enter().use { cx ->
+                func.call(cx, scriptFunc.scope, scriptFunc.scope, arrayOf(stack, model, transformType, partialTick, renderer))
+            }
         }
     }
 }
