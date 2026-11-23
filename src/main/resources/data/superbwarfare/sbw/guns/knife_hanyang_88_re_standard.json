@@ -71,9 +71,6 @@
   "AvailableAttachments": {
     "Charm": [
       "#superbwarfare:attachment/charm"
-    ],
-    "LowerRail": [
-      "#superbwarfare:attachment/lower_rail/standard"
     ]
   },
   "AvailablePerks": [

@@ -782,7 +782,7 @@ object ModItems {
     @JvmField val PISTOL_LASER = registerAttachment("pistol_laser")
     @JvmField val SUREFIRE_X400_ULTRA_FLASHLIGHT =
         registerAttachment("surefire_x400_ultra_flashlight", Rarity.RARE)
-    @JvmField val LOWER_RAIL_BIPOD = registerAttachment("lower_rail_bipod", Rarity.RARE)
+    @JvmField val LOWER_RAIL_BIPOD = registerAttachment("lower_rail_bipod")
     // @formatter:on
 
     // LeftRail
