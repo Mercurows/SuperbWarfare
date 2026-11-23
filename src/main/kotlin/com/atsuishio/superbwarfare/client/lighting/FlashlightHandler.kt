@@ -21,10 +21,10 @@ import net.minecraftforge.api.distmarker.OnlyIn
 @OnlyIn(Dist.CLIENT)
 object FlashlightHandler {
 
-    private const val MAX_LIGHTS = 4
+    private const val MAX_LIGHTS = 8
 
     /** 超过该距离的其他玩家手电不渲染（格）。 */
-    private const val MAX_DISTANCE = 96.0
+    private const val MAX_DISTANCE = 128.0
     private const val WALL_CLEARANCE = 0.15
     private const val MIN_FROM_EYE = 0.05
 
@@ -83,30 +83,43 @@ object FlashlightHandler {
         val gun = gunOf(stack) ?: return false
         return AttachmentDefinition.findFlashlights(gun).isNotEmpty()
     }
+
+    @JvmStatic
+    fun hasAnyEmitter(stack: ItemStack): Boolean {
+        val gun = gunOf(stack) ?: return false
+        return AttachmentDefinition.findFlashlights(gun).isNotEmpty() ||
+            AttachmentDefinition.findLaserEmitters(gun).isNotEmpty()
+    }
+
     @JvmStatic
     fun modeOf(stack: ItemStack): FlashlightMode {
         val gun = gunOf(stack) ?: return FlashlightMode.OFF
-        if (AttachmentDefinition.findFlashlights(gun).isEmpty()) return FlashlightMode.OFF
+        if (AttachmentDefinition.findFlashlights(gun).isEmpty() &&
+            AttachmentDefinition.findLaserEmitters(gun).isEmpty()
+        ) return FlashlightMode.OFF
         return FlashlightState.modeOf(gun)
     }
 
-    /** 手电是否亮着（常亮或爆闪）。 */
     @JvmStatic
-    fun isOn(stack: ItemStack): Boolean = modeOf(stack) != FlashlightMode.OFF
+    fun isOn(stack: ItemStack): Boolean {
+        val mode = modeOf(stack)
+        return mode == FlashlightMode.ON || mode == FlashlightMode.STROBE
+    }
 
-    /** 本机 Ctrl+T：关 → 常亮 → 爆闪 → 关 循环，返回切换后的预期档位。 */
     @JvmStatic
     fun toggleLocal(): FlashlightMode? {
         val player = localPlayer ?: return null
         val stack = player.mainHandItem
-        if (!hasFlashlight(stack)) return null
-        val expected = modeOf(stack).next()
+        val gun = gunOf(stack) ?: return null
+        if (!hasAnyEmitter(stack)) return null
+        val expected = FlashlightState.next(gun)
         sendPacketToServer(ToggleFlashlightMessage)
         return expected
     }
     @JvmStatic
     fun sample(holder: LivingEntity, stack: ItemStack, origin: Vec3, direction: Vec3) {
-        if (!isOn(stack)) return
+        val mode = modeOf(stack)
+        if (mode != FlashlightMode.ON && mode != FlashlightMode.STROBE) return
         val dir = direction.normalize()
         if (dir.lengthSqr() < 1e-6) return
         samples[holder.stringUUID] = Sample(origin, dir, time())
@@ -165,11 +178,12 @@ object FlashlightHandler {
             val uuid = player.stringUUID
             val stack = player.mainHandItem
             val mode = modeOf(stack)
-            // 第一次看到该玩家（刚上线/进入视野）时不触发眩光，也不重置爆闪相位。
+            val lightOn = mode == FlashlightMode.ON || mode == FlashlightMode.STROBE
             val previous = lastModes.put(uuid, mode) ?: mode
+            val previousLightOn = previous == FlashlightMode.ON || previous == FlashlightMode.STROBE
             if (previous != mode) modeStartedAt[uuid] = now
-            if (mode != FlashlightMode.OFF && previous == FlashlightMode.OFF) flashStartedAt[uuid] = now
-            if (mode == FlashlightMode.OFF) {
+            if (lightOn && !previousLightOn) flashStartedAt[uuid] = now
+            if (!lightOn) {
                 flashStartedAt.remove(uuid)
                 continue
             }

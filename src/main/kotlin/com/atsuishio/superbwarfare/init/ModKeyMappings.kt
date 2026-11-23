@@ -136,8 +136,8 @@ object ModKeyMappings {
     val TOGGLE_TACTICAL_MAP = registerKey("toggle_tactical_map", GLFW.GLFW_KEY_M)
 
     @JvmField
-    val TOGGLE_FLASHLIGHT = registerKey(
-        "toggle_flashlight",
+    val TOGGLE_LIGHT = registerKey(
+        "toggle_light",
         GLFW.GLFW_KEY_Y,
         KeyConflictContext.IN_GAME,
         KeyModifier.CONTROL

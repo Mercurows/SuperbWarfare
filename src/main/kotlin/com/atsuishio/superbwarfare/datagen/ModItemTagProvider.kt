@@ -690,22 +690,26 @@ class ModItemTagProvider(
             ModItems.LOWER_RAIL_BIPOD,
             ModItems.PEQ_15,
             ModItems.PISTOL_LASER,
-            ModItems.HANDGUN_SHIELD
+            ModItems.HANDGUN_SHIELD,
+            ModItems.SUREFIRE_X400_ULTRA_FLASHLIGHT
         ),
         AttachmentType.UPPER_RAIL to listOf(
             ModItems.PEQ_15,
             ModItems.PISTOL_LASER,
             ModItems.STANDARD_GUN_SHIELD,
-            ModItems.HYPERION_SHIELD_MODULE
+            ModItems.HYPERION_SHIELD_MODULE,
+            ModItems.SUREFIRE_X400_ULTRA_FLASHLIGHT
         ),
         AttachmentType.LEFT_RAIL to listOf(
             ModItems.PEQ_15,
             ModItems.PISTOL_LASER,
-            ModItems.RANGE_FINDER
+            ModItems.RANGE_FINDER,
+            ModItems.SUREFIRE_X400_ULTRA_FLASHLIGHT
         ),
         AttachmentType.RIGHT_RAIL to listOf(
             ModItems.PEQ_15,
-            ModItems.PISTOL_LASER
+            ModItems.PISTOL_LASER,
+            ModItems.SUREFIRE_X400_ULTRA_FLASHLIGHT
         ),
     )
 
@@ -782,6 +786,7 @@ class ModItemTagProvider(
             ModItems.LOWER_RAIL_BIPOD.get(),
             ModItems.PEQ_15.get(),
             ModItems.PISTOL_LASER.get(),
+            ModItems.SUREFIRE_X400_ULTRA_FLASHLIGHT.get(),
         )
 
         this.tag(ModTags.Items.ATTACHMENT_UPPER_RAIL_STANDARD).add(
@@ -789,17 +794,20 @@ class ModItemTagProvider(
             ModItems.STANDARD_GUN_SHIELD.get(),
             ModItems.PISTOL_LASER.get(),
             ModItems.HYPERION_SHIELD_MODULE.get(),
+            ModItems.SUREFIRE_X400_ULTRA_FLASHLIGHT.get(),
         )
 
         this.tag(ModTags.Items.ATTACHMENT_LEFT_RAIL_STANDARD).add(
             ModItems.PEQ_15.get(),
             ModItems.RANGE_FINDER.get(),
             ModItems.PISTOL_LASER.get(),
+            ModItems.SUREFIRE_X400_ULTRA_FLASHLIGHT.get(),
         )
 
         this.tag(ModTags.Items.ATTACHMENT_RIGHT_RAIL_STANDARD).add(
             ModItems.PEQ_15.get(),
             ModItems.PISTOL_LASER.get(),
+            ModItems.SUREFIRE_X400_ULTRA_FLASHLIGHT.get(),
         )
 
         // stock_zenit_pt_1 是 AK 系专属，不进通用 tag

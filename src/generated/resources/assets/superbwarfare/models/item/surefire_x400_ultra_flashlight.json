@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "superbwarfare:item/surefire_x400_ultra_flashlight"
+  }
+}

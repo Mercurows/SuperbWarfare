@@ -16,7 +16,9 @@ object ToggleFlashlightMessage : ServerPacketPayload() {
         if (!GunItem.isHeldWeapon(stack)) return
 
         val gun = stack.toGunData() ?: return
-        if (AttachmentDefinition.findFlashlights(gun).isEmpty()) return
+        if (AttachmentDefinition.findFlashlights(gun).isEmpty() &&
+            AttachmentDefinition.findLaserEmitters(gun).isEmpty()
+        ) return
 
         FlashlightState.cycle(gun)
     }

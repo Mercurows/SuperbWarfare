@@ -694,6 +694,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
         val data = from(stack)
         val preview = attachmentEditPreview(stack, data, slot)
+        if (preview == null && FlashlightState.modeOf(data) != FlashlightMode.LASER) return
         LaserSightCapture.capture(
             info = info,
             colorRgb = info.resolveColorRgb(preview?.laserColor ?: data.attachment.getLaserColor(slot)),
@@ -884,6 +885,15 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                     attachmentModel,
                     definition,
                     slot.type,
+                    stack,
+                )
+                // 手电出光口：导轨上的二合一/纯手电配件走通用槽位，必须和激光一样在这里采集，
+                // 否则只有 GRIP 槽（垂直握把）的手电会亮。
+                captureFlashlight(
+                    transformType,
+                    poseStack.last().pose(),
+                    attachmentModel,
+                    definition,
                     stack,
                 )
                 // 枪盾：耐久空的破损态藏掉盾面骨骼

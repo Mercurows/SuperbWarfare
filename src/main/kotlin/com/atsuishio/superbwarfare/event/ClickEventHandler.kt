@@ -364,8 +364,8 @@ object ClickEventHandler {
                 }
             }
 
-            if (key == ModKeyMappings.TOGGLE_FLASHLIGHT.key.value &&
-                ModKeyMappings.TOGGLE_FLASHLIGHT.keyModifier.isActive(KeyConflictContext.IN_GAME)
+            if (key == ModKeyMappings.TOGGLE_LIGHT.key.value &&
+                ModKeyMappings.TOGGLE_LIGHT.keyModifier.isActive(KeyConflictContext.IN_GAME)
             ) {
                 FlashlightHandler.toggleLocal()?.let {
                     player.playSound(ModSounds.CANNON_ZOOM_OUT.get(), 1f, 1f)
