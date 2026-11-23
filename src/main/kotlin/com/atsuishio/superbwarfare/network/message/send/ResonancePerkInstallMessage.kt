@@ -78,8 +78,8 @@ data class ResonancePerkInstallMessage(
         if (costs.any { (item, count) -> (available[item] ?: 0) < count }) {
             return
         }
-        val result = GunData.stackStorage.copyStack(stack)
-        applySelection(GunData.from(result), selections, selectedPerks.associateWith { levels.getValue(it.name) })
+        val result = data.copy()
+        applySelection(result, selections, selectedPerks.associateWith { levels.getValue(it.name) })
         val remaining = costs.toMutableMap()
         for (itemStack in player.inventory.items) {
             val needed = remaining[itemStack.item] ?: continue
@@ -87,7 +87,7 @@ data class ResonancePerkInstallMessage(
             remaining[itemStack.item] = needed - consumed
             itemStack.shrink(consumed)
         }
-        player.inventory.setItem(inventorySlot, result)
+        player.inventory.setItem(inventorySlot, result.stack)
         for (refund in refunds) if (!player.addItem(refund)) player.drop(refund, false)
         player.inventory.setChanged()
         player.inventoryMenu.broadcastChanges()

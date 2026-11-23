@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.stack
 
 import com.atsuishio.superbwarfare.init.ModDataComponents
+import com.atsuishio.superbwarfare.item.gun.GunItem
 import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.item.ItemStack
@@ -13,8 +14,11 @@ object ItemStackStorage : GunStackStorage {
     private fun component(stack: ItemStack): ModDataComponents.ItemTag? =
         stack.get(ModDataComponents.ITEM_TAG.get())
 
-    /** 活引用：新组件优先；旧存档退回 `custom_data`（只读，不共用对象） */
-    private fun liveTag(stack: ItemStack): CompoundTag? = component(stack)?.tag ?: legacyTag(stack)
+    private fun copyRoot(stack: ItemStack): CompoundTag? {
+        val value = component(stack) ?: return legacyTag(stack)?.copy()
+        val root = if (stack.item is GunItem && !value.belongsTo(stack)) value.written else value.tag
+        return root.copy()
+    }
 
     @Suppress("DEPRECATION")
     private fun legacyTag(stack: ItemStack): CompoundTag? =
@@ -22,23 +26,22 @@ object ItemStackStorage : GunStackStorage {
 
     override fun copyStack(stack: ItemStack): ItemStack {
         val copy = stack.copy()
-        // Vanilla stack copies share component values, including the mutable ItemTag.
-        if (!copy.isEmpty) component(stack)?.let { attach(copy, it.tag.copy()) }
+        if (!copy.isEmpty) copyRoot(stack)?.let { attach(copy, it) }
         return copy
     }
 
     override fun rootTag(stack: ItemStack): CompoundTag {
-        component(stack)?.let { return it.tag }
-
-        val created = CompoundTag()
-        legacyTag(stack)?.let { GunStackStorage.mergePreservingIdentity(created, it) }
+        component(stack)?.takeIf { it.belongsTo(stack) }?.let { return it.tag }
+        // Vanilla copies, including inventory and equipment snapshots, share the component value.
+        val created = copyRoot(stack) ?: CompoundTag()
         attach(stack, created)
         return created
     }
 
-    override fun rootTagOrNull(stack: ItemStack): CompoundTag? = liveTag(stack)
+    override fun rootTagOrNull(stack: ItemStack): CompoundTag? =
+        component(stack)?.takeIf { it.belongsTo(stack) }?.tag ?: copyRoot(stack)
 
-    override fun hasData(stack: ItemStack): Boolean = liveTag(stack) != null
+    override fun hasData(stack: ItemStack): Boolean = component(stack) != null || legacyTag(stack) != null
 
     override fun writeRoot(stack: ItemStack, root: CompoundTag) {
         val live = rootTag(stack)
@@ -60,6 +63,6 @@ object ItemStackStorage : GunStackStorage {
     }
 
     private fun attach(stack: ItemStack, tag: CompoundTag) {
-        stack.set(ModDataComponents.ITEM_TAG.get(), ModDataComponents.ItemTag(tag))
+        stack.set(ModDataComponents.ITEM_TAG.get(), ModDataComponents.ItemTag(tag, owner = stack))
     }
 }

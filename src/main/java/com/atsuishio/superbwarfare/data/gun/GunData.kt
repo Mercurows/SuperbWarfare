@@ -1805,7 +1805,16 @@ class GunData private constructor(
     fun copy(): GunData {
         // The copy re-decodes the state from the stack, so deferred writes have to land first.
         flush()
-        return GunData(this.stack.copy())
+        return from(stackStorage.copyStack(stack))
+    }
+
+    /** Builds a preview with the current state and a private copy of the remaining tag. */
+    fun previewWithoutAttachments(): GunData {
+        val preview = stackStorage.copyStack(stack)
+        val root = stackStorage.rootTag(preview)
+        root.remove(KEY_ATTACHMENTS)
+        stackStorage.writeRoot(preview, root)
+        return from(preview).also { it.updateLocal { state } }
     }
 
     // TODO Deprecated: temporary adaptation for Touhou Little Maid mod

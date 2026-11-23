@@ -2644,11 +2644,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         ) {
             // 只操作副本。保留相同等级、Perk、弹种、覆写及运行状态，卸下全部配件后重新跑 PMC。
             // 不调用原 GunData 的 save/copy/flush，避免推进客户端 revision。
-            statsBaseline = GunData.from(GunData.stackStorage.copyStack(data.stack)).also { baseline ->
-                baseline.updateLocal { state }
-                baseline.attachmentTag.allKeys.toList().forEach(baseline.attachmentTag::remove)
-                baseline.invalidateProperties()
-            }
+            statsBaseline = data.previewWithoutAttachments()
             statsState = state
             statsPerks = data.perkTag.copy()
             statsAttachments = data.attachmentTag.copy()

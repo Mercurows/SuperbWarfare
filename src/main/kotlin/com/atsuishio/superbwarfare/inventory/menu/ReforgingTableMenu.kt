@@ -251,7 +251,7 @@ open class ReforgingTableMenu(
             return
         }
 
-        val result = gun.copy()
+        val result = GunData.stackStorage.copyStack(gun)
         val data = GunData.from(result)
 
         listOf(ammo, func, damage).forEach { item ->
@@ -311,7 +311,7 @@ open class ReforgingTableMenu(
 
             if (level <= 0) return
 
-            val output = gun.copy()
+            val output = GunData.stackStorage.copyStack(gun)
             val outputData = GunData.from(output)
             outputData.perk.remove(perkItem.perk)
 

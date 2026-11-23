@@ -399,7 +399,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         val previewStack = GunData.stackStorage.copyStack(stack)
         val preview = GunData.from(previewStack)
         ResonancePerkInstallMessage.applySelection(preview, draft, draft.values.flatten().associateWith { draftLevels[it] ?: 1 })
-        text(doc, "weapon-upgrade-points", draftPoints(preview.level.get()).toString())
+        text(doc, "weapon-upgrade-points", draftPoints(level).toString())
         val selectedPerk = activePerk()
         val selectedLevel = selectedPerk?.let { draftLevels[it] ?: 1 } ?: 1
         for (action in listOf("min", "decrease", "increase", "max")) {
