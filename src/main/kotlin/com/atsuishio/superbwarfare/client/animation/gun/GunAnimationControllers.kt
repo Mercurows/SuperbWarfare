@@ -115,13 +115,13 @@ object GunAnimationControllers : ResourceManagerReloadListener {
         val next = mutableMapOf<ResourceLocation, Loaded>()
         reported.clear()
         for ((path, resource) in manager.listResources(directory) { it.path.endsWith(".json") }) {
-            val id = ResourceLocation(path.namespace, path.path.removePrefix("$directory/").removeSuffix(".json"))
+            val id = path.withPath { it.removePrefix("$directory/").removeSuffix(".json") }
             try {
                 val definition = resource.openAsReader().use { Json.decodeFromString<Definition>(it.readText()) }
                 val names = validate(definition)
                 val script = definition.script?.let {
-                    val key = ResourceLocation(it)
-                    val file = ResourceLocation(key.namespace, "scripts/animation_controllers/${key.path}.js")
+                    val key = ResourceLocation.parse(it)
+                    val file = key.withPath { path -> "scripts/animation_controllers/$path.js" }
                     val source = manager.getResourceOrThrow(file).openAsReader().use { reader -> reader.readText() }
                     withContext { cx -> cx.compileString(source, file.toString(), 1, null) }
                 }

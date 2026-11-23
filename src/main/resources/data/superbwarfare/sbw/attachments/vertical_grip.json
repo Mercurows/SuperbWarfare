@@ -27,6 +27,9 @@
     "Angle": 30.0,
     "InnerAngle": 10.0,
     "Intensity": 2.5,
-    "Color": "0xFFFFFF"
+    "Color": "0xFFFFFF",
+    "FlashPeak": 32.0,
+    "FlashTime": 0.2,
+    "StrobeHz": 12.0
   }
 }

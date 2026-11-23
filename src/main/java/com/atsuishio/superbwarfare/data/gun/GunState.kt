@@ -144,6 +144,9 @@ data class GunState(
 
     @SerialName("FlashlightOn")
     val flashlightOn: Boolean = false,
+
+    @SerialName("FlashlightMode")
+    val flashlightMode: Int? = null,
 ) {
     data class Structural(
         val override: String,

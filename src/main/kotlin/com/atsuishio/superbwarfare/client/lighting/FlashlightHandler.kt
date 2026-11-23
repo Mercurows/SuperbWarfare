@@ -1,6 +1,9 @@
 package com.atsuishio.superbwarfare.client.lighting
 
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
+import com.atsuishio.superbwarfare.data.attachment.FlashlightInfo
+import com.atsuishio.superbwarfare.data.attachment.FlashlightMode
+import com.atsuishio.superbwarfare.data.attachment.FlashlightState
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.ToggleFlashlightMessage
@@ -14,6 +17,7 @@ import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
+import java.util.*
 
 @OnlyIn(Dist.CLIENT)
 object FlashlightHandler {
@@ -24,9 +28,33 @@ object FlashlightHandler {
     private const val MAX_DISTANCE = 96.0
     private const val WALL_CLEARANCE = 0.15
     private const val MIN_FROM_EYE = 0.05
+    private const val TICKS_PER_SECOND = 20.0
 
     private data class Sample(val origin: Vec3, val direction: Vec3, val time: Double)
-    private val samples = mutableMapOf<String, Sample>()
+    private data class Playback(
+        var mode: FlashlightMode,
+        var modeStartedAt: Double = 0.0,
+        var flashStartedAt: Double? = null,
+    )
+
+    private val samples = mutableMapOf<UUID, Sample>()
+    private val playback = mutableMapOf<UUID, Playback>()
+
+    private fun flashBoost(info: FlashlightInfo, start: Double, now: Double): Float {
+        val duration = info.safeFlashTime * TICKS_PER_SECOND
+        val remaining = (1.0 - (now - start) / duration).coerceIn(0.0, 1.0).toFloat()
+        return 1f + (info.safeFlashPeak - 1f) * remaining * remaining * remaining
+    }
+
+    private fun strobeFactor(info: FlashlightInfo, elapsedTicks: Double): Float {
+        val period = TICKS_PER_SECOND / info.safeStrobeHz
+        val phase = ((elapsedTicks.coerceAtLeast(0.0) % period) / period).toFloat()
+        val edge = 0.1f
+        val rise = (phase / edge).coerceIn(0f, 1f)
+        val fall = ((0.5f - phase) / edge).coerceIn(0f, 1f)
+        val pulse = minOf(rise, fall)
+        return pulse * pulse * (3f - 2f * pulse)
+    }
 
     private fun time(): Double {
         val mc = Minecraft.getInstance()
@@ -35,36 +63,36 @@ object FlashlightHandler {
 
     private fun gunOf(stack: ItemStack): GunData? =
         if (GunItem.isHeldWeapon(stack)) GunData.from(stack) else null
-    @JvmStatic
-    fun hasFlashlight(stack: ItemStack): Boolean {
-        val gun = gunOf(stack) ?: return false
-        return AttachmentDefinition.findFlashlights(gun).isNotEmpty()
-    }
+
     @JvmStatic
     fun isOn(stack: ItemStack): Boolean {
         val gun = gunOf(stack) ?: return false
-        return gun.state.flashlightOn && AttachmentDefinition.findFlashlights(gun).isNotEmpty()
+        return FlashlightState.modeOf(gun.state) != FlashlightMode.OFF &&
+            AttachmentDefinition.findFlashlights(gun).isNotEmpty()
     }
+
     @JvmStatic
-    fun toggleLocal(): Boolean? {
+    fun toggleLocal(): FlashlightMode? {
         val player = localPlayer ?: return null
-        val stack = player.mainHandItem
-        if (!hasFlashlight(stack)) return null
-        val expected = !isOn(stack)
+        val gun = gunOf(player.mainHandItem) ?: return null
+        if (AttachmentDefinition.findFlashlights(gun).isEmpty()) return null
+        val expected = FlashlightState.modeOf(gun.state).next()
         sendPacketToServer(ToggleFlashlightMessage)
         return expected
     }
+
     @JvmStatic
     fun sample(holder: LivingEntity, stack: ItemStack, origin: Vec3, direction: Vec3) {
         if (!isOn(stack)) return
         val dir = direction.normalize()
         if (dir.lengthSqr() < 1e-6) return
-        samples[holder.stringUUID] = Sample(origin, dir, time())
+        samples[holder.uuid] = Sample(origin, dir, time())
     }
 
     @JvmStatic
     fun clear() {
         samples.clear()
+        playback.clear()
     }
 
     private fun colorVec(rgb: Int): Vec3 = Vec3(
@@ -105,17 +133,33 @@ object FlashlightHandler {
         val camera = mc.gameRenderer.mainCamera.position
         val now = time()
         val lights = ArrayList<GunMuzzleLightHandler.Light>(MAX_LIGHTS)
+        samples.values.removeIf { now - it.time !in 0.0..1.0 }
+        playback.keys.removeIf { level.getPlayerByUUID(it) == null }
 
         for (player in level.players()) {
             if (player.position().distanceToSqr(camera) > MAX_DISTANCE * MAX_DISTANCE) continue
 
-            val gun = gunOf(player.mainHandItem) ?: continue
-            if (!gun.state.flashlightOn) continue
-            val emitter = AttachmentDefinition.findFlashlights(gun).firstOrNull() ?: continue
+            val gun = gunOf(player.mainHandItem)
+            val emitter = AttachmentDefinition.findFlashlights(gun).firstOrNull()
+            val mode = if (gun != null && emitter != null) FlashlightState.modeOf(gun.state) else FlashlightMode.OFF
+            // 首次看到已开启的手电时，爆闪沿用世界时间相位，避免停在波形的起点。
+            val state = playback.getOrPut(player.uuid) { Playback(mode) }
+            if (state.mode != mode) {
+                if (state.mode == FlashlightMode.OFF) state.flashStartedAt = now
+                if (mode == FlashlightMode.OFF) state.flashStartedAt = null
+                state.mode = mode
+                state.modeStartedAt = now
+            }
+            if (mode == FlashlightMode.OFF || emitter == null) continue
             val info = emitter.info
             if (info.safeIntensity <= 0f) continue
 
-            val sample = samples[player.stringUUID]?.takeIf { now - it.time in 0.0..1.0 }
+            val boost = state.flashStartedAt?.let { flashBoost(info, it, now) } ?: 1f
+            if (boost <= 1f) state.flashStartedAt = null
+            val strobe = if (mode == FlashlightMode.STROBE) strobeFactor(info, now - state.modeStartedAt) else 1f
+            if (strobe <= 0.001f) continue
+
+            val sample = samples[player.uuid]
             val rawOrigin = sample?.origin ?: player.eyePosition.add(player.lookAngle.scale(0.6))
             val origin = clampOrigin(player, rawOrigin)
             val direction = sample?.direction ?: player.lookAngle.normalize()
@@ -130,7 +174,7 @@ object FlashlightHandler {
                 player,
                 0.0,
                 1.0,
-                info.safeIntensity,
+                info.safeIntensity * boost * strobe,
                 info.safeRange,
                 origin,
                 direction,

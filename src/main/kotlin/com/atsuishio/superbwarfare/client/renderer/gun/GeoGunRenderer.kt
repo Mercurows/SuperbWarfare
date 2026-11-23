@@ -725,7 +725,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val emitterTransform = attachmentModel.getLocatorTransform(info.locator)
             ?: attachmentModel.getGlobalTransform(info.locator)
             ?: return
-        val matrix = Matrix4f(poseMatrix).mul(emitterTransform)
+        val matrix = if (firstPerson) BedrockBoneCoordinateTool.modelToView(poseMatrix) else Matrix4f(poseMatrix)
+        matrix.mul(emitterTransform)
         val point = matrix.getTranslation(Vector3f())
         val axis = matrix.transformDirection(0f, 0f, -1f, Vector3f())
         if (axis.lengthSquared() < 1e-8f) return
