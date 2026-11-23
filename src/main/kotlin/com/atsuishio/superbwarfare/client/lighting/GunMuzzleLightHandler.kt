@@ -11,9 +11,12 @@ import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.resource.gun.GunResource
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.TreeModelInstance
+import com.mojang.blaze3d.vertex.DefaultVertexFormat
+import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
-import net.minecraft.client.renderer.LightTexture
+import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.ClipContext
@@ -23,7 +26,10 @@ import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import kotlin.math.max
+import org.joml.Matrix4f
+import org.joml.Vector3f
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 /** 枪械专用的短时渲染光源；不写入方块光照，也不触发区块更新。 */
 @OnlyIn(Dist.CLIENT)
@@ -31,6 +37,8 @@ object GunMuzzleLightHandler {
 
     private const val MAX_SOURCES = 64
     private const val WALL_CLEARANCE = 0.12
+    private const val MODEL_LIGHT_RADIUS = 1.25
+    private const val MODEL_SHADOW_SAMPLES = 192
 
     /** 枪口到持枪者眼睛的合理上限；超过说明取到了别的坐标空间里的枪口位置。 */
     private const val MAX_MUZZLE_DISTANCE = 32.0
@@ -68,6 +76,7 @@ object GunMuzzleLightHandler {
     private var world: ClientLevel? = null
     private val lights = linkedMapOf<SourceKey, Light>()
     private val samples = linkedMapOf<SourceKey, MuzzleSample>()
+    private var firstPersonShot: Pair<SourceKey, Light>? = null
 
     /** 同一枪管连射刷新同一个脉冲，亮度不会随弹丸或渲染次数累加。时间单位为 tick。 */
     @JvmStatic
@@ -91,6 +100,7 @@ object GunMuzzleLightHandler {
         if (world !== current) {
             lights.clear()
             samples.clear()
+            firstPersonShot = null
             world = current
         }
     }
@@ -127,6 +137,7 @@ object GunMuzzleLightHandler {
             (level / 12f * muzzleScale.coerceAtMost(1f)).coerceIn(0.02f, 1f), (2f + level * 0.25f),
             sample?.position ?: holder.eyePosition.add(direction.scale(0.6)), direction)
         lights[key] = light
+        if (holder === Minecraft.getInstance().player) firstPersonShot = key to light
         updatePosition(light, light.position, direction)
         light.sampledAt = sample?.time ?: Double.NEGATIVE_INFINITY
     }
@@ -261,26 +272,134 @@ object GunMuzzleLightHandler {
 
     fun intensity(light: Light): Float = light.intensity(time()) * DisplayConfig.MUZZLE_LIGHT_STRENGTH.get().toFloat()
 
-    /** 复用材质 shader 的光照输入，兼容原版手臂、SBM 枪身及光影包材质。 */
     @JvmStatic
-    fun firstPersonLight(packedLight: Int): Int {
+    private fun firstPersonStrength(): Float {
         val mc = Minecraft.getInstance()
         if (!DisplayConfig.ENABLE_FIRE_FLASH_LIGHT.get() || !mc.options.cameraType.isFirstPerson ||
-            ShaderCompat.isRenderingShadowPass() || ScopeThermalRenderer.isFullScreenActive()) return packedLight
-        val player = mc.player ?: return packedLight
-        if (player.level() !== world) return packedLight
+            ShaderCompat.isRenderingShadowPass() || ScopeThermalRenderer.isFullScreenActive()) return 0f
+        val player = mc.player ?: return 0f
+        if (mc.cameraEntity !== player || player.level() !== world) return 0f
+        val (key, light) = firstPersonShot ?: return 0f
+        val age = time() - light.start
+        if (age < 0.0 || age >= 3.0) return 0f
         val active = ActiveGun.stackOf(player)
-        if (active.isEmpty) return packedLight
-        val light = lights[SourceKey(player.id, identity(active))] ?: return packedLight
-        val amount = intensity(light).coerceIn(0f, 1f)
-        if (amount <= 0f) return packedLight
-        return LightTexture.pack(max(LightTexture.block(packedLight), (amount * 13f).toInt()), LightTexture.sky(packedLight))
+        if (active.isEmpty || key != SourceKey(player.id, identity(active))) return 0f
+        // 枪身补光略晚于火焰贴图熄灭，夜间也能看清受光的前端零件。
+        val fade = ((3.0 - age) / 2.35).coerceIn(0.0, 1.0).toFloat()
+        return light.strength * fade * fade * (3f - 2f * fade) * DisplayConfig.MUZZLE_LIGHT_STRENGTH.get().toFloat()
+    }
+
+    @JvmStatic
+    fun shadeFirstPersonModel(
+        source: MultiBufferSource, model: TreeModelInstance, pose: Matrix4f, anchor: Matrix4f,
+    ): MultiBufferSource {
+        val strength = firstPersonStrength()
+        if (strength <= 0f) return source
+        val modelPose = Matrix4f(pose)
+        val muzzle = Matrix4f(modelPose).mul(anchor)
+        val tip = muzzle.getTranslation(Vector3f())
+        val forward = muzzle.transformDirection(0f, 0f, -1f, Vector3f())
+        if (forward.lengthSquared() > 1e-8f) tip.add(forward.normalize(0.055f))
+        val origin = Vec3(tip)
+        val shadows = HashMap<ShadowCell, Boolean>()
+        return MultiBufferSource { type ->
+            val target = source.getBuffer(type)
+            if (type.format() == DefaultVertexFormat.NEW_ENTITY) {
+                ModelLightConsumer(target, model, modelPose, origin, strength, shadows)
+            } else target
+        }
+    }
+
+    private data class ShadowCell(val x: Int, val y: Int, val z: Int, val nx: Int, val ny: Int, val nz: Int)
+
+    private class ModelLightConsumer(
+        private val target: VertexConsumer,
+        private val model: TreeModelInstance,
+        private val pose: Matrix4f,
+        private val muzzle: Vec3,
+        private val strength: Float,
+        private val shadows: MutableMap<ShadowCell, Boolean>,
+    ) : VertexConsumer {
+        private var position = Vec3.ZERO
+        private var normal = Vec3.ZERO
+        private var blockLight = 0
+        private var skyLight = 0
+
+        override fun vertex(x: Double, y: Double, z: Double): VertexConsumer {
+            position = Vec3(x, y, z)
+            target.vertex(x, y, z)
+            return this
+        }
+
+        override fun color(r: Int, g: Int, b: Int, a: Int): VertexConsumer {
+            target.color(r, g, b, a)
+            return this
+        }
+
+        override fun uv(u: Float, v: Float): VertexConsumer {
+            target.uv(u, v)
+            return this
+        }
+
+        override fun overlayCoords(u: Int, v: Int): VertexConsumer {
+            target.overlayCoords(u, v)
+            return this
+        }
+
+        override fun uv2(u: Int, v: Int): VertexConsumer {
+            blockLight = u
+            skyLight = v
+            return this
+        }
+
+        override fun normal(x: Float, y: Float, z: Float): VertexConsumer {
+            normal = Vec3(x.toDouble(), y.toDouble(), z.toDouble())
+            return this
+        }
+
+        override fun endVertex() {
+            val light = if (blockLight < 240) muzzleLight() else 0
+            target.uv2(maxOf(blockLight, light * 16), skyLight)
+            target.normal(normal.x.toFloat(), normal.y.toFloat(), normal.z.toFloat())
+            target.endVertex()
+        }
+
+        private fun muzzleLight(): Int {
+            val toMuzzle = muzzle.subtract(position)
+            val distance = toMuzzle.length()
+            if (distance >= MODEL_LIGHT_RADIUS || normal.lengthSqr() < 1e-6) return 0
+
+            // 火焰有宽度，掠射的前端零件也能受光，完全背向的面仍保留原光照。
+            val surfaceNormal = normal.normalize()
+            val facing = surfaceNormal.dot(toMuzzle) / distance.coerceAtLeast(0.001)
+            val angular = ((facing + 0.42) / 1.42).coerceIn(0.0, 1.0)
+            if (angular <= 0.0) return 0
+            val range = 1.0 - distance / MODEL_LIGHT_RADIUS
+            val cell = ShadowCell(
+                (toMuzzle.x * 10).roundToInt(), (toMuzzle.y * 10).roundToInt(), (toMuzzle.z * 10).roundToInt(),
+                (surfaceNormal.x * 2).roundToInt(), (surfaceNormal.y * 2).roundToInt(), (surfaceNormal.z * 2).roundToInt(),
+            )
+            // 共用邻近顶点的遮挡结果，避免给每个重复顶点遍历整把枪的立方体。
+            val blocked = shadows[cell] ?: if (shadows.size < MODEL_SHADOW_SAMPLES) {
+                val start = position.add(surfaceNormal.scale(0.018))
+                val edge = muzzle.add(surfaceNormal.scale(0.15))
+                val obstructed = model.rayTrace(pose, Vec3.ZERO, start, edge)?.t()?.let { it in 0.04..0.97 } == true
+                shadows[cell] = obstructed
+                obstructed
+            } else true
+            val exposure = (strength * angular * range * range * if (blocked) 0.38 else 3.8).coerceIn(0.0, 1.0)
+            return (sqrt(exposure) * 15).roundToInt()
+        }
+
+        override fun defaultColor(r: Int, g: Int, b: Int, a: Int) = target.defaultColor(r, g, b, a)
+        override fun unsetDefaultColor() = target.unsetDefaultColor()
     }
 
     @JvmStatic
     fun clear() {
         lights.clear()
         samples.clear()
+        firstPersonShot = null
         world = null
     }
 }
