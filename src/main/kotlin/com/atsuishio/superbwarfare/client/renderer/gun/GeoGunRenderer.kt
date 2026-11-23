@@ -332,9 +332,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedOverlay: Int,
         partialTick: Float
     ) {
-        val packedLight = if (transformType.firstPerson()) {
-            GunMuzzleLightHandler.firstPersonLight(packedLight)
-        } else packedLight
         handledScopeAttachment = null
         if (StaticGunRenderer.tryRender(
                 stack, transformType, poseStack, bufferSource, packedLight, packedOverlay
@@ -451,6 +448,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             resolveMuzzleAttachmentMuzzleTransform(stack, model, it)
         }
         val muzzleFlashScale = resolveMuzzleAttachmentMuzzleFlashScale(stack)
+        val firstPersonHand = if (transformType.firstPerson()) handForContext(transformType) else null
+        val deployedFirstPerson = firstPersonHand != null && ActiveGun.isDeployed(from(stack), true)
+        val firstPersonAnimation = firstPersonHand?.let { FirstPersonRenderHandler.getActiveAnimationInstance(it) as? GeoGunAnimationInstance }
+        val subWeaponFire = firstPersonHand != null && (deployedFirstPerson ||
+                ClientEventHandler.subWeaponFireRotTimer > 0.0 || firstPersonAnimation?.isSubWeaponFire() == true)
+        var subWeaponFlare: Matrix4f? = null
+        var firstPersonAnchor: Matrix4f? = null
 
         val canStencil = transformType.firstPerson()
                 && !ShaderCompat.isRenderingShadowPass()
@@ -547,8 +551,20 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             // **中途抛异常**就会跳过那个复位，共享实例上的这几根骨骼会一直留在 hidden 直到下次资源重载。
             val savedOcularBones = if (builtinScopeActive) model.builtinScopeRenderer.hideOcularBones() else null
             try {
+                if (firstPersonHand != null) {
+                    if (subWeaponFire) subWeaponFlare = resolveSubWeaponFlareTransform(stack, model)
+                    firstPersonAnchor = MuzzleFlashRenderer.resolveFlareTransform(
+                        model, stack, attachmentMuzzleTransform, subWeaponFlare, deployedFirstPerson
+                    )
+                }
+                val anchor = firstPersonAnchor
+                val modelBuffers = if (anchor != null && firstPersonHand == InteractionHand.MAIN_HAND &&
+                    localFirstPersonHand == InteractionHand.MAIN_HAND
+                ) {
+                    GunMuzzleLightHandler.shadeFirstPersonModel(bufferSource, model.instance, poseStack.last().pose(), anchor)
+                } else bufferSource
                 model.renderToBuffer(
-                    poseStack, bufferSource, texture, packedLight, packedOverlay,
+                    poseStack, modelBuffers, texture, packedLight, packedOverlay,
                     resolveGunAmmoReadout(stack, resource),
                     // ⚠ 必须在 `renderAttachments` 之后算：副武器换弹那份锚点是在里面填的，优先级更高
                     resolveArmAnchorsForDraw(model, transformType),
@@ -605,19 +621,11 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             }
         }
 
-        if (transformType.firstPerson()) {
-            val hand = handForContext(transformType)
-            val animation = FirstPersonRenderHandler.getActiveAnimationInstance(hand) as? GeoGunAnimationInstance
-
-            // 副武器开火期间（部署中，或副武器那一支开火动画正在播）才解析它的枪口骨骼：谁被切出来，火就归谁
-            val subWeaponFire = ActiveGun.isDeployed(from(stack), true) ||
-                    ClientEventHandler.subWeaponFireRotTimer > 0.0 ||
-                    animation?.isSubWeaponFire() == true
-            val subWeaponFlare = if (subWeaponFire) resolveSubWeaponFlareTransform(stack, model) else null
+        if (firstPersonHand != null) {
+            val hand = firstPersonHand
             val subWeaponFlashScale = if (subWeaponFire) resolveSubWeaponMuzzleFlashScale(stack) else 1.0f
-
-            val deployed = ActiveGun.isDeployed(from(stack), true)
-            val anchor = MuzzleFlashRenderer.resolveFlareTransform(model, stack, attachmentMuzzleTransform, subWeaponFlare, deployed)
+            val deployed = deployedFirstPerson
+            val anchor = firstPersonAnchor
             val holder = localPlayer
             if (holder != null && localFirstPersonHand == InteractionHand.MAIN_HAND && hand == InteractionHand.MAIN_HAND) {
                 MuzzleFlashRenderer.renderShot(holder, stack, true, poseStack, bufferSource, anchor,
