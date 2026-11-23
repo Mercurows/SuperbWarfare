@@ -43,6 +43,13 @@ open class GeoGunAnimationInstance(
     private val hand: InteractionHand
 ) : IFPAnimationInstance {
     private val animations = hashMapOf<String, BedrockAnimation>()
+    private var controller: GunAnimationControllerPlayer? = null
+    private var controllerRef: String? = null
+    private var controllerGeneration = -1L
+    private var heldId: UUID? = null
+    val takesHands get() = controller?.takesHands == true || (controller?.standalone != true &&
+            controller?.replaces(currentState) != true && currentState?.takesHandAway == true)
+    val ownsSprint get() = controller?.ownsSprint == true
     private var runner: AnimationRunner? = null
     private var fireRunner: AnimationRunner? = null
     private var fireModeRunner: AnimationRunner? = null
@@ -273,11 +280,13 @@ open class GeoGunAnimationInstance(
         reportMissing: Boolean = false,
         overrideAnimation: String? = null,
     ) {
+        refreshController()
         val hostStack = this.stack
 
         val fireName = resolveOverrideFireName(hostStack, overrideAnimation)
             ?: resolveFireName(hostStack, candidates, reportMissing)
-            ?: return
+        controller?.shot(fireName)
+        if (fireName == null) return
         if (!animations.containsKey(fireName)) return
 
         // 这一发是不是副武器打的
@@ -1614,9 +1623,15 @@ open class GeoGunAnimationInstance(
 
     // 两边都 key 的骨骼听上层的，只有常驻层 key 的听常驻层
     private fun overLoop(upperPose: Pose): Pose {
-        val loop = loopRunner ?: return upperPose
-        if (upperPose == DummyPose.INSTANCE) return loop.evaluate()
-        return MERGE_BLENDER.blend(listOf(loop.evaluate(), upperPose))
+        val custom = controller
+        val action = if (custom?.replaces(currentState) == true) DummyPose.INSTANCE else upperPose
+        val loop = loopRunner
+        val base = when {
+            loop == null -> action
+            action == DummyPose.INSTANCE -> loop.evaluate()
+            else -> MERGE_BLENDER.blend(listOf(loop.evaluate(), action))
+        }
+        return custom?.blend("action", base, ::mixControllerPose) ?: base
     }
 
     /**
@@ -1713,8 +1728,120 @@ open class GeoGunAnimationInstance(
 
     override fun getCachedPose(): Pose = cachedPose
 
+    private fun refreshController() {
+        val ref = GunResource.compute(stack).animationController
+        if (ref == null && controllerRef == null) return
+        if (ref == controllerRef && controllerGeneration == GunAnimationControllers.generation) return
+        controller = null
+        clearPlayback()
+        loadAnimations()
+        controllerRef = ref
+        heldId = ref?.let { GunData.from(stack).uuid }
+        controllerGeneration = GunAnimationControllers.generation
+        val loaded = ref?.let(GunAnimationControllers::lookup) ?: return
+        try {
+            controller = GunAnimationControllerPlayer(loaded, animations, ::controllerSlot, ::controllerTiming) {
+                collectParticleEvents(it)
+                collectSoundEvents(it)
+            }
+        } catch (e: Exception) {
+            GunAnimationControllers.report(loaded.id, e.message ?: "Could not bind controller")
+        }
+    }
+
+    private fun controllerSlot(slot: String): String? {
+        val a = GunResource.compute(stack).animation ?: return null
+        return when (slot) {
+            "Idle" -> handGuardName(a.idle, a.idleHandGuard)
+            "Edit" -> handGuardName(a.edit, a.editHandGuard)
+            "Fire" -> hostFireName(a, stack)
+            "Reload" -> handGuardName(a.reload, a.reloadHandGuard)
+            "ReloadNormal" -> normalReloadName(a)
+            "ReloadEmpty" -> emptyReloadName(a)
+            "Melee" -> resolveMeleeName()
+            "FireMode" -> currentFireModeAnimation()?.name
+            "Prepare" -> a.prepare
+            "PrepareLoad" -> a.prepareLoad
+            "Iterative" -> a.iterative
+            "Finish" -> a.finish
+            "Bolt" -> a.bolt
+            "Loop" -> a.loop
+            "Run" -> a.run
+            "Charge" -> a.charge
+            "Hold" -> a.hold
+            "HoldOpen" -> a.holdOpen
+            "CloseStrike" -> a.closeStrike
+            "IdleDeploy" -> a.idleDeploy
+            "BayonetCharge" -> a.bayonetCharge
+            "ChangeFireMode" -> a.changeFireMode
+            "FireLoop" -> a.fireLoop
+            else -> error("Unknown ClipSlot '$slot'")
+        }
+    }
+
+    private fun controllerTiming(timing: String, clip: BedrockAnimation): Float = when (timing) {
+        "Bolt" -> boltPlaybackSpeed(clip)
+        "Melee" -> meleePlaybackSpeed(clip)
+        "Charge" -> chargePlaybackSpeed(clip, GunData.from(stack))
+        else -> {
+            val action = when (timing) {
+                "Reload" -> GunAnimationState.RELOAD
+                "Reload.Normal" -> GunAnimationState.RELOAD_NORMAL
+                "Reload.Empty" -> GunAnimationState.RELOAD_EMPTY
+                "Reload.Prepare" -> GunAnimationState.PREPARE
+                "Reload.PrepareLoad" -> GunAnimationState.PREPARE_LOAD
+                "Reload.Iterative" -> GunAnimationState.ITERATIVE
+                "Reload.Finish" -> GunAnimationState.FINISH
+                else -> error("Unknown Timing '$timing'")
+            }
+            reloadPlaybackSpeed(action, clip)
+        }
+    }
+
+    private fun mixControllerPose(lower: Pose, upper: Pose, blend: GunAnimationControllers.Blend, weight: Float): Pose {
+        if (weight <= 0f) return lower
+        val additive = blend == GunAnimationControllers.Blend.Additive
+        val target = if (additive) combineLayers(lower, upper) else upper
+        if (weight >= 1f) return if (additive) target else combineHoldOpen(lower, target)
+        return CROSSFADE_BLENDER.combine(lower, target) { a, b ->
+            if (b.boneIndex() < 0) a else SimpleInterpolatorBlender.leanerLerpTransforms(
+                a, b, weight, maxOf(a.boneIndex(), b.boneIndex()), TRANSFORM_FACTORY
+            )
+        }
+    }
+
     override fun tick(partialTicks: Float) {
+        refreshController()
         val target = resolveState()
+        val custom = controller
+        if (custom == null) {
+            tickDefault(target)
+            return
+        }
+        try {
+            val dt = Minecraft.getInstance().deltaFrameTime.coerceAtLeast(0f) / TICKS_PER_SECOND
+            custom.update(GunData.from(stack), hand, target, dt)
+            if (custom.standalone) {
+                if (hand == InteractionHand.MAIN_HAND) {
+                    updateSubWeaponReload()
+                    subWeaponReloadRunner?.tick()
+                    collectSoundEvents(subWeaponReloadRunner)
+                    updateSubWeaponIdle()
+                }
+                cachedPose = custom.blend("action", DummyPose.INSTANCE, ::mixControllerPose)
+            } else {
+                tickDefault(target)
+            }
+            cachedPose = custom.blend("final", cachedPose, ::mixControllerPose)
+        } catch (e: Exception) {
+            GunAnimationControllers.report(custom.id, e.message ?: "Playback failed")
+            controller = null
+            clearPlayback()
+            tickDefault(target)
+        }
+    }
+
+    private fun tickDefault(target: GunAnimationState?) {
         val animation = GunResource.compute(stack).animation
 
         // 常驻层排在状态分支之前：换弹/开火/近战都停不下它
@@ -1756,11 +1883,12 @@ open class GeoGunAnimationInstance(
             clearDeployIdle()
             currentState = null
             pendingParticles.clear()
-            cachedPose = DummyPose.INSTANCE
+            cachedPose = controller?.blend("action", DummyPose.INSTANCE, ::mixControllerPose) ?: DummyPose.INSTANCE
             return
         }
 
         if (currentState == GunAnimationState.EDIT
+            && controller?.replaces(GunAnimationState.EDIT) != true
             && target != GunAnimationState.EDIT
             && !ClientEventHandler.isEditing
         ) {
@@ -1897,12 +2025,14 @@ open class GeoGunAnimationInstance(
             updateSubWeaponIdle()
         }
 
-        collectParticleEvents(runner)
+        if (controller?.replaces(currentState) != true) {
+            collectParticleEvents(runner)
+            collectSoundEvents(runner)
+        }
         collectParticleEvents(fireRunner)
         collectParticleEvents(fireModeRunner)
         collectParticleEvents(fireModeSwitchRunner)
 
-        collectSoundEvents(runner)
         collectSoundEvents(fireRunner)
         collectSoundEvents(fireModeRunner)
         collectSoundEvents(fireModeSwitchRunner)
@@ -1944,12 +2074,6 @@ open class GeoGunAnimationInstance(
             applyFireLoop(
                 combineFireModeSwitch(
                     combineLayers(
-                        // 蓄力层压在基础状态上、垫在开火层下面：它只 key `root`（枪身），
-                        // 手部锚点仍由基础状态的 `Idle` 给，两者合起来才是"枪在手里抖"。
-                        // 它是按权重交叉淡出出来的，所以基础状态单独先合一次。
-                        // 自定义奔跑层在最底下（`Idle` 之上、其余层之下）：蓄力/开火那类"正在做动作"
-                        // 的层要压得住它，而它自己得盖住 `Idle` 的枪身。冲锋层压在奔跑层上 ——
-                        // 两者本来互斥，重叠的那几帧正好是交叉淡入淡出。
                         applyCharge(
                             applyDeployIdle(
                                 bayonetChargeLayer.apply(
@@ -2013,7 +2137,11 @@ open class GeoGunAnimationInstance(
 
     override fun updateItem(stack: ItemStack) {
         val itemChanged = this.stack.item != stack.item
+        val id = controllerRef?.let { GunData.from(stack).uuid }
+        val swapped = heldId != null && id != null && id != heldId
         this.stack = stack
+        heldId = id
+        if ((itemChanged || swapped) && controllerRef != null) triggerPutAway()
         if (itemChanged) {
             editExitRunner = null
             clearFireModeLayers()
@@ -2034,12 +2162,24 @@ open class GeoGunAnimationInstance(
     }
 
     override fun triggerDraw() {
-        if (runner == null) {
+        if (runner == null && controller?.standalone != true) {
             play(resolveState() ?: GunAnimationState.IDLE)
         }
     }
 
     override fun triggerPutAway() {
+        controller = null
+        controllerRef = null
+        controllerGeneration = -1
+        heldId = null
+        clearPlayback()
+    }
+
+    private fun clearPlayback() {
+        clearDeployIdle()
+        clearSubWeaponReloadRunner()
+        subWeaponIdleClip = null
+        subWeaponIdleAnimationName = null
         runner = null
         editExitRunner = null
         fireRunner = null
@@ -2127,7 +2267,6 @@ open class GeoGunAnimationInstance(
                 else -> {}
             }
         }
-
 
         private val TRANSFORM_FACTORY: BoneTransformFactory = ZYXBoneTransformFactory()
 

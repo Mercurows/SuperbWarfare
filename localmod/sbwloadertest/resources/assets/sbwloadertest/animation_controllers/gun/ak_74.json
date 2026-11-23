@@ -1,0 +1,32 @@
+{
+  "FormatVersion": 1,
+  "Base": "superbwarfare:default",
+  "Script": "sbwloadertest:ak_74",
+  "Tracks": [
+    {
+      "Id": "rewindReload",
+      "After": "action",
+      "ReplaceActions": ["RELOAD_NORMAL", "RELOAD_EMPTY"],
+      "InitialState": "rewind",
+      "Select": [
+        { "When": "isEmptyReload", "To": "quickSwap" },
+        { "To": "rewind" }
+      ],
+      "States": [
+        {
+          "Id": "rewind",
+          "ClipSlot": "ReloadEmpty",
+          "Timing": "Reload.Normal",
+          "Speed": -1,
+          "TakesHands": true
+        },
+        {
+          "Id": "quickSwap",
+          "ClipSlot": "ReloadNormal",
+          "Timing": "Reload.Empty",
+          "TakesHands": true
+        }
+      ]
+    }
+  ]
+}

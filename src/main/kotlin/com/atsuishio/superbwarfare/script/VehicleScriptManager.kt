@@ -10,8 +10,7 @@ import org.mozillaa.javascript.ScriptableObject
 typealias JSFunction = org.mozillaa.javascript.Function
 
 object VehicleScriptManager {
-    val RHINO_CONTEXT: Context = Context.enter()
-    val SHARED_SCOPE: ScriptableObject = RHINO_CONTEXT.initStandardObjects()
+    val SHARED_SCOPE: ScriptableObject = Context.enter().use { it.initStandardObjects() }
 
     class ScriptFunction(val script: Script, val scope: Scriptable)
 
@@ -24,12 +23,14 @@ object VehicleScriptManager {
         partialTicks: Float,
         renderer: Any
     ) {
-        val ctx = RHINO_CONTEXT
+
         val scope = scriptFunc.scope
 
         val func = scope.get("transformCustomModelPart", scope)
         if (func is JSFunction) {
-            func.call(ctx, scope, scope, arrayOf(vehicle, model, poseStack, entityYaw, partialTicks, renderer))
+            Context.enter().use { cx ->
+                func.call(cx, scope, scope, arrayOf(vehicle, model, poseStack, entityYaw, partialTicks, renderer))
+            }
         }
     }
 }
