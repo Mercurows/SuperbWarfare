@@ -150,7 +150,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             val energy = stack.getCapability(ForgeCapabilities.ENERGY)
                 .map { obj -> obj.energyStored }
                 .orElseGet { 0 }
-            return Math.round(energy * 13f / GunData.get(stack, GunProp.MAX_ENERGY))
+            return Math.round(energy * 13f / GunData.get(stack, GunProp.MAX_ENERGY)).coerceIn(0, 13)
         }
 
         return super.getBarWidth(stack)
