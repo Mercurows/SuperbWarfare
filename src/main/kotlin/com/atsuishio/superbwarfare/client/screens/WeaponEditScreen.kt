@@ -2323,6 +2323,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val unit: String = "", val higherIsBetter: Boolean = true,
         val optional: Boolean = false, val firearmOnly: Boolean = false,
         val meleeRequired: Boolean = false, val minimum: Double = 0.0,
+        val acceptsNegative: Boolean = minimum < 0.0,
         val read: (GunData) -> Double,
     ) {
         RPM(
@@ -2334,7 +2335,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         DAMAGE("damage", 100.0, firearmOnly = true, read = { it.get(GunProp.DAMAGE) }),
         HEADSHOT("headshot", 4.0, unit = "×", firearmOnly = true, read = { it.get(GunProp.HEADSHOT) }),
         AIM_ASSIST(
-            "aim_assist", 100.0, 0, firearmOnly = true, minimum = -100.0,
+            "aim_assist", 100.0, 0, firearmOnly = true, acceptsNegative = true,
             read = { it.get(GunProp.AIM_ASSIST).toDouble() }),
         RECOIL_X("recoil_x", 0.005, 5, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.RECOIL_X) }),
         RECOIL_Y("recoil_y", 0.04, 5, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.RECOIL_Y) }),
@@ -2461,7 +2462,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             "melee_lifesteal", 100.0, unit = "%", optional = true, meleeRequired = true,
             read = { it.get(GunProp.MELEE_LIFESTEAL) * 100.0 });
 
-        fun accepts(value: Double) = value.isFinite() && (minimum < 0.0 || value >= 0.0)
+        fun accepts(value: Double) = value.isFinite() && (acceptsNegative || value >= 0.0)
 
         fun format(value: Double): String {
             val number = String.format(Locale.ROOT, "%.${decimals}f", value)
