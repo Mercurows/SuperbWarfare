@@ -22,7 +22,7 @@ open class GeoGunItem(properties: Properties) : GunItem(properties) {
         private fun registerGunExtensions(event: RegisterClientExtensionsEvent) {
             for (item in BuiltInRegistries.ITEM.filterIsInstance<GeoGunItem>()) {
                 event.registerItem(object : IClientItemExtensions {
-                    private val renderer by lazy { GeoGunRenderer() }
+                    private val renderer by lazy { item.createRenderer() }
 
                     override fun getCustomRenderer() = renderer
 
