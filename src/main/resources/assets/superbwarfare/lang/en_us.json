@@ -739,6 +739,7 @@
   "item.superbwarfare.lower_rail_bipod": "Lower Rail Bipod",
   "item.superbwarfare.peq_15": "AN/PEQ-15 ATPIAL Laser Aiming Illuminator",
   "item.superbwarfare.pistol_laser": "Pistol Laser Sight",
+  "item.superbwarfare.surefire_x400_ultra_flashlight": "SureFire X400 Ultra Flashlight/Laser",
   "item.superbwarfare.range_finder": "Range Finder",
   "item.superbwarfare.grip_vertical_pineapple": "Pineapple Vertical Grip",
   "item.superbwarfare.oem_stock_light": "Universal Light Stock",
@@ -1103,7 +1104,7 @@
   "key.superbwarfare.active_thermal_imaging": "Toggle Thermal Imaging / Fusion",
   "key.superbwarfare.loiter_config": "Auto-Orbit Config",
   "key.superbwarfare.toggle_tactical_map": "Open Tactical Map",
-  "key.superbwarfare.toggle_flashlight": "Toggle Flashlight",
+  "key.superbwarfare.toggle_light": "Toggle Light / Laser",
   "key.superbwarfare.change_seat": "Change Seat (+Index)",
 
   "effect.superbwarfare.shock": "Shock",

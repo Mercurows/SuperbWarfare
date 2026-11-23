@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.laser
 
 import com.atsuishio.superbwarfare.data.attachment.LaserInfo
+import com.atsuishio.superbwarfare.tools.BedrockBoneCoordinateTool
 import net.minecraft.world.phys.Vec3
 import org.joml.Matrix4f
 import org.joml.Vector3f
@@ -29,9 +30,11 @@ object LaserSightCapture {
         if (locatorTransform == null) return null
 
         val matrix = Matrix4f(poseMatrix).mul(locatorTransform)
-        val origin = matrix.getTranslation(Vector3f())
+        // 顶点使用原始矩阵，由渲染管线应用 ModelView；射线需要先显式进入视图空间。
+        val traceMatrix = if (firstPerson) BedrockBoneCoordinateTool.modelToView(matrix) else matrix
+        val origin = traceMatrix.getTranslation(Vector3f())
 
-        val axis = matrix.transformDirection(0f, 0f, -1f, Vector3f())
+        val axis = traceMatrix.transformDirection(0f, 0f, -1f, Vector3f())
         val axisScale = axis.length()
         if (axisScale < 1e-6f) return null
         axis.div(axisScale)

@@ -339,9 +339,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             shotParticles[handForContext(transformType)]?.clear()
         }
 
-        if (transformType.firstPerson() || transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
-            LaserSightCapture.beginFrame()
-        }
+        LaserSightCapture.beginFrame()
 
         val resource = GunResource.compute(stack)
         val modelResource = resource.getModel()
@@ -564,7 +562,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 captureMountScreenPositions(stack, poseStack, model)
             }
 
-            // 激光束：本地玩家第一人称 + 第三人称右手（出光口已在 `renderAttachments` 里采完）。
+            // 激光束：本地玩家第一人称 + 第三人称主手（出光口已在 `renderAttachments` 里采完）。
             //
             // ⚠ 位置就在**模板窗口内部**（上面那句 `GL_EQUAL 0` 还生效，收尾的
             // `finishStencilCulling` 排在下面）：高倍镜（`scope`）里枪身与出光的那件配件都被
@@ -574,9 +572,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             // ⚠ 必须**留在上面那个 `vanillaAcceleration` 块内部**：光束的格式（`ITEM_ENTITY_TARGET`
             // 那一族）正好落在 AR 会加速的那批格式里 —— 走出这个块，它的顶点会被 AR 推迟到帧尾，
             // 那时模板状态早就换了，光束就会整根盖到镜筒里外。
-            if (transformType.firstPerson() || transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
-                LaserSightRenderer.render(poseStack, bufferSource, partialTick)
-            }
+            LaserSightRenderer.render(poseStack, bufferSource, partialTick)
             // SIGHT reticles are composited after the gun, hands and attachments, while AR is
             // still on its vanilla pipeline. The original ocular stencil clips them to the lens.
             if (stencilScope?.scopeMode?.isSight() == true && !stencilScope.scopeMode.thermal) {
@@ -676,19 +672,21 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         stack: ItemStack,
     ) {
         val info = definition.laser ?: return
+        if (ShaderCompat.isRenderingShadowPass()) return
 
         val firstPerson = transformType.firstPerson()
         if (firstPerson) {
             if (localFirstPersonHand == null) return
-        } else if (transformType != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
-            return
+        } else {
+            if (transformType != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND &&
+                transformType != ItemDisplayContext.THIRD_PERSON_LEFT_HAND
+            ) return
+            if (!GunRenderContext.isMainArm()) return
         }
-        // 阴影 pass 里画激光只会往阴影贴图里写颜色（与吊坠那边同一个判据）
-        // TODO OculusCompat
-//        if (OculusCompat.isRenderingShadowPass()) return
 
         val data = from(stack)
         val preview = attachmentEditPreview(stack, data, slot)
+        if (preview == null && FlashlightState.modeOf(data) != FlashlightMode.LASER) return
         LaserSightCapture.capture(
             info = info,
             colorRgb = info.resolveColorRgb(preview?.laserColor ?: data.attachment.getLaserColor(slot)),
@@ -703,6 +701,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         poseMatrix: Matrix4f,
         attachmentModel: BedrockAttachmentModel,
         definition: AttachmentDefinition,
+        slot: AttachmentType,
         stack: ItemStack,
     ) {
         val info = definition.flashlight ?: return
@@ -757,7 +756,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             worldOrigin = camera.position.add(point.x.toDouble(), point.y.toDouble(), point.z.toDouble())
             worldDirection = Vec3(axis.x.toDouble(), axis.y.toDouble(), axis.z.toDouble())
         }
-        FlashlightHandler.sample(holder, stack, worldOrigin, worldDirection)
+        FlashlightHandler.sample(holder, stack, slot, worldOrigin, worldDirection)
     }
 
     open fun renderAttachments(
@@ -879,6 +878,16 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 }
                 // 激光出光口
                 captureLaserSight(
+                    transformType,
+                    poseStack.last().pose(),
+                    attachmentModel,
+                    definition,
+                    slot.type,
+                    stack,
+                )
+                // 手电出光口：导轨上的二合一/纯手电配件走通用槽位，必须和激光一样在这里采集，
+                // 否则只有 GRIP 槽（垂直握把）的手电会亮。
+                captureFlashlight(
                     transformType,
                     poseStack.last().pose(),
                     attachmentModel,
@@ -1353,7 +1362,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             Matrix4f(mountTransform).mul(attachmentTransform(stack, AttachmentType.GRIP, definition))
         )
 
-        captureFlashlight(transformType, poseStack.last().pose(), attachmentModel, definition, stack)
+        captureFlashlight(transformType, poseStack.last().pose(), attachmentModel, definition, AttachmentType.GRIP, stack)
         attachmentModel.renderToBuffer(
             poseStack, bufferSource, texture, packedLight, packedOverlay,
             null, resolveAmmoReadout(stack, definition.ammoBar, definition.textShow)

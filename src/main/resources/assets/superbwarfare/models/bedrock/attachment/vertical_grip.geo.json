@@ -148,11 +148,6 @@
 					]
 				},
 				{
-					"name": "light_pos",
-					"parent": "grip",
-					"pivot": [0, -1, -1]
-				},
-				{
 					"name": "bone",
 					"parent": "grip",
 					"pivot": [2, -2.36387, -0.01784],

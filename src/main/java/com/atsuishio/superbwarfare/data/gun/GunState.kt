@@ -157,12 +157,15 @@ data class GunState(
         val ammo: Int,
         val virtualAmmo: Int,
         val zooming: Boolean,
+        val flashlightOn: Boolean,
+        val flashlightMode: Int?,
     )
 
     /** Read-only view of the fields that can invalidate the PMC cache; see [Structural]. */
     val structural: Structural
         get() = Structural(
-            override, defaultDataId, selectedAmmoType, selectedFireMode, level, ammo, virtualAmmo, zooming
+            override, defaultDataId, selectedAmmoType, selectedFireMode, level, ammo, virtualAmmo, zooming,
+            flashlightOn, flashlightMode,
         )
 
     /**

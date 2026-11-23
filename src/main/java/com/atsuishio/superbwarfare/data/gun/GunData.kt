@@ -3,10 +3,7 @@ package com.atsuishio.superbwarfare.data.gun
 import com.atsuishio.superbwarfare.capability.entity.InfiniteAmmoCapability
 import com.atsuishio.superbwarfare.config.server.GunConfig
 import com.atsuishio.superbwarfare.data.*
-import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
-import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
-import com.atsuishio.superbwarfare.data.attachment.AttachmentZoom
-import com.atsuishio.superbwarfare.data.attachment.AvailableAttachments
+import com.atsuishio.superbwarfare.data.attachment.*
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.BACKUP_AMMO_CACHE_TICKS
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.DATA_VERSION
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
@@ -508,12 +505,16 @@ class GunData private constructor(
             // 3. Attachments
             attachmentJsonPropModifier.update(null as kotlinx.serialization.json.JsonObject?)
             val installedAttachments = attachment.installed()
+            // 激光/手电关闭时，带发光功能的配件只保留 Weight 修改（见 AttachmentDefinition.modifyProperty）
+            val lightMode = FlashlightState.modeOf(this, installedAttachments)
             for (instance in installedAttachments) {
                 attachmentOption(instance.slot, instance.id)?.let { option ->
                     attachmentJsonPropModifier.update(option.override)
                     attachmentJsonPropModifier.modifyProperty(pmcInstance)
                 }
-                instance.definition.modifyProperty(pmcInstance)
+                val includeNonWeight = instance.definition.laser == null ||
+                    lightMode == FlashlightMode.LASER
+                instance.definition.modifyProperty(pmcInstance, includeNonWeight)
             }
 
             // 3.5 某些槽位装上配件后，换弹方式按数据覆写（如装了瞄准镜就无法用弹夹装填）

@@ -169,9 +169,22 @@ data class AttachmentDefinition(
     }
 
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
+        modifyProperty(modifier, includeNonWeight = true)
+    }
+
+    /**
+     * 应用配件属性修改。
+     *
+     * [includeNonWeight] = false 时只保留 `Weight`：激光/手电关闭后，除重量外的属性修改失效，
+     * 但"这件配件挂在枪上"的重量惩罚仍然存在。
+     */
+    fun modifyProperty(modifier: PMC<GunData, DefaultGunData>, includeNonWeight: Boolean) {
         val input = captureInputSnapshot(modifier)
         val pmc = PmcProxy(modifier)
-        modifiers.forEach { it.apply(pmc, input) }
+        modifiers.forEach {
+            if (includeNonWeight || it.prop == GunProp.WEIGHT.serializationName) it.apply(pmc, input)
+        }
+        if (!includeNonWeight) return
 
         override?.let {
             jsonPropModifier.update(it)
