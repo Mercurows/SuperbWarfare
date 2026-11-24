@@ -91,6 +91,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.BL_132.get(), ::Bl132Renderer)
             registerEntityRenderer(ModEntities.GRAPESHOT.get(), ::GrapeshotRenderer)
             registerEntityRenderer(ModEntities.SUPER_STAR_PROJECTILE.get(), ::SuperStarProjectileRenderer)
+            registerEntityRenderer(ModEntities.SWORD_WAVE.get(), ::SwordWaveRenderer)
             registerEntityRenderer(ModEntities.VEHICLE_ASSEMBLING_TABLE.get(), ::VehicleAssemblingTableVehicleRenderer)
             registerEntityRenderer(ModEntities.WAVEFORCE_TOWER.get(), ::WaveforceTowerRenderer)
             registerEntityRenderer(ModEntities.IGLA_MISSILE.get(), ::BasicProjectileRenderer)

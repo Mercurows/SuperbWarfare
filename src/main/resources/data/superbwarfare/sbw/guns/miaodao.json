@@ -20,22 +20,26 @@
   "MeleeActions": [
     {
       "Animation": "melee_1",
+      "ProjectileRoll": -65,
       "Duration": 16,
       "HitTime": 7
     },
     {
       "Animation": "melee_2",
+      "ProjectileRoll": 70,
       "Duration": 20,
       "HitTime": 7
     },
     {
       "Animation": "melee_3",
+      "ProjectileRoll": -50,
       "Duration": 15,
       "HitTime": 5,
       "DamageMultiplier": 1.2222
     },
     {
       "Animation": "melee_heavy",
+      "ProjectileRoll": 20,
       "Duration": 26,
       "HitTime": 12,
       "Heavy": true,
@@ -45,6 +49,7 @@
       "ReleaseAnimation": "melee_heavy_realease",
       "ReleaseDuration": 17,
       "ReleaseHitTime": 3,
+      "ReleaseProjectileRoll": 10,
       "Hitbox": {
         "Type": "Box",
         "Range": 3.2,
@@ -84,6 +89,7 @@
     "superbwarfare:frostmourne",
     "superbwarfare:rusted_blade",
     "superbwarfare:cast_no_shadows",
+    "superbwarfare:shadows_of_sword",
     "superbwarfare:eager_edge",
     "superbwarfare:powerful_attraction",
     "superbwarfare:striving_for_perfection",

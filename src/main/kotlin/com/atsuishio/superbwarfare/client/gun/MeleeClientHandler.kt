@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.RightClickAction
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeAction
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeHitboxType
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeProjectileLauncher
 import com.atsuishio.superbwarfare.data.gun.melee.ResolvedMeleeAction
 import com.atsuishio.superbwarfare.data.gun.subdata.Cooldown
 import com.atsuishio.superbwarfare.data.gun.subweapon.SubWeaponRuntime
@@ -311,10 +312,13 @@ object MeleeClientHandler {
         // ⑤ 通知动画侧"新的一次挥击开始了"。按住 V 连续挥击时状态一直是 MELEE，
         //    光靠状态切换判断的话动画只会播第一段（见 [swingSerial] 的说明）。
         swingSerial++
-        state.meleeHarvestSwingId = swingSerial.takeIf { !player.isCreative && data.get(GunProp.CAN_HARVEST) }
-        state.meleeHarvestSwingId?.let { id ->
+        state.meleeSwingId = swingSerial.takeIf {
+            (!player.isCreative && data.get(GunProp.CAN_HARVEST)) ||
+                (!chargeStrike && MeleeProjectileLauncher.canLaunch(data, action, releaseStrike))
+        }
+        state.meleeSwingId?.let { id ->
             sendPacketToServer(MeleeAttackMessage(MeleeAttackMessage.SOURCE_MAIN, index, emptyList(),
-                chargeStrike = chargeStrike, harvestSwingId = id, releaseStrike = releaseStrike))
+                chargeStrike = chargeStrike, swingId = id, releaseStrike = releaseStrike))
         }
 
         if (action.cooldown > 0) {
@@ -326,7 +330,7 @@ object MeleeClientHandler {
 
         // ⑦ 与旧的帧驱动开火冷却对齐：挥击期间不该顺手打出一发
         ClientEventHandler.fireCooldown = (duration + 4).toDouble()
-        if (state.meleeHarvestSwingId != null && timing.hitTicks.firstOrNull() == 0) tickActiveSwing(player, data, state)
+        if (state.meleeSwingId != null && timing.hitTicks.firstOrNull() == 0) tickActiveSwing(player, data, state)
 
         debugLog {
             "melee swing: gun=${data.id} index=$index duration=$duration " +
@@ -364,7 +368,7 @@ object MeleeClientHandler {
                 state.meleeActionIndex,
                 forced,
                 state.meleeFromBayonetCharge,
-                state.meleeHarvestSwingId,
+                state.meleeSwingId,
                 hitIndex,
             )
         }
@@ -377,7 +381,7 @@ object MeleeClientHandler {
         actionIndex: Int,
         forced: Entity? = null,
         chargeStrike: Boolean = false,
-        harvestSwingId: Int? = null,
+        swingId: Int? = null,
         hitIndex: Int = 0,
     ) {
         if (!player.isAlive || player.isRemoved || player.isSpectator) return
@@ -399,8 +403,8 @@ object MeleeClientHandler {
                 actionIndex = actionIndex,
                 targets = hits.map { it.toPayload() },
                 chargeStrike = chargeStrike,
-                harvestSwingId = harvestSwingId,
-                harvestHitIndex = hitIndex.takeIf { harvestSwingId != null },
+                swingId = swingId,
+                hitIndex = hitIndex.takeIf { swingId != null },
             )
         )
 

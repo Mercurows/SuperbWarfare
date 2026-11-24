@@ -5,21 +5,15 @@ import com.atsuishio.superbwarfare.config.server.GunConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
-import com.atsuishio.superbwarfare.data.gun.RightClickAction
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket
-import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.ProjectileUtil
-import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.HitResult
@@ -31,30 +25,9 @@ import net.minecraftforge.eventbus.api.Event
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
-import java.util.*
 
 @EventBusSubscriber(modid = Mod.MODID)
 internal object MeleeHarvest {
-    private const val HIT_TOLERANCE_TICKS = 2
-    private const val HIT_TIMEOUT_TICKS = 20
-
-    private class Swing(
-        val id: Int,
-        val item: Item,
-        val gunId: UUID,
-        val slot: Int,
-        val mode: Int,
-        val dimension: ResourceKey<Level>,
-        val actionIndex: Int,
-        val chargeStrike: Boolean,
-        val startedAt: Long,
-        val nextStartAt: Long,
-        val expiresAt: Long,
-        val hitTicks: IntArray,
-    ) {
-        var nextHit = 0
-    }
-
     private class Progress(val state: BlockState, val breakerId: Int) {
         var damage = 0.0
         var expiresAt = 0L
@@ -62,50 +35,9 @@ internal object MeleeHarvest {
 
     private class BreakTarget(val player: ServerPlayer, val pos: BlockPos, val stack: ItemStack)
 
-    private val swings = WeakHashMap<ServerPlayer, Swing>()
     private val progressByLevel = mutableMapOf<ServerLevel, MutableMap<BlockPos, Progress>>()
     private val finishing = ThreadLocal<BreakTarget>()
     private var nextBreakerId = Int.MIN_VALUE
-
-    fun startSwing(player: ServerPlayer, data: GunData, id: Int, actionIndex: Int, chargeStrike: Boolean, releaseStrike: Boolean) {
-        if (!canSwing(player, data)) return
-        val gunId = data.uuid ?: return
-        val actions = data.meleeActions()
-        if (actionIndex !in actions.indices || (chargeStrike && releaseStrike)) return
-        if (releaseStrike && (data.get(GunProp.RIGHT_CLICK_ACTION) != RightClickAction.HEAVY_HOLD ||
-                actionIndex != actions.indexOfFirst { it.isHeavy() }.coerceAtLeast(0))) return
-
-        val now = player.server.tickCount.toLong()
-        val previous = swings[player]
-        if (previous != null && (id - previous.id <= 0 || now + HIT_TOLERANCE_TICKS < previous.nextStartAt)) return
-        val startedAt = maxOf(now, previous?.nextStartAt ?: now)
-        val timing = data.meleeSwingTiming(player, actionIndex, chargeStrike, releaseStrike) ?: return
-        val chainWindow = data.get(GunProp.MELEE_CHAIN_WINDOW)
-        val nextStart = startedAt + maxOf(1, timing.duration - chainWindow, timing.hitTicks.lastOrNull() ?: 0)
-        swings[player] = Swing(id, data.item(), gunId, player.inventory.selected, data.selectedFireMode.get(),
-            player.level().dimension(), actionIndex, chargeStrike, startedAt, nextStart,
-            startedAt + timing.duration + HIT_TIMEOUT_TICKS, timing.hitTicks)
-    }
-
-    fun acceptHit(player: ServerPlayer, data: GunData, id: Int, actionIndex: Int, chargeStrike: Boolean, hitIndex: Int): Boolean {
-        val swing = swings[player] ?: return false
-        if (id != swing.id || hitIndex < swing.nextHit || actionIndex != swing.actionIndex || chargeStrike != swing.chargeStrike) return false
-        val hitTick = swing.hitTicks.getOrNull(hitIndex) ?: return false
-        if (data.item() !== swing.item || data.uuid != swing.gunId || player.inventory.selected != swing.slot ||
-            data.selectedFireMode.get() != swing.mode || player.level().dimension() != swing.dimension || !canSwing(player, data)) return false
-
-        val now = player.server.tickCount.toLong()
-        if (now > swing.expiresAt || now + HIT_TOLERANCE_TICKS < swing.startedAt + hitTick) return false
-        swing.nextHit = hitIndex + 1
-        return true
-    }
-
-    private fun canSwing(player: ServerPlayer, data: GunData): Boolean {
-        if (player.isCreative || player.isSpectator || !player.isAlive || player.isUsingItem ||
-            player.hasEffect(ModMobEffects.SHOCK.get()) || !data.item().canHarvest(data)) return false
-        val vehicle = player.vehicle
-        return vehicle !is VehicleEntity || !vehicle.banHand(player)
-    }
 
     /** Returns true when the swing was directed at a block, even if a protection prevents damage. */
     fun hitBlock(player: ServerPlayer, data: GunData, baseDamage: Double): Boolean {

@@ -490,7 +490,8 @@ class ModItemTagProvider(
             perkItem(ModPerks.BACKPACK_LINKED_MAGAZINE),
             perkItem(ModPerks.ADRENALINE_RUSH),
             perkItem(ModPerks.TURBO_CHARGER),
-            perkItem(ModPerks.STRIVING_FOR_PERFECTION)
+            perkItem(ModPerks.STRIVING_FOR_PERFECTION),
+            perkItem(ModPerks.SHADOWS_OF_SWORD)
         )
         this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_LEGENDARY).add(
             perkItem(ModPerks.PRACTICE_MAKES_PERFECT),

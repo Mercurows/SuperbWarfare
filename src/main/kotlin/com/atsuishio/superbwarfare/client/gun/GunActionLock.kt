@@ -65,7 +65,7 @@ object GunActionLock {
         /** 已经结算到第几个结算点；等于 [meleeHitTicks] 长度时本段不再出伤 */
         var meleeHitIndex: Int = 0
 
-        var meleeHarvestSwingId: Int? = null
+        var meleeSwingId: Int? = null
 
         /** 本段挥击是不是刺刀冲锋打出来的（决定用 `Animation.BayonetChargeHit` 换掉本段 clip） */
         var meleeFromBayonetCharge: Boolean = false
@@ -154,7 +154,7 @@ object GunActionLock {
             meleeTicks = 0
             meleeHitTicks = IntArray(0)
             meleeHitIndex = 0
-            meleeHarvestSwingId = null
+            meleeSwingId = null
             meleeFromBayonetCharge = false
             meleeHeavyRelease = false
             meleeHoldTicks = 0
@@ -205,7 +205,7 @@ object GunActionLock {
             meleeDuration = 0
             meleeHitTicks = IntArray(0)
             meleeHitIndex = 0
-            meleeHarvestSwingId = null
+            meleeSwingId = null
             meleeFromBayonetCharge = false
             meleeHeavyRelease = false
             meleeChargeTarget = null

@@ -146,6 +146,13 @@ data class MeleeAction(
     /** 蓄势后松开那一下的结算点；不写时用本段 [hitTimes] */
     @SerialName("ReleaseHitTime")
     val releaseHitTime: SingleOrList<Int>? = null,
+
+    /** Roll in degrees, clockwise as seen from the attacker. A missing value disables launch. */
+    @SerialName("ProjectileRoll")
+    val projectileRoll: Float? = null,
+
+    @SerialName("ReleaseProjectileRoll")
+    val releaseProjectileRoll: Float? = null,
 ) : IDBasedData<MeleeAction> {
 
     @Transient
@@ -244,6 +251,8 @@ data class MeleeAction(
             hit = hit,
             effectSpecs = effectSpecs(),
             heavy = isHeavy(),
+            projectileRoll = projectileRoll?.takeIf(Float::isFinite),
+            releaseProjectileRoll = releaseProjectileRoll?.takeIf(Float::isFinite),
         )
     }
 

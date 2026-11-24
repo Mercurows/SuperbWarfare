@@ -71,7 +71,12 @@ data class ResolvedMeleeAction(
      * 轻击/重击的区别要参与伤害结算（例如隐之刃凛只在轻击时蓄力、只在重击时释放）。
      */
     val heavy: Boolean = false,
+    val projectileRoll: Float? = null,
+    val releaseProjectileRoll: Float? = null,
 ) {
+    fun projectileRoll(release: Boolean): Float? =
+        if (release) releaseProjectileRoll ?: projectileRoll else projectileRoll
+
     /**
      * 本段实际生效的额外效果（预设 + 内联覆盖已合并）。
      *

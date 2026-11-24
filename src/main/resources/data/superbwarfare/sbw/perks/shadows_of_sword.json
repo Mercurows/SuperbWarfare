@@ -1,0 +1,5 @@
+{
+  "Type": "functional",
+  "MeleeLaunch": true,
+  "Script": "superbwarfare:scripts/perks/shadows_of_sword.js"
+}

@@ -4,9 +4,7 @@ import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.MeleeSound
-import com.atsuishio.superbwarfare.data.gun.melee.MeleeEffectDispatcher
-import com.atsuishio.superbwarfare.data.gun.melee.MeleeHarvest
-import com.atsuishio.superbwarfare.data.gun.melee.ResolvedMeleeAction
+import com.atsuishio.superbwarfare.data.gun.melee.*
 import com.atsuishio.superbwarfare.data.gun.subdata.Cooldown
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
@@ -58,9 +56,9 @@ data class MeleeAttackMessage(
     val targets: List<TargetPayload>,
     /** 这一击是不是刺刀冲锋撞人那一下（伤害基数改走 `BayonetCharge.StrikeDamage`） */
     val chargeStrike: Boolean = false,
-    /** A harvest swing start has an ID and no hit index; subsequent hit frames carry both. */
-    val harvestSwingId: Int? = null,
-    val harvestHitIndex: Int? = null,
+    /** A tracked swing start has an ID and no hit index; subsequent hit frames carry both. */
+    val swingId: Int? = null,
+    val hitIndex: Int? = null,
     val releaseStrike: Boolean = false,
 ) : ServerPacketPayload() {
 
@@ -102,18 +100,27 @@ data class MeleeAttackMessage(
 
         val actions = data.meleeActions()
         val index = ((actionIndex % actions.size) + actions.size) % actions.size
-        if (harvestSwingId != null && harvestHitIndex == null) {
+        val canHarvest = !player.isCreative && item.canHarvest(data)
+        if (swingId != null && hitIndex == null) {
             val action = data.resolveMeleeAction(index)
-            if (action.cooldown <= 0 || !data.cooldown.isCoolingDown(Cooldown.meleeKey(index))) {
-                MeleeHarvest.startSwing(player, data, harvestSwingId, actionIndex, chargeStrike, releaseStrike)
+            val canLaunch = !chargeStrike && MeleeProjectileLauncher.canLaunch(data, action, releaseStrike)
+            if ((canHarvest || canLaunch) &&
+                (action.cooldown <= 0 || !data.cooldown.isCoolingDown(Cooldown.meleeKey(index)))) {
+                MeleeSwingTracker.start(player, data, swingId, actionIndex, chargeStrike, releaseStrike)
             }
             return
         }
 
-        if (harvestSwingId != null && harvestHitIndex != null &&
-            MeleeHarvest.acceptHit(player, data, harvestSwingId, actionIndex, chargeStrike, harvestHitIndex) &&
-            (!chargeStrike || targets.isEmpty())
-        ) {
+        val trackedHit = if (swingId != null && hitIndex != null) {
+            MeleeSwingTracker.acceptHit(player, data, swingId, actionIndex, chargeStrike, hitIndex)
+        } else null
+        if (trackedHit?.first == true && !chargeStrike) {
+            val action = data.resolveMeleeAction(index)
+            if (action.cooldown <= 0 || !data.cooldown.isCoolingDown(Cooldown.meleeKey(index))) {
+                MeleeProjectileLauncher.dispatch(player, data, action, trackedHit.release)
+            }
+        }
+        if (trackedHit != null && canHarvest && (!chargeStrike || targets.isEmpty())) {
             val action = data.resolveMeleeAction(index)
             if (MeleeHarvest.hitBlock(player, data, baseDamage(player, data, action, chargeStrike))) return
         }

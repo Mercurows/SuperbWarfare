@@ -16,6 +16,7 @@ class PerkDescriptor(
     val rgb: List<Int>?,
     val mobEffects: List<String>?,
     val hideParticle: Boolean,
+    val meleeLaunch: Boolean = false,
 ) {
     val perkType: Perk.Type by lazy {
         when (type.lowercase(Locale.ROOT)) {
@@ -38,7 +39,8 @@ class PerkDescriptor(
                 Codec.INT.listOf().optionalFieldOf("RGB").forGetter { it.rgb?.let { rgb -> Optional.of(rgb) } ?: Optional.empty() },
                 Codec.STRING.listOf().optionalFieldOf("MobEffects").forGetter { it.mobEffects?.let { m -> Optional.of(m) } ?: Optional.empty() },
                 Codec.BOOL.optionalFieldOf("HideParticle", false).forGetter { it.hideParticle },
-            ).apply(instance) { type, script, bypassArmorRate, damageRate, speedRate, slug, rgb, mobEffects, hideParticle ->
+                Codec.BOOL.optionalFieldOf("MeleeLaunch", false).forGetter { it.meleeLaunch },
+            ).apply(instance) { type, script, bypassArmorRate, damageRate, speedRate, slug, rgb, mobEffects, hideParticle, meleeLaunch ->
                 PerkDescriptor(
                     type = type,
                     script = script.orElse(null),
@@ -49,6 +51,7 @@ class PerkDescriptor(
                     rgb = rgb.orElse(null),
                     mobEffects = mobEffects.orElse(null),
                     hideParticle = hideParticle,
+                    meleeLaunch = meleeLaunch,
                 )
             }
         }

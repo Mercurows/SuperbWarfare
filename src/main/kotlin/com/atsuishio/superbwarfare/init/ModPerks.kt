@@ -107,6 +107,7 @@ object ModPerks {
     lateinit var POWERFUL_COOLER: PERK
     lateinit var CAST_NO_SHADOWS: PERK
     lateinit var EAGER_EDGE: PERK
+    lateinit var SHADOWS_OF_SWORD: PERK
     lateinit var ADRENALINE_RUSH: PERK
     lateinit var QUICKDRAW: PERK
     lateinit var SNAPSHOT_SIGHTS: PERK
@@ -273,6 +274,7 @@ object ModPerks {
         EAGER_EDGE = autoRegistryObjects["eager_edge"] ?: registerFuncPerk("eager_edge") {
             EmptyPerk("eager_edge", Perk.Type.FUNCTIONAL)
         }
+        SHADOWS_OF_SWORD = autoRegistryObjects.getValue("shadows_of_sword")
         ADRENALINE_RUSH = autoRegistryObjects["adrenaline_rush"] ?: registerFuncPerk("adrenaline_rush") {
             EmptyPerk("adrenaline_rush", Perk.Type.FUNCTIONAL)
         }

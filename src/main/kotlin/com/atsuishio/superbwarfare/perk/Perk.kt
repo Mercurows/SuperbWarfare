@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.data.PropertyModifier
 import com.atsuishio.superbwarfare.data.gun.DamageReduce
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeProjectileLauncher
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.item.misc.PerkItem
@@ -25,6 +26,10 @@ open class Perk(val descriptionId: String, val type: Type) : PropertyModifier<Gu
 
     /** Normalized RGB channels of the ammo effect. Treat the returned array as read-only. */
     open val ammoRgb: FloatArray? get() = null
+
+    open val launchesMeleeProjectile: Boolean get() = false
+
+    open fun onMeleeLaunch(instance: PerkInstance, launcher: MeleeProjectileLauncher) {}
 
     // 默认不进行修改
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {}

@@ -5,7 +5,9 @@ import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.gun.DamageReduce
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeProjectileLauncher
 import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties
+import com.atsuishio.superbwarfare.inventory.menu.ReforgingTableMenu.Companion.MAX_PERK_LEVEL
 import com.atsuishio.superbwarfare.perk.IAmmoStat
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.perk.PerkInstance
@@ -25,6 +27,12 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
     override val speedRate: Double get() = descriptor.speedRate
 
     override val slug: Boolean get() = descriptor.slug
+
+    override val launchesMeleeProjectile: Boolean get() = descriptor.meleeLaunch
+
+    override fun onMeleeLaunch(instance: PerkInstance, launcher: MeleeProjectileLauncher) {
+        script?.callFunction("onMeleeLaunch", instance.level.toInt(), MAX_PERK_LEVEL, launcher)
+    }
 
     override val ammoRgb: FloatArray? by lazy {
         if (type != Type.AMMO) return@lazy null
