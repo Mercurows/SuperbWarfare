@@ -3,7 +3,7 @@
   "fragment": "superbwarfare:gun_muzzle_light",
   "attributes": ["Position"],
   "blend": {"func":"add","srcrgb":"1","dstrgb":"1","srcalpha":"0","dstalpha":"1"},
-  "samplers": [{"name":"SceneColor"}, {"name":"SceneDepth"}, {"name":"WorldDepth"}],
+  "samplers": [{"name":"SceneColor"}, {"name":"SceneDepth"}, {"name":"WorldDepth"}, {"name":"BlockShadowDepth"}],
   "uniforms": [
     {"name":"InverseProjection","type":"matrix4x4","count":16,"values":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]},
     {"name":"InverseView","type":"matrix4x4","count":16,"values":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]},
@@ -11,6 +11,7 @@
     {"name":"View","type":"matrix4x4","count":16,"values":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]},
     {"name":"TexelSize","type":"float","count":2,"values":[1,1]},
     {"name":"ShaderPackMode","type":"int","count":1,"values":[0]},
+    {"name":"Pass","type":"int","count":1,"values":[0]},
     {"name":"LightPosition","type":"float","count":3,"values":[0,0,0]},
     {"name":"LightDirection","type":"float","count":3,"values":[0,0,-1]},
     {"name":"LightRadius","type":"float","count":1,"values":[1]},
@@ -19,6 +20,11 @@
     {"name":"LightColor","type":"float","count":3,"values":[1,0.64,0.28]},
     {"name":"LightShadow","type":"float","count":1,"values":[1]},
     {"name":"LightSelfMask","type":"float","count":1,"values":[0]},
+    {"name":"BlockShadowOrigin","type":"float","count":3,"values":[0,0,0]},
+    {"name":"BlockShadowAxis","type":"float","count":3,"values":[0,0,-1]},
+    {"name":"BlockShadowRight","type":"float","count":3,"values":[1,0,0]},
+    {"name":"BlockShadowUp","type":"float","count":3,"values":[0,1,0]},
+    {"name":"BlockShadowAngle","type":"float","count":1,"values":[0]},
     {"name":"FlashlightEffect","type":"float","count":2,"values":[0,0]}
   ]
 }

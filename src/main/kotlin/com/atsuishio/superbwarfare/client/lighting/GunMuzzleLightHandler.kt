@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.client.lighting
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
-import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
@@ -13,8 +11,6 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.TreeModelInstance
-import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.vertex.BufferBuilder
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.blaze3d.vertex.VertexFormat
@@ -24,7 +20,6 @@ import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.LivingEntity
@@ -70,11 +65,8 @@ object GunMuzzleLightHandler {
         val coneCosInner: Float = -2f,
         val steady: Boolean = false,
         val shadowThickness: Float = 0.65f,
-        /**
-         * 自身遮挡深度窗口（米）：遮挡步进会忽略"光源后方 + 光源前方该距离内"的深度，
-         * 用于排除发光者自己的枪械/握把/手臂/身体；0 = 关闭。
-         */
         val selfMask: Float = 0f,
+        val flashlight: FlashlightHandler.Emitter? = null,
     ) {
         var requestedPosition: Vec3 = position
         var sampledAt = Double.NEGATIVE_INFINITY

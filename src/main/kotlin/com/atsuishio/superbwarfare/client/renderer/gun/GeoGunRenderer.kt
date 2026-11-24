@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.client.charm.CharmRuntime
 import com.atsuishio.superbwarfare.client.charm.CharmSnapshot
 import com.atsuishio.superbwarfare.client.lighting.FlashlightHandler
 import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightHandler
+import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightRenderer
 import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
@@ -726,11 +727,15 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         if (ShaderCompat.isRenderingShadowPass()) return
 
         val firstPerson = transformType.firstPerson()
-        if (!firstPerson &&
-            transformType != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND &&
-            transformType != ItemDisplayContext.THIRD_PERSON_LEFT_HAND
+        if (firstPerson) {
+            if (localFirstPersonHand != InteractionHand.MAIN_HAND ||
+                handForContext(transformType) != InteractionHand.MAIN_HAND
+            ) return
+        } else if (!GunRenderContext.isMainArm() ||
+            (transformType != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND &&
+                transformType != ItemDisplayContext.THIRD_PERSON_LEFT_HAND &&
+                !(transformType == ItemDisplayContext.FIXED && GunMountContext.active))
         ) return
-        if (firstPerson && localFirstPersonHand != handForContext(transformType)) return
 
         // 定位点优先取模型里显式定义的 locator；若模型直接用骨骼当定位点（没有 locators 表），
         // 退回该骨骼的全局变换——这样骨骼自身的旋转会直接驱动光轴向（Bedrock 约定 -Z 为前方）。
@@ -746,32 +751,20 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val holder = if (firstPerson) localPlayer else GunRenderContext.entity()
         holder ?: return
         val camera = Minecraft.getInstance().gameRenderer.mainCamera
-        val rotationInverse = cameraRotationInverse()
+        val viewToWorld = if (firstPerson) cameraRotationInverse()
+            else GunMuzzleLightRenderer.worldPoseInverse() ?: return
 
-        val worldOrigin: Vec3
-        val worldDirection: Vec3
-        if (firstPerson) {
-            // 与第一人称枪口采样一致：先修正手部 FOV 深度，再用相机旋转逆矩阵转到世界轴
+        val viewPoint = if (firstPerson) {
             val adjusted = BedrockBoneCoordinateTool.adjustViewDepthForFov(
-                Vec3(point.x.toDouble(), point.y.toDouble(), point.z.toDouble()),
+                Vec3(point),
                 ClientEventHandler.handFov.toFloat(),
                 ClientEventHandler.fov.toFloat()
             )
-            val offset = rotationInverse.transformPosition(
-                Vector3f(adjusted.x.toFloat(), adjusted.y.toFloat(), adjusted.z.toFloat())
-            )
-            val worldAxis = rotationInverse.transformDirection(axis, Vector3f())
-            worldOrigin = camera.position.add(Vec3(offset.x.toDouble(), offset.y.toDouble(), offset.z.toDouble()))
-            worldDirection = Vec3(worldAxis.x.toDouble(), worldAxis.y.toDouble(), worldAxis.z.toDouble())
-        } else {
-            worldOrigin = BedrockBoneCoordinateTool.viewPointToWorld(
-                Vec3(point.x.toDouble(), point.y.toDouble(), point.z.toDouble()), camera
-            )
-            worldDirection = BedrockBoneCoordinateTool.viewPointToWorldOffset(
-                Vec3(axis.x.toDouble(), axis.y.toDouble(), axis.z.toDouble()), camera
-            )
-        }
-        FlashlightHandler.sample(holder, stack, slot, worldOrigin, worldDirection)
+            Vector3f(adjusted.x.toFloat(), adjusted.y.toFloat(), adjusted.z.toFloat())
+        } else point
+        val origin = camera.position.add(Vec3(viewToWorld.transformPosition(viewPoint)))
+        val direction = Vec3(viewToWorld.transformDirection(axis))
+        FlashlightHandler.sample(holder, stack, slot, origin, direction, firstPerson)
     }
 
     open fun renderAttachments(

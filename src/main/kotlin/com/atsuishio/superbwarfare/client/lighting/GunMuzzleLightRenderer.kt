@@ -34,13 +34,23 @@ import kotlin.math.floor
 @OnlyIn(Dist.CLIENT)
 object GunMuzzleLightRenderer {
 
+    private const val FLASHLIGHT_BEAM_LENGTH = 2.0
+    private const val SURFACE_PASS = 0
+    private const val FLASHLIGHT_EFFECTS_PASS = 1
+    private const val COMPOSITE_PASS = 2
+    private val shadowUnpackParameters = intArrayOf(
+        GL11.GL_UNPACK_ROW_LENGTH, GL11.GL_UNPACK_SKIP_ROWS, GL11.GL_UNPACK_SKIP_PIXELS, GL11.GL_UNPACK_SWAP_BYTES
+    )
+
     private class FlashlightVisibility(var value: Float, var updatedAt: Long)
 
     private val logger = LogUtils.getLogger()
-    private val flashlightVisibility = mutableMapOf<Int, FlashlightVisibility>()
+    private val flashlightVisibility = mutableMapOf<String, FlashlightVisibility>()
     private var shader: ShaderInstance? = null
     private var scene: TextureTarget? = null
+    private var flashlightEffects: TextureTarget? = null
     private var view: Matrix4f? = null
+    private var inverseWorldPose: Matrix4f? = null
     private var projection: Matrix4f? = null
     private var failed = false
 
@@ -57,15 +67,21 @@ object GunMuzzleLightRenderer {
     @JvmStatic
     fun beginFrame() {
         view = null
+        inverseWorldPose = null
         projection = null
+        FlashlightHandler.beginFrame()
     }
 
     @JvmStatic
-    fun captureWorld(modelView: Matrix4f, worldProjection: Matrix4f) {
+    fun captureWorld(worldPose: Matrix4f, worldProjection: Matrix4f) {
         if (ShaderCompat.isRenderingShadowPass()) return
-        view = Matrix4f(modelView)
+        inverseWorldPose = Matrix4f(worldPose).invert()
+        view = Matrix4f(RenderSystem.getModelViewMatrix()).mul(worldPose)
         projection = Matrix4f(worldProjection)
     }
+
+    @JvmStatic
+    fun worldPoseInverse(): Matrix4f? = inverseWorldPose
 
     @JvmStatic
     fun render() {
@@ -95,6 +111,15 @@ object GunMuzzleLightRenderer {
         if (drawFbo != main.frameBufferId || viewport[0] != 0 || viewport[1] != 0 ||
             viewport[2] != main.width || viewport[3] != main.height
         ) return
+        val camera = mc.gameRenderer.mainCamera.position
+        val draws = lights.mapNotNull { light ->
+            val point = light.position.subtract(camera)
+            val bounds = screenBounds(worldView, worldProjection, point.x.toFloat(), point.y.toFloat(),
+                point.z.toFloat(), light.radius, main.width, main.height) ?: return@mapNotNull null
+            Triple(light, point, bounds)
+        }
+        if (draws.isEmpty()) return
+        FlashlightShadowMap.update(draws.map { it.first })
         val depthTest = GL11.glIsEnabled(GL11.GL_DEPTH_TEST)
         val depthWrite = GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK)
         val blend = GL11.glIsEnabled(GL11.GL_BLEND)
@@ -112,17 +137,23 @@ object GunMuzzleLightRenderer {
         val blendEquationRgb = GL11.glGetInteger(GL20.GL_BLEND_EQUATION_RGB)
         val blendEquationAlpha = GL11.glGetInteger(GL20.GL_BLEND_EQUATION_ALPHA)
         val activeTexture = GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE)
-        val textures = IntArray(3) {
+        val textures = IntArray(4) {
             RenderSystem.activeTexture(GL13.GL_TEXTURE0 + it)
             GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D)
         }
         val capabilities = GL.getCapabilities()
         val samplers = if (capabilities.OpenGL33 || capabilities.GL_ARB_sampler_objects)
-            IntArray(3) { GL30.glGetIntegeri(GL33.GL_SAMPLER_BINDING, it) } else null
+            IntArray(textures.size) { GL30.glGetIntegeri(GL33.GL_SAMPLER_BINDING, it) } else null
+        val unpackState = if (draws.any { it.first.flashlight != null })
+            shadowUnpackParameters.map { GL11.glGetInteger(it) } else null
+        val unpackBuffer = if (unpackState != null) GL11.glGetInteger(GL21.GL_PIXEL_UNPACK_BUFFER_BINDING) else 0
         val clearColor = BufferUtils.createFloatBuffer(4)
         GL11.glGetFloatv(GL11.GL_COLOR_CLEAR_VALUE, clearColor)
         val clearDepth = GL11.glGetDouble(GL11.GL_DEPTH_CLEAR_VALUE)
         try {
+            // Atlas uploads can leave a row stride and offsets in the shared OpenGL state.
+            if (unpackState != null) shadowUnpackParameters.forEach { GL11.glPixelStorei(it, 0) }
+            if (unpackBuffer != 0) GL15.glBindBuffer(GL21.GL_PIXEL_UNPACK_BUFFER, 0)
             RenderSystem.activeTexture(GL13.GL_TEXTURE0)
             RenderSystem.disableScissor()
             GL11.glDisable(GL11.GL_STENCIL_TEST)
@@ -139,6 +170,9 @@ object GunMuzzleLightRenderer {
             GlStateManager._glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, copy.frameBufferId)
             GL30.glBlitFramebuffer(0, 0, main.width, main.height, 0, 0, main.width, main.height,
                 GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST)
+            val effects = if (draws.any { it.first.flashlight?.showEffects == true }) {
+                flashlightEffectsTarget(main.width, main.height)
+            } else null
             main.bindWrite(true)
             samplers?.indices?.forEach { GL33.glBindSampler(it, 0) }
             custom.setSampler("SceneColor", copy.colorTextureId)
@@ -154,11 +188,7 @@ object GunMuzzleLightRenderer {
             RenderSystem.depthMask(false)
             RenderSystem.disableCull()
             RenderSystem.colorMask(true, true, true, false)
-            val camera = mc.gameRenderer.mainCamera.position
-            for (light in lights) {
-                val point = light.position.subtract(camera)
-                val bounds = screenBounds(worldView, worldProjection, point.x.toFloat(), point.y.toFloat(),
-                    point.z.toFloat(), light.radius, main.width, main.height) ?: continue
+            for ((light, point, bounds) in draws) {
                 RenderSystem.enableScissor(bounds[0], bounds[1], bounds[2], bounds[3])
                 custom.safeGetUniform("LightPosition").set(point.x.toFloat(), point.y.toFloat(), point.z.toFloat())
                 custom.safeGetUniform("LightDirection").set(light.direction.x.toFloat(), light.direction.y.toFloat(), light.direction.z.toFloat())
@@ -170,35 +200,29 @@ object GunMuzzleLightRenderer {
                 )
                 custom.safeGetUniform("LightShadow").set(light.shadowThickness)
                 custom.safeGetUniform("LightSelfMask").set(light.selfMask)
-                val flashlightEffect = custom.safeGetUniform("FlashlightEffect")
-                if (light.coneCosInner > light.coneCosOuter &&
-                    !(light.holder === mc.player && mc.options.cameraType.isFirstPerson)
-                ) {
-                    val beamEnd = light.position.add(light.direction.scale(light.radius.toDouble()))
+                if (!FlashlightShadowMap.bind(custom, light, camera)) continue
+                draw(custom, SURFACE_PASS, GL14.GL_FUNC_ADD)
+
+                val emitter = light.flashlight
+                if (effects != null && emitter?.showEffects == true) {
+                    val beamEnd = light.position.add(light.direction.scale(minOf(FLASHLIGHT_BEAM_LENGTH, light.radius.toDouble())))
                     val beamHit = clipFlashlight(light, beamEnd)
                     val beamLength = light.position.distanceTo(beamHit.location).toFloat()
                     val lensVisible = point.lengthSqr() < light.radius * light.radius &&
                         clipFlashlight(light, camera).type == HitResult.Type.MISS
-                    flashlightEffect.set(beamLength, smoothFlashlightVisibility(light.holder.id, lensVisible, now))
-                } else {
-                    flashlightEffect.set(0f, 0f)
+                    custom.safeGetUniform("FlashlightEffect").set(
+                        beamLength, smoothFlashlightVisibility(emitter.key, lensVisible, now)
+                    )
+                    // 重合像素只保留各通道的最大亮度。
+                    effects.bindWrite(false)
+                    draw(custom, FLASHLIGHT_EFFECTS_PASS, GL14.GL_MAX)
+                    main.bindWrite(false)
                 }
-                try {
-                    custom.apply()
-                    // Set the actual GL blend state after ShaderInstance applies its cached mode.
-                    GL11.glEnable(GL11.GL_BLEND)
-                    GL20.glBlendEquationSeparate(GL14.GL_FUNC_ADD, GL14.GL_FUNC_ADD)
-                    GL14.glBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO, GL11.GL_ONE)
-                    val builder = Tesselator.getInstance().builder
-                    builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION)
-                    builder.vertex(-1.0, -1.0, 0.0).endVertex()
-                    builder.vertex(1.0, -1.0, 0.0).endVertex()
-                    builder.vertex(1.0, 1.0, 0.0).endVertex()
-                    builder.vertex(-1.0, 1.0, 0.0).endVertex()
-                    BufferUploader.draw(builder.end())
-                } finally {
-                    custom.clear()
-                }
+            }
+            if (effects != null) {
+                RenderSystem.disableScissor()
+                custom.setSampler("SceneColor", effects.colorTextureId)
+                draw(custom, COMPOSITE_PASS, GL14.GL_FUNC_ADD)
             }
         } catch (exception: Exception) {
             failed = true
@@ -232,6 +256,8 @@ object GunMuzzleLightRenderer {
                 GlStateManager._bindTexture(texture)
             }
             samplers?.forEachIndexed { unit, sampler -> GL33.glBindSampler(unit, sampler) }
+            unpackState?.forEachIndexed { index, value -> GL11.glPixelStorei(shadowUnpackParameters[index], value) }
+            if (unpackBuffer != 0) GL15.glBindBuffer(GL21.GL_PIXEL_UNPACK_BUFFER, unpackBuffer)
             RenderSystem.activeTexture(activeTexture)
             RenderSystem.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3])
             RenderSystem.clearDepth(clearDepth)
@@ -239,10 +265,42 @@ object GunMuzzleLightRenderer {
         }
     }
 
-    @JvmStatic
-    private fun smoothFlashlightVisibility(holderId: Int, visible: Boolean, now: Long): Float {
+    private fun flashlightEffectsTarget(width: Int, height: Int): TextureTarget {
+        var target = flashlightEffects
+        if (target == null || target.width != width || target.height != height) {
+            target?.destroyBuffers()
+            target = TextureTarget(width, height, false, Minecraft.ON_OSX)
+            flashlightEffects = target
+        }
+        target.bindWrite(false)
+        RenderSystem.clearColor(0f, 0f, 0f, 0f)
+        RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX)
+        return target
+    }
+
+    private fun draw(shader: ShaderInstance, pass: Int, blendEquation: Int) {
+        shader.safeGetUniform("Pass").set(pass)
+        try {
+            shader.apply()
+            // ShaderInstance caches its blend mode, so set the equation after apply().
+            GL11.glEnable(GL11.GL_BLEND)
+            GL20.glBlendEquationSeparate(blendEquation, GL14.GL_FUNC_ADD)
+            GL14.glBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO, GL11.GL_ONE)
+            val builder = Tesselator.getInstance().builder
+            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION)
+            builder.vertex(-1.0, -1.0, 0.0).endVertex()
+            builder.vertex(1.0, -1.0, 0.0).endVertex()
+            builder.vertex(1.0, 1.0, 0.0).endVertex()
+            builder.vertex(-1.0, 1.0, 0.0).endVertex()
+            BufferUploader.draw(builder.end())
+        } finally {
+            shader.clear()
+        }
+    }
+
+    private fun smoothFlashlightVisibility(key: String, visible: Boolean, now: Long): Float {
         val target = if (visible) 1f else 0f
-        val state = flashlightVisibility.getOrPut(holderId) { FlashlightVisibility(target, now) }
+        val state = flashlightVisibility.getOrPut(key) { FlashlightVisibility(target, now) }
         // 方块边缘会使 raycast 在命中和未命中之间跳变，让可见度在几帧内过渡。
         val elapsed = (now - state.updatedAt).coerceAtLeast(0L)
         val fraction = (1.0 - exp(-elapsed / 45.0)).toFloat()
@@ -254,7 +312,7 @@ object GunMuzzleLightRenderer {
     @JvmStatic
     private fun clipFlashlight(light: GunMuzzleLightHandler.Light, end: Vec3): HitResult =
         light.holder.level().clip(
-            ClipContext(light.position, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, light.holder)
+            ClipContext(light.position, end, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, light.holder)
         )
 
     /** 投影包围盒而非枪口中心，因此屏幕外枪口仍能照到画面内的墙。近裁剪相交时保守覆盖全屏。 */
@@ -285,7 +343,10 @@ object GunMuzzleLightRenderer {
     @JvmStatic
     fun close() {
         flashlightVisibility.clear()
+        FlashlightShadowMap.close()
         scene?.destroyBuffers()
         scene = null
+        flashlightEffects?.destroyBuffers()
+        flashlightEffects = null
     }
 }

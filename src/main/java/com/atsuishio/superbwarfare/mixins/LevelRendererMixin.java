@@ -29,13 +29,19 @@ public class LevelRendererMixin {
     @Final
     private EntityRenderDispatcher entityRenderDispatcher;
 
+    @Inject(method = "renderLevel", at = @At("HEAD"))
+    private void superbWarfare$captureLightingView(PoseStack poses, float partialTick, long finishTime,
+                                                  boolean renderOutline, Camera camera, GameRenderer renderer,
+                                                  LightTexture lightTexture, Matrix4f projection, CallbackInfo ci) {
+        GunMuzzleLightRenderer.captureWorld(poses.last().pose(), projection);
+    }
+
     // 感谢 Minecraft-Ping-Wheel 开源
     // https://github.com/LukenSkyne/Minecraft-Ping-Wheel/blob/138295954dab9d2451ad19e16d8d413ef018a2d8/fabric/src/main/java/nx/pingwheel/fabric/mixin/LevelRendererMixin.java
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;applyModelViewMatrix()V", ordinal = 1, shift = At.Shift.AFTER))
     private void onStartRenderLevel(PoseStack $$0, float tickDelta, long $$2, boolean $$3, Camera $$4, GameRenderer $$5, LightTexture $$6, Matrix4f $$7, CallbackInfo ci) {
         ClientEventHandler.modelViewMatrix = RenderSystem.getModelViewMatrix();
         ClientEventHandler.projectionMatrix = RenderSystem.getProjectionMatrix();
-        GunMuzzleLightRenderer.captureWorld(ClientEventHandler.modelViewMatrix, ClientEventHandler.projectionMatrix);
     }
 
     // 热成像不再需要给实体整体提亮：热源轮廓来自 ScopeThermalRenderer 的遮罩，这里只负责把几何喂给它。

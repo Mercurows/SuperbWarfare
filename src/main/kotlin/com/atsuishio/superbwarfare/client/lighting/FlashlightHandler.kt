@@ -31,10 +31,13 @@ object FlashlightHandler {
     private const val WALL_CLEARANCE = 0.15
     private const val MIN_FROM_EYE = 0.05
 
-    private data class Sample(val origin: Vec3, val direction: Vec3, val time: Double)
+    data class Emitter(val key: String, val showEffects: Boolean)
 
-    /** key = 玩家 UUID + 槽位；每件配件各自一份采样。 */
-    private val samples = mutableMapOf<String, Sample>()
+    private data class Sample(val gun: Any, val origin: Vec3, val direction: Vec3)
+
+    private val worldSamples = mutableMapOf<String, Sample>()
+    private var handSamples = mutableMapOf<String, Sample>()
+    private var previousHandSamples = mutableMapOf<String, Sample>()
 
     /** 每件配件上一帧的档位，用于检测切换（开灯眩光 / 爆闪相位起点）。 */
     private val lastModes = mutableMapOf<String, FlashlightMode>()
@@ -130,18 +133,32 @@ object FlashlightHandler {
     }
 
     @JvmStatic
-    fun sample(holder: LivingEntity, stack: ItemStack, slot: AttachmentType, origin: Vec3, direction: Vec3) {
+    fun sample(
+        holder: LivingEntity, stack: ItemStack, slot: AttachmentType, origin: Vec3, direction: Vec3,
+        firstPerson: Boolean,
+    ) {
         val gun = gunOf(stack) ?: return
         val mode = AttachmentLightState.modeOf(gun, slot)
         if (mode != FlashlightMode.ON && mode != FlashlightMode.STROBE) return
         val dir = direction.normalize()
         if (dir.lengthSqr() < 1e-6) return
-        samples[key(holder.stringUUID, slot)] = Sample(origin, dir, time())
+        val samples = if (firstPerson) handSamples else worldSamples
+        samples[key(holder.stringUUID, slot)] = Sample(gun.uuid ?: stack, origin, dir)
+    }
+
+    fun beginFrame() {
+        worldSamples.clear()
+        val reusable = previousHandSamples
+        previousHandSamples = handSamples
+        handSamples = reusable
+        handSamples.clear()
     }
 
     @JvmStatic
     fun clear() {
-        samples.clear()
+        worldSamples.clear()
+        handSamples.clear()
+        previousHandSamples.clear()
         lastModes.clear()
         flashStartedAt.clear()
         modeStartedAt.clear()
@@ -155,12 +172,15 @@ object FlashlightHandler {
 
     private fun eyePosition(holder: LivingEntity): Vec3 {
         val mc = Minecraft.getInstance()
-        return if (holder === mc.player && mc.options.cameraType.isFirstPerson) {
+        return if (isLocalHand(holder, mc)) {
             mc.gameRenderer.mainCamera.position
         } else {
             holder.getEyePosition(mc.frameTime)
         }
     }
+
+    private fun isLocalHand(holder: LivingEntity, mc: Minecraft): Boolean =
+        holder === mc.player && holder === mc.cameraEntity && mc.options.cameraType.isFirstPerson
 
     private fun clampOrigin(holder: LivingEntity, desired: Vec3): Vec3 {
         val level = Minecraft.getInstance().level ?: return desired
@@ -169,7 +189,7 @@ object FlashlightHandler {
         if (length <= MIN_FROM_EYE) return desired
 
         val hit = level.clip(
-            ClipContext(eye, desired, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, holder)
+            ClipContext(eye, desired, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, holder)
         )
         if (hit.type == HitResult.Type.MISS) return desired
 
@@ -191,6 +211,8 @@ object FlashlightHandler {
 
             val stack = player.mainHandItem
             val gun = gunOf(stack) ?: continue
+            val gunIdentity = gun.uuid ?: stack
+            val firstPerson = isLocalHand(player, mc)
             val emitters = AttachmentDefinition.findFlashlights(gun)
             if (emitters.isEmpty()) continue
 
@@ -212,7 +234,7 @@ object FlashlightHandler {
                 val lightOn = mode == FlashlightMode.ON || mode == FlashlightMode.STROBE
                 val previous = lastModes.put(k, mode) ?: mode
                 val previousLightOn = previous == FlashlightMode.ON || previous == FlashlightMode.STROBE
-                if (previous != mode) modeStartedAt[k] = now
+                if (previous != mode || k !in modeStartedAt) modeStartedAt[k] = now
                 if (lightOn && !previousLightOn) flashStartedAt[k] = now
                 if (!lightOn) {
                     flashStartedAt.remove(k)
@@ -231,13 +253,11 @@ object FlashlightHandler {
 
                 if (strobe <= 0.001f) continue
 
-                val sample = samples[k]?.takeIf { now - it.time in 0.0..1.0 }
-                val rawOrigin = sample?.origin ?: player.eyePosition.add(player.lookAngle.scale(0.6))
+                val sample = if (firstPerson) handSamples[k] ?: previousHandSamples[k] else worldSamples[k]
+                val mount = sample?.takeIf { it.gun == gunIdentity }
+                val look = player.getViewVector(mc.frameTime)
+                val rawOrigin = mount?.origin ?: eyePosition(player).add(look.scale(0.6))
                 val origin = clampOrigin(player, rawOrigin)
-                val direction = sample?.direction ?: player.lookAngle.normalize()
-
-                val shadowThickness = 1000f
-                val selfMask = 1.5f
 
                 lights += GunMuzzleLightHandler.Light(
                     player,
@@ -246,13 +266,12 @@ object FlashlightHandler {
                     info.safeIntensity * boost * strobe,
                     info.safeRange * rangeMultiplier,
                     origin,
-                    direction,
+                    mount?.direction ?: look.normalize(),
                     colorVec(info.colorRgb()),
                     info.outerCos(),
                     info.innerCos(),
                     steady = true,
-                    shadowThickness = shadowThickness,
-                    selfMask = selfMask,
+                    flashlight = Emitter(k, !firstPerson && mount != null && origin == rawOrigin),
                 )
             }
         }

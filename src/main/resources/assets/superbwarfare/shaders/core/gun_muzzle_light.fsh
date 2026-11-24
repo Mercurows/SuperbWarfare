@@ -3,12 +3,14 @@
 uniform sampler2D SceneColor;
 uniform sampler2D SceneDepth;
 uniform sampler2D WorldDepth;
+uniform sampler2D BlockShadowDepth;
 uniform mat4 InverseProjection;
 uniform mat4 InverseView;
 uniform mat4 Projection;
 uniform mat4 View;
 uniform vec2 TexelSize;
 uniform int ShaderPackMode;
+uniform int Pass;
 uniform vec3 LightPosition;
 uniform vec3 LightDirection;
 uniform float LightRadius;
@@ -16,12 +18,15 @@ uniform float LightStrength;
 // x = cos(外半角), y = cos(内半角)；y <= x 表示不启用锥形（枪口火光保持原行为）
 uniform vec2 LightCone;
 uniform vec3 LightColor;
-// LightShadow = 屏幕空间遮挡的深度厚度：0 = 关闭；枪口火光默认 0.65；手电筒 1000。
+// LightShadow = 屏幕空间遮挡的深度厚度，0 = 关闭。
 uniform float LightShadow;
-// 手电筒"自身遮挡"半径：比光源更靠近相机、且离光源比这个更近的深度不算遮挡物，
-// 用来排除发光者自己的枪械/握把/身体；枪口火光传 0 = 不启用。
 uniform float LightSelfMask;
-// x = 光轴被方块截断后的长度，y = 方块遮挡过渡后的灯头可见度。
+uniform vec3 BlockShadowOrigin;
+uniform vec3 BlockShadowAxis;
+uniform vec3 BlockShadowRight;
+uniform vec3 BlockShadowUp;
+uniform float BlockShadowAngle;
+// x = 近端光柱的长度，y = 方块遮挡过渡后的灯头可见度。
 uniform vec2 FlashlightEffect;
 in vec2 texCoord;
 out vec4 fragColor;
@@ -36,12 +41,8 @@ float shadowSample(vec2 uv, float rayZ, float thickness, vec3 lightView) {
     float depth = texture(WorldDepth, uv).r;
     if (depth >= 0.999999) return 0.0;
     vec3 sampleView = viewPosition(uv, depth);
-    // 排除发光者自己的枪械/握把/手臂/身体：
-    //  - 光源后方（相机与光源之间）的深度物理上不可能挡住光源发出的光；
-    //  - 光源前方 LightSelfMask 米内的深度是枪身/护木/手等紧贴光源的自体几何
-    //    （看截图实测：枪管/护木在光源前一点点，仍会被当作遮挡物，形成锯齿状假阴影）。
-    // 比这更远的深度才是真正的遮挡物（墙、柱子、其他实体），照常参与遮挡。
     if (LightSelfMask > 0.0 && sampleView.z > lightView.z - LightSelfMask) return 0.0;
+    if (LightCone.y > LightCone.x && distance(sampleView, lightView) < 0.30) return 0.0;
     float gap = sampleView.z - rayZ;
     // 软边过渡（penumbra）：比原来的 0.025~0.075 更宽，遮挡边界不再是硬阶跃；
     // 大半径世界光（载具/爆炸）投影面积大时尤其明显，可有效掩盖屏幕空间步进的锯齿。
@@ -93,6 +94,40 @@ float visibility(vec3 surface, vec3 light, float thickness) {
         if (visible <= 0.005) return 0.0;
     }
     return visible;
+}
+
+float blockShadowSample(ivec2 cell, ivec2 size, vec3 delta, vec3 normal, float distance) {
+    cell = clamp(cell, ivec2(0), size - 1);
+    float depth = texelFetch(BlockShadowDepth, cell, 0).r;
+    // 在接收面的平面上比较邻近射线，避免掠过地面时把地面本身当作遮挡物。
+    vec2 sampleAngle = ((vec2(cell) + 0.5) / vec2(size) * 2.0 - 1.0) * BlockShadowAngle;
+    float angle = length(sampleAngle);
+    vec3 sampleDirection = BlockShadowAxis * cos(angle) +
+        (BlockShadowRight * sampleAngle.x + BlockShadowUp * sampleAngle.y) * (sin(angle) / max(angle, 0.00001));
+    float denom = dot(normal, sampleDirection);
+    float receiverDepth = abs(denom) > 0.0001 ? dot(normal, delta) / denom : distance;
+    if (receiverDepth < distance * 0.5 || receiverDepth > distance * 2.0) receiverDepth = distance;
+    return smoothstep(0.03, 0.07, min(receiverDepth, LightRadius) - depth);
+}
+
+float blockVisibility(vec3 world, vec3 normal) {
+    if (BlockShadowAngle <= 0.0) return 1.0;
+    vec3 delta = world - BlockShadowOrigin;
+    float distance = length(delta);
+    vec2 tangent = vec2(dot(delta, BlockShadowRight), dot(delta, BlockShadowUp));
+    float tangentLength = length(tangent);
+    float angle = atan(tangentLength, dot(delta, BlockShadowAxis));
+    if (distance < 0.001 || angle > BlockShadowAngle) return 1.0;
+    vec2 uv = 0.5 + tangent * (0.5 * angle / (max(tangentLength, 0.00001) * BlockShadowAngle));
+    ivec2 size = textureSize(BlockShadowDepth, 0);
+    vec2 grid = uv * vec2(size) - 0.5;
+    ivec2 cell = ivec2(floor(grid));
+    vec2 weight = fract(grid);
+    float a = blockShadowSample(cell, size, delta, normal, distance);
+    float b = blockShadowSample(cell + ivec2(1, 0), size, delta, normal, distance);
+    float c = blockShadowSample(cell + ivec2(0, 1), size, delta, normal, distance);
+    float d = blockShadowSample(cell + ivec2(1, 1), size, delta, normal, distance);
+    return 1.0 - mix(mix(a, b, weight.x), mix(c, d, weight.x), weight.y);
 }
 
 // 手电筒距离衰减：对需求曲线（逻辑斯蒂）拟合后再归一化 —— 0m 处为 1，射程极限处为 0。
@@ -153,9 +188,9 @@ vec2 beamInterval(vec3 ray, vec3 lightView, vec3 lightAxis, float sceneDistance)
     return interval;
 }
 
-float flashlightBeam(vec3 ray, vec3 lightView, vec3 lightAxis, float sceneDistance) {
+float flashlightBeam(vec3 eye, vec3 ray, vec3 lightView, vec3 lightAxis, float sceneDistance) {
     if (FlashlightEffect.x <= 0.01) return 0.0;
-    vec2 interval = beamInterval(ray, lightView, lightAxis, sceneDistance);
+    vec2 interval = beamInterval(ray, lightView - eye, lightAxis, sceneDistance);
     float span = interval.y - interval.x;
     if (span <= 0.0) return 0.0;
 
@@ -163,7 +198,8 @@ float flashlightBeam(vec3 ray, vec3 lightView, vec3 lightAxis, float sceneDistan
     float stepSize = span / float(samples);
     float density = 0.0;
     for (int i = 0; i < samples; i++) {
-        vec3 fromLight = ray * (interval.x + (float(i) + 0.5) * stepSize) - lightView;
+        vec3 point = eye + ray * (interval.x + (float(i) + 0.5) * stepSize);
+        vec3 fromLight = point - lightView;
         float distance = length(fromLight);
         float forward = dot(fromLight, lightAxis) / max(distance, 0.0001);
         float cone = smoothstep(LightCone.x, LightCone.y, forward);
@@ -171,10 +207,11 @@ float flashlightBeam(vec3 ray, vec3 lightView, vec3 lightAxis, float sceneDistan
         float range = distance / LightRadius;
         float fade = smoothstep(0.04, 0.30, distance) * (1.0 - smoothstep(0.82, 1.0, axial));
         float falloff = (1.0 - smoothstep(0.72, 1.0, range)) / (1.0 + range * range * 3.0);
-        density += cone * fade * falloff;
+        vec3 world = (InverseView * vec4(point, 1.0)).xyz;
+        density += cone * fade * falloff * blockVisibility(world, vec3(0.0));
     }
     const float beamDensity = 0.085;
-    return 1.0 - exp(-density * stepSize * LightStrength * beamDensity);
+    return 1.0 - exp(-density * stepSize * min(LightStrength, 3.0) * beamDensity);
 }
 
 float flareDepthVisibility(vec2 center, float lightZ) {
@@ -261,14 +298,11 @@ vec3 surfaceLighting(vec3 p, vec3 lightView, vec3 scene, bool spot) {
         cone = smoothstep(LightCone.x, LightCone.y, forward);
         if (cone <= 0.0) return vec3(0.0);
     }
-    // 手电筒：用 LightSelfMask 排除发光者自己的枪械/握把/身体（第三人称下它们挡在相机与光源之间，
-    // 不排除会把整片光斑误判成阴影）；墙体、地形和其他实体仍然照常遮挡，与枪口火光一致。
-    // 手电筒另加"最小距离"：紧贴光源（<0.1m）的表面不参与遮挡、0.1~0.6m 淡入，
-    // 否则枪抵墙时整片光斑会被误判成阴影而直接消失。
-    float visible = 1.0;
+    float visible = spot ? blockVisibility(world, mat3(InverseView) * n) : 1.0;
+    if (visible <= 0.0) return vec3(0.0);
     if (LightShadow > 0.0) {
         float shadowFade = spot ? smoothstep(0.10, 0.60, distanceToLight) : 1.0;
-        visible = mix(1.0, visibility(p + n * 0.035, lightView, LightShadow), shadowFade);
+        visible = min(visible, mix(1.0, visibility(p + n * 0.035, lightView, LightShadow), shadowFade));
     }
 
     float energy;
@@ -294,30 +328,38 @@ vec3 surfaceLighting(vec3 p, vec3 lightView, vec3 scene, bool spot) {
 }
 
 void main() {
+    if (Pass == 2) {
+        fragColor = vec4(texture(SceneColor, texCoord).rgb, 0.0);
+        return;
+    }
     if (LightStrength <= 0.0) discard;
     float depth = texture(WorldDepth, texCoord).r;
     bool hasSurface = depth < 0.999999;
-    bool flashlight = FlashlightEffect.x > 0.01 || FlashlightEffect.y > 0.0;
-    if (!hasSurface && !flashlight) discard;
+    if (!hasSurface && Pass == 0) discard;
     // Iris hands use a different projection and are lit through their own material shader.
     if (ShaderPackMode != 0 && texture(SceneDepth, texCoord).r + 0.000001 < depth) discard;
 
     vec3 lightView = (View * vec4(LightPosition, 1.0)).xyz;
     vec3 scene = texture(SceneColor, texCoord).rgb;
     vec3 p = hasSurface ? viewPosition(texCoord, depth) : vec3(0.0);
-    bool spot = LightCone.y > LightCone.x;
-    vec3 light = hasSurface ? surfaceLighting(p, lightView, scene, spot) : vec3(0.0);
-    if (flashlight) {
-        vec3 ray = normalize(viewPosition(texCoord, 0.5));
+    vec3 light;
+    if (Pass == 0) {
+        light = surfaceLighting(p, lightView, scene, LightCone.y > LightCone.x);
+    } else {
+        // 投影矩阵也可能包含视角摇晃的平移。用它还原视线的真实起点。
+        vec4 eyePoint = InverseProjection * vec4(0.0, 0.0, 1.0, 0.0);
+        vec3 eye = eyePoint.xyz / eyePoint.w;
+        vec3 ray = normalize(viewPosition(texCoord, 0.5) - eye);
         vec3 lightAxis = normalize(mat3(View) * LightDirection);
-        float face = dot(-lightView / max(length(lightView), 0.0001), lightAxis);
+        vec3 toEye = eye - lightView;
+        float face = dot(toEye / max(length(toEye), 0.0001), lightAxis);
         // 从灯后沿光轴看时，整段光束会投影成圆斑。侧面才逐渐呈现可见的散射光。
         float beamFacing = smoothstep(-0.45, 0.15, face);
-        float sceneDistance = hasSurface ? length(p) : length(lightView) + LightRadius;
-        float beam = beamFacing > 0.0 ? flashlightBeam(ray, lightView, lightAxis, sceneDistance) * beamFacing : 0.0;
+        float sceneDistance = hasSurface ? length(p - eye) : length(toEye) + FlashlightEffect.x;
+        float beam = beamFacing > 0.0 ? flashlightBeam(eye, ray, lightView, lightAxis, sceneDistance) * beamFacing : 0.0;
         vec3 scatter = mix(LightColor, vec3(0.72, 0.86, 1.0), 0.42) * beam;
         vec3 glare = flashlightFlare(lightView, face);
-        light += (vec3(1.0) - light) * (scatter + (vec3(1.0) - scatter) * glare);
+        light = scatter + (vec3(1.0) - scatter) * glare;
     }
     if (max(light.r, max(light.g, light.b)) <= 0.0) discard;
     vec3 headroom = vec3(1.0) - clamp(scene, vec3(0.0), vec3(1.0));
