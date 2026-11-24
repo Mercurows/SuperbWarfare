@@ -15,6 +15,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.BedrockBoneCoordinateTool
+import com.google.common.collect.MapMaker
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.LightTexture
@@ -25,10 +26,6 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 import org.joml.Matrix4f
 import org.joml.Vector3f
-import java.util.WeakHashMap
-import kotlin.collections.ArrayDeque
-import kotlin.collections.getOrPut
-import kotlin.collections.isNotEmpty
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -40,6 +37,7 @@ object MuzzleFlashRenderer {
     private const val FLARE_BONE = "flare"
     private const val MUZZLE_FLASH_BONE = "muzzle_flash"
     private const val MAX_VISIBLE_TIME = 0.3
+    private const val SHOT_LIFETIME_TICKS = 2.0
     private const val PEAK_BRIGHTNESS_PHASE = 0.5f
 
     /**
@@ -85,7 +83,8 @@ object MuzzleFlashRenderer {
     }
 
     private val atlas = Mod.loc("textures/particle/muzzle/flash.png")
-    private val shots = WeakHashMap<LivingEntity, ArrayDeque<Shot>>()
+    // Entity.equals 按 ID 比较，重生或重新追踪时同一 ID 可以属于新的实体实例。
+    private val shots = MapMaker().weakKeys().makeMap<LivingEntity, ArrayDeque<Shot>>()
 
     private class Shot(val start: Double, val host: Any, val barrel: Any, val firstPerson: Boolean) {
         val variant = Random.nextInt(8)
@@ -97,11 +96,25 @@ object MuzzleFlashRenderer {
 
     private fun identity(stack: ItemStack): Any = GunData.from(stack).uuid ?: stack
 
-    fun hasShot(holder: LivingEntity): Boolean {
-        val queue = shots[holder] ?: return false
-        if (holder.tickCount - queue.last().start <= 2) return true
+    private fun shotTime(holder: LivingEntity, partialTick: Float): Double =
+        holder.level().gameTime.toDouble() + partialTick
+
+    private fun activeShots(holder: LivingEntity, partialTick: Float): ArrayDeque<Shot>? {
+        val queue = shots[holder] ?: return null
+        if (holder.isAlive && holder.level() === Minecraft.getInstance().level) {
+            val now = shotTime(holder, partialTick)
+            while (queue.isNotEmpty() && now - queue.first().start > SHOT_LIFETIME_TICKS) queue.removeFirst()
+            if (queue.isNotEmpty()) return queue.takeIf { now >= it.first().start }
+        }
         shots.remove(holder)
-        return false
+        return null
+    }
+
+    fun hasShot(holder: LivingEntity, partialTick: Float): Boolean = activeShots(holder, partialTick) != null
+
+    fun clear(holder: LivingEntity) {
+        shots.remove(holder)
+        GunMuzzleLightHandler.clear(holder)
     }
 
     fun clear() {
@@ -111,9 +124,11 @@ object MuzzleFlashRenderer {
 
     fun recordShot(holder: LivingEntity, barrel: ItemStack) {
         val mc = Minecraft.getInstance()
+        if (!holder.isAlive || holder.level() !== mc.level) return
         val queue = shots.getOrPut(holder) { ArrayDeque() }
-        val time = holder.tickCount.toDouble() + mc.frameTime
-        while (queue.isNotEmpty() && (time - queue.first().start > 2 || queue.size >= 8)) queue.removeFirst()
+        val time = shotTime(holder, mc.frameTime)
+        if (queue.isNotEmpty() && time < queue.last().start) queue.clear()
+        while (queue.isNotEmpty() && (time - queue.first().start > SHOT_LIFETIME_TICKS || queue.size >= 8)) queue.removeFirst()
         queue.addLast(Shot(time, identity(holder.mainHandItem), identity(barrel),
             holder === mc.player && mc.options.cameraType.isFirstPerson))
         GunMuzzleLightHandler.recordShot(holder, barrel)
@@ -122,7 +137,9 @@ object MuzzleFlashRenderer {
     fun remoteShot(id: Int, weapon: String, subWeapon: Boolean) {
         val mc = Minecraft.getInstance()
         val holder = mc.level?.getEntity(id) as? LivingEntity ?: return
-        if (holder === mc.player || mc.gameRenderer.mainCamera.position.distanceToSqr(holder.position()) > 96.0 * 96.0) return
+        if (!holder.isAlive || holder === mc.player ||
+            mc.gameRenderer.mainCamera.position.distanceToSqr(holder.position()) > 96.0 * 96.0
+        ) return
         val active = ActiveGun.stackOf(holder)
         if (active.isEmpty || active.item !is GunItem) return
         val data = GunData.from(active)
@@ -135,14 +152,9 @@ object MuzzleFlashRenderer {
         buffers: MultiBufferSource, anchor: Matrix4f?, flashScale: Float, partialTick: Float,
         emit: (DefaultGunResource, Boolean, Boolean) -> Unit,
     ) {
-        val queue = shots[holder] ?: return
+        val queue = activeShots(holder, partialTick) ?: return
         if (anchor == null || ShaderCompat.isRenderingShadowPass()) return
-        val now = holder.tickCount.toDouble() + partialTick
-        while (queue.isNotEmpty() && now - queue.first().start > 2.0) queue.removeFirst()
-        if (queue.isEmpty()) {
-            shots.remove(holder)
-            return
-        }
+        val now = shotTime(holder, partialTick)
         val barrel = ActiveGun.stackOf(holder)
         if (barrel.isEmpty) return
         val hostId = identity(host)
@@ -161,8 +173,9 @@ object MuzzleFlashRenderer {
                 BedrockBoneCoordinateTool.viewPointToWorldOffset(Vec3(axis.x.toDouble(), axis.y.toDouble(), axis.z.toDouble()), camera))
         }
         for (shot in queue) {
+            if (now < shot.start) break
             if (shot.firstPerson != firstPerson || shot.host != hostId || shot.barrel != barrelId) continue
-            val age = ((now - shot.start) * 0.05).coerceAtLeast(0.0).toFloat()
+            val age = ((now - shot.start) * 0.05).toFloat()
             if (age > duration && (shot.presented || age > 0.065f)) continue
             val firstFrame = !shot.presented
             if (firstFrame) {

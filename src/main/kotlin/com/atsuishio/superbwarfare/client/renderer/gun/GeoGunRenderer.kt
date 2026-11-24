@@ -665,15 +665,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         } else if ((transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ||
                     transformType == ItemDisplayContext.THIRD_PERSON_LEFT_HAND) && GunRenderContext.isMainArm()) {
             val holder = GunRenderContext.entity()
-            if (holder != null) {
+            if (holder != null && MuzzleFlashRenderer.hasShot(holder, partialTick)) {
                 val deployed = ActiveGun.isDeployed(from(stack), true)
                 val sub = if (deployed) resolveSubWeaponFlareTransform(stack, model) else null
                 val anchor = MuzzleFlashRenderer.resolveFlareTransform(model, stack, attachmentMuzzleTransform, sub, deployed)
-                if (MuzzleFlashRenderer.hasShot(holder)) {
-                    MuzzleFlashRenderer.renderShot(holder, stack, false, poseStack, bufferSource, anchor,
-                        if (deployed) resolveSubWeaponMuzzleFlashScale(stack) else muzzleFlashScale, partialTick) { fx, smoke, sparks ->
-                        MuzzleParticles.spawnWorld(Matrix4f(poseStack.last().pose()).mul(anchor!!), fx, smoke, sparks)
-                    }
+                MuzzleFlashRenderer.renderShot(holder, stack, false, poseStack, bufferSource, anchor,
+                    if (deployed) resolveSubWeaponMuzzleFlashScale(stack) else muzzleFlashScale, partialTick) { fx, smoke, sparks ->
+                    MuzzleParticles.spawnWorld(Matrix4f(poseStack.last().pose()).mul(anchor!!), fx, smoke, sparks)
                 }
             }
         }

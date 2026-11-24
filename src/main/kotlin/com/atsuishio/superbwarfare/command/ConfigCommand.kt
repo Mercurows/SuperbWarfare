@@ -38,7 +38,7 @@ val CONFIG_COMMAND = buildCommand("config") {
 
     booleanConfig(GunConfig::FREE_ATTACHMENT_MODE)
     booleanConfig(GunConfig::FULLY_FREE_ATTACHMENT_MODE)
-    booleanConfig(GunConfig::UNRESTRICTED_MODIFICATION)
+    booleanConfig(GunConfig::UNRESTRICTED_ATTACHMENT_MODE)
     booleanConfig(GunConfig::FREE_PERK_MODE)
     booleanConfig(GunConfig::FULLY_FREE_PERK_MODE)
 

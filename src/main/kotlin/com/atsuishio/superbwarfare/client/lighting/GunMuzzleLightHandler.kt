@@ -34,6 +34,7 @@ import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import org.joml.Matrix4f
 import org.joml.Vector3f
+import java.lang.ref.WeakReference
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -51,7 +52,9 @@ object GunMuzzleLightHandler {
     private const val MODEL_SHADOW_VISIBILITY = 0.0
 
     private data class SourceKey(val holder: Int, val barrel: Any)
-    private data class MuzzleSample(val position: Vec3, val direction: Vec3, val time: Double)
+    private data class MuzzleSample(
+        val holder: WeakReference<LivingEntity>, val position: Vec3, val direction: Vec3, val time: Double,
+    )
 
     class Light(
         val holder: LivingEntity,
@@ -110,7 +113,7 @@ object GunMuzzleLightHandler {
 
     fun recordShot(holder: LivingEntity, barrel: ItemStack) {
         syncWorld()
-        if (!DisplayConfig.ENABLE_FIRE_FLASH_LIGHT.get() || holder.level() !== world) return
+        if (!holder.isAlive || holder.level() !== world || !DisplayConfig.ENABLE_FIRE_FLASH_LIGHT.get()) return
         // 修理工具的持续焊接光仍由旧工具光效入口管理，避免重复照明。
         if (barrel.`is`(ModItems.REPAIR_TOOL.get())) return
         val params = MuzzleFlashHelper.calculateFromStack(barrel) ?: return
@@ -132,7 +135,7 @@ object GunMuzzleLightHandler {
             lights.remove(furthest.key)
         }
         val level = params.maxLevel.coerceIn(1, 15)
-        val sample = samples[key]?.takeIf { now - it.time in 0.0..1.0 }
+        val sample = freshSample(key, holder, now)
         val direction = sample?.direction ?: holder.lookAngle.normalize()
         val light = Light(holder, now,
             // 环境补光比枪口焰贴图稍长；QBZ 的 41ms 火焰不应限制房间照明的可见时间。
@@ -148,11 +151,16 @@ object GunMuzzleLightHandler {
     fun sample(holder: LivingEntity, barrel: ItemStack, position: Vec3, direction: Vec3) {
         if (ShaderCompat.isRenderingShadowPass()) return
         syncWorld()
-        if (holder.level() !== world || !DisplayConfig.ENABLE_FIRE_FLASH_LIGHT.get() || barrel.isEmpty) return
+        if (!holder.isAlive || holder.level() !== world || !DisplayConfig.ENABLE_FIRE_FLASH_LIGHT.get() || barrel.isEmpty) return
         val key = SourceKey(holder.id, identity(barrel))
-        if (!samples.containsKey(key) && samples.size >= MAX_SOURCES) samples.remove(samples.keys.first())
-        samples[key] = MuzzleSample(position, direction, time())
+        val previous = samples[key]
+        if (previous == null && samples.size >= MAX_SOURCES) samples.remove(samples.keys.first())
+        val reference = previous?.holder?.takeIf { it.get() === holder } ?: WeakReference(holder)
+        samples[key] = MuzzleSample(reference, position, direction, time())
     }
+
+    private fun freshSample(key: SourceKey, holder: LivingEntity, now: Double): MuzzleSample? =
+        samples[key]?.takeIf { it.holder.get() === holder && now - it.time in 0.0..1.0 }
 
     private fun updatePosition(light: Light, position: Vec3, direction: Vec3) {
         val level = world ?: return
@@ -227,7 +235,7 @@ object GunMuzzleLightHandler {
         }
         val mc = Minecraft.getInstance()
         val now = time()
-        lights.entries.removeIf { (_, light) -> light.holder.isRemoved || light.intensity(now) <= 0f }
+        lights.entries.removeIf { (_, light) -> !light.holder.isAlive || light.intensity(now) <= 0f }
         val camera = mc.gameRenderer.mainCamera.position
         // 开火和模型渲染只提交挂点，入选的光源在世界补光时各做一次方块检测。
         return lights.entries.sortedBy { (_, light) ->
@@ -235,7 +243,7 @@ object GunMuzzleLightHandler {
         }
             .take(DisplayConfig.MUZZLE_LIGHT_LIMIT.get())
             .mapNotNull { (key, light) ->
-                val sample = samples[key]?.takeIf { now - it.time in 0.0..1.0 }
+                val sample = freshSample(key, light.holder, now)
                 val direction = sample?.direction ?: light.holder.lookAngle
                 val position = sample?.position ?: light.holder.eyePosition.add(direction.scale(0.6))
                 updatePosition(light, position, direction)
@@ -249,8 +257,9 @@ object GunMuzzleLightHandler {
         if (!DisplayConfig.ENABLE_FIRE_FLASH_LIGHT.get() || !mc.options.cameraType.isFirstPerson ||
             ShaderCompat.isRenderingShadowPass() || ScopeThermalRenderer.isFullScreenActive()) return 0f
         val player = mc.player ?: return 0f
-        if (mc.cameraEntity !== player || player.level() !== world) return 0f
+        if (!player.isAlive || mc.cameraEntity !== player || player.level() !== world) return 0f
         val (key, light) = firstPersonShot ?: return 0f
+        if (light.holder !== player) return 0f
         val age = time() - light.start
         // 枪身补光比枪口焰贴图略长（5 tick / 250ms），否则截图/低帧率下经常只剩粒子而枪身已经暗回去。
         if (age !in 0.0..<3.0) return 0f
@@ -475,6 +484,13 @@ object GunMuzzleLightHandler {
         override fun unsetDefaultColor() {
             target.unsetDefaultColor()
         }
+    }
+
+    @JvmStatic
+    fun clear(holder: LivingEntity) {
+        lights.values.removeIf { it.holder === holder }
+        samples.values.removeIf { it.holder.get() === holder }
+        if (firstPersonShot?.second?.holder === holder) firstPersonShot = null
     }
 
     @JvmStatic

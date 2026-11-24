@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.config.server
 
 import com.atsuishio.superbwarfare.config.SERVER_CONFIG
 import com.atsuishio.superbwarfare.config.buildServerConfig
-import com.atsuishio.superbwarfare.config.server.GunConfig.UNRESTRICTED_MODIFICATION
+import com.atsuishio.superbwarfare.config.server.GunConfig.UNRESTRICTED_ATTACHMENT_MODE
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraftforge.common.ForgeConfigSpec
@@ -25,10 +25,10 @@ object GunConfig {
     }
 
     @JvmField
-    val UNRESTRICTED_MODIFICATION = buildServerConfig {
+    val UNRESTRICTED_ATTACHMENT_MODE = buildServerConfig {
         comment("Set true to let players in any game mode install gun ATTACHMENTS exactly like creative mode does: installing needs no matching item in the inventory")
-        comment("是否允许非创造模式玩家像创造模式一样自由装卸枪械配件：装配件不需要背包里有对应物品、卸下或替换不返还物品。")
-        define("unrestricted_modification", false)
+        comment("是否允许非创造模式玩家像创造模式一样自由装卸枪械配件：装配件不需要背包里有对应物品、卸下或替换不返还物品")
+        define("unrestricted_attachment_mode", false)
     }
 
     @JvmField
@@ -80,10 +80,10 @@ object GunConfig {
 
     @JvmStatic
     val unrestrictedModification: Boolean
-        get() = configValue(UNRESTRICTED_MODIFICATION)
+        get() = configValue(UNRESTRICTED_ATTACHMENT_MODE)
 
     /**
-     * 装卸配件时是否按「创造模式」对待：创造模式玩家本身，或开启了 [UNRESTRICTED_MODIFICATION]。
+     * 装卸配件时是否按「创造模式」对待：创造模式玩家本身，或开启了 [UNRESTRICTED_ATTACHMENT_MODE]。
      *
      * 只影响配件（`AvailableAttachments` 之外的持有/消耗/返还判定），
      * 不影响模组（perk）、开火、伤害、掉落等其它创造模式特权。

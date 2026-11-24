@@ -876,6 +876,7 @@ object ClientEventHandler {
     fun clearGravityLensing(event: ClientPlayerNetworkEvent.LoggingOut) {
         FlashbangOverlay.clear()
         MuzzleFlashRenderer.clear()
+        resetLocalShotState()
         resetMeleeOnDeath()
         meleePlayer = null
         meleeLevel = null
@@ -891,9 +892,12 @@ object ClientEventHandler {
     }
 
     @SubscribeEvent
-    fun resetMeleeOnRespawn(event: ClientPlayerNetworkEvent.Clone) {
+    fun resetClientStateOnRespawn(event: ClientPlayerNetworkEvent.Clone) {
         FlashbangOverlay.clear()
         // 立即复活可能完全跳过客户端的死亡 tick，不能只靠 isDeadOrDying 清理。
+        MuzzleFlashRenderer.clear(event.oldPlayer)
+        resetLocalShotState()
+        FirstPersonRenderHandler.reset()
         resetMeleeOnDeath()
         meleePlayer = event.newPlayer
         meleeLevel = event.newPlayer.level()
@@ -943,6 +947,8 @@ object ClientEventHandler {
         staminaSystem()
         handlePlayerSprint()
         if (!player.isAlive || player.isRemoved || player.isSpectator) {
+            MuzzleFlashRenderer.clear(player)
+            resetLocalShotState()
             resetMeleeOnDeath()
         } else {
             handleGunMelee(player, stack)
@@ -2032,6 +2038,7 @@ object ClientEventHandler {
     fun handleGunShoot() {
         if (clientLevel == null) return
         val player = localPlayer ?: return
+        if (!player.isAlive || player.isSpectator) return
 
         if (notInGame) {
             holdingFireKey = false
@@ -2253,6 +2260,7 @@ object ClientEventHandler {
     }
 
     fun shootClient(player: Player, chargePower: Double = 1.0) {
+        if (!player.isAlive || player.isSpectator) return
         // 冲锋窗口里不许开火（蓄力满了松开左键的那一发也算）
         if (GunChargeHandler.isCharging()) return
 
@@ -2317,6 +2325,7 @@ object ClientEventHandler {
 
     fun handleClientShoot(chargePower: Double = 1.0) {
         val player = localPlayer ?: return
+        if (!player.isAlive || player.isSpectator) return
         val stack = ActiveGun.stackOf(player)
         if (!GunItem.isOperable(stack)) return
         val data = GunData.from(stack)
@@ -3596,22 +3605,42 @@ object ClientEventHandler {
         resetGunTransientState()
     }
 
-    /**
-     * 只清"上一把枪残留的运行时状态"
-     */
-    fun resetGunTransientState() {
+    fun resetFireInput() {
         pendingFireInput.reset()
         clientTimer.stop()
-        fireCooldown = 0.0
-//        holdingFireKey = false
         holdingFireKeyTicks = 0
         holdingFireKeyTicks0 = 0f
-        ClickEventHandler.switchZoom = false
         burstFireAmount = 0
         chargeActive = false
         chargeArmed = false
         chargeProgress = 0.0
         chargePower = 0.0
+    }
+
+    fun resetLocalShotState() {
+        resetFireInput()
+        holdingFireKey = false
+        fireRecoilTime = 0.0
+        firePosTimer = 0.0
+        fireRotTimer = 0.0
+        subWeaponFireRotTimer = 0.0
+        subWeaponRecoilTimer = 0.0
+        boltMove = 0.0
+        firePosZ = 0.0
+        fireSpread = 0.0
+        chargedRecoilX = null
+        chargedRecoilY = null
+        ClientRenderHandler.bulletRenderOffset = null
+        ClientRenderHandler.muzzleDirection = null
+    }
+
+    /**
+     * 只清"上一把枪残留的运行时状态"
+     */
+    fun resetGunTransientState() {
+        resetFireInput()
+        fireCooldown = 0.0
+        ClickEventHandler.switchZoom = false
         noSprintTicks = 10f
         seekingTime = 0
         lockOn = false

@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.config.server.GunConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.message.receive.RealisticShootModeSyncMessage
-import com.atsuishio.superbwarfare.network.message.receive.UnrestrictedModificationSyncMessage
+import com.atsuishio.superbwarfare.network.message.receive.UnrestrictedAttachmentModeSyncMessage
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import com.atsuishio.superbwarfare.tools.sendPacketToAll
 import net.minecraft.server.level.ServerPlayer
@@ -22,7 +22,7 @@ object ServerConfigSync {
     private val packetFactories = linkedMapOf<KProperty0<*>, () -> ClientPacketPayload>()
 
     init {
-        register(GunConfig::UNRESTRICTED_MODIFICATION, ::UnrestrictedModificationSyncMessage)
+        register(GunConfig::UNRESTRICTED_ATTACHMENT_MODE, ::UnrestrictedAttachmentModeSyncMessage)
         register(MiscConfig::REALISTIC_SHOOT_MODE, ::RealisticShootModeSyncMessage)
     }
 
