@@ -331,6 +331,10 @@ data class DefaultGunData(
     val projectilePenetrating: Boolean = false,
     @SerialName("AimAssist")
     val aimAssist: Int = 0,
+    @SerialName("AutoAim")
+    val autoAim: Boolean = false,
+    @SerialName("AutoAimRange")
+    val autoAimRange: Double = 0.0,
     @SerialName("AllyHealRatio")
     val allyHealRatio: Double = 0.0,
     // 投射物分裂次数：爆炸消失后分裂出的产物再减一，0 表示不分裂

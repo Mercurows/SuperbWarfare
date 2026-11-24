@@ -20,12 +20,14 @@ import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.ModKeyMappings
+import com.atsuishio.superbwarfare.init.ModMobEffects
+import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
 import com.atsuishio.superbwarfare.item.curio.TacticalTerminalItem
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.*
-import com.atsuishio.superbwarfare.perk.AutoAimHelper
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.*
 import com.mojang.blaze3d.platform.InputConstants
@@ -840,10 +842,14 @@ object ClickEventHandler {
         sendPacketToServer(ZoomMessage(0))
         ClientEventHandler.zoom = true
 
-        val level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP)
-        ClientEventHandler.lockedEntity = if (level > 0 && !player.isShiftKeyDown) {
-            AutoAimHelper.findTarget(player, data, ClientEventHandler.lockedEntity, 32.0 + 8.0 * (level - 1), 20.0)
-        } else null
+        if (data.get(GunProp.AUTO_AIM) && ClientEventHandler.lockedEntity == null) {
+            val range = data.get(GunProp.AUTO_AIM_RANGE)
+            ClientEventHandler.lockedEntity = if (data.get(GunProp.PROJECTILE_PENETRATING)) {
+                SeekTool.seekEntityThroughWall(player, range, 20.0)
+            } else {
+                SeekTool.seekLivingEntity(player, range, 20.0)
+            }
+        }
     }
 
     fun handleWeaponUseRelease() {

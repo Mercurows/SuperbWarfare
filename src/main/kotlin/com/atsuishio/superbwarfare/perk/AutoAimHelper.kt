@@ -53,11 +53,13 @@ object AutoAimHelper {
         if (rewind == 0) return null
 
         val data = shot.data
-        val perkLevel = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP)
-        if (perkLevel <= 0) return null
+        if (!data.get(GunProp.AUTO_AIM)) return null
         val target = shot.level.getEntity(targetId) ?: return null
-        val range = 32.0 + 8.0 * (perkLevel - 1)
-        if (!isValidTarget(shooter, target, range)) return null
+        val range = data.get(GunProp.AUTO_AIM_RANGE)
+        if (target === shooter || target.vehicle != null || shooter.distanceToSqr(target) > range * range) return null
+        if (!SeekTool.BASIC_FILTER.test(target) || SeekTool.IS_INVULNERABLE.test(target)) return null
+        if (SeekTool.IS_FRIENDLY.test(shooter, target) || SeekTool.IS_OWNER.test(shooter, target)) return null
+        if (target is Player && !shooter.canHarmPlayer(target)) return null
 
         val projectileId = data.get(GunProp.PROJECTILE).itemId
         val isBeam = isBeam(projectileId)

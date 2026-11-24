@@ -1881,6 +1881,8 @@
   "prop.superbwarfare.fuel_per_ammo": "Fuel Cost Per Ammo",
   "prop.superbwarfare.bolt_action_time": "Bolt Action Time",
   "prop.superbwarfare.aim_assist": "Aim Assist",
+  "prop.superbwarfare.auto_aim": "Auto Aim",
+  "prop.superbwarfare.auto_aim_range": "Auto Aim Range",
   "prop.superbwarfare.ally_heal_ratio": "Ally Healing Ratio",
   "prop.superbwarfare.knockback": "Projectile Knockback",
 

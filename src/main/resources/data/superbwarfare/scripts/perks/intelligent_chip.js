@@ -1,3 +1,7 @@
 function modifyProperty(pmc, level, perkTag, gunData) {
-    pmc.add("AimAssist", 5 * Math.max(0, Math.min(level, 20)))
+    if (level <= 0) return
+
+    pmc.add("AimAssist", 5 * Math.min(level, 20))
+    pmc.set("AutoAim", true)
+    pmc.add("AutoAimRange", 32 + 8 * (level - 1))
 }
