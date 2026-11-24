@@ -753,6 +753,27 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         doc.getElementById("settings-color-hex")?.let { input ->
             wireSettingsInput(input, AttachmentColorInput::isDraft, { finish -> commitColorInput(input, finish) })
         }
+        // 单件配件的激光/手电档位按钮：点了直接改这件配件的槽位 NBT（服务端权威写入）。
+        doc.getElementById("settings-mode-label")?.textContent = label("light_mode")
+        for ((id, mode) in LIGHT_MODES) {
+            doc.getElementById("settings-mode-$id-label")?.textContent = label("light_mode.$id")
+            doc.getElementById("settings-mode-$id")?.let { button ->
+                button.setAttribute("aria-label", label("light_mode.$id"))
+                button.setAttribute("title", label("light_mode.$id"))
+                button.addEventListener("click") {
+                    val (type, data) = selectedAdjustmentData() ?: return@addEventListener
+                    playUiSound(ModSounds.ATTACHMENT_BUTTON.get())
+                    sendPacketToServer(
+                        SetAttachmentLightModeMessage(
+                            type.ordinal,
+                            mode.ordinal,
+                            localPlayer?.inventory?.selected ?: -1,
+                            data.uuid?.toString(),
+                        )
+                    )
+                }
+            }
+        }
         prepareGrid(doc)
         prepareStats(doc)
     }
@@ -991,7 +1012,11 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val rotation = type != null && AttachmentAdjustments.canRotate(data, type)
         val offset = type != null && AttachmentAdjustments.canOffset(type)
         val laser = type?.let { laserInfo(data, it) }
-        if (type == null || !data.attachment.has(type) || (!rotation && !offset && laser == null)) {
+        val definition = type?.let { data.attachment.id(it)?.let(AttachmentDefinition::from) }
+        val lightModes = AttachmentLightState.cycleFor(definition)
+        if (type == null || !data.attachment.has(type) ||
+            (!rotation && !offset && laser == null && lightModes.isEmpty())
+        ) {
             setStyle(settings, "display", "none")
             statsCollapsedForSettings = false
             statsCollapseSuppressed = false
@@ -1058,12 +1083,26 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             doc.getElementById("settings-color-hex")?.let { if (!it.isFocus && it.getValue() != hex) it.setValue(hex) }
             setStyle(doc.getElementById("settings-color-swatch"), "background-color", hex)
         }
+        // 单件配件档位按钮：只显示该配件支持的档位，并高亮它当前自己的档位。
+        setStyle(
+            doc.getElementById("settings-mode-row"),
+            "display", if (lightModes.isEmpty()) "none" else "flex"
+        )
+        if (lightModes.isNotEmpty()) {
+            val current = type?.let { AttachmentLightState.modeOf(data, it) }
+            for ((id, mode) in LIGHT_MODES) {
+                val button = doc.getElementById("settings-mode-$id") ?: continue
+                setStyle(button, "display", if (mode in lightModes) "flex" else "none")
+                setClass(button, "active", mode == current)
+            }
+        }
         doc.getElementById("settings-confirm")?.let {
             val disabled = adjustmentDraft.preview == null || adjustmentDraft.awaitingServer
             setClass(it, "disabled", disabled)
             it.toggleAttribute("disabled", disabled)
         }
-        val rows = (if (rotation) 1 else 0) + (if (offset) 1 else 0) + (if (laser != null) 4 else 0)
+        val rows = (if (rotation) 1 else 0) + (if (offset) 1 else 0) + (if (laser != null) 4 else 0) +
+            (if (lightModes.isEmpty()) 0 else 1)
         val scale = editorPanelScale()
         val scrollKey = "${type.attachmentName}:${data.attachment.id(type)}"
         doc.getElementById("settings-controls")?.let { controls ->
@@ -2771,7 +2810,13 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
 
         /** 副武器弹种面板右上角的编号 */
         private const val SUB_AMMO_TYPE_CODE = "SUB AMMO"
-
+        /** 配件设置面板里的激光/手电档位按钮（HTML id 后缀 → 档位）。 */
+        private val LIGHT_MODES = listOf(
+            "laser" to FlashlightMode.LASER,
+            "on" to FlashlightMode.ON,
+            "strobe" to FlashlightMode.STROBE,
+            "off" to FlashlightMode.OFF,
+        )
         // 与 weapon_edit.html 的主题色及 title-bar 高度保持一致。
         private const val UI_ACCENT = 0xff52fcda.toInt()
         private const val PANEL_BORDER = 0xff237b87.toInt()

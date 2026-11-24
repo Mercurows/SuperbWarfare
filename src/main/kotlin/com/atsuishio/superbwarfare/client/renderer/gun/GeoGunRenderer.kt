@@ -694,7 +694,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
         val data = from(stack)
         val preview = attachmentEditPreview(stack, data, slot)
-        if (preview == null && FlashlightState.modeOf(data) != FlashlightMode.LASER) return
+        if (AttachmentLightState.modeOf(data, slot) != FlashlightMode.LASER) return
         LaserSightCapture.capture(
             info = info,
             colorRgb = info.resolveColorRgb(preview?.laserColor ?: data.attachment.getLaserColor(slot)),
@@ -709,8 +709,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         poseMatrix: Matrix4f,
         attachmentModel: BedrockAttachmentModel,
         definition: AttachmentDefinition,
-        slot: AttachmentType,
         stack: ItemStack,
+        slot: AttachmentType,
     ) {
         val info = definition.flashlight ?: return
         if (ShaderCompat.isRenderingShadowPass()) return
@@ -900,8 +900,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                     poseStack.last().pose(),
                     attachmentModel,
                     definition,
-                    slot.type,
                     stack,
+                    slot.type,
                 )
                 // 枪盾：耐久空的破损态藏掉盾面骨骼
                 shieldHidden = definition.shield != null && hideBrokenShield(attachmentModel, stack)
@@ -1370,7 +1370,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             Matrix4f(mountTransform).mul(attachmentTransform(stack, AttachmentType.GRIP, definition))
         )
 
-        captureFlashlight(transformType, poseStack.last().pose(), attachmentModel, definition, AttachmentType.GRIP, stack)
+        captureFlashlight(
+            transformType, poseStack.last().pose(), attachmentModel, definition, stack, AttachmentType.GRIP
+        )
         attachmentModel.renderToBuffer(
             poseStack, bufferSource, texture, packedLight, packedOverlay,
             null, resolveAmmoReadout(stack, definition.ammoBar, definition.textShow)
