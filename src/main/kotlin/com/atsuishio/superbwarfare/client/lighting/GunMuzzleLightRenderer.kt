@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.lighting
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
+import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.mojang.blaze3d.pipeline.TextureTarget
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
@@ -43,6 +44,12 @@ object GunMuzzleLightRenderer {
     )
 
     private class FlashlightVisibility(var value: Float, var updatedAt: Long)
+    private class LightDraw(
+        val light: GunMuzzleLightHandler.Light,
+        val point: Vec3,
+        val bounds: IntArray,
+        val strength: Float,
+    )
 
     private val logger = LogUtils.getLogger()
     private val flashlightVisibility = mutableMapOf<String, FlashlightVisibility>()
@@ -112,14 +119,18 @@ object GunMuzzleLightRenderer {
             viewport[2] != main.width || viewport[3] != main.height
         ) return
         val camera = mc.gameRenderer.mainCamera.position
+        val lightTime = (mc.level?.gameTime ?: 0L).toDouble() + mc.frameTime
+        val strengthScale = DisplayConfig.MUZZLE_LIGHT_STRENGTH.get().toFloat()
         val draws = lights.mapNotNull { light ->
+            val strength = light.intensity(lightTime) * strengthScale
+            if (strength <= 0f) return@mapNotNull null
             val point = light.position.subtract(camera)
             val bounds = screenBounds(worldView, worldProjection, point.x.toFloat(), point.y.toFloat(),
                 point.z.toFloat(), light.radius, main.width, main.height) ?: return@mapNotNull null
-            Triple(light, point, bounds)
+            LightDraw(light, point, bounds, strength)
         }
         if (draws.isEmpty()) return
-        FlashlightShadowMap.update(draws.map { it.first })
+        FlashlightShadowMap.update(draws.map { it.light })
         val depthTest = GL11.glIsEnabled(GL11.GL_DEPTH_TEST)
         val depthWrite = GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK)
         val blend = GL11.glIsEnabled(GL11.GL_BLEND)
@@ -144,7 +155,7 @@ object GunMuzzleLightRenderer {
         val capabilities = GL.getCapabilities()
         val samplers = if (capabilities.OpenGL33 || capabilities.GL_ARB_sampler_objects)
             IntArray(textures.size) { GL30.glGetIntegeri(GL33.GL_SAMPLER_BINDING, it) } else null
-        val unpackState = if (draws.any { it.first.flashlight != null })
+        val unpackState = if (draws.any { it.light.flashlight != null })
             shadowUnpackParameters.map { GL11.glGetInteger(it) } else null
         val unpackBuffer = if (unpackState != null) GL11.glGetInteger(GL21.GL_PIXEL_UNPACK_BUFFER_BINDING) else 0
         val clearColor = BufferUtils.createFloatBuffer(4)
@@ -170,7 +181,7 @@ object GunMuzzleLightRenderer {
             GlStateManager._glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, copy.frameBufferId)
             GL30.glBlitFramebuffer(0, 0, main.width, main.height, 0, 0, main.width, main.height,
                 GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST)
-            val effects = if (draws.any { it.first.flashlight?.showEffects == true }) {
+            val effects = if (draws.any { it.light.flashlight?.showEffects == true }) {
                 flashlightEffectsTarget(main.width, main.height)
             } else null
             main.bindWrite(true)
@@ -188,17 +199,21 @@ object GunMuzzleLightRenderer {
             RenderSystem.depthMask(false)
             RenderSystem.disableCull()
             RenderSystem.colorMask(true, true, true, false)
-            for ((light, point, bounds) in draws) {
+            for (draw in draws) {
+                val light = draw.light
+                val point = draw.point
+                val bounds = draw.bounds
                 RenderSystem.enableScissor(bounds[0], bounds[1], bounds[2], bounds[3])
                 custom.safeGetUniform("LightPosition").set(point.x.toFloat(), point.y.toFloat(), point.z.toFloat())
                 custom.safeGetUniform("LightDirection").set(light.direction.x.toFloat(), light.direction.y.toFloat(), light.direction.z.toFloat())
                 custom.safeGetUniform("LightRadius").set(light.radius)
-                custom.safeGetUniform("LightStrength").set(GunMuzzleLightHandler.intensity(light))
+                custom.safeGetUniform("LightStrength").set(draw.strength)
                 custom.safeGetUniform("LightCone").set(light.coneCosOuter, light.coneCosInner)
                 custom.safeGetUniform("LightColor").set(
                     light.color.x.toFloat(), light.color.y.toFloat(), light.color.z.toFloat()
                 )
                 custom.safeGetUniform("LightShadow").set(light.shadowThickness)
+                custom.safeGetUniform("MuzzleFlash").set(if (light.muzzleFlash) 1 else 0)
                 custom.safeGetUniform("LightSelfMask").set(light.selfMask)
                 if (!FlashlightShadowMap.bind(custom, light, camera)) continue
                 draw(custom, SURFACE_PASS, GL14.GL_FUNC_ADD)

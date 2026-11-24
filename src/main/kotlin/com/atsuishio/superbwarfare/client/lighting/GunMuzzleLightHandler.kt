@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.TreeModelInstance
+import com.mojang.blaze3d.vertex.BufferBuilder
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.blaze3d.vertex.VertexFormat
@@ -67,9 +68,8 @@ object GunMuzzleLightHandler {
         val shadowThickness: Float = 0.65f,
         val selfMask: Float = 0f,
         val flashlight: FlashlightHandler.Emitter? = null,
+        val muzzleFlash: Boolean = false,
     ) {
-        var requestedPosition: Vec3 = position
-        var sampledAt = Double.NEGATIVE_INFINITY
         var blocked = false
 
         fun intensity(time: Double): Float =
@@ -138,11 +138,10 @@ object GunMuzzleLightHandler {
             // 环境补光比枪口焰贴图稍长；QBZ 的 41ms 火焰不应限制房间照明的可见时间。
             ((resource.muzzleFx?.flash?.duration?.toDouble() ?: 0.045) + 0.055).coerceIn(0.09, 0.14) * 20.0,
             (level / 12f * muzzleScale.coerceAtMost(1f)).coerceIn(0.02f, 1f), (2f + level * 0.25f),
-            sample?.position ?: holder.eyePosition.add(direction.scale(0.6)), direction)
+            sample?.position ?: holder.eyePosition.add(direction.scale(0.6)), direction,
+            muzzleFlash = true)
         lights[key] = light
         if (holder === Minecraft.getInstance().player) firstPersonShot = key to light
-        updatePosition(light, light.position, direction)
-        light.sampledAt = sample?.time ?: Double.NEGATIVE_INFINITY
     }
 
     /** 模型渲染只更新挂点，不生成新光源。阴影 pass 不允许覆盖可见场景的挂点。 */
@@ -153,15 +152,10 @@ object GunMuzzleLightHandler {
         val key = SourceKey(holder.id, identity(barrel))
         if (!samples.containsKey(key) && samples.size >= MAX_SOURCES) samples.remove(samples.keys.first())
         samples[key] = MuzzleSample(position, direction, time())
-        val light = lights[key] ?: return
-        if (light.intensity(time()) <= 0f) return
-        updatePosition(light, position, direction)
-        light.sampledAt = time()
     }
 
     private fun updatePosition(light: Light, position: Vec3, direction: Vec3) {
         val level = world ?: return
-        light.requestedPosition = position
         light.direction = direction.normalize()
         val mc = Minecraft.getInstance()
         val camera = mc.gameRenderer.mainCamera
@@ -235,17 +229,19 @@ object GunMuzzleLightHandler {
         val now = time()
         lights.entries.removeIf { (_, light) -> light.holder.isRemoved || light.intensity(now) <= 0f }
         val camera = mc.gameRenderer.mainCamera.position
-        return lights.values.sortedBy { if (it.holder === mc.player) -1.0 else it.position.distanceToSqr(camera) }
+        // 开火和模型渲染只提交挂点，入选的光源在世界补光时各做一次方块检测。
+        return lights.entries.sortedBy { (_, light) ->
+            if (light.holder === mc.player) -1.0 else light.position.distanceToSqr(camera)
+        }
             .take(DisplayConfig.MUZZLE_LIGHT_LIMIT.get())
-            .onEach {
-                if (now - it.sampledAt > 1.0) updatePosition(it,
-                    it.holder.eyePosition.add(it.holder.lookAngle.scale(0.6)), it.holder.lookAngle)
-                else updatePosition(it, it.requestedPosition, it.direction)
+            .mapNotNull { (key, light) ->
+                val sample = samples[key]?.takeIf { now - it.time in 0.0..1.0 }
+                val direction = sample?.direction ?: light.holder.lookAngle
+                val position = sample?.position ?: light.holder.eyePosition.add(direction.scale(0.6))
+                updatePosition(light, position, direction)
+                light.takeUnless { it.blocked }
             }
-            .filterNot { it.blocked }
     }
-
-    fun intensity(light: Light): Float = light.intensity(time()) * DisplayConfig.MUZZLE_LIGHT_STRENGTH.get().toFloat()
 
     @JvmStatic
     private fun firstPersonStrength(): Float {
@@ -257,7 +253,7 @@ object GunMuzzleLightHandler {
         val (key, light) = firstPersonShot ?: return 0f
         val age = time() - light.start
         // 枪身补光比枪口焰贴图略长（5 tick / 250ms），否则截图/低帧率下经常只剩粒子而枪身已经暗回去。
-        if (age < 0.0 || age >= 3.0) return 0f
+        if (age !in 0.0..<3.0) return 0f
         val active = ActiveGun.stackOf(player)
         if (active.isEmpty || key != SourceKey(player.id, identity(active))) return 0f
         // 枪身补光略晚于火焰贴图熄灭，夜间也能看清受光的前端零件。
@@ -375,6 +371,15 @@ object GunMuzzleLightHandler {
             shadows.put(cell, 1.0)
             return 1.0
         }
+
+        fun blockLight(x: Double, y: Double, z: Double, nx: Float, ny: Float, nz: Float, original: Int): Int {
+            if (original >= LightTexture.FULL_BLOCK) return original
+            val exposure = exposure(x, y, z, nx, ny, nz)
+            if (exposure <= 1e-5) return maxOf(original, 0)
+            val energy = (exposure * visibility(x, y, z, nx, ny, nz) * MODEL_HIGHLIGHT_GAIN).coerceIn(0.0, 1.0)
+            val level = (sqrt(energy) * 15.0).roundToInt()
+            return maxOf(original, level * 16)
+        }
     }
 
     /**
@@ -398,19 +403,22 @@ object GunMuzzleLightHandler {
             x: Float, y: Float, z: Float, r: Float, g: Float, b: Float, a: Float,
             u: Float, v: Float, overlay: Int, packedLight: Int, nx: Float, ny: Float, nz: Float,
         ) {
+            val originalBlock = LightTexture.block(packedLight) * 16
+            val sky = LightTexture.sky(packedLight) * 16
+            val block = light.blockLight(x.toDouble(), y.toDouble(), z.toDouble(), nx, ny, nz, originalBlock)
+            val target = target
+            // NEW_ENTITY 的 BufferBuilder 可以一次写入整条顶点，避免把 SBM 的批量调用拆成属性写入。
+            if (target is BufferBuilder) {
+                target.vertex(x, y, z, r, g, b, a, u, v, overlay, (sky shl 16) or block, nx, ny, nz)
+                return
+            }
             target.vertex(x.toDouble(), y.toDouble(), z.toDouble())
             target.color(r, g, b, a)
             target.uv(u, v)
             target.overlayCoords(overlay)
-            this.x = x.toDouble()
-            this.y = y.toDouble()
-            this.z = z.toDouble()
-            this.nx = nx
-            this.ny = ny
-            this.nz = nz
-            blockLight = LightTexture.block(packedLight) * 16
-            skyLight = LightTexture.sky(packedLight) * 16
-            finishVertex()
+            target.uv2(block, sky)
+            target.normal(nx, ny, nz)
+            target.endVertex()
         }
 
         override fun vertex(x: Double, y: Double, z: Double): VertexConsumer {
@@ -455,12 +463,7 @@ object GunMuzzleLightHandler {
         }
 
         private fun finishVertex() {
-            val exposure = light.exposure(x, y, z, nx, ny, nz)
-            val visibility = if (exposure > 1e-5) {
-                light.visibility(x, y, z, nx, ny, nz)
-            } else 0.0
-            val level = (sqrt((exposure * visibility * MODEL_HIGHLIGHT_GAIN).coerceIn(0.0, 1.0)) * 15.0).roundToInt()
-            target.uv2(maxOf(blockLight, level * 16), skyLight)
+            target.uv2(light.blockLight(x, y, z, nx, ny, nz, blockLight), skyLight)
             target.normal(nx, ny, nz)
             target.endVertex()
         }

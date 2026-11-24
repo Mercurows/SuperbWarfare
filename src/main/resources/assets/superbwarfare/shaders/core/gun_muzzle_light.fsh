@@ -20,6 +20,7 @@ uniform vec2 LightCone;
 uniform vec3 LightColor;
 // LightShadow = 屏幕空间遮挡的深度厚度，0 = 关闭。
 uniform float LightShadow;
+uniform int MuzzleFlash;
 uniform float LightSelfMask;
 uniform vec3 BlockShadowOrigin;
 uniform vec3 BlockShadowAxis;
@@ -36,30 +37,31 @@ vec3 viewPosition(vec2 uv, float depth) {
     return p.xyz / p.w;
 }
 
-float shadowSample(vec2 uv, float rayZ, float thickness, vec3 lightView) {
+float shadowSample(vec2 uv, float rayZ, float thickness, vec3 lightView, vec3 edges) {
     if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0)))) return 0.0;
     float depth = texture(WorldDepth, uv).r;
     if (depth >= 0.999999) return 0.0;
-    vec3 sampleView = viewPosition(uv, depth);
-    if (LightSelfMask > 0.0 && sampleView.z > lightView.z - LightSelfMask) return 0.0;
-    if (LightCone.y > LightCone.x && distance(sampleView, lightView) < 0.30) return 0.0;
-    float gap = sampleView.z - rayZ;
-    // 软边过渡（penumbra）：比原来的 0.025~0.075 更宽，遮挡边界不再是硬阶跃；
-    // 大半径世界光（载具/爆炸）投影面积大时尤其明显，可有效掩盖屏幕空间步进的锯齿。
-    return smoothstep(0.035, 0.16, gap) * (1.0 - smoothstep(thickness * 0.65, thickness, gap));
+    vec4 sampleView = InverseProjection * vec4(uv * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
+    float sampleZ = sampleView.z / sampleView.w;
+    float gap = sampleZ - rayZ;
+    // 在做软边插值和手电自遮挡判断前丢掉不可能遮住光线的深度。
+    if (gap <= edges.x || gap >= thickness) return 0.0;
+    if (LightSelfMask > 0.0 && sampleZ > lightView.z - LightSelfMask) return 0.0;
+    if (LightCone.y > LightCone.x && distance(sampleView.xyz / sampleView.w, lightView) < 0.30) return 0.0;
+    return smoothstep(edges.x, edges.y, gap) * (1.0 - smoothstep(edges.z, thickness, gap));
 }
 
 // Filter occlusion comparisons, never raw depth: interpolating foreground and
 // background depth would invent an occluder between unrelated surfaces.
-float filteredShadow(vec2 uv, float rayZ, float thickness, vec3 lightView) {
+float filteredShadow(vec2 uv, float rayZ, float thickness, vec3 lightView, vec3 edges) {
     vec2 footprint = TexelSize * 2.0;
     vec2 grid = uv / footprint - 0.5;
     vec2 base = (floor(grid) + 0.5) * footprint;
     vec2 weight = fract(grid);
-    float a = shadowSample(base, rayZ, thickness, lightView);
-    float b = shadowSample(base + vec2(footprint.x, 0.0), rayZ, thickness, lightView);
-    float c = shadowSample(base + vec2(0.0, footprint.y), rayZ, thickness, lightView);
-    float d = shadowSample(base + footprint, rayZ, thickness, lightView);
+    float a = shadowSample(base, rayZ, thickness, lightView, edges);
+    float b = shadowSample(base + vec2(footprint.x, 0.0), rayZ, thickness, lightView, edges);
+    float c = shadowSample(base + vec2(0.0, footprint.y), rayZ, thickness, lightView, edges);
+    float d = shadowSample(base + footprint, rayZ, thickness, lightView, edges);
     return mix(mix(a, b, weight.x), mix(c, d, weight.x), weight.y);
 }
 
@@ -80,17 +82,20 @@ float visibility(vec3 surface, vec3 light, float thickness) {
     }
     limit = clamp(limit, 0.0, 1.0);
     float pixels = length(deltaUv * limit / TexelSize);
-    // 每 ~1.5 像素一步，最多 64 步：载具炮口/爆炸这类大半径光投影跨度大，
-    // 原来 32 步的上限会让遮挡边缘出现明显的大台阶。
-    int steps = int(clamp(ceil(pixels / 1), 16.0, 128.0));
+    // 枪口闪光使用原来的两像素间隔和较窄的软边，大范围光源仍使用密集采样。
+    int steps = MuzzleFlash != 0
+        ? int(clamp(ceil(pixels * 0.5), 12.0, 32.0))
+        : int(clamp(ceil(pixels), 16.0, 128.0));
+    vec3 edges = MuzzleFlash != 0
+        ? vec3(0.025, 0.075, thickness * 0.7)
+        : vec3(0.035, 0.16, thickness * 0.65);
     float visible = 1.0;
-    for (int i = 0; i < 128; i++) {
-        if (i >= steps) break;
+    for (int i = 0; i < steps; i++) {
         float t = (float(i) + 0.5) / float(steps) * limit;
         vec2 uv = startUv + deltaUv * t;
         float reciprocalW = mix(1.0 / startClip.w, 1.0 / endClip.w, t);
         float rayZ = mix(surface.z / startClip.w, end.z / endClip.w, t) / reciprocalW;
-        visible = min(visible, 1.0 - filteredShadow(uv, rayZ, thickness, light));
+        visible = min(visible, 1.0 - filteredShadow(uv, rayZ, thickness, light, edges));
         if (visible <= 0.005) return 0.0;
     }
     return visible;
@@ -201,14 +206,15 @@ float flashlightBeam(vec3 eye, vec3 ray, vec3 lightView, vec3 lightAxis, float s
         vec3 point = eye + ray * (interval.x + (float(i) + 0.5) * stepSize);
         vec3 fromLight = point - lightView;
         float distance = length(fromLight);
-        float forward = dot(fromLight, lightAxis) / max(distance, 0.0001);
+        float axialDistance = dot(fromLight, lightAxis);
+        float forward = axialDistance / max(distance, 0.0001);
         float cone = smoothstep(LightCone.x, LightCone.y, forward);
-        float axial = dot(fromLight, lightAxis) / FlashlightEffect.x;
-        float range = distance / LightRadius;
-        float fade = smoothstep(0.04, 0.30, distance) * (1.0 - smoothstep(0.82, 1.0, axial));
-        float falloff = (1.0 - smoothstep(0.72, 1.0, range)) / (1.0 + range * range * 3.0);
+        float axial = clamp(axialDistance / FlashlightEffect.x, 0.0, 1.0);
+        float fade = smoothstep(0.04, 0.30, distance) * (1.0 - axial);
+        // 锥体越宽，视线穿过的距离越长。按相对锥宽修正密度，避免侧看时光柱越往前越亮。
+        float relativeWidth = max(axial, 0.15);
         vec3 world = (InverseView * vec4(point, 1.0)).xyz;
-        density += cone * fade * falloff * blockVisibility(world, vec3(0.0));
+        density += cone * fade / relativeWidth * blockVisibility(world, vec3(0.0));
     }
     const float beamDensity = 0.085;
     return 1.0 - exp(-density * stepSize * min(LightStrength, 3.0) * beamDensity);
@@ -272,6 +278,9 @@ vec3 surfaceLighting(vec3 p, vec3 lightView, vec3 scene, bool spot) {
     vec3 delta = world - LightPosition;
     float distanceToLight = length(delta);
     if (distanceToLight >= LightRadius) return vec3(0.0);
+    float forward = dot(delta / max(distanceToLight, 0.0001), LightDirection);
+    float cone = spot ? smoothstep(LightCone.x, LightCone.y, forward) : 1.0;
+    if (cone <= 0.0) return vec3(0.0);
 
     // Prefer the neighbour on the same surface at silhouettes and block edges.
     vec2 tx = vec2(TexelSize.x, 0.0);
@@ -287,17 +296,10 @@ vec3 surfaceLighting(vec3 p, vec3 lightView, vec3 scene, bool spot) {
     if (dot(n, -p) < 0.0) n = -n;
     vec3 toLight = lightView - p;
     float diffuse = max(dot(n, toLight / max(length(toLight), 0.0001)), 0.0);
+    if (!spot && diffuse <= 0.0) return vec3(0.0);
     // Keep the near field strong; roll off smoothly only towards the radius boundary.
     float normalizedDistance = distanceToLight / LightRadius;
     float falloff = 1.0 - normalizedDistance * normalizedDistance;
-    float forward = dot(delta / max(distanceToLight, 0.0001), LightDirection);
-    // 锥形只对手电筒启用；枪口火光保持原有点光行为（LightCone = (-2,-2)）。
-    float cone = 1.0;
-    if (spot) {
-        // 外沿处平滑归零：光斑边界不再是一道硬"截止面"。
-        cone = smoothstep(LightCone.x, LightCone.y, forward);
-        if (cone <= 0.0) return vec3(0.0);
-    }
     float visible = spot ? blockVisibility(world, mat3(InverseView) * n) : 1.0;
     if (visible <= 0.0) return vec3(0.0);
     if (LightShadow > 0.0) {

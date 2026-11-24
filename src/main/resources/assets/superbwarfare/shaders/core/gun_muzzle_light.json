@@ -19,6 +19,7 @@
     {"name":"LightCone","type":"float","count":2,"values":[-2,-2]},
     {"name":"LightColor","type":"float","count":3,"values":[1,0.64,0.28]},
     {"name":"LightShadow","type":"float","count":1,"values":[1]},
+    {"name":"MuzzleFlash","type":"int","count":1,"values":[0]},
     {"name":"LightSelfMask","type":"float","count":1,"values":[0]},
     {"name":"BlockShadowOrigin","type":"float","count":3,"values":[0,0,0]},
     {"name":"BlockShadowAxis","type":"float","count":3,"values":[0,0,-1]},
