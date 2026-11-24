@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.lighting
 
+import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer
@@ -46,11 +47,12 @@ object GunMuzzleLightHandler {
 
     private const val MAX_SOURCES = 64
     private const val WALL_CLEARANCE = 0.12
-    private const val MODEL_LIGHT_RADIUS = 1.65
+    private const val MODEL_LIGHT_RADIUS = 2.5
     private const val NEAR_SHADOW_TESTS = 72
     private const val FAR_SHADOW_TESTS = 16
-    private const val MODEL_HIGHLIGHT_GAIN = 2.05
-    private const val MODEL_SHADOW_VISIBILITY = 1.0 / 105.0
+    private const val MODEL_HIGHLIGHT_GAIN = 3.2
+    /** 被自身遮挡/背光的表面保留的受光比例：压低它来制造明暗对比。 */
+    private const val MODEL_SHADOW_VISIBILITY = 0.0
 
     private data class SourceKey(val holder: Int, val barrel: Any)
     private data class MuzzleSample(val position: Vec3, val direction: Vec3, val time: Double)
@@ -87,8 +89,6 @@ object GunMuzzleLightHandler {
     private val samples = linkedMapOf<SourceKey, MuzzleSample>()
     private var firstPersonShot: Pair<SourceKey, Light>? = null
     private var modelLight: ModelLight? = null
-    private val modelLightBuffers = mutableListOf<BufferBuilder>()
-
     /** 同一枪管连射刷新同一个脉冲，亮度不会随弹丸或渲染次数累加。时间单位为 tick。 */
     @JvmStatic
     fun envelope(age: Double, duration: Double): Float {
@@ -264,6 +264,7 @@ object GunMuzzleLightHandler {
         if (mc.cameraEntity !== player || player.level() !== world) return 0f
         val (key, light) = firstPersonShot ?: return 0f
         val age = time() - light.start
+        // 枪身补光比枪口焰贴图略长（5 tick / 250ms），否则截图/低帧率下经常只剩粒子而枪身已经暗回去。
         if (age < 0.0 || age >= 3.0) return 0f
         val active = ActiveGun.stackOf(player)
         if (active.isEmpty || key != SourceKey(player.id, identity(active))) return 0f
@@ -282,15 +283,13 @@ object GunMuzzleLightHandler {
             val tip = muzzle.getTranslation(Vector3f())
             val forward = muzzle.transformDirection(0f, 0f, -1f, Vector3f())
             if (forward.lengthSquared() > 1e-8f) tip.add(forward.normalize(0.055f))
-            modelLight = ModelLight(Vec3(tip), strength).also { it.addOccluder(model, pose) }
+            // 第一人称模型补光：真实枪口经常偏在屏幕一侧，只有前端受光。
+            // 把光源的相机 x/y 移到屏幕中心（保留枪口深度），让枪身受光分布更接近"枪口火球"而不是点光源。
+            val centered = Vector3f(0f, 0f, tip.z)
+            modelLight = ModelLight(Vec3(centered), strength).also { it.addOccluder(model, pose) }
         }
-        val current = modelLight
         return AutoCloseable {
-            try {
-                current?.discardPending()
-            } finally {
-                modelLight = previous
-            }
+            modelLight = previous
         }
     }
 
@@ -302,7 +301,7 @@ object GunMuzzleLightHandler {
         draw: (MultiBufferSource) -> Unit,
     ) {
         val light = modelLight
-        if (light == null || source !is MultiBufferSource.BufferSource) {
+        if (light == null) {
             draw(source)
             return
         }
@@ -318,19 +317,17 @@ object GunMuzzleLightHandler {
                 return@MultiBufferSource original
             }
             val consumer = consumers.getOrPut(type) {
-                ModelLightConsumer(light, source, texture, mode)
+                ModelLightConsumer(light)
             }
             consumer.target = original
             consumer
         }
         draw(litSource)
-        if (immediate) light.flush()
     }
 
+    /** 保留旧调用点；灯光贴图方案不需要额外 flush。 */
     @JvmStatic
-    fun flushFirstPersonModelLight() {
-        modelLight?.flush()
-    }
+    fun flushFirstPersonModelLight() = Unit
 
     private class ModelOccluder(val model: TreeModelInstance, val pose: Matrix4f)
 
@@ -339,8 +336,6 @@ object GunMuzzleLightHandler {
         private val shadows = Long2DoubleOpenHashMap()
         private var nearTests = 0
         private var farTests = 0
-        private var source: MultiBufferSource.BufferSource? = null
-        private val pending = linkedMapOf<RenderType, BufferBuilder>()
 
         fun addOccluder(model: TreeModelInstance, pose: Matrix4f) {
             if (occluders.none { it.model === model && it.pose == pose }) {
@@ -358,9 +353,11 @@ object GunMuzzleLightHandler {
             if (normalSquared < 1e-6f) return 0.0
             val distance = sqrt(distanceSquared)
             val facing = (nx * dx + ny * dy + nz * dz) / (distance * sqrt(normalSquared)).coerceAtLeast(0.001)
-            val angular = ((facing + 0.32) / 1.32).coerceIn(0.0, 1.0)
+            val angular = ((facing + 0.25) / 1.25).coerceIn(0.0, 1.0)
             val range = 1.0 - distance / MODEL_LIGHT_RADIUS
-            return strength * angular * range * range * range * 5.6
+            // 局部光：只照亮朝向枪口、距离足够近的面；不额外加环境项，让背光面保持暗，形成对比。
+            // 用 range^1.5 而不是 range²：枪口附近保持更亮，同时中段不会掉得太快。
+            return strength * angular * range * sqrt(range) * 8.0
         }
 
         fun visibility(x: Double, y: Double, z: Double, nx: Float, ny: Float, nz: Float): Double {
@@ -370,8 +367,8 @@ object GunMuzzleLightHandler {
             if (previous >= 0.0) return previous
             val used = if (near) nearTests else farTests
             val limit = if (near) NEAR_SHADOW_TESTS else FAR_SHADOW_TESTS
-            // 额度按实际模型检测计数，整把枪、配件和双臂共用。额度用完后保留近似补光。
-            if (used + occluders.size > limit) return 0.72
+            // 额度按实际模型检测计数，整把枪、配件和双臂共用。
+            if (used + occluders.size > limit) return 0.5
             val normal = Vec3(nx.toDouble(), ny.toDouble(), nz.toDouble()).normalize()
             val start = Vec3(x, y, z).add(normal.scale(0.018))
             val edge = muzzle.add(normal.scale(0.15))
@@ -386,96 +383,59 @@ object GunMuzzleLightHandler {
             shadows.put(cell, 1.0)
             return 1.0
         }
-
-        fun overlay(source: MultiBufferSource.BufferSource, texture: ResourceLocation, mode: VertexFormat.Mode): BufferBuilder {
-            if (this.source != null && this.source !== source) flush()
-            this.source = source
-            val material = ModRenderTypes.muzzleSurfaceLight(texture, mode)
-            return pending.getOrPut(material) {
-                val index = pending.size
-                val pooled = modelLightBuffers.getOrNull(index) ?: BufferBuilder(4096).also { modelLightBuffers.add(it) }
-                val builder = if (pooled.building()) BufferBuilder(4096) else pooled
-                builder.begin(mode, DefaultVertexFormat.NEW_ENTITY)
-                builder
-            }
-        }
-
-        fun flush() {
-            val base = source ?: return
-            try {
-                if (!ShaderCompat.endBatch(base)) base.endBatch()
-                val sorting = RenderSystem.getVertexSorting()
-                for ((type, builder) in pending) type.end(builder, sorting)
-            } finally {
-                discardPending()
-            }
-        }
-
-        fun discardPending() {
-            for (builder in pending.values) {
-                if (builder.building()) builder.endOrDiscardIfEmpty()?.release()
-            }
-            pending.clear()
-            source = null
-        }
     }
 
+    /**
+     * 把枪口局部光照写进**灯光贴图 UV2**，而不是再画一层加色 overlay：
+     * 受光面按“距离/朝向/遮挡”提升 block light，背光面保持原亮度，因此对比度来自模型本身的明暗。
+     */
     private class ModelLightConsumer(
         private val light: ModelLight,
-        private val source: MultiBufferSource.BufferSource,
-        private val texture: ResourceLocation,
-        private val mode: VertexFormat.Mode,
     ) : VertexConsumer {
         lateinit var target: VertexConsumer
-        private val vertexCount = if (mode == VertexFormat.Mode.TRIANGLES) 3 else 4
-        private val xs = DoubleArray(vertexCount)
-        private val ys = DoubleArray(vertexCount)
-        private val zs = DoubleArray(vertexCount)
-        private val nxs = FloatArray(vertexCount)
-        private val nys = FloatArray(vertexCount)
-        private val nzs = FloatArray(vertexCount)
-        private val us = FloatArray(vertexCount)
-        private val vs = FloatArray(vertexCount)
-        private val opacities = DoubleArray(vertexCount) { 1.0 }
-        private val exposures = DoubleArray(vertexCount)
-        private var vertexIndex = 0
-        private var overlayBuffer: BufferBuilder? = null
+        private var x = 0.0
+        private var y = 0.0
+        private var z = 0.0
+        private var nx = 0f
+        private var ny = 0f
+        private var nz = 0f
+        private var blockLight = 0
+        private var skyLight = 0
 
         override fun vertex(
             x: Float, y: Float, z: Float, r: Float, g: Float, b: Float, a: Float,
             u: Float, v: Float, overlay: Int, packedLight: Int, nx: Float, ny: Float, nz: Float,
         ) {
-            target.vertex(x, y, z, r, g, b, a, u, v, overlay, packedLight, nx, ny, nz)
-            xs[vertexIndex] = x.toDouble()
-            ys[vertexIndex] = y.toDouble()
-            zs[vertexIndex] = z.toDouble()
-            nxs[vertexIndex] = nx
-            nys[vertexIndex] = ny
-            nzs[vertexIndex] = nz
-            us[vertexIndex] = u
-            vs[vertexIndex] = v
-            opacities[vertexIndex] = a.toDouble()
+            target.vertex(x.toDouble(), y.toDouble(), z.toDouble())
+            target.color(r, g, b, a)
+            target.uv(u, v)
+            target.overlayCoords(overlay)
+            this.x = x.toDouble()
+            this.y = y.toDouble()
+            this.z = z.toDouble()
+            this.nx = nx
+            this.ny = ny
+            this.nz = nz
+            blockLight = LightTexture.block(packedLight) * 16
+            skyLight = LightTexture.sky(packedLight) * 16
             finishVertex()
         }
 
         override fun vertex(x: Double, y: Double, z: Double): VertexConsumer {
             target.vertex(x, y, z)
-            xs[vertexIndex] = x
-            ys[vertexIndex] = y
-            zs[vertexIndex] = z
+            this.x = x
+            this.y = y
+            this.z = z
             return this
         }
 
         override fun color(r: Int, g: Int, b: Int, a: Int): VertexConsumer {
             target.color(r, g, b, a)
-            opacities[vertexIndex] = a / 255.0
             return this
         }
 
         override fun uv(u: Float, v: Float): VertexConsumer {
             target.uv(u, v)
-            us[vertexIndex] = u
-            vs[vertexIndex] = v
             return this
         }
 
@@ -485,68 +445,40 @@ object GunMuzzleLightHandler {
         }
 
         override fun uv2(u: Int, v: Int): VertexConsumer {
-            target.uv2(u, v)
+            // 先缓存原灯光，等 endVertex 时再把枪口光照合并进去。
+            blockLight = u
+            skyLight = v
             return this
         }
 
         override fun normal(x: Float, y: Float, z: Float): VertexConsumer {
-            target.normal(x, y, z)
-            nxs[vertexIndex] = x
-            nys[vertexIndex] = y
-            nzs[vertexIndex] = z
+            nx = x
+            ny = y
+            nz = z
             return this
         }
 
         override fun endVertex() {
-            target.endVertex()
             finishVertex()
         }
 
         private fun finishVertex() {
-            exposures[vertexIndex] = if (opacities[vertexIndex] <= 0.0) 0.0 else light.exposure(
-                xs[vertexIndex], ys[vertexIndex], zs[vertexIndex], nxs[vertexIndex], nys[vertexIndex], nzs[vertexIndex]
-            )
-            if (++vertexIndex < vertexCount) return
-            vertexIndex = 0
-
-            var strongest = 0
-            var weight = 0.0
-            var x = 0.0
-            var y = 0.0
-            var z = 0.0
-            for (i in 0 until vertexCount) {
-                val exposure = exposures[i]
-                if (exposure > exposures[strongest]) strongest = i
-                if (exposure >= 0.012) {
-                    weight += exposure
-                    x += xs[i] * exposure
-                    y += ys[i] * exposure
-                    z += zs[i] * exposure
-                }
-            }
-            if (weight == 0.0) return
-
-            // 每个受光面只查一次遮挡，距离与法线亮度仍然按顶点插值。
-            val visibility = light.visibility(x / weight, y / weight, z / weight, nxs[strongest], nys[strongest], nzs[strongest])
-            // 提亮已进入补光范围的表面，保持遮挡采样范围和渲染批次。
-            val gain = visibility * MODEL_HIGHLIGHT_GAIN
-            if (exposures[strongest] * gain < 0.5 / 255) return
-            val overlay = overlayBuffer ?: light.overlay(source, texture, mode).also { overlayBuffer = it }
-            for (i in 0 until vertexCount) {
-                val alpha = (exposures[i] * gain).coerceIn(0.0, 1.0) * opacities[i]
-                overlay.vertex(xs[i].toFloat(), ys[i].toFloat(), zs[i].toFloat(), 1f, 228f / 255f, 160f / 255f,
-                    alpha.toFloat(), us[i], vs[i], OverlayTexture.NO_OVERLAY, LightTexture.FULL_BRIGHT, nxs[i], nys[i], nzs[i])
-            }
+            val exposure = light.exposure(x, y, z, nx, ny, nz)
+            val visibility = if (exposure > 1e-5) {
+                light.visibility(x, y, z, nx, ny, nz)
+            } else 0.0
+            val level = (sqrt((exposure * visibility * MODEL_HIGHLIGHT_GAIN).coerceIn(0.0, 1.0)) * 15.0).roundToInt()
+            target.uv2(maxOf(blockLight, level * 16), skyLight)
+            target.normal(nx, ny, nz)
+            target.endVertex()
         }
 
         override fun defaultColor(r: Int, g: Int, b: Int, a: Int) {
             target.defaultColor(r, g, b, a)
-            opacities.fill(a / 255.0)
         }
 
         override fun unsetDefaultColor() {
             target.unsetDefaultColor()
-            opacities.fill(1.0)
         }
     }
 
