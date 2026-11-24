@@ -23,6 +23,9 @@ open class Perk(val descriptionId: String, val type: Type) : PropertyModifier<Gu
         .filter { it.isNotEmpty() }
         .joinToString("") { word -> word.replaceFirstChar { it.uppercase(Locale.ROOT) } }
 
+    /** Normalized RGB channels of the ammo effect. Treat the returned array as read-only. */
+    open val ammoRgb: FloatArray? get() = null
+
     // 默认不进行修改
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {}
 

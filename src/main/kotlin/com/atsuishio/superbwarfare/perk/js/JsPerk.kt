@@ -26,6 +26,13 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
 
     override val slug: Boolean get() = descriptor.slug
 
+    override val ammoRgb: FloatArray? by lazy {
+        if (type != Type.AMMO) return@lazy null
+        val rgb = descriptor.rgb ?: listOf(255, 222, 39)
+        if (rgb.size < 3) return@lazy null
+        FloatArray(3) { rgb[it] / 255f }
+    }
+
     private val ammoConfig: AmmoConfig? by lazy {
         if (type == Type.AMMO) {
             val effects = mutableListOf<MobEffect>()
@@ -43,7 +50,6 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
                 descriptor.damageRate,
                 descriptor.speedRate,
                 descriptor.slug,
-                descriptor.rgb ?: listOf(255, 222, 39),
                 effects,
                 descriptor.hideParticle,
             )
@@ -74,8 +80,7 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
     override fun modifyProjectile(data: GunData, instance: PerkInstance, entity: Entity) {
         val config = ammoConfig
         if (config != null && entity is IBulletProperties) {
-            val r = config.rgb
-            entity.setRGB(floatArrayOf(r[0] / 255f, r[1] / 255f, r[2] / 255f))
+            ammoRgb?.let(entity::setRGB)
             if (config.mobEffects.isNotEmpty()) {
                 val amplifier = getEffectAmplifier(instance)
                 val duration = getEffectDuration(instance)
@@ -380,7 +385,6 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
         val damageRate: Double,
         val speedRate: Double,
         val slug: Boolean,
-        val rgb: List<Int>,
         val mobEffects: List<MobEffect>,
         val hideParticle: Boolean,
     )

@@ -107,6 +107,10 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     var animation: GunAnimation? = GunAnimation()
 
     @JvmField
+    @SerialName("BladeTrail")
+    var bladeTrail: BladeTrailInfo? = null
+
+    @JvmField
     @SerialName("AnimationController")
     var animationController: String? = null
 

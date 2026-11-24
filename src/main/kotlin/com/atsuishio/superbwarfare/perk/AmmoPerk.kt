@@ -17,6 +17,7 @@ open class AmmoPerk : Perk {
     val speedRate: Double
     val slug: Boolean
     val rgb: FloatArray
+    override val ammoRgb: FloatArray get() = rgb
     val hideParticle: Boolean
     val mobEffects: () -> ArrayList<MobEffect>
 

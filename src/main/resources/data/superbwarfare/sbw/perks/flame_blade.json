@@ -1,4 +1,5 @@
 {
   "Type": "ammo",
+  "RGB": [255, 111, 40],
   "Script": "superbwarfare:scripts/perks/flame_blade.js"
 }

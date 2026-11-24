@@ -1,6 +1,17 @@
 {
   "SlotIcon": "superbwarfare:textures/item/knife_icon.png",
   "UseCustomSprintAnimation": true,
+  "BladeTrail": {
+    "Bone": "second_root",
+    "Base": [0, -0.46, -4.36],
+    "Tip": [0, 0.10, -10.74],
+    "Windows": {
+      "animation.knife.melee_1": { "Start": 0.15, "End": 0.24 },
+      "animation.knife.melee_2": { "Start": 0.15, "End": 0.24 },
+      "animation.knife.melee_3": { "Start": 0.17, "End": 0.24 },
+      "animation.knife.melee_heavy": { "Start": 0.32, "End": 0.44 }
+    }
+  },
   "Animation": {
     "Idle": "animation.knife.idle",
     "Melee": "animation.knife.melee_1",

@@ -573,6 +573,12 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             // 普通配件、枪身和双臂共用一次提交。需要切换模板的瞄具外壳已原位提交。
             GunMuzzleLightHandler.flushFirstPersonModelLight()
 
+            if (firstPersonHand == InteractionHand.MAIN_HAND && localFirstPersonHand == firstPersonHand
+                && !ShaderCompat.isRenderingShadowPass()
+            ) {
+                BladeTrailRenderer.render(resource.bladeTrail, firstPersonAnimation, stack, model, poseStack, bufferSource)
+            }
+
             // 改装界面：把各槽位挂点骨骼投影成屏幕坐标，供界面摆放按钮（见 [WeaponEditMountTracker]）。
             // 投影要的正是"模型几何原点"这一层 PoseStack —— 就是刚交给 `renderToBuffer` 的那个。
             // 只取第一人称的主手：改装界面只对主手的枪开放，副手也拿着枪时后渲染的那一把会把结果覆盖掉。

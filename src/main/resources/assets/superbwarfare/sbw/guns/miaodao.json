@@ -1,6 +1,18 @@
 {
   "SlotIcon": "superbwarfare:textures/item/miaodao_icon.png",
   "UseCustomSprintAnimation": true,
+  "BladeTrail": {
+    "Bone": "second_root",
+    "Base": [0, 11.13, -1],
+    "Tip": [0, 68.28, 2.81],
+    "Windows": {
+      "animation.miaodao.melee_1": { "Start": 0.22, "End": 0.34 },
+      "animation.miaodao.melee_2": { "Start": 0.29, "End": 0.43 },
+      "animation.miaodao.melee_3": { "Start": 0.17, "End": 0.29 },
+      "animation.miaodao.melee_heavy": { "Start": 0.48, "End": 0.62 },
+      "animation.miaodao.melee_heavy_realease": { "Start": 0.035, "End": 0.18 }
+    }
+  },
   "Animation": {
     "Idle": "animation.miaodao.idle",
     "Melee": "animation.miaodao.melee_1",

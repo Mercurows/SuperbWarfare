@@ -785,6 +785,15 @@ open class GeoGunAnimationInstance(
         }
     }
 
+    internal data class MeleePlayback(val swing: Int, val clip: String, val seconds: Float)
+
+    internal fun meleePlayback(): MeleePlayback? {
+        if (currentState != GunAnimationState.MELEE || ClientEventHandler.isGunMeleeHoldActive(stack)) return null
+        val activeRunner = runner ?: return null
+        val clip = activeRunner.animation as? BedrockAnimation ?: return null
+        return MeleePlayback(consumedMeleeSerial, clip.name, activeRunner.progressInSecond)
+    }
+
     private fun meleePlaybackSpeed(animation: BedrockAnimation): Float {
         // 抬刀保持按片段原速播完，然后停在最后一帧
         if (ClientEventHandler.isGunMeleeHoldActive(stack)) return 1f
