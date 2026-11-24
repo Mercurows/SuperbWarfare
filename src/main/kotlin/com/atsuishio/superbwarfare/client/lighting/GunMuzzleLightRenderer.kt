@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.lighting
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.client.renderer.matchDepthFormat
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
 import com.mojang.blaze3d.pipeline.TextureTarget
@@ -72,10 +71,11 @@ object GunMuzzleLightRenderer {
         val worldView = view ?: return
         var worldProjection = projection ?: return
         if (failed || ShaderCompat.isRenderingShadowPass() || ScopeThermalRenderer.isFullScreenActive()) return
+        val lights = GunMuzzleLightHandler.visibleLights() + FlashlightHandler.visibleLights() +
+                WorldLightHandler.visibleLights()
+        if (lights.isEmpty()) return
         val now = Util.getMillis()
         flashlightVisibility.values.removeIf { now - it.updatedAt > 250L }
-        val lights = GunMuzzleLightHandler.visibleLights() + FlashlightHandler.visibleLights()
-        if (lights.isEmpty()) return
         val mc = Minecraft.getInstance()
         val main = mc.mainRenderTarget
         if (main.width <= 0 || main.height <= 0 || main.depthTextureId <= 0) return
@@ -87,11 +87,12 @@ object GunMuzzleLightRenderer {
         val program = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM)
         val drawFbo = GL11.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING)
         val readFbo = GL11.glGetInteger(GL30.GL_READ_FRAMEBUFFER_BINDING)
-        if (drawFbo != main.frameBufferId) return
         val viewport = BufferUtils.createIntBuffer(4)
         GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport)
-        // Do not write into an auxiliary view or a differently sized render target.
-        if (viewport[0] != 0 || viewport[1] != 0 || viewport[2] != main.width || viewport[3] != main.height) return
+        // Require the completed main scene, including when another renderer uses a same-size target.
+        if (drawFbo != main.frameBufferId || viewport[0] != 0 || viewport[1] != 0 ||
+            viewport[2] != main.width || viewport[3] != main.height
+        ) return
         val depthTest = GL11.glIsEnabled(GL11.GL_DEPTH_TEST)
         val depthWrite = GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK)
         val blend = GL11.glIsEnabled(GL11.GL_BLEND)
@@ -132,12 +133,8 @@ object GunMuzzleLightRenderer {
                 scene = copy
                 if (main.isStencilEnabled) copy.enableStencil()
             }
-            matchDepthFormat(main.depthTextureId, copy.depthTextureId)
             GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, main.frameBufferId)
             GlStateManager._glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, copy.frameBufferId)
-            check(GL30.glCheckFramebufferStatus(GL30.GL_DRAW_FRAMEBUFFER) == GL30.GL_FRAMEBUFFER_COMPLETE) {
-                "Incomplete muzzle lighting framebuffer"
-            }
             GL30.glBlitFramebuffer(0, 0, main.width, main.height, 0, 0, main.width, main.height,
                 GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST)
             main.bindWrite(true)
@@ -179,21 +176,22 @@ object GunMuzzleLightRenderer {
                     val beamHit = clipFlashlight(light, beamEnd)
                     val beamLength = light.position.distanceTo(beamHit.location).toFloat()
                     val lensVisible = point.lengthSqr() < light.radius * light.radius &&
-                        clipFlashlight(light, camera).type == HitResult.Type.MISS
+                            clipFlashlight(light, camera).type == HitResult.Type.MISS
                     flashlightEffect.set(beamLength, smoothFlashlightVisibility(light.holder.id, lensVisible, now))
                 } else {
                     flashlightEffect.set(0f, 0f)
                 }
                 try {
                     custom.apply()
+                    // Set the actual GL blend state after ShaderInstance applies its cached mode.
                     GL11.glEnable(GL11.GL_BLEND)
                     GL20.glBlendEquationSeparate(GL14.GL_FUNC_ADD, GL14.GL_FUNC_ADD)
                     GL14.glBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO, GL11.GL_ONE)
                     val builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION)
-                    builder.addVertex(-1f, -1f, 0f)
-                    builder.addVertex(1f, -1f, 0f)
-                    builder.addVertex(1f, 1f, 0f)
-                    builder.addVertex(-1f, 1f, 0f)
+                    builder.addVertex(-1.0f, -1.0f, 0.0f)
+                    builder.addVertex(1.0f, -1.0f, 0.0f)
+                    builder.addVertex(1.0f, 1.0f, 0.0f)
+                    builder.addVertex(-1.0f, 1.0f, 0.0f)
                     BufferUploader.draw(builder.buildOrThrow())
                 } finally {
                     custom.clear()
@@ -216,8 +214,16 @@ object GunMuzzleLightRenderer {
             if (scissor) RenderSystem.enableScissor(scissorBox[0], scissorBox[1], scissorBox[2], scissorBox[3])
             else RenderSystem.disableScissor()
             GL20.glBlendEquationSeparate(blendEquationRgb, blendEquationAlpha)
+            // Restore both the Blaze3D cache and the state set directly for the draw.
+            RenderSystem.blendFuncSeparate(blendSrc, blendDst, blendSrcAlpha, blendDstAlpha)
             GL14.glBlendFuncSeparate(blendSrc, blendDst, blendSrcAlpha, blendDstAlpha)
-            if (blend) GL11.glEnable(GL11.GL_BLEND) else GL11.glDisable(GL11.GL_BLEND)
+            if (blend) {
+                RenderSystem.enableBlend()
+                GL11.glEnable(GL11.GL_BLEND)
+            } else {
+                RenderSystem.disableBlend()
+                GL11.glDisable(GL11.GL_BLEND)
+            }
             textures.forEachIndexed { unit, texture ->
                 RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
                 GlStateManager._bindTexture(texture)

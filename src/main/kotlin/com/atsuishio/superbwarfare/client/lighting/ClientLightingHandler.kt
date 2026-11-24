@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.lighting
 import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.projectile.Projectile
+import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 
@@ -27,6 +28,23 @@ object ClientLightingHandler {
     @JvmStatic
     fun handleProjectileTick(entity: Entity) {
         ProjectileLightHelper.emitTrailLight(entity)
+    }
+
+    /**
+     * 信号弹（FlareDecoyEntity）每 tick 的跟随光：暖白、大半径、无遮挡 march。
+     * 之前信号弹只靠贴图自发光，完全没有世界光照。
+     */
+    @JvmStatic
+    fun handleFlareTick(entity: Entity) {
+        WorldLightHandler.put(
+            "flare_${entity.id}",
+            entity.position().add(0.0, entity.bbHeight * 0.5, 0.0),
+            Vec3.ZERO,
+            strength = 0.9f,
+            radius = 10f,
+            durationTicks = 2,
+            color = Vec3(1.0, 0.86, 0.72),
+        )
     }
 
     /**
@@ -55,7 +73,8 @@ object ClientLightingHandler {
      */
     @JvmStatic
     fun handleProjectileRemoved(entity: Entity) {
-        LightPositionRegistry.removeAround(entity.blockPosition(), 2)
+        // 弹丸消失后立即移除跟随光（曳光主光 + 尾焰光）。
+        ProjectileLightHelper.clear(entity)
 
         val radius = getExplosionRadius(entity)
         if (radius > 0f) {

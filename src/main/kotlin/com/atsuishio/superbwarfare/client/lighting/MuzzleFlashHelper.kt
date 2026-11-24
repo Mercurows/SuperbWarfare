@@ -7,8 +7,6 @@ import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.gun.GunItem
-import com.atsuishio.superbwarfare.tools.clientLevel
-import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
@@ -51,9 +49,10 @@ object MuzzleFlashHelper {
     // -----------------------------
 
     /**
-     * Spawns a single block-light node in front of the muzzle along the barrel axis.
+     * Spawns a **spherical** screen-space light at the muzzle tip.
      *
-     * Applies subtle spatial offset variance (0.35m..0.45m) and level variance per shot for visual uniqueness.
+     * 除手电外所有世界动态光都是球形点光；这里不再传圆锥参数。
+     * 走 [WorldLightHandler] → [GunMuzzleLightRenderer]，不再往区块光照引擎写假方块光。
      *
      * @param origin    world-space muzzle tip position
      * @param direction barrel direction vector
@@ -64,25 +63,20 @@ object MuzzleFlashHelper {
         if (!DisplayConfig.ENABLE_FIRE_FLASH_LIGHT.get()) return
         if (params.maxLevel <= 0) return
 
-        val level = clientLevel ?: return
-        val engine = level.lightEngine
         val dir = direction.normalize()
+        if (dir.lengthSqr() < 1e-8) return
 
         val random = ThreadLocalRandom.current()
-
-        val muzzleOffset = 0.35 + random.nextDouble() * 0.10
-        val muzzlePoint = origin.add(dir.scale(muzzleOffset))
-        val muzzleBp = BlockPos.containing(muzzlePoint.x, muzzlePoint.y, muzzlePoint.z)
-
+        val muzzlePoint = origin.add(dir.scale(0.35 + random.nextDouble() * 0.10))
         val juicedMax = (params.maxLevel + random.nextInt(3) - 1).coerceIn(1, 15)
-        val juicedMin = (params.minLevel + random.nextInt(2) - 1).coerceIn(1, juicedMax)
 
-        if (juicedMax >= 10) {
-            LightPositionRegistry.putSparkRadius(muzzleBp, juicedMax, juicedMin, params.duration, radius = 1)
-        } else {
-            LightPositionRegistry.putSpark(muzzleBp.asLong(), juicedMax, juicedMin, params.duration)
-        }
-        engine.checkBlock(muzzleBp)
+        WorldLightHandler.put(
+            Any(), muzzlePoint, Vec3.ZERO,
+            strength = (juicedMax / 15f).coerceIn(0.05f, 1f),
+            radius = 2f + juicedMax * 0.3f,
+            durationTicks = params.duration,
+            color = WorldLightHandler.warmColor(),
+        )
     }
 
     /**

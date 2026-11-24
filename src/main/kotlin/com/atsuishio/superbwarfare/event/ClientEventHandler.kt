@@ -12,11 +12,7 @@ import com.atsuishio.superbwarfare.client.animation.gun.GunDrawAnimation
 import com.atsuishio.superbwarfare.client.animation.gun.GunSprintAnimation
 import com.atsuishio.superbwarfare.client.camera.VehicleBoneCamera
 import com.atsuishio.superbwarfare.client.gun.*
-import com.atsuishio.superbwarfare.client.lighting.FlashlightHandler
-import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightRenderer
-import com.atsuishio.superbwarfare.client.lighting.LightPositionRegistry
-import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
-import com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
+import com.atsuishio.superbwarfare.client.lighting.*
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
 import com.atsuishio.superbwarfare.client.overlay.FlashbangOverlay
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
@@ -892,6 +888,7 @@ object ClientEventHandler {
         ScopeLensPostProcessor.close()
         GunMuzzleLightRenderer.close()
         FlashlightHandler.clear()
+        WorldLightHandler.clear()
         com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer.close()
     }
 
@@ -959,8 +956,6 @@ object ClientEventHandler {
         handleControlVehicle(player, stack)
         handleArtilleryIndicator(player, stack)
         calculateBombHitPos(player)
-
-        LightPositionRegistry.tick()
     }
 
     @JvmStatic
