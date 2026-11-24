@@ -20,7 +20,10 @@ import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.ModKeyMappings
+import com.atsuishio.superbwarfare.init.ModMobEffects
+import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
 import com.atsuishio.superbwarfare.item.curio.TacticalTerminalItem
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -842,15 +845,12 @@ object ClickEventHandler {
         sendPacketToServer(ZoomMessage(0))
         ClientEventHandler.zoom = true
 
-        val level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP)
-        if (level > 0) {
-            if (ClientEventHandler.lockedEntity == null) {
-                ClientEventHandler.lockedEntity =
-                    if (data.get(GunProp.PROJECTILE_PENETRATING)) {
-                        SeekTool.seekEntityThroughWall(player, 32 + 8 * (level - 1).toDouble(), 20.0)
-                    } else {
-                        SeekTool.seekLivingEntity(player, 32 + 8 * (level - 1).toDouble(), 20.0)
-                    }
+        if (data.get(GunProp.AUTO_AIM) && ClientEventHandler.lockedEntity == null) {
+            val range = data.get(GunProp.AUTO_AIM_RANGE)
+            ClientEventHandler.lockedEntity = if (data.get(GunProp.PROJECTILE_PENETRATING)) {
+                SeekTool.seekEntityThroughWall(player, range, 20.0)
+            } else {
+                SeekTool.seekLivingEntity(player, range, 20.0)
             }
         }
     }

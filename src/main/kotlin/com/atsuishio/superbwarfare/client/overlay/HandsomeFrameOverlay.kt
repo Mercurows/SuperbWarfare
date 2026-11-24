@@ -4,9 +4,9 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
-import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.worldToScreen
@@ -27,7 +27,7 @@ object HandsomeFrameOverlay : CommonOverlay("handsome_frame") {
 
     override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
-        // 当前操控的枪（部署中的副武器也算）：智能芯片的锁定框跟着它走
+        // 自瞄锁定框跟随当前操控的枪，包括部署中的副武器。
         val stack = ActiveGun.stackOf(player)
 
         if (ClientEventHandler.isEditing) return
@@ -36,8 +36,8 @@ object HandsomeFrameOverlay : CommonOverlay("handsome_frame") {
 
         if (GunItem.isOperable(stack) && isFirstPerson) {
             val data = from(stack)
-            val level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP).toInt()
-            if (level == 0) return
+            if (!data.get(GunProp.AUTO_AIM)) return
+            val range = data.get(GunProp.AUTO_AIM_RANGE)
 
             RenderSystem.disableDepthTest()
             RenderSystem.depthMask(false)
@@ -51,10 +51,10 @@ object HandsomeFrameOverlay : CommonOverlay("handsome_frame") {
             )
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-            val allEntities = SeekTool.seekLivingEntitiesThroughWall(player, (32 + 8 * (level - 1)).toDouble(), 30.0)
-            val visibleEntities = SeekTool.seekLivingEntities(player, (32 + 8 * (level - 1)).toDouble(), 30.0)
+            val allEntities = SeekTool.seekLivingEntitiesThroughWall(player, range, 30.0)
+            val visibleEntities = SeekTool.seekLivingEntities(player, range, 30.0)
 
-            val nearestEntity = SeekTool.seekLivingEntity(player, (32 + 8 * (level - 1)).toDouble(), 30.0)
+            val nearestEntity = SeekTool.seekLivingEntity(player, range, 30.0)
             val targetEntity = ClientEventHandler.lockedEntity
 
             for (e in allEntities) {

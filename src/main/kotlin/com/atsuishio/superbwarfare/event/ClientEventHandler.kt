@@ -10,11 +10,7 @@ import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
 import com.atsuishio.superbwarfare.client.animation.gun.GunDrawAnimation
 import com.atsuishio.superbwarfare.client.animation.gun.GunSprintAnimation
 import com.atsuishio.superbwarfare.client.gun.*
-import com.atsuishio.superbwarfare.client.lighting.FlashlightHandler
-import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightRenderer
-import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
-import com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
-import com.atsuishio.superbwarfare.client.lighting.WorldLightHandler
+import com.atsuishio.superbwarfare.client.lighting.*
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
 import com.atsuishio.superbwarfare.client.overlay.FlashbangOverlay
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
@@ -607,7 +603,7 @@ object ClientEventHandler {
     @JvmField
     var lerpShake: Double = 0.0
 
-    // 智慧芯片锁定的实体
+    // 自瞄锁定的实体
     @JvmField
     var lockedEntity: Entity? = null
 
@@ -2324,12 +2320,15 @@ object ClientEventHandler {
         val stack = ActiveGun.stackOf(player)
         if (!GunItem.isOperable(stack)) return
         val data = GunData.from(stack)
+        val autoAimTarget = lockedEntity?.takeIf {
+            it.isAlive && data.get(GunProp.AUTO_AIM) && player.distanceTo(it) <= data.get(GunProp.AUTO_AIM_RANGE)
+        }
 
         sendPacketToServer(
             ShootMessage(
                 gunSpread,
                 zoom,
-                if (lockedEntity != null) lockedEntity!!.getUUID() else null,
+                autoAimTarget?.getUUID(),
                 null,
                 chargePower,
                 ClientRenderHandler.freshMuzzleDirection()
@@ -3472,43 +3471,32 @@ object ClientEventHandler {
                 event.fov /= (1 + p * 0.01)
             currentFov = event.fov
 
-            // 智慧芯片
-            if (zoom && !notInGame && drawTime < 0.01 && !isEditing) {
-                if (player.isShiftKeyDown) {
-                    lockedEntity = null
-                } else {
-                    val intelligentChipLevel = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP)
-                    val seekRange = 32.0 + 8.0 * (intelligentChipLevel - 1)
-
-                    if (intelligentChipLevel > 0) {
-                        if (lockedEntity == null || !lockedEntity!!.isAlive) {
-                            lockedEntity = if (data.get(GunProp.PROJECTILE_PENETRATING)) {
-                                SeekTool.seekEntityThroughWall(player, seekRange, 16 / customZoom)
-                            } else {
-                                SeekTool.seekLivingEntity(player, seekRange, 16 / customZoom)
-                            }
-                        }
-                        if (lockedEntity != null && lockedEntity!!.isAlive) {
-                            val targetVec = lockedEntity!!.getEyePosition(event.partialTick.toFloat())
-                            val playerVec = player.getEyePosition(event.partialTick.toFloat())
-
-                            val hasGravity = data.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0
-                            val velocity = data.get(GunProp.VELOCITY)
-
-                            val toVec = RangeTool.calculateFiringSolution(
-                                playerVec,
-                                targetVec,
-                                lockedEntity!!.deltaMovement.scale(0.5),
-                                velocity,
-                                if (hasGravity) data.get(GunProp.GRAVITY) else 0.0
-                            )
-
-                            look(player, toVec)
-
-                            if (player.distanceTo(lockedEntity!!) > seekRange) {
-                                lockedEntity = null
-                            }
-                        }
+            if (zoom && !notInGame && drawTime < 0.01 && !isEditing && !player.isShiftKeyDown &&
+                data.get(GunProp.AUTO_AIM)
+            ) {
+                val range = data.get(GunProp.AUTO_AIM_RANGE)
+                if (lockedEntity?.isAlive != true) {
+                    lockedEntity = if (data.get(GunProp.PROJECTILE_PENETRATING)) {
+                        SeekTool.seekEntityThroughWall(player, range, 16 / customZoom)
+                    } else {
+                        SeekTool.seekLivingEntity(player, range, 16 / customZoom)
+                    }
+                }
+                val target = lockedEntity
+                if (target != null && target.isAlive) {
+                    if (player.distanceTo(target) > range) {
+                        lockedEntity = null
+                    } else {
+                        val partialTick = event.partialTick.toFloat()
+                        val hasGravity = data.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0
+                        val toVec = RangeTool.calculateFiringSolution(
+                            player.getEyePosition(partialTick),
+                            target.getEyePosition(partialTick),
+                            target.deltaMovement.scale(0.5),
+                            data.get(GunProp.VELOCITY),
+                            if (hasGravity) data.get(GunProp.GRAVITY) else 0.0
+                        )
+                        look(player, toVec)
                     }
                 }
             } else {

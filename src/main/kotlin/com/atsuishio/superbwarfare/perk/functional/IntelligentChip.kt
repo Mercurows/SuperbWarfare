@@ -9,7 +9,11 @@ import com.atsuishio.superbwarfare.perk.Perk
 
 object IntelligentChip : Perk("intelligent_chip", Type.FUNCTIONAL) {
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
-        val level = modifier.data.perk.getLevel(this).toInt().coerceIn(0, MAX_PERK_LEVEL)
-        modifier[GunProp.AIM_ASSIST] += level * 5
+        val level = modifier.data.perk.getLevel(this).toInt()
+        if (level <= 0) return
+
+        modifier[GunProp.AIM_ASSIST] += level.coerceAtMost(MAX_PERK_LEVEL) * 5
+        modifier[GunProp.AUTO_AIM] = true
+        modifier[GunProp.AUTO_AIM_RANGE] += 32.0 + 8.0 * (level - 1)
     }
 }
