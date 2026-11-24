@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
+import com.atsuishio.superbwarfare.client.lighting.ClientLightingHandler
 import com.atsuishio.superbwarfare.client.particle.CustomFlareOption
 import com.atsuishio.superbwarfare.init.ModEntities
 import net.minecraft.nbt.CompoundTag
@@ -37,6 +38,7 @@ open class FlareDecoyEntity : Entity {
         this.move(MoverType.SELF, this.deltaMovement)
 
         if (level().isClientSide()) {
+            ClientLightingHandler.handleFlareTick(this)
             val l = deltaMovement.length()
             var i = 0.0
             while (i < l) {

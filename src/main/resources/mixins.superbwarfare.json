@@ -23,7 +23,6 @@
     "tacz.EntityUtilMixin"
   ],
   "client": [
-    "BlockLightEngineMixin",
     "CameraMixin",
     "ClientPacketListenerMixin",
     "ClientPlayerEntityMixin",
@@ -36,7 +35,6 @@
     "KeymappingMixin",
     "LevelRendererMixin",
     "LibraryMixin",
-    "LightEngineMixin",
     "LivingEntityRendererMixin",
     "LocalPlayerMixin",
     "MinecraftMixin",

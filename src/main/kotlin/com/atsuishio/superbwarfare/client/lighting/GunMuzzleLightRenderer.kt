@@ -73,7 +73,8 @@ object GunMuzzleLightRenderer {
         val worldView = view ?: return
         var worldProjection = projection ?: return
         if (failed || ShaderCompat.isRenderingShadowPass() || ScopeThermalRenderer.isFullScreenActive()) return
-        val lights = GunMuzzleLightHandler.visibleLights() + FlashlightHandler.visibleLights()
+        val lights = GunMuzzleLightHandler.visibleLights() + FlashlightHandler.visibleLights() +
+            WorldLightHandler.visibleLights()
         if (lights.isEmpty()) return
         val now = Util.getMillis()
         flashlightVisibility.values.removeIf { now - it.updatedAt > 250L }

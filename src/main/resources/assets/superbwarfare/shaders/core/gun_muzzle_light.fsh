@@ -43,9 +43,9 @@ float shadowSample(vec2 uv, float rayZ, float thickness, vec3 lightView) {
     // 比这更远的深度才是真正的遮挡物（墙、柱子、其他实体），照常参与遮挡。
     if (LightSelfMask > 0.0 && sampleView.z > lightView.z - LightSelfMask) return 0.0;
     float gap = sampleView.z - rayZ;
-    // Feather both ends of the finite depth thickness to avoid binary depth bands.
-    // 火光用 0.65 的薄层（只看贴近光线的遮挡物）；手电筒允许更厚的遮挡体（见 main）。
-    return smoothstep(0.025, 0.075, gap) * (1.0 - smoothstep(thickness * 0.7, thickness, gap));
+    // 软边过渡（penumbra）：比原来的 0.025~0.075 更宽，遮挡边界不再是硬阶跃；
+    // 大半径世界光（载具/爆炸）投影面积大时尤其明显，可有效掩盖屏幕空间步进的锯齿。
+    return smoothstep(0.035, 0.16, gap) * (1.0 - smoothstep(thickness * 0.65, thickness, gap));
 }
 
 // Filter occlusion comparisons, never raw depth: interpolating foreground and
@@ -79,9 +79,11 @@ float visibility(vec3 surface, vec3 light, float thickness) {
     }
     limit = clamp(limit, 0.0, 1.0);
     float pixels = length(deltaUv * limit / TexelSize);
-    int steps = int(clamp(ceil(pixels / 2.0), 12.0, 32.0));
+    // 每 ~1.5 像素一步，最多 64 步：载具炮口/爆炸这类大半径光投影跨度大，
+    // 原来 32 步的上限会让遮挡边缘出现明显的大台阶。
+    int steps = int(clamp(ceil(pixels / 1), 16.0, 128.0));
     float visible = 1.0;
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < 128; i++) {
         if (i >= steps) break;
         float t = (float(i) + 0.5) / float(steps) * limit;
         vec2 uv = startUv + deltaUv * t;
