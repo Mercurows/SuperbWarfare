@@ -196,7 +196,14 @@ public class ModRenderTypes extends RenderType {
     }
 
     public static final Function<ResourceLocation, RenderType> MUZZLE_FLASH_TYPE = Util.memoize(location ->
-            muzzleEmissive("muzzle_flash", location, VertexFormat.Mode.QUADS, TEST_TRANSPARENCY, true));
+            create("muzzle_flash", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true,
+                    CompositeState.builder()
+                            .setShaderState(RENDERTYPE_EYES_SHADER)
+                            .setTextureState(new TextureStateShard(location, false, false))
+                            .setTransparencyState(TEST_TRANSPARENCY)
+                            .setCullState(NO_CULL)
+                            .setWriteMaskState(COLOR_WRITE)
+                            .createCompositeState(false)));
 
     private static final TransparencyStateShard MUZZLE_SURFACE_BLEND = new TransparencyStateShard("muzzle_surface_blend", () -> {
         RenderSystem.enableBlend();
@@ -210,30 +217,18 @@ public class ModRenderTypes extends RenderType {
     private record MuzzleSurface(ResourceLocation texture, VertexFormat.Mode mode) {}
 
     private static final Function<MuzzleSurface, RenderType> MUZZLE_SURFACE_LIGHT = Util.memoize(surface ->
-            muzzleEmissive("muzzle_surface_light", surface.texture(), surface.mode(), MUZZLE_SURFACE_BLEND, false));
+            create("muzzle_surface_light", DefaultVertexFormat.NEW_ENTITY, surface.mode(), 256, false, false,
+                    CompositeState.builder()
+                            .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+                            .setTextureState(new TextureStateShard(surface.texture(), false, false))
+                            .setTransparencyState(MUZZLE_SURFACE_BLEND)
+                            .setCullState(NO_CULL)
+                            .setOverlayState(OVERLAY)
+                            .setWriteMaskState(COLOR_WRITE)
+                            .createCompositeState(false)));
 
     public static RenderType muzzleSurfaceLight(ResourceLocation texture, VertexFormat.Mode mode) {
         return MUZZLE_SURFACE_LIGHT.apply(new MuzzleSurface(texture, mode));
-    }
-
-    private static RenderType muzzleEmissive(String name, ResourceLocation location, VertexFormat.Mode mode,
-                                             TransparencyStateShard transparency, boolean sort) {
-        TextureStateShard shard = new RenderStateShard.TextureStateShard(location, false, false);
-        RenderType.CompositeState state = RenderType.CompositeState.builder()
-                // Iris routes this shader through its full-bright entity program. The generic
-                // textured program expects a lightmap, which POSITION_COLOR_TEX cannot supply.
-                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
-                .setTransparencyState(transparency)
-                .setCullState(NO_CULL)
-                // 绑定贴图
-                .setTextureState(shard)
-                // Match entityTranslucentEmissive's overlay sampler; vertices use NO_OVERLAY.
-                .setLightmapState(RenderStateShard.NO_LIGHTMAP)
-                .setOverlayState(RenderStateShard.OVERLAY)
-                .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-                .createCompositeState(false);
-
-        return RenderType.create(name, DefaultVertexFormat.NEW_ENTITY, mode, 256, false, sort, state);
     }
 
     public static final Function<ResourceLocation, RenderType> TOW_CHAIN = Util.memoize((location) -> {

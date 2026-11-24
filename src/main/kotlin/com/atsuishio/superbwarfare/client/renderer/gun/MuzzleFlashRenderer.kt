@@ -30,6 +30,7 @@ import kotlin.collections.ArrayDeque
 import kotlin.collections.getOrPut
 import kotlin.collections.isNotEmpty
 import kotlin.math.abs
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 object MuzzleFlashRenderer {
@@ -39,6 +40,7 @@ object MuzzleFlashRenderer {
     private const val FLARE_BONE = "flare"
     private const val MUZZLE_FLASH_BONE = "muzzle_flash"
     private const val MAX_VISIBLE_TIME = 0.3
+    private const val PEAK_BRIGHTNESS_PHASE = 0.5f
 
     /**
      * 开火窗口（枪口焰可见的那一小段）：主武器看 `fireRotTimer`，副武器看
@@ -162,19 +164,19 @@ object MuzzleFlashRenderer {
             if (shot.firstPerson != firstPerson || shot.host != hostId || shot.barrel != barrelId) continue
             val age = ((now - shot.start) * 0.05).coerceAtLeast(0.0).toFloat()
             if (age > duration && (shot.presented || age > 0.065f)) continue
-            val lateFirstFrame = !shot.presented && age >= duration
-            if (!shot.presented) {
+            val firstFrame = !shot.presented
+            if (firstFrame) {
                 shot.presented = true
                 emit(resource, !firstPerson || fx?.trigger == "shot",
                     !silenced && shot.sparks < (fx?.sparks?.probability ?: 0f).coerceIn(0f, 1f))
             }
             if (silenced || fx?.flash?.enabled == false || flashScale <= 0f) continue
-            val phase = if (lateFirstFrame) 0.45f else (age / duration).coerceIn(0f, 1f)
+            val phase = if (firstFrame && age >= duration) 0.45f else (age / duration).coerceIn(0f, 1f)
             // Entity-format effects must stay in the current hand/stencil pass with AR too.
             val vanillaAcceleration = AcceleratedRenderingCompat.shouldAccelerate
             if (vanillaAcceleration) AcceleratedRenderingCompat.beginVanillaAcceleration()
             try {
-                drawFlash(buffers, matrix, resource, flashScale, shot, phase)
+                drawFlash(buffers, matrix, resource, flashScale, shot, phase, firstFrame)
             } finally {
                 if (vanillaAcceleration) AcceleratedRenderingCompat.endVanillaAcceleration()
             }
@@ -183,12 +185,15 @@ object MuzzleFlashRenderer {
 
     private fun drawFlash(
         buffers: MultiBufferSource, matrix: Matrix4f, resource: DefaultGunResource,
-        flashScale: Float, shot: Shot, phase: Float,
+        flashScale: Float, shot: Shot, phase: Float, firstFrame: Boolean,
     ) {
         val fx = resource.muzzleFx
         val size = resource.flareSize * shot.size * flashScale * (1f - 0.35f * phase)
         if (size <= 0f) return
-        val alpha = ((1f - phase) * 255).toInt()
+        // 第一帧可能已落在淡出区间，先让玩家看到完整的闪光。
+        val remaining = ((1f - phase) / (1f - PEAK_BRIGHTNESS_PHASE)).coerceAtMost(1f)
+        val alpha = if (firstFrame) 255 else (255 * remaining * remaining * (3f - 2f * remaining)).roundToInt()
+        if (alpha == 0) return
         val legacy = fx == null && !resource.hasSmoke
         val consumer = buffers.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(if (legacy) FLARE_TEXTURE else atlas))
         val index = shot.variant % (fx?.flash?.variants ?: 8).coerceIn(1, 8)
