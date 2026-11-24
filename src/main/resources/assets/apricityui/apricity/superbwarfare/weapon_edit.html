@@ -178,6 +178,15 @@
                 <div id="settings-color-swatch"></div>
                 <input id="settings-color-hex" type="text" maxlength="7" value="#FF0000" placeholder="#RRGGBB">
             </div>
+            <div id="settings-mode-row" class="settings-row">
+                <div id="settings-mode-label" class="settings-label"></div>
+                <div id="settings-mode-buttons">
+                    <button id="settings-mode-laser" class="settings-mode" type="button"><span id="settings-mode-laser-label" class="button-label"></span></button>
+                    <button id="settings-mode-on" class="settings-mode" type="button"><span id="settings-mode-on-label" class="button-label"></span></button>
+                    <button id="settings-mode-strobe" class="settings-mode" type="button"><span id="settings-mode-strobe-label" class="button-label"></span></button>
+                    <button id="settings-mode-off" class="settings-mode" type="button"><span id="settings-mode-off-label" class="button-label"></span></button>
+                </div>
+            </div>
         </div>
         <button id="settings-confirm" type="button"><span id="settings-confirm-label" class="button-label"></span></button>
     </div>
@@ -547,6 +556,17 @@
     #settings-color-swatch { width: 16px; height: 16px; box-sizing: border-box; border: 0.5px solid #338997; flex-shrink: 0; }
     #settings-color-hex { width: 107px; padding: 0 3px; font-size: 7.5px; }
     #settings-color-hex:focus { border-color: #52fcda; }
+    /* 单件配件的激光/手电档位按钮：选中档高亮，非本配件可用的档位由 Kotlin 隐藏。 */
+    #settings-mode-buttons { display: flex; flex: 1; gap: 2px; height: 16px; min-width: 0; }
+    .settings-mode {
+        display: flex; flex: 1 1 0; min-width: 0; box-sizing: border-box; height: 16px;
+        margin: 0; padding: 0; border: 0.5px solid #338997; background: rgba(0, 18, 25, 0.7);
+        color: #e6f4f6; font-size: 7px; font-weight: normal;
+        align-items: center; justify-content: center; cursor: pointer;
+    }
+    .settings-mode > .button-label { line-height: 15px; white-space: nowrap; }
+    .settings-mode:hover { border-color: #52fcda; background: rgba(20, 90, 99, 0.8); }
+    .settings-mode.active { background: #52fcda; border-color: #52fcda; color: #00161e; }
     /* 独立的紧凑属性面板；Kotlin 将整组宽高限制在可用视口的一半以内。 */
     #weapon-stats {
         position: absolute; left: 0; top: 0; width: 112px; height: 17px;

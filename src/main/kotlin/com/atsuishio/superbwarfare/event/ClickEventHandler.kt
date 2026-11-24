@@ -43,6 +43,7 @@ import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.InputEvent
 import net.minecraftforge.client.settings.KeyConflictContext
+import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.ModList
 import net.minecraftforge.fml.common.Mod
@@ -60,6 +61,12 @@ object ClickEventHandler {
     /** 右键是否按着；枪械会 cancel 掉这个按键，`KeyMapping.isDown()` 之后就不再更新了 */
     var useKeyHeld: Boolean = false
         private set
+
+    /** 手电/激光键的长按判定阈值（tick）。 */
+    private const val LIGHT_LONG_PRESS_TICKS = 9
+    private var lightKeyDown = false
+    private var lightPressTicks = 0
+    private var lightLongFired = false
 
     private fun isUseMouseButton(button: Int): Boolean =
         (ModKeyMappings.HOLD_ZOOM.key.type == InputConstants.Type.MOUSE
@@ -302,6 +309,36 @@ object ClickEventHandler {
         }
     }
 
+    @SubscribeEvent
+    fun onClientTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.END) return
+
+        val mc = Minecraft.getInstance()
+        val inactive = notInGame || mc.screen != null
+        val down = if (inactive) false else ModKeyMappings.TOGGLE_LIGHT.isDown
+
+        if (down) {
+            if (!lightKeyDown) {
+                lightPressTicks = 0
+                lightLongFired = false
+            }
+            lightPressTicks++
+            if (!lightLongFired && lightPressTicks >= LIGHT_LONG_PRESS_TICKS) {
+                if (FlashlightHandler.turnOffAllLocal()) {
+                    localPlayer?.playSound(ModSounds.CANNON_ZOOM_OUT.get(), 1f, 1f)
+                }
+                lightLongFired = true
+            }
+        } else if (lightKeyDown && !lightLongFired && !inactive) {
+            if (FlashlightHandler.cycleAllLocal()) {
+                localPlayer?.playSound(ModSounds.CANNON_ZOOM_OUT.get(), 1f, 1f)
+            }
+        }
+
+        lightKeyDown = down
+        if (!down) lightLongFired = false
+    }
+
     @JvmStatic
     fun handleScopeThermalKey(player: Player): Boolean {
         if (!ScopeThermalRenderer.isAimingThermalScope(player.mainHandItem)) return false
@@ -361,14 +398,6 @@ object ClickEventHandler {
                             player.playSound(ModSounds.CANNON_ZOOM_OUT.get())
                         }
                     }
-                }
-            }
-
-            if (key == ModKeyMappings.TOGGLE_LIGHT.key.value &&
-                ModKeyMappings.TOGGLE_LIGHT.keyModifier.isActive(KeyConflictContext.IN_GAME)
-            ) {
-                FlashlightHandler.toggleLocal()?.let {
-                    player.playSound(ModSounds.CANNON_ZOOM_OUT.get(), 1f, 1f)
                 }
             }
 
