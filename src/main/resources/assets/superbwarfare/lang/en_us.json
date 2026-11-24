@@ -605,6 +605,8 @@
   "des.superbwarfare.acid_bullet": "Fires bullets that splash acid.",
   "item.superbwarfare.irradiation_bullet": "Irradiation Bullet",
   "des.superbwarfare.irradiation_bullet": "Fires bullets carrying a potent radiation source.",
+  "item.superbwarfare.rusted_blade": "Rusted Blade",
+  "des.superbwarfare.rusted_blade": "Melee hits apply Trauma to targets.",
 
   "item.superbwarfare.heal_clip": "Heal Clip",
   "des.superbwarfare.heal_clip": "Reloading after defeating a mob will heal you and your nearby allies.",

@@ -456,7 +456,8 @@ class ModItemTagProvider(
             perkItem(ModPerks.AP_BULLET),
             perkItem(ModPerks.SUPER_HEAVY_BULLET),
             perkItem(ModPerks.SHATTER_CAPS),
-            perkItem(ModPerks.ACID_BULLET)
+            perkItem(ModPerks.ACID_BULLET),
+            perkItem(ModPerks.RUSTED_BLADE)
         )
         this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_EPIC).add(
             perkItem(ModPerks.HOMING_BULLET),

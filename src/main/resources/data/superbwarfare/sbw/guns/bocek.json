@@ -58,7 +58,8 @@
     "superbwarfare:steady_resolve",
     "!superbwarfare:chain_lightning",
     "!superbwarfare:micro_missile",
-    "!superbwarfare:cluster_bomb"
+    "!superbwarfare:cluster_bomb",
+    "!superbwarfare:rusted_blade"
   ],
   "SoundInfo": {
     "Fire1P": "superbwarfare:bocek_zoom_fire_1p",

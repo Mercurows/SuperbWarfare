@@ -572,7 +572,7 @@
   "item.superbwarfare.poisonous_bullet": "淬毒弹",
   "des.superbwarfare.poisonous_bullet": "命中后会使目标中毒",
   "item.superbwarfare.blade_bullet": "刀片弹",
-  "des.superbwarfare.blade_bullet": "命中后会创伤目标",
+  "des.superbwarfare.blade_bullet": "子弹命中后会创伤目标",
   "item.superbwarfare.phosphorus_flame_bullet": "磷火弹",
   "des.superbwarfare.phosphorus_flame_bullet": "命中后会使目标受到磷火效果",
   "item.superbwarfare.longer_wire": "延长导线",
@@ -605,6 +605,8 @@
   "des.superbwarfare.acid_bullet": "发射飞溅酸液的子弹",
   "item.superbwarfare.irradiation_bullet": "辐照弹",
   "des.superbwarfare.irradiation_bullet": "发射带有强力辐射源的子弹",
+  "item.superbwarfare.rusted_blade": "破伤风之刃",
+  "des.superbwarfare.rusted_blade": "近战命中后会创伤目标",
 
   "item.superbwarfare.heal_clip": "治疗弹匣",
   "des.superbwarfare.heal_clip": "最后一击后短时间内填装，可治疗自身和附近队友",

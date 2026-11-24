@@ -81,6 +81,7 @@ object ModPerks {
     lateinit var SHATTER_CAPS: PERK
     lateinit var ACID_BULLET: PERK
     lateinit var IRRADIATION_BULLET: PERK
+    lateinit var RUSTED_BLADE: PERK
     // @formatter:on
 
     /**
@@ -250,6 +251,7 @@ object ModPerks {
         IRRADIATION_BULLET = autoRegistryObjects["irradiation_bullet"] ?: registerAmmoPerk("irradiation_bullet") {
             EmptyPerk("irradiation_bullet", Perk.Type.AMMO)
         }
+        RUSTED_BLADE = autoRegistryObjects.getValue("rusted_blade")
 
         // Functional Perks
         HEAL_CLIP = autoRegistryObjects["heal_clip"] ?: registerFuncPerk("heal_clip") { HealClip }
