@@ -453,8 +453,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val firstPersonAnimation = firstPersonHand?.let { FirstPersonRenderHandler.getActiveAnimationInstance(it) as? GeoGunAnimationInstance }
         val subWeaponFire = firstPersonHand != null && (deployedFirstPerson ||
                 ClientEventHandler.subWeaponFireRotTimer > 0.0 || firstPersonAnimation?.isSubWeaponFire() == true)
-        var subWeaponFlare: Matrix4f? = null
-        var firstPersonAnchor: Matrix4f? = null
+        val subWeaponFlare = if (subWeaponFire) resolveSubWeaponFlareTransform(stack, model) else null
+        val firstPersonAnchor = if (firstPersonHand != null) {
+            MuzzleFlashRenderer.resolveFlareTransform(model, stack, attachmentMuzzleTransform, subWeaponFlare, deployedFirstPerson)
+        } else null
 
         val canStencil = transformType.firstPerson()
                 && !ShaderCompat.isRenderingShadowPass()
@@ -472,6 +474,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         if (vanillaAcceleration) {
             AcceleratedRenderingCompat.beginVanillaAcceleration()
         }
+        val muzzleLightScope = if (firstPersonHand == InteractionHand.MAIN_HAND && localFirstPersonHand == InteractionHand.MAIN_HAND) {
+            GunMuzzleLightHandler.beginFirstPersonModelLight(model.instance, poseStack.last().pose(), firstPersonAnchor)
+        } else null
         try {
             if (stencilScope != null) {
                 handledScopeAttachment = stencilScope.attachmentId
@@ -551,20 +556,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             // **中途抛异常**就会跳过那个复位，共享实例上的这几根骨骼会一直留在 hidden 直到下次资源重载。
             val savedOcularBones = if (builtinScopeActive) model.builtinScopeRenderer.hideOcularBones() else null
             try {
-                if (firstPersonHand != null) {
-                    if (subWeaponFire) subWeaponFlare = resolveSubWeaponFlareTransform(stack, model)
-                    firstPersonAnchor = MuzzleFlashRenderer.resolveFlareTransform(
-                        model, stack, attachmentMuzzleTransform, subWeaponFlare, deployedFirstPerson
-                    )
-                }
-                val anchor = firstPersonAnchor
-                val modelBuffers = if (anchor != null && firstPersonHand == InteractionHand.MAIN_HAND &&
-                    localFirstPersonHand == InteractionHand.MAIN_HAND
-                ) {
-                    GunMuzzleLightHandler.shadeFirstPersonModel(bufferSource, model.instance, poseStack.last().pose(), anchor)
-                } else bufferSource
                 model.renderToBuffer(
-                    poseStack, modelBuffers, texture, packedLight, packedOverlay,
+                    poseStack, bufferSource, texture, packedLight, packedOverlay,
                     resolveGunAmmoReadout(stack, resource),
                     // ⚠ 必须在 `renderAttachments` 之后算：副武器换弹那份锚点是在里面填的，优先级更高
                     resolveArmAnchorsForDraw(model, transformType),
@@ -577,6 +570,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 if (savedOcularBones != null) model.builtinScopeRenderer.restoreOcularBones(savedOcularBones)
                 model.builtinScopeRenderer.restoreDivisionBones(savedDivisionBones)
             }
+            // 普通配件、枪身和双臂共用一次提交。需要切换模板的瞄具外壳已原位提交。
+            GunMuzzleLightHandler.flushFirstPersonModelLight()
 
             // 改装界面：把各槽位挂点骨骼投影成屏幕坐标，供界面摆放按钮（见 [WeaponEditMountTracker]）。
             // 投影要的正是"模型几何原点"这一层 PoseStack —— 就是刚交给 `renderToBuffer` 的那个。
@@ -616,6 +611,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 }
             }
         } finally {
+            muzzleLightScope?.close()
             if (vanillaAcceleration) {
                 AcceleratedRenderingCompat.endVanillaAcceleration()
             }

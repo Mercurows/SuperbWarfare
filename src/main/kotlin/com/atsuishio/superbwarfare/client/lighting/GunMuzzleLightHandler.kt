@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.lighting
 
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
+import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
@@ -11,11 +12,20 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.TreeModelInstance
+import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.BufferBuilder
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.VertexConsumer
+import com.mojang.blaze3d.vertex.VertexFormat
+import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
+import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.core.BlockPos
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.ClipContext
@@ -36,8 +46,11 @@ object GunMuzzleLightHandler {
 
     private const val MAX_SOURCES = 64
     private const val WALL_CLEARANCE = 0.12
-    private const val MODEL_LIGHT_RADIUS = 1.25
-    private const val MODEL_SHADOW_SAMPLES = 192
+    private const val MODEL_LIGHT_RADIUS = 1.65
+    private const val NEAR_SHADOW_TESTS = 72
+    private const val FAR_SHADOW_TESTS = 16
+    private const val MODEL_HIGHLIGHT_GAIN = 2.05
+    private const val MODEL_SHADOW_VISIBILITY = 1.0 / 105.0
 
     private data class SourceKey(val holder: Int, val barrel: Any)
     private data class MuzzleSample(val position: Vec3, val direction: Vec3, val time: Double)
@@ -73,6 +86,8 @@ object GunMuzzleLightHandler {
     private val lights = linkedMapOf<SourceKey, Light>()
     private val samples = linkedMapOf<SourceKey, MuzzleSample>()
     private var firstPersonShot: Pair<SourceKey, Light>? = null
+    private var modelLight: ModelLight? = null
+    private val modelLightBuffers = mutableListOf<BufferBuilder>()
 
     /** 同一枪管连射刷新同一个脉冲，亮度不会随弹丸或渲染次数累加。时间单位为 tick。 */
     @JvmStatic
@@ -258,54 +273,209 @@ object GunMuzzleLightHandler {
     }
 
     @JvmStatic
-    fun shadeFirstPersonModel(
-        source: MultiBufferSource, model: TreeModelInstance, pose: Matrix4f, anchor: Matrix4f,
-    ): MultiBufferSource {
+    fun beginFirstPersonModelLight(model: TreeModelInstance, pose: Matrix4f, anchor: Matrix4f?): AutoCloseable {
+        val previous = modelLight
+        modelLight = null
         val strength = firstPersonStrength()
-        if (strength <= 0f) return source
-        val modelPose = Matrix4f(pose)
-        val muzzle = Matrix4f(modelPose).mul(anchor)
-        val tip = muzzle.getTranslation(Vector3f())
-        val forward = muzzle.transformDirection(0f, 0f, -1f, Vector3f())
-        if (forward.lengthSquared() > 1e-8f) tip.add(forward.normalize(0.055f))
-        val origin = Vec3(tip)
-        val shadows = HashMap<ShadowCell, Boolean>()
-        return MultiBufferSource { type ->
-            val target = source.getBuffer(type)
-            if (type.format() == DefaultVertexFormat.NEW_ENTITY) {
-                ModelLightConsumer(target, model, modelPose, origin, strength, shadows)
-            } else target
+        if (anchor != null && strength > 0f) {
+            val muzzle = Matrix4f(pose).mul(anchor)
+            val tip = muzzle.getTranslation(Vector3f())
+            val forward = muzzle.transformDirection(0f, 0f, -1f, Vector3f())
+            if (forward.lengthSquared() > 1e-8f) tip.add(forward.normalize(0.055f))
+            modelLight = ModelLight(Vec3(tip), strength).also { it.addOccluder(model, pose) }
+        }
+        val current = modelLight
+        return AutoCloseable {
+            try {
+                current?.discardPending()
+            } finally {
+                modelLight = previous
+            }
         }
     }
 
-    private data class ShadowCell(val x: Int, val y: Int, val z: Int, val nx: Int, val ny: Int, val nz: Int)
+    @JvmStatic
+    fun renderLitModel(
+        source: MultiBufferSource, model: TreeModelInstance?, pose: Matrix4f,
+        texture: ResourceLocation, first: RenderType, second: RenderType,
+        immediate: Boolean = false,
+        draw: (MultiBufferSource) -> Unit,
+    ) {
+        val light = modelLight
+        if (light == null || source !is MultiBufferSource.BufferSource) {
+            draw(source)
+            return
+        }
+        if (model != null) light.addOccluder(model, pose)
+
+        val consumers = mutableMapOf<RenderType, ModelLightConsumer>()
+        val litSource = MultiBufferSource { type ->
+            val original = source.getBuffer(type)
+            val mode = type.mode()
+            if ((type !== first && type !== second) || type.format() != DefaultVertexFormat.NEW_ENTITY ||
+                (mode != VertexFormat.Mode.QUADS && mode != VertexFormat.Mode.TRIANGLES)
+            ) {
+                return@MultiBufferSource original
+            }
+            val consumer = consumers.getOrPut(type) {
+                ModelLightConsumer(light, source, texture, mode)
+            }
+            consumer.target = original
+            consumer
+        }
+        draw(litSource)
+        if (immediate) light.flush()
+    }
+
+    @JvmStatic
+    fun flushFirstPersonModelLight() {
+        modelLight?.flush()
+    }
+
+    private class ModelOccluder(val model: TreeModelInstance, val pose: Matrix4f)
+
+    private class ModelLight(private val muzzle: Vec3, private val strength: Float) {
+        private val occluders = mutableListOf<ModelOccluder>()
+        private val shadows = Long2DoubleOpenHashMap()
+        private var nearTests = 0
+        private var farTests = 0
+        private var source: MultiBufferSource.BufferSource? = null
+        private val pending = linkedMapOf<RenderType, BufferBuilder>()
+
+        fun addOccluder(model: TreeModelInstance, pose: Matrix4f) {
+            if (occluders.none { it.model === model && it.pose == pose }) {
+                occluders.add(ModelOccluder(model, Matrix4f(pose)))
+            }
+        }
+
+        fun exposure(x: Double, y: Double, z: Double, nx: Float, ny: Float, nz: Float): Double {
+            val dx = muzzle.x - x
+            val dy = muzzle.y - y
+            val dz = muzzle.z - z
+            val distanceSquared = dx * dx + dy * dy + dz * dz
+            if (distanceSquared >= MODEL_LIGHT_RADIUS * MODEL_LIGHT_RADIUS) return 0.0
+            val normalSquared = nx * nx + ny * ny + nz * nz
+            if (normalSquared < 1e-6f) return 0.0
+            val distance = sqrt(distanceSquared)
+            val facing = (nx * dx + ny * dy + nz * dz) / (distance * sqrt(normalSquared)).coerceAtLeast(0.001)
+            val angular = ((facing + 0.32) / 1.32).coerceIn(0.0, 1.0)
+            val range = 1.0 - distance / MODEL_LIGHT_RADIUS
+            return strength * angular * range * range * range * 5.6
+        }
+
+        fun visibility(x: Double, y: Double, z: Double, nx: Float, ny: Float, nz: Float): Double {
+            val near = muzzle.distanceToSqr(x, y, z) < 0.8 * 0.8
+            val cell = BlockPos.asLong((x * 6).roundToInt(), (y * 6).roundToInt(), (z * 6).roundToInt())
+            val previous = shadows.getOrDefault(cell, -1.0)
+            if (previous >= 0.0) return previous
+            val used = if (near) nearTests else farTests
+            val limit = if (near) NEAR_SHADOW_TESTS else FAR_SHADOW_TESTS
+            // 额度按实际模型检测计数，整把枪、配件和双臂共用。额度用完后保留近似补光。
+            if (used + occluders.size > limit) return 0.72
+            val normal = Vec3(nx.toDouble(), ny.toDouble(), nz.toDouble()).normalize()
+            val start = Vec3(x, y, z).add(normal.scale(0.018))
+            val edge = muzzle.add(normal.scale(0.15))
+            for (occluder in occluders) {
+                if (near) nearTests++ else farTests++
+                val hit = occluder.model.rayTrace(occluder.pose, Vec3.ZERO, start, edge)?.t()
+                if (hit != null && hit in 0.04..0.97) {
+                    shadows.put(cell, MODEL_SHADOW_VISIBILITY)
+                    return MODEL_SHADOW_VISIBILITY
+                }
+            }
+            shadows.put(cell, 1.0)
+            return 1.0
+        }
+
+        fun overlay(source: MultiBufferSource.BufferSource, texture: ResourceLocation, mode: VertexFormat.Mode): BufferBuilder {
+            if (this.source != null && this.source !== source) flush()
+            this.source = source
+            val material = ModRenderTypes.muzzleSurfaceLight(texture, mode)
+            return pending.getOrPut(material) {
+                val index = pending.size
+                val pooled = modelLightBuffers.getOrNull(index) ?: BufferBuilder(4096).also { modelLightBuffers.add(it) }
+                val builder = if (pooled.building()) BufferBuilder(4096) else pooled
+                builder.begin(mode, DefaultVertexFormat.NEW_ENTITY)
+                builder
+            }
+        }
+
+        fun flush() {
+            val base = source ?: return
+            try {
+                if (!ShaderCompat.endBatch(base)) base.endBatch()
+                val sorting = RenderSystem.getVertexSorting()
+                for ((type, builder) in pending) type.end(builder, sorting)
+            } finally {
+                discardPending()
+            }
+        }
+
+        fun discardPending() {
+            for (builder in pending.values) {
+                if (builder.building()) builder.endOrDiscardIfEmpty()?.release()
+            }
+            pending.clear()
+            source = null
+        }
+    }
 
     private class ModelLightConsumer(
-        private val target: VertexConsumer,
-        private val model: TreeModelInstance,
-        private val pose: Matrix4f,
-        private val muzzle: Vec3,
-        private val strength: Float,
-        private val shadows: MutableMap<ShadowCell, Boolean>,
+        private val light: ModelLight,
+        private val source: MultiBufferSource.BufferSource,
+        private val texture: ResourceLocation,
+        private val mode: VertexFormat.Mode,
     ) : VertexConsumer {
-        private var position = Vec3.ZERO
-        private var normal = Vec3.ZERO
-        private var blockLight = 0
-        private var skyLight = 0
+        lateinit var target: VertexConsumer
+        private val vertexCount = if (mode == VertexFormat.Mode.TRIANGLES) 3 else 4
+        private val xs = DoubleArray(vertexCount)
+        private val ys = DoubleArray(vertexCount)
+        private val zs = DoubleArray(vertexCount)
+        private val nxs = FloatArray(vertexCount)
+        private val nys = FloatArray(vertexCount)
+        private val nzs = FloatArray(vertexCount)
+        private val us = FloatArray(vertexCount)
+        private val vs = FloatArray(vertexCount)
+        private val opacities = DoubleArray(vertexCount) { 1.0 }
+        private val exposures = DoubleArray(vertexCount)
+        private var vertexIndex = 0
+        private var overlayBuffer: BufferBuilder? = null
+
+        override fun vertex(
+            x: Float, y: Float, z: Float, r: Float, g: Float, b: Float, a: Float,
+            u: Float, v: Float, overlay: Int, packedLight: Int, nx: Float, ny: Float, nz: Float,
+        ) {
+            target.vertex(x, y, z, r, g, b, a, u, v, overlay, packedLight, nx, ny, nz)
+            xs[vertexIndex] = x.toDouble()
+            ys[vertexIndex] = y.toDouble()
+            zs[vertexIndex] = z.toDouble()
+            nxs[vertexIndex] = nx
+            nys[vertexIndex] = ny
+            nzs[vertexIndex] = nz
+            us[vertexIndex] = u
+            vs[vertexIndex] = v
+            opacities[vertexIndex] = a.toDouble()
+            finishVertex()
+        }
 
         override fun vertex(x: Double, y: Double, z: Double): VertexConsumer {
-            position = Vec3(x, y, z)
             target.vertex(x, y, z)
+            xs[vertexIndex] = x
+            ys[vertexIndex] = y
+            zs[vertexIndex] = z
             return this
         }
 
         override fun color(r: Int, g: Int, b: Int, a: Int): VertexConsumer {
             target.color(r, g, b, a)
+            opacities[vertexIndex] = a / 255.0
             return this
         }
 
         override fun uv(u: Float, v: Float): VertexConsumer {
             target.uv(u, v)
+            us[vertexIndex] = u
+            vs[vertexIndex] = v
             return this
         }
 
@@ -315,52 +485,69 @@ object GunMuzzleLightHandler {
         }
 
         override fun uv2(u: Int, v: Int): VertexConsumer {
-            blockLight = u
-            skyLight = v
+            target.uv2(u, v)
             return this
         }
 
         override fun normal(x: Float, y: Float, z: Float): VertexConsumer {
-            normal = Vec3(x.toDouble(), y.toDouble(), z.toDouble())
+            target.normal(x, y, z)
+            nxs[vertexIndex] = x
+            nys[vertexIndex] = y
+            nzs[vertexIndex] = z
             return this
         }
 
         override fun endVertex() {
-            val light = if (blockLight < 240) muzzleLight() else 0
-            target.uv2(maxOf(blockLight, light * 16), skyLight)
-            target.normal(normal.x.toFloat(), normal.y.toFloat(), normal.z.toFloat())
             target.endVertex()
+            finishVertex()
         }
 
-        private fun muzzleLight(): Int {
-            val toMuzzle = muzzle.subtract(position)
-            val distance = toMuzzle.length()
-            if (distance >= MODEL_LIGHT_RADIUS || normal.lengthSqr() < 1e-6) return 0
-
-            // 火焰有宽度，掠射的前端零件也能受光，完全背向的面仍保留原光照。
-            val surfaceNormal = normal.normalize()
-            val facing = surfaceNormal.dot(toMuzzle) / distance.coerceAtLeast(0.001)
-            val angular = ((facing + 0.42) / 1.42).coerceIn(0.0, 1.0)
-            if (angular <= 0.0) return 0
-            val range = 1.0 - distance / MODEL_LIGHT_RADIUS
-            val cell = ShadowCell(
-                (toMuzzle.x * 10).roundToInt(), (toMuzzle.y * 10).roundToInt(), (toMuzzle.z * 10).roundToInt(),
-                (surfaceNormal.x * 2).roundToInt(), (surfaceNormal.y * 2).roundToInt(), (surfaceNormal.z * 2).roundToInt(),
+        private fun finishVertex() {
+            exposures[vertexIndex] = if (opacities[vertexIndex] <= 0.0) 0.0 else light.exposure(
+                xs[vertexIndex], ys[vertexIndex], zs[vertexIndex], nxs[vertexIndex], nys[vertexIndex], nzs[vertexIndex]
             )
-            // 共用邻近顶点的遮挡结果，避免给每个重复顶点遍历整把枪的立方体。
-            val blocked = shadows[cell] ?: if (shadows.size < MODEL_SHADOW_SAMPLES) {
-                val start = position.add(surfaceNormal.scale(0.018))
-                val edge = muzzle.add(surfaceNormal.scale(0.15))
-                val obstructed = model.rayTrace(pose, Vec3.ZERO, start, edge)?.t()?.let { it in 0.04..0.97 } == true
-                shadows[cell] = obstructed
-                obstructed
-            } else true
-            val exposure = (strength * angular * range * range * if (blocked) 0.38 else 3.8).coerceIn(0.0, 1.0)
-            return (sqrt(exposure) * 15).roundToInt()
+            if (++vertexIndex < vertexCount) return
+            vertexIndex = 0
+
+            var strongest = 0
+            var weight = 0.0
+            var x = 0.0
+            var y = 0.0
+            var z = 0.0
+            for (i in 0 until vertexCount) {
+                val exposure = exposures[i]
+                if (exposure > exposures[strongest]) strongest = i
+                if (exposure >= 0.012) {
+                    weight += exposure
+                    x += xs[i] * exposure
+                    y += ys[i] * exposure
+                    z += zs[i] * exposure
+                }
+            }
+            if (weight == 0.0) return
+
+            // 每个受光面只查一次遮挡，距离与法线亮度仍然按顶点插值。
+            val visibility = light.visibility(x / weight, y / weight, z / weight, nxs[strongest], nys[strongest], nzs[strongest])
+            // 提亮已进入补光范围的表面，保持遮挡采样范围和渲染批次。
+            val gain = visibility * MODEL_HIGHLIGHT_GAIN
+            if (exposures[strongest] * gain < 0.5 / 255) return
+            val overlay = overlayBuffer ?: light.overlay(source, texture, mode).also { overlayBuffer = it }
+            for (i in 0 until vertexCount) {
+                val alpha = (exposures[i] * gain).coerceIn(0.0, 1.0) * opacities[i]
+                overlay.vertex(xs[i].toFloat(), ys[i].toFloat(), zs[i].toFloat(), 1f, 228f / 255f, 160f / 255f,
+                    alpha.toFloat(), us[i], vs[i], OverlayTexture.NO_OVERLAY, LightTexture.FULL_BRIGHT, nxs[i], nys[i], nzs[i])
+            }
         }
 
-        override fun defaultColor(r: Int, g: Int, b: Int, a: Int) = target.defaultColor(r, g, b, a)
-        override fun unsetDefaultColor() = target.unsetDefaultColor()
+        override fun defaultColor(r: Int, g: Int, b: Int, a: Int) {
+            target.defaultColor(r, g, b, a)
+            opacities.fill(a / 255.0)
+        }
+
+        override fun unsetDefaultColor() {
+            target.unsetDefaultColor()
+            opacities.fill(1.0)
+        }
     }
 
     @JvmStatic
@@ -368,6 +555,7 @@ object GunMuzzleLightHandler {
         lights.clear()
         samples.clear()
         firstPersonShot = null
+        modelLight = null
         world = null
     }
 }
