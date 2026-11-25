@@ -12,6 +12,17 @@
     "Model": "superbwarfare:models/bedrock/gun/knife_6kh2.geo.json",
     "Texture": "superbwarfare:textures/bedrock/gun/knife_6kh2.png"
   },
+  "BladeTrail": {
+    "Bone": "second_root",
+    "Base": [0, -0.72, -3.22],
+    "Tip": [0, -0.03, -10.38],
+    "Windows": {
+      "animation.knife_6kh2.melee_1": { "Start": 0.15, "End": 0.24 },
+      "animation.knife_6kh2.melee_2": { "Start": 0.15, "End": 0.24 },
+      "animation.knife_6kh2.melee_3": { "Start": 0.17, "End": 0.24 },
+      "animation.knife_6kh2.melee_heavy": { "Start": 0.32, "End": 0.44 }
+    }
+  },
   "ItemDisplay": {
     "firstperson_righthand": {
       "scale": [

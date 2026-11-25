@@ -1,17 +1,32 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
+import com.atsuishio.superbwarfare.entity.OBBEntity
 import com.atsuishio.superbwarfare.entity.getValue
+import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
+import com.atsuishio.superbwarfare.entity.projectile.IAdvancedHitDetection.Companion.rayTraceBlocks
 import com.atsuishio.superbwarfare.entity.setValue
+import com.atsuishio.superbwarfare.tools.HitboxHelper
+import com.atsuishio.superbwarfare.tools.OBB
+import com.atsuishio.superbwarfare.world.phys.EntityResult
+import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
+import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
+import net.minecraft.world.phys.HitResult
+import net.minecraft.world.phys.Vec3
 import kotlin.math.roundToInt
 
 open class SwordWaveEntity(type: EntityType<out SwordWaveEntity>, level: Level) : FastThrowableProjectile(type, level) {
     open var roll by ROLL
     open var rgb by RGB
+    var launchOwnerId = -1
+        private set
 
     init {
         lifeValue = 60
@@ -25,9 +40,25 @@ open class SwordWaveEntity(type: EntityType<out SwordWaveEntity>, level: Level) 
         entityData.define(RGB, 0xE6F2FF)
     }
 
-    override fun getDefaultItem() = Items.AIR
+    override fun writeSpawnData(buffer: FriendlyByteBuf) {
+        super.writeSpawnData(buffer)
+        buffer.writeVarInt(owner?.id ?: -1)
+        buffer.writeVarInt(lifeValue)
+        buffer.writeFloat(velocityValue)
+    }
+
+    override fun readSpawnData(additionalData: FriendlyByteBuf) {
+        super.readSpawnData(additionalData)
+        launchOwnerId = additionalData.readVarInt()
+        lifeValue = additionalData.readVarInt()
+        velocityValue = additionalData.readFloat()
+    }
+
+    override fun getDefaultItem(): Item = Items.WOODEN_SWORD
 
     override fun canPassThroughFluid() = true
+
+    override fun isFastMoving() = false
 
     override fun getRGB() = floatArrayOf(
         ((rgb ushr 16) and 255) / 255f,
@@ -41,23 +72,59 @@ open class SwordWaveEntity(type: EntityType<out SwordWaveEntity>, level: Level) 
         this.rgb = (channel(0) shl 16) or (channel(1) shl 8) or channel(2)
     }
 
+    override fun getHitResult(entity: Entity, startVec: Vec3, endVec: Vec3): EntityResult? {
+        super.getHitResult(entity, startVec, endVec)?.let { return it }
+
+        val axisHit = if (entity is OBBEntity && !entity.enableAABB()) {
+            val (hit, part) = entity.getOBBs().asSequence()
+                .filter { it.part != OBB.Part.COLLISION }
+                .mapNotNull { box ->
+                    val intersection = LaserBeamEntity.intersectBeam(box, startVec, endVec, HIT_RADIUS)
+                    intersection?.takeIf(::canReachContact)?.let { it to box.part }
+                }
+                .minByOrNull { startVec.distanceToSqr(it.first.axis) } ?: return null
+            OBBHitter.getInstance(this).`sbw$setCurrentHitPart`(part)
+            hit.axis
+        } else {
+            val bounds = HitboxHelper.getCompensatedBoundingBox(entity, owner)
+            val hit = LaserBeamEntity.intersectBeam(bounds, startVec, endVec, HIT_RADIUS) ?: return null
+            if (!canReachContact(hit)) return null
+            hit.axis
+        }
+
+        // Glancing contact widens the body hit only; direct hits keep the inherited hit zones.
+        return EntityResult(entity, axisHit, headshot = false, legShot = false)
+    }
+
+    private fun canReachContact(hit: LaserBeamEntity.BeamIntersection): Boolean {
+        if (hit.axis.distanceToSqr(hit.contact) < 1e-10) return true
+        val ray = ClipContext(hit.axis, hit.contact, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)
+        return rayTraceBlocks(level(), ray) { false }.type == HitResult.Type.MISS
+    }
+
     override fun projectileMove(level: Level) {
         if (isRemoved) return
         val movement = deltaMovement
         setPos(x + movement.x, y + movement.y, z + movement.z)
         val speed = movement.length()
         if (speed > CRUISE_SPEED) {
-            val deceleration = (velocityValue - CRUISE_SPEED).coerceAtLeast(0.0) / DECELERATION_TICKS
+            // The first tick uses launch speed, and the final lifetime tick uses cruise speed.
+            val deceleration = (velocityValue - CRUISE_SPEED).coerceAtLeast(0.0) / (lifeValue - 1).coerceAtLeast(1)
             deltaMovement = movement.scale((speed - deceleration).coerceAtLeast(CRUISE_SPEED) / speed)
         }
     }
 
     companion object {
-        private const val LAUNCH_SPEED = 0.5f
+        private const val LAUNCH_SPEED = 1.0f
         private const val CRUISE_SPEED = 0.2
-        private const val DECELERATION_TICKS = 20
+        private const val HIT_RADIUS = 0.35
 
-        @JvmField val ROLL = SynchedEntityData.defineId(SwordWaveEntity::class.java, EntityDataSerializers.FLOAT)
-        @JvmField val RGB = SynchedEntityData.defineId(SwordWaveEntity::class.java, EntityDataSerializers.INT)
+        @JvmField
+        val ROLL: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(SwordWaveEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
+        val RGB: EntityDataAccessor<Int> =
+            SynchedEntityData.defineId(SwordWaveEntity::class.java, EntityDataSerializers.INT)
     }
 }

@@ -12,6 +12,17 @@
     "Model": "superbwarfare:models/bedrock/gun/knife_m1917.geo.json",
     "Texture": "superbwarfare:textures/bedrock/gun/knife_m1917.png"
   },
+  "BladeTrail": {
+    "Bone": "second_root",
+    "Base": [0, -2.31, -3.55],
+    "Tip": [0, -1.65, -22.65],
+    "Windows": {
+      "animation.knife_m1917.melee_1": { "Start": 0.15, "End": 0.24 },
+      "animation.knife_m1917.melee_2": { "Start": 0.15, "End": 0.24 },
+      "animation.knife_m1917.melee_3": { "Start": 0.17, "End": 0.24 },
+      "animation.knife_m1917.melee_heavy": { "Start": 0.32, "End": 0.44 }
+    }
+  },
   "ItemDisplay": {
     "firstperson_righthand": {
       "scale": [

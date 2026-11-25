@@ -12,6 +12,18 @@
     "Model": "superbwarfare:models/bedrock/gun/fire_axe.geo.json",
     "Texture": "superbwarfare:textures/bedrock/gun/fire_axe.png"
   },
+  "BladeTrail": {
+    "Bone": "second_root",
+    "Base": [0, 27.36, -4.75],
+    "Tip": [0, 33.69, -5.49],
+    "Windows": {
+      "animation.fire_axe.melee_1": { "Start": 0.25, "End": 0.375 },
+      "animation.fire_axe.melee_2": { "Start": 0.42, "End": 0.59 },
+      "animation.fire_axe.melee_3": { "Start": 0.22, "End": 0.39 },
+      "animation.fire_axe.melee_heavy": { "Start": 0.65, "End": 0.825 },
+      "animation.fire_axe.melee_heavy_release": { "Start": 0.0667, "End": 0.2417 }
+    }
+  },
   "ItemDisplay": {
     "firstperson_righthand": {
       "scale": [

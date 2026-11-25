@@ -12,6 +12,17 @@
     "Model": "superbwarfare:models/bedrock/gun/knife_hanyang_88_re_standard.geo.json",
     "Texture": "superbwarfare:textures/bedrock/gun/knife_hanyang_88_re_standard.png"
   },
+  "BladeTrail": {
+    "Bone": "bayonet",
+    "Base": [0, -5.14, -0.40],
+    "Tip": [0, -4.52, -19.91],
+    "Windows": {
+      "animation.knife_hanyang_88_re_standard.melee_1": { "Start": 0.15, "End": 0.24 },
+      "animation.knife_hanyang_88_re_standard.melee_2": { "Start": 0.15, "End": 0.24 },
+      "animation.knife_hanyang_88_re_standard.melee_3": { "Start": 0.17, "End": 0.24 },
+      "animation.knife_hanyang_88_re_standard.melee_heavy": { "Start": 0.32, "End": 0.44 }
+    }
+  },
   "ItemDisplay": {
     "firstperson_righthand": {
       "scale": [1.0, 1.0, 1.0]

@@ -12,6 +12,17 @@
     "Model": "superbwarfare:models/bedrock/gun/knife_seitengewehr_84.geo.json",
     "Texture": "superbwarfare:textures/bedrock/gun/knife_seitengewehr_84.png"
   },
+  "BladeTrail": {
+    "Bone": "second_root",
+    "Base": [0, -0.48, -3.50],
+    "Tip": [0, 0.13, -13.88],
+    "Windows": {
+      "animation.knife_seitengewehr_84.melee_1": { "Start": 0.15, "End": 0.24 },
+      "animation.knife_seitengewehr_84.melee_2": { "Start": 0.15, "End": 0.24 },
+      "animation.knife_seitengewehr_84.melee_3": { "Start": 0.17, "End": 0.24 },
+      "animation.knife_seitengewehr_84.melee_heavy": { "Start": 0.32, "End": 0.44 }
+    }
+  },
   "ItemDisplay": {
     "firstperson_righthand": {
       "scale": [
