@@ -1,9 +1,11 @@
 {
   "values": [
+    "superbwarfare:blade_bullet",
     "superbwarfare:homing_bullet",
     "superbwarfare:chain_lightning",
     "superbwarfare:phase_penetrating_bullet",
     "superbwarfare:phosphorus_flame_bullet",
-    "superbwarfare:cluster_bomb"
+    "superbwarfare:cluster_bomb",
+    "superbwarfare:rusted_blade"
   ]
 }

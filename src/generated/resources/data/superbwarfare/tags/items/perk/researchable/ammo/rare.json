@@ -1,7 +1,6 @@
 {
   "values": [
     "superbwarfare:frostmourne",
-    "superbwarfare:blade_bullet",
     "superbwarfare:cupid_arrow",
     "superbwarfare:arrsow_discord",
     "superbwarfare:he_bullet",
@@ -9,7 +8,6 @@
     "superbwarfare:ap_bullet",
     "superbwarfare:super_heavy_bullet",
     "superbwarfare:shatter_caps",
-    "superbwarfare:acid_bullet",
-    "superbwarfare:rusted_blade"
+    "superbwarfare:acid_bullet"
   ]
 }

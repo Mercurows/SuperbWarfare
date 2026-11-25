@@ -19,8 +19,9 @@ function preReload(tag, level, gunData, entity) {
 }
 
 function postReload(tag, level, gunData, entity) {
+    if (!tag.getBoolean("HealClip")) return
+    tag.remove("HealClip")
     if (!entity.isLivingEntity()) return
-    if (tag.has("HealClip")) return
 
     const lvl = level === 0 ? 1 : level
     const healAmount = 12 * (0.8 + 0.2 * lvl)

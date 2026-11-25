@@ -50,12 +50,10 @@ object HealClip : Perk("heal_clip", Type.FUNCTIONAL) {
         instance: PerkInstance,
         entity: Entity?
     ) {
-        if (entity !is LivingEntity) return
-
         val tag = data.perk.getTag(this) ?: return
-        if (tag.contains("HealClip")) {
-            return
-        }
+        if (!tag.getBoolean("HealClip")) return
+        tag.remove("HealClip")
+        if (entity !is LivingEntity) return
 
         var healClipLevel = instance.level
         if (healClipLevel == 0.toShort()) {

@@ -27,15 +27,17 @@ object OneTwoPunch : Perk("one_two_punch", Type.DAMAGE) {
         target: Entity
     ) {
         val tag = data.perk.getTag(this) ?: return
-        tag.putInt("OneTwoPunchCount", tag.getInt("OneTwoPunchCount") + 1)
-        tag.putInt("OneTwoPunchCountTime", 2)
-
+        val count = if (tag.getInt("OneTwoPunchCountTime") > 0) tag.getInt("OneTwoPunchCount") + 1 else 1
         val needCount = floor(data.get(GunProp.PROJECTILE_AMOUNT) * (1 - 0.05 * (instance.level - 1)))
+            .toInt().coerceAtLeast(1)
 
-        if (tag.getInt("OneTwoPunchCount") >= needCount) {
-            tag.putInt("OneTwoPunchTime", 60)
+        if (count >= needCount) {
+            data.perk.putStructuralInt(this, "OneTwoPunchTime", 60)
             tag.remove("OneTwoPunchCount")
             tag.remove("OneTwoPunchCountTime")
+        } else {
+            tag.putInt("OneTwoPunchCount", count)
+            tag.putInt("OneTwoPunchCountTime", 2)
         }
     }
 
@@ -44,22 +46,26 @@ object OneTwoPunch : Perk("one_two_punch", Type.DAMAGE) {
         instance: PerkInstance,
         living: Entity?
     ) {
-        val tag = data.perk.getTag(this) ?: return
-        tag.remove("OneTwoPunchTime")
-        tag.remove("OneTwoPunchCount")
-        tag.remove("OneTwoPunchCountTime")
+        clearOneTwoPunch(data)
     }
 
-    override fun onMeleeAttack(
+    override fun onMeleeDamage(
+        damage: Float,
         data: GunData,
         instance: PerkInstance,
         target: Entity,
-        source: DamageSource
+        source: DamageSource,
     ) {
+        if (damage > 0f) clearOneTwoPunch(data)
+    }
+
+    private fun clearOneTwoPunch(data: GunData) {
         val tag = data.perk.getTag(this) ?: return
+        val wasActive = tag.getInt("OneTwoPunchTime") > 0
         tag.remove("OneTwoPunchTime")
         tag.remove("OneTwoPunchCount")
         tag.remove("OneTwoPunchCountTime")
+        if (wasActive) data.invalidateProperties()
     }
 
     override fun tick(
@@ -69,5 +75,7 @@ object OneTwoPunch : Perk("one_two_punch", Type.DAMAGE) {
     ) {
         data.perk.reduceCooldown(this, "OneTwoPunchTime")
         data.perk.reduceCooldown(this, "OneTwoPunchCountTime")
+        val tag = data.perk.getTag(this) ?: return
+        if (!tag.contains("OneTwoPunchCountTime")) tag.remove("OneTwoPunchCount")
     }
 }

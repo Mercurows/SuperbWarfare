@@ -448,7 +448,6 @@ class ModItemTagProvider(
         )
         this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_RARE).add(
             perkItem(ModPerks.FROSTMOURNE),
-            perkItem(ModPerks.BLADE_BULLET),
             perkItem(ModPerks.CUPID_ARROW),
             perkItem(ModPerks.ARRSOW_DISCORD),
             perkItem(ModPerks.HE_BULLET),
@@ -456,22 +455,22 @@ class ModItemTagProvider(
             perkItem(ModPerks.AP_BULLET),
             perkItem(ModPerks.SUPER_HEAVY_BULLET),
             perkItem(ModPerks.SHATTER_CAPS),
-            perkItem(ModPerks.ACID_BULLET),
-            perkItem(ModPerks.RUSTED_BLADE)
+            perkItem(ModPerks.ACID_BULLET)
         )
         this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_EPIC).add(
+            perkItem(ModPerks.BLADE_BULLET),
             perkItem(ModPerks.HOMING_BULLET),
             perkItem(ModPerks.CHAIN_LIGHTNING),
             perkItem(ModPerks.PHASE_PENETRATING_BULLET),
             perkItem(ModPerks.PHOSPHORUS_FLAME_BULLET),
-            perkItem(ModPerks.CLUSTER_BOMB)
+            perkItem(ModPerks.CLUSTER_BOMB),
+            perkItem(ModPerks.RUSTED_BLADE)
         )
         this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_LEGENDARY).add(
             perkItem(ModPerks.IRRADIATION_BULLET)
         )
 
         this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_COMMON).add(
-            perkItem(ModPerks.CAST_NO_SHADOWS),
             perkItem(ModPerks.EAGER_EDGE),
             perkItem(ModPerks.FIELD_DOCTOR),
             perkItem(ModPerks.TRIPLE_TAP),
@@ -480,6 +479,7 @@ class ModItemTagProvider(
             perkItem(ModPerks.SNAPSHOT_SIGHTS)
         )
         this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_RARE).add(
+            perkItem(ModPerks.CAST_NO_SHADOWS),
             perkItem(ModPerks.POWERFUL_COOLER),
             perkItem(ModPerks.SUBSISTENCE),
             perkItem(ModPerks.FOURTH_TIMES_CHARM),

@@ -7,35 +7,46 @@ function modifyProperty(pmc, level, perkTag, gunDataProxy) {
 
 function onHit(attackerProxy, level, gunData, targetProxy, perkTag) {
     if (!perkTag || !gunData) return
-    perkTag.putInt("OneTwoPunchCount", perkTag.getInt("OneTwoPunchCount") + 1)
-    perkTag.putInt("OneTwoPunchCountTime", 2)
 
-    var projectileAmount = gunData.getProjectileAmount()
-    var needCount = Math.floor(projectileAmount * (1 - 0.05 * (level - 1)))
+    const count = perkTag.getInt("OneTwoPunchCountTime") > 0 ? perkTag.getInt("OneTwoPunchCount") + 1 : 1
+    const projectileAmount = gunData.getProjectileAmount()
+    const needCount = Math.max(1, Math.floor(projectileAmount * (1 - 0.05 * (level - 1))))
 
-    if (perkTag.getInt("OneTwoPunchCount") >= needCount) {
+    if (count >= needCount) {
+        const wasActive = perkTag.getInt("OneTwoPunchTime") > 0
         perkTag.putInt("OneTwoPunchTime", 60)
         perkTag.remove("OneTwoPunchCount")
         perkTag.remove("OneTwoPunchCountTime")
+        if (!wasActive) gunData.invalidateProperties()
+    } else {
+        perkTag.putInt("OneTwoPunchCount", count)
+        perkTag.putInt("OneTwoPunchCountTime", 2)
     }
 }
 
 function onChangeSlot(perkTag, level, gunData, entityProxy) {
-    if (!perkTag) return
-    perkTag.remove("OneTwoPunchTime")
-    perkTag.remove("OneTwoPunchCount")
-    perkTag.remove("OneTwoPunchCountTime")
+    clearOneTwoPunch(perkTag, gunData)
 }
 
-function onMeleeAttack(perkTag, level, gunData, targetProxy, sourceProxy) {
+function onMeleeDamage(damage, perkTag, level, gunData, targetProxy, sourceProxy) {
+    if (damage > 0) clearOneTwoPunch(perkTag, gunData)
+}
+
+function clearOneTwoPunch(perkTag, gunData) {
     if (!perkTag) return
+    const wasActive = perkTag.getInt("OneTwoPunchTime") > 0
     perkTag.remove("OneTwoPunchTime")
     perkTag.remove("OneTwoPunchCount")
     perkTag.remove("OneTwoPunchCountTime")
+    if (wasActive && gunData) gunData.invalidateProperties()
 }
 
 function tick(perkTag, level, gunData, entityProxy) {
     if (!perkTag) return
+    const wasActive = perkTag.getInt("OneTwoPunchTime") > 0
     perkTag.reduceCooldown("OneTwoPunchTime")
+    if (wasActive && !perkTag.has("OneTwoPunchTime") && gunData) gunData.invalidateProperties()
+
     perkTag.reduceCooldown("OneTwoPunchCountTime")
+    if (!perkTag.has("OneTwoPunchCountTime")) perkTag.remove("OneTwoPunchCount")
 }
