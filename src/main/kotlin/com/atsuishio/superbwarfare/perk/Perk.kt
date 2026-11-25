@@ -31,6 +31,8 @@ open class Perk(val descriptionId: String, val type: Type) : PropertyModifier<Gu
 
     open fun onMeleeLaunch(instance: PerkInstance, launcher: MeleeProjectileLauncher) {}
 
+    open fun addMeleeProjectileEffects(instance: PerkInstance, projectile: Entity) {}
+
     // 默认不进行修改
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {}
 

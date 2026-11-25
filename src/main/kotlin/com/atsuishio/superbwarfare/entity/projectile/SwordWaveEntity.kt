@@ -7,17 +7,21 @@ import com.atsuishio.superbwarfare.entity.projectile.IAdvancedHitDetection.Compa
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.tools.HitboxHelper
 import com.atsuishio.superbwarfare.tools.OBB
+import com.atsuishio.superbwarfare.tools.forceApplyEffect
 import com.atsuishio.superbwarfare.world.phys.EntityResult
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
+import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import kotlin.math.roundToInt
@@ -29,7 +33,7 @@ open class SwordWaveEntity(type: EntityType<out SwordWaveEntity>, level: Level) 
         private set
 
     init {
-        lifeValue = 60
+        lifeValue = 20
         velocityValue = LAUNCH_SPEED
         gravityValue = 0f
     }
@@ -102,21 +106,56 @@ open class SwordWaveEntity(type: EntityType<out SwordWaveEntity>, level: Level) 
         return rayTraceBlocks(level(), ray) { false }.type == HitResult.Type.MISS
     }
 
+    override fun shoot(x: Double, y: Double, z: Double, velocity: Float, inaccuracy: Float) {
+        super.shoot(x, y, z, velocity, inaccuracy)
+        velocityValue = velocity
+        deltaMovement = deltaMovement.scale(speedFraction(0))
+    }
+
+    override fun tick() {
+        super.tick()
+        if (!level().isClientSide && tickCount >= lifeValue) discard()
+    }
+
     override fun projectileMove(level: Level) {
         if (isRemoved) return
         val movement = deltaMovement
         setPos(x + movement.x, y + movement.y, z + movement.z)
+        if (level.isClientSide) return
+
         val speed = movement.length()
-        if (speed > CRUISE_SPEED) {
-            // The first tick uses launch speed, and the final lifetime tick uses cruise speed.
-            val deceleration = (velocityValue - CRUISE_SPEED).coerceAtLeast(0.0) / (lifeValue - 1).coerceAtLeast(1)
-            deltaMovement = movement.scale((speed - deceleration).coerceAtLeast(CRUISE_SPEED) / speed)
+        if (speed > 0.0) {
+            deltaMovement = movement.scale(velocityValue * speedFraction(tickCount) / speed)
+        }
+    }
+
+    // The midpoint speed is the average over a tick, so total travel is launch speed times half the lifetime.
+    private fun speedFraction(elapsedTicks: Int): Double =
+        (1.0 - (elapsedTicks + 0.5) / lifeValue.coerceAtLeast(1)).coerceAtLeast(0.0)
+
+    override fun onHitEntity(result: EntityHitResult) {
+        val speed = deltaMovement.length()
+        val stepProgress = if (speed > 0.0) (position().distanceTo(result.location) / speed).coerceIn(0.0, 1.0) else 0.0
+        val progress = ((tickCount - 1 + stepProgress) / lifeValue.coerceAtLeast(1)).coerceIn(0.0, 1.0)
+        val launchDamage = damageValue
+        damageValue = (launchDamage * (1.0 - MAX_DAMAGE_FALLOFF * progress)).toFloat()
+        try {
+            super.onHitEntity(result)
+        } finally {
+            damageValue = launchDamage
+        }
+    }
+
+    override fun performAddEffect(entity: Entity, damage: Float, isHeadshot: Boolean) {
+        if (entity !is LivingEntity || entity.level().isClientSide) return
+        for (effect in getEffects()) {
+            entity.forceApplyEffect(MobEffectInstance(effect), owner)
         }
     }
 
     companion object {
         private const val LAUNCH_SPEED = 1.0f
-        private const val CRUISE_SPEED = 0.2
+        private const val MAX_DAMAGE_FALLOFF = 0.8
         private const val HIT_RADIUS = 0.35
 
         @JvmField

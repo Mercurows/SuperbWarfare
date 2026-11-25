@@ -40,6 +40,9 @@ open class MeleeProjectileLauncher internal constructor(
         if (entity is SwordWaveEntity) {
             entity.roll = roll % 360f
             entity.setHeadShot(headshot)
+            for (ammo in data.perk.getInstances(Perk.Type.AMMO)) {
+                if (ammo.level > 0) ammo.perk.addMeleeProjectileEffects(ammo, entity)
+            }
             // Preserve the player's yaw even for a vertical launch, where velocity has no stable yaw.
             entity.yRot = player.yRot
             entity.xRot = player.xRot

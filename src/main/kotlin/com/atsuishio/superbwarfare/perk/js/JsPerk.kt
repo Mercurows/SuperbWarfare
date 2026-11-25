@@ -34,6 +34,10 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
         script?.callFunction("onMeleeLaunch", instance.level.toInt(), MAX_PERK_LEVEL, launcher)
     }
 
+    override fun addMeleeProjectileEffects(instance: PerkInstance, projectile: Entity) {
+        script?.callFunction("addMeleeProjectileEffects", ProjectileProxy(projectile), instance.level.toInt())
+    }
+
     override val ammoRgb: FloatArray? by lazy {
         if (type != Type.AMMO) return@lazy null
         val rgb = descriptor.rgb ?: listOf(255, 222, 39)
@@ -325,7 +329,7 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
         val targetProxy = EntityProxy(target)
         val level = instance.level.toInt()
 
-        val args = mutableListOf<Any>(attackerProxy, level, gunDataProxy, targetProxy, perkTag)
+        val args = mutableListOf(attackerProxy, level, gunDataProxy, targetProxy, perkTag)
         if (projectile != null) args.add(ProjectileProxy(projectile))
         s.callFunction("onHit", *args.toTypedArray())
     }
