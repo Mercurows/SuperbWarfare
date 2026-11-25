@@ -1,4 +1,5 @@
 {
+  "RenderMounts": true,
   "Models": [
     {
       "Model": "superbwarfare:models/bedrock/vehicle/drone.geo.json",

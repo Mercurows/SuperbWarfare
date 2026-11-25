@@ -7,6 +7,7 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BakerO
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ResourceManager
 import net.minecraft.util.profiling.ProfilerFiller
+import java.util.regex.Pattern
 
 object VehicleModelReloadListener : BasicModelReloadListener("vehicle") {
     @JvmStatic
@@ -29,6 +30,7 @@ object VehicleModelReloadListener : BasicModelReloadListener("vehicle") {
         "^passengerWeaponStationYaw$",
         "^passengerWeaponStationPitch$",
         "^.*camera.*",
+        "^mount_pos\\d*$",
     )
 
     override fun apply(
@@ -48,7 +50,7 @@ object VehicleModelReloadListener : BasicModelReloadListener("vehicle") {
                 BakerOptions.ofAnimationFile(anim)
             } else {
                 BakerOptions.defaults()
-            }.withPreservedBoneRegexes(PATTERNS)
+            }.withPreservedBoneRegexes(PATTERNS + getAttachmentMarkerPatterns(pojo))
 
             this.models[location] = BakedBedrockModel.bake(pojo, options)
         }
@@ -59,5 +61,14 @@ object VehicleModelReloadListener : BasicModelReloadListener("vehicle") {
             this.animations[location] = BedrockAnimation.createAnimation(file, model)
         }
         this.animFiles.clear()
+    }
+
+    private fun getAttachmentMarkerPatterns(pojo: BedrockModelPOJO): Set<String> {
+        val bones = pojo.geometryModelNew?.bones ?: pojo.geometryModelLegacy?.bones.orEmpty()
+        val parents = bones.mapNotNull { it.parent }.toHashSet()
+        return bones.asSequence()
+            .filter { it.name !in parents && it.cubes.isNullOrEmpty() && it.polyMesh == null }
+            .map { Pattern.quote(it.name) }
+            .toSet()
     }
 }

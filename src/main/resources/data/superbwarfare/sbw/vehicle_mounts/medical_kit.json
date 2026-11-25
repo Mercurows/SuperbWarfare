@@ -1,0 +1,18 @@
+{
+  "Ingredient": {
+    "Item": "superbwarfare:medical_kit"
+  },
+  "Capacity": 1,
+  "Action": {
+    "Type": "ReleaseEntity",
+    "Entity": "superbwarfare:medical_kit",
+    "Offset": [0, -0.75, 0],
+    "OnDestroyed": true
+  },
+  "Display": {
+    "Entity": "superbwarfare:medical_kit",
+    "Offset": [0, -0.01, 0],
+    "Rotation": [180, 0, 0],
+    "Scale": 0.5
+  }
+}

@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.common.util.FakePlayer
+import net.minecraftforge.items.ItemHandlerHelper
 
 open class RCEntity(type: EntityType<*>, level: Level) : VehicleEntity(type, level) {
     open fun canBindRemoteControl(player: ServerPlayer): Boolean {
@@ -33,8 +34,31 @@ open class RCEntity(type: EntityType<*>, level: Level) : VehicleEntity(type, lev
         val monitor = stack.item as? MonitorItem
         if (monitor != null) return monitor.bindTo(this, player)
 
+        val result = interactMount(player, hand)
+        if (result != InteractionResult.PASS) return result
+
         // Retain the normal service and retrieval interactions without creating a physical rider.
         return if (player.isShiftKeyDown || locked) super.interact(player, hand) else InteractionResult.PASS
+    }
+
+    open fun interactMount(player: Player, hand: InteractionHand): InteractionResult {
+        if (locked || !isAvailableForRemoteControl() || player.isSpectator || player.vehicle === this) return InteractionResult.PASS
+
+        val stack = player.getItemInHand(hand)
+        val occupied = mounts.occupiedSlotIds()
+        if (stack.isEmpty && hand == InteractionHand.MAIN_HAND && player.isShiftKeyDown && occupied.isNotEmpty()) {
+            if (!level().isClientSide) {
+                val removed = mounts.uninstall(occupied.first())
+                if (removed.isEmpty) return InteractionResult.PASS
+                ItemHandlerHelper.giveItemToPlayer(player, removed)
+            }
+            return InteractionResult.sidedSuccess(level().isClientSide)
+        }
+
+        if (stack.isEmpty || occupied.isNotEmpty()) return InteractionResult.PASS
+        val slot = mounts.slots().firstOrNull { mounts.previewInstallation(it.id, stack) != null } ?: return InteractionResult.PASS
+        if (!level().isClientSide && !mounts.install(slot.id, stack, !player.isCreative)) return InteractionResult.PASS
+        return InteractionResult.sidedSuccess(level().isClientSide)
     }
 
     override fun canAddPassenger(pPassenger: Entity): Boolean =
@@ -44,18 +68,20 @@ open class RCEntity(type: EntityType<*>, level: Level) : VehicleEntity(type, lev
 
     override fun hidePassenger(index: Int): Boolean = index == 0 || super.hidePassenger(index)
 
+    override fun canAbsorbPassengerDamage(passenger: Entity): Boolean = false
+
     override fun banHand(entity: LivingEntity?): Boolean = getSeatIndex(entity) == 0 || super.banHand(entity)
 
     override fun allowEjection(seatIndex: Int): Boolean = false
 
     override fun getDismountLocationForPassenger(passenger: LivingEntity): Vec3 = passenger.position()
 
-    override fun destroy() {
+    override fun beforeVehicleDestruction() {
         if (!level().isClientSide) {
             RemoteControl.endSession(this)
             clearRemoteBinding()
         }
-        super.destroy()
+        super.beforeVehicleDestruction()
     }
 
     override fun remove(reason: RemovalReason) {

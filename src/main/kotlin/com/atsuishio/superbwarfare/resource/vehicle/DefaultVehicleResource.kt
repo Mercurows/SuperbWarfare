@@ -50,6 +50,9 @@ class DefaultVehicleResource : IDBasedData<DefaultVehicleResource> {
     @SerialName("Models")
     private val models: SingleOrList<VehicleModelPojo> = SingleOrList()
 
+    @SerialName("RenderMounts")
+    val renderMounts: Boolean = true
+
     @SerialName("Script")
     private val script: SerializedResourceLocation? = null
 

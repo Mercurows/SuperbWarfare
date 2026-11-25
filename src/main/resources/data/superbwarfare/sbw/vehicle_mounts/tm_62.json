@@ -1,0 +1,20 @@
+{
+  "Ingredient": {
+    "Item": "superbwarfare:tm_62"
+  },
+  "Capacity": 1,
+  "Action": {
+    "Type": "Detonate",
+    "ImpactSpeed": 0.45,
+    "OnDestroyed": true,
+    "Damage": 30,
+    "ExplosionDamage": 450,
+    "ExplosionRadius": 13
+  },
+  "Display": {
+    "Entity": "superbwarfare:tm_62",
+    "Offset": [0, -0.01, 0],
+    "Rotation": [180, 0, 0],
+    "Scale": 0.8
+  }
+}

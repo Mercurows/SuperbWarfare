@@ -18,6 +18,7 @@ import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
 import com.atsuishio.superbwarfare.entity.projectile.PerkAwareProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.remote.RemoteControl
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.ammo.ammoBoxData
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -119,8 +120,12 @@ object LivingEventHandler {
         val source = event.source
         val entity = event.entity ?: return
         val vehicle = entity.vehicle
-        if (!source.`is`(ModDamageTypes.VEHICLE_EXPLOSION) && !source.`is`(ModDamageTypes.AIR_CRASH)
-            && vehicle is VehicleEntity
+        if (vehicle !is VehicleEntity
+            || !vehicle.canAbsorbPassengerDamage(entity)
+            || RemoteControl.isForwardingBodyDamage(entity)
+        ) return
+        if (!source.`is`(ModDamageTypes.VEHICLE_EXPLOSION)
+            && !source.`is`(ModDamageTypes.AIR_CRASH)
             && vehicle.isEnclosed(entity)
         ) {
             if (!source.`is`(ModTags.DamageTypes.VEHICLE_NOT_ABSORB)) {
@@ -155,7 +160,10 @@ object LivingEventHandler {
     fun handleVehicleHurt(event: LivingHurtEvent) {
         val entity = event.entity
         val vehicle = entity.vehicle
-        if (vehicle is VehicleEntity) {
+        if (vehicle is VehicleEntity && vehicle.canAbsorbPassengerDamage(entity) && !RemoteControl.isForwardingBodyDamage(
+                entity
+            )
+        ) {
             val source = event.source
             if (source.`is`(ModTags.DamageTypes.VEHICLE_IGNORE)) return
 
@@ -834,7 +842,12 @@ object LivingEventHandler {
 
                         val amount = damage.toFloat()
                         if (isCustom) {
-                            explosion.applyDamageWithPerks(entity, amount) { entity.hurt(explosion.damageSource, amount) }
+                            explosion.applyDamageWithPerks(entity, amount) {
+                                entity.hurt(
+                                    explosion.damageSource,
+                                    amount
+                                )
+                            }
                         } else {
                             entity.hurt(explosion.damageSource, amount)
                         }

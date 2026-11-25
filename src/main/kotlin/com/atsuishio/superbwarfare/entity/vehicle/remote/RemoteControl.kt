@@ -11,6 +11,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -28,12 +29,14 @@ import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.entity.EntityMountEvent
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent
 import net.minecraftforge.event.entity.living.LivingAttackEvent
+import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.event.entity.player.AttackEntityEvent
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.event.level.BlockEvent
 import net.minecraftforge.event.server.ServerStoppingEvent
+import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
 import java.util.*
@@ -45,18 +48,17 @@ object RemoteControl {
     private const val ANCHOR_DISTANCE = 2
     private val anchorTicket = TicketType.create("superbwarfare_remote_anchor", Comparator.naturalOrder<UUID>())
     private val sessions = mutableMapOf<UUID, Session>()
+    private val forwardingBodyDamage = mutableMapOf<ServerPlayer, DamageSource>()
 
     private class Session(
         val player: ServerPlayer,
         val vehicle: RCEntity,
         val body: RCOperatorBodyEntity,
-        val carrier: VehicleEntity?,
+        val carrier: Entity?,
         val seat: Int,
     ) {
-        val anchorLevel = player.serverLevel()
-        var anchor = player.position()
-        val yaw = player.yRot
-        val pitch = player.xRot
+        val anchorLevel: ServerLevel = player.serverLevel()
+        var anchor: Vec3 = player.position()
         var chunk = carrier?.chunkPosition() ?: ChunkPos(BlockPos.containing(anchor))
         var mounting = true
         var ending = false
@@ -72,13 +74,12 @@ object RemoteControl {
         ) return false
 
         val level = player.serverLevel()
-        val carrier = player.vehicle as? VehicleEntity
-        val seat = carrier?.getSeatIndex(player) ?: -1
-        if (player.isPassenger) {
-            if (carrier == null || carrier is RCEntity || carrier.isRemoved || carrier.isWreck || carrier.health <= 0 || seat < 0) return false
-        } else if (!player.onGround() || player.isInWater ||
-            !level.noCollision(player, player.getDimensions(Pose.STANDING).makeBoundingBox(player.position()))
-        ) return false
+        val carrier = player.vehicle
+        val seat = when (carrier) {
+            is VehicleEntity -> carrier.getSeatIndex(player)
+            else -> carrier?.passengers?.indexOf(player) ?: -1
+        }
+        if (carrier != null && (carrier is RCEntity || !isCarrierAvailable(carrier) || seat < 0)) return false
 
         val body = ModEntities.RC_OPERATOR_BODY.get().create(level) ?: return false
         val session = Session(player, vehicle, body, carrier, seat)
@@ -94,12 +95,12 @@ object RemoteControl {
 
         if (carrier != null) {
             player.stopRiding()
-            if (player.isPassenger || !carrier.boardSeat(body, seat)) {
+            if (player.isPassenger || !boardCarrier(carrier, body, seat)) {
                 endSession(player)
                 return false
             }
-            carrier.positionRider(body, Entity::setPos)
-            if (seat == 0) {
+            carrier.positionRider(body)
+            if (carrier is VehicleEntity && seat == 0) {
                 carrier.processInput(0)
                 carrier.mouseInput(0.0, 0.0)
             }
@@ -112,6 +113,8 @@ object RemoteControl {
             endSession(player)
             return false
         }
+        player.fallDistance = 0f
+        player.deltaMovement = Vec3.ZERO
         session.mounting = false
         player.displayClientMessage(Component.translatable("tips.superbwarfare.monitor.controlling", vehicle.displayName), true)
         return true
@@ -121,19 +124,29 @@ object RemoteControl {
     fun isMounting(passenger: Entity, vehicle: RCEntity): Boolean =
         sessions[passenger.uuid]?.let { it.mounting && !it.ending && it.player === passenger && it.vehicle === vehicle } == true
 
+    private fun isCarrierAvailable(carrier: Entity): Boolean =
+        !carrier.isRemoved && (carrier !is VehicleEntity || !carrier.isWreck && carrier.health > 0)
+
+    private fun boardCarrier(carrier: Entity, passenger: Entity, seat: Int): Boolean =
+        if (carrier is VehicleEntity) carrier.boardSeat(passenger, seat) else passenger.startRiding(carrier, true)
+
+    private fun isBodyOnCarrier(session: Session, carrier: Entity): Boolean = session.body.vehicle === carrier &&
+        (carrier !is VehicleEntity || carrier.getNthEntity(session.seat) === session.body)
+
     @JvmStatic
     fun endSession(vehicle: RCEntity) {
         sessions.values.firstOrNull { it.vehicle === vehicle }?.let { endSession(it.player) }
     }
 
     @JvmStatic
-    fun endSession(player: ServerPlayer): Boolean {
+    @JvmOverloads
+    fun endSession(player: ServerPlayer, returnOnDeath: Boolean = false): Boolean {
         val session = sessions[player.uuid] ?: return false
         if (session.player !== player || session.ending) return false
         session.ending = true
         val carrier = session.carrier
-        val bodyInSeat = carrier != null && session.body.vehicle === carrier && carrier.getNthEntity(session.seat) === session.body
-        if (bodyInSeat) updateAnchor(session)
+        val bodyInSeat = carrier != null && isBodyOnCarrier(session, carrier)
+        if (!session.body.isRemoved && (carrier == null || bodyInSeat)) updateAnchor(session)
         session.vehicle.processInput(0)
         if (player.vehicle === session.vehicle) player.stopRiding()
         if (player.vehicle === session.vehicle) {
@@ -143,7 +156,7 @@ object RemoteControl {
 
         try {
             if (bodyInSeat) session.body.stopRiding()
-            if (player.isAlive) restoreReturn(player, session.mounting || bodyInSeat)
+            if (player.isAlive || returnOnDeath) restoreReturn(player, !returnOnDeath && (session.mounting || bodyInSeat))
             else player.persistentData.remove(RETURN_DATA)
         } finally {
             sessions.remove(player.uuid)
@@ -160,11 +173,26 @@ object RemoteControl {
         if (session.body !== body || session.mounting || session.ending || !amount.isFinite() || amount <= 0f) return false
 
         val player = session.player
+        if (player.isCreative || isForwardingBodyDamage(player)) return false
         val attacker = source.entity as? ServerPlayer
         if (attacker != null && (!attacker.server.isPvpAllowed || !attacker.canHarmPlayer(player))) return false
         if (!ForgeHooks.onLivingAttack(body, source, amount)) return false
-        return endSession(player) && player.hurt(source, amount)
+        if (!source.`is`(DamageTypeTags.IS_FALL) && !endSession(player)) return false
+        forwardingBodyDamage[player] = source
+        try {
+            return player.hurt(source, amount)
+        } finally {
+            forwardingBodyDamage.remove(player)
+        }
     }
+
+    @JvmStatic
+    fun isForwardingBodyDamage(entity: Entity): Boolean = entity is ServerPlayer && entity in forwardingBodyDamage
+
+    @JvmStatic
+    fun hasCreativeOperator(body: RCOperatorBodyEntity): Boolean =
+        !body.level().isClientSide &&
+            body.operatorProfile?.id?.let(sessions::get)?.let { it.body === body && it.player.isCreative } == true
 
     private fun saveReturn(session: Session) {
         session.player.persistentData.put(RETURN_DATA, CompoundTag().apply {
@@ -172,13 +200,24 @@ object RemoteControl {
             putDouble("X", session.anchor.x)
             putDouble("Y", session.anchor.y)
             putDouble("Z", session.anchor.z)
-            putFloat("Yaw", session.yaw)
-            putFloat("Pitch", session.pitch)
+            saveBodyState(this, session.body)
             session.carrier?.let {
                 putUUID("Carrier", it.uuid)
                 putInt("Seat", session.seat)
             }
         })
+    }
+
+    private fun saveBodyState(tag: CompoundTag, body: RCOperatorBodyEntity) {
+        tag.putFloat("Yaw", body.yRot)
+        tag.putFloat("Pitch", body.xRot)
+        tag.putString("Pose", body.pose.name)
+        tag.putBoolean("OnGround", body.onGround())
+        tag.putFloat("FallDistance", body.fallDistance)
+        val motion = body.deltaMovement
+        tag.putDouble("MotionX", motion.x)
+        tag.putDouble("MotionY", motion.y)
+        tag.putDouble("MotionZ", motion.z)
     }
 
     private fun updateAnchor(session: Session) {
@@ -198,10 +237,7 @@ object RemoteControl {
                 putDouble("Z", position.z)
             }
         }
-        session.player.persistentData.getCompound(RETURN_DATA).apply {
-            putFloat("Yaw", session.body.yRot)
-            putFloat("Pitch", session.body.xRot)
-        }
+        saveBodyState(session.player.persistentData.getCompound(RETURN_DATA), session.body)
     }
 
     private fun restoreReturn(player: ServerPlayer, allowCarrier: Boolean = true) {
@@ -213,24 +249,38 @@ object RemoteControl {
         val anchor = Vec3(tag.getDouble("X"), tag.getDouble("Y"), tag.getDouble("Z"))
         val wasMounted = tag.hasUUID("Carrier")
         if (allowCarrier && wasMounted && level.dimension().location() == dimension) {
-            val carrier = level.getEntity(tag.getUUID("Carrier")) as? VehicleEntity
+            val carrier = level.getEntity(tag.getUUID("Carrier"))
             val seat = tag.getInt("Seat")
-            if (carrier != null && !carrier.isRemoved && !carrier.isWreck && carrier.health > 0 && player.level() === level) {
+            if (carrier != null && isCarrierAvailable(carrier) && player.level() === level) {
                 player.yRot = tag.getFloat("Yaw")
                 player.xRot = tag.getFloat("Pitch")
-                if (carrier.getNthEntity(seat) === player || carrier.boardSeat(player, seat)) {
+                if (player.vehicle === carrier || boardCarrier(carrier, player, seat)) {
                     player.fallDistance = 0f
                     player.persistentData.remove(RETURN_DATA)
                     return
                 }
             }
         }
-        val destination = if (level.dimension().location() == dimension) findReturnPosition(player, level, anchor, wasMounted)
-            else Vec3.atBottomCenterOf(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, level.sharedSpawnPos))
+        val returnToBody = !wasMounted && level.dimension().location() == dimension &&
+            level.worldBorder.isWithinBounds(BlockPos.containing(anchor))
+        val destination = when {
+            returnToBody -> anchor
+            level.dimension().location() == dimension -> findReturnPosition(player, level, anchor, wasMounted)
+            else -> Vec3.atBottomCenterOf(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, level.sharedSpawnPos))
+        }
 
         player.teleportTo(level, destination.x, destination.y, destination.z, tag.getFloat("Yaw"), tag.getFloat("Pitch"))
-        player.deltaMovement = Vec3.ZERO
-        player.fallDistance = 0f
+        val onGround = returnToBody && tag.getBoolean("OnGround")
+        player.fallDistance = if (returnToBody && !onGround) tag.getFloat("FallDistance") else 0f
+        player.deltaMovement = if (returnToBody) {
+            val y = tag.getDouble("MotionY")
+            Vec3(tag.getDouble("MotionX"), if (onGround) y.coerceAtLeast(0.0) else y, tag.getDouble("MotionZ"))
+        } else Vec3.ZERO
+        if (returnToBody) {
+            player.setOnGround(onGround)
+            Pose.entries.firstOrNull { it.name == tag.getString("Pose") }?.let { player.pose = it }
+        }
+        if (player.deltaMovement.lengthSqr() > 0.0) player.connection.send(ClientboundSetEntityMotionPacket(player))
         player.setJumping(false)
         player.persistentData.remove(RETURN_DATA)
     }
@@ -275,13 +325,12 @@ object RemoteControl {
             val player = session.player
             if (player.server !== event.server || session.mounting || session.ending) continue
             val carrier = session.carrier
-            val carrierValid = carrier == null || (!carrier.isRemoved && !carrier.isWreck && carrier.health > 0 &&
-                session.body.vehicle === carrier && carrier.getNthEntity(session.seat) === session.body)
+            val carrierValid = carrier == null || isCarrierAvailable(carrier) && isBodyOnCarrier(session, carrier)
             if (!player.isAlive || player.vehicle !== session.vehicle || session.body.isRemoved ||
                 session.body.level() !== player.level() || session.vehicle.isWreck || !carrierValid
             ) {
                 endSession(player)
-            } else if (carrier != null) {
+            } else {
                 updateAnchor(session)
             }
         }
@@ -325,7 +374,18 @@ object RemoteControl {
 
     @SubscribeEvent
     fun onAttack(event: LivingAttackEvent) {
-        if (isOperating(event.entity) && !event.source.`is`(DamageTypeTags.BYPASSES_INVULNERABILITY)) event.isCanceled = true
+        val player = event.entity as? ServerPlayer ?: return
+        if (isOperating(player) && forwardingBodyDamage[player] !== event.source &&
+            !event.source.`is`(DamageTypeTags.BYPASSES_INVULNERABILITY)
+        ) event.isCanceled = true
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    fun onDeath(event: LivingDeathEvent) {
+        val player = event.entity as? ServerPlayer ?: return
+        if (forwardingBodyDamage[player] === event.source && isOperating(player)) {
+            endSession(player, true)
+        }
     }
 
     @SubscribeEvent

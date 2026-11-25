@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.data.mob_guns.DefaultMobGunData
 import com.atsuishio.superbwarfare.data.mob_guns.MobGunData
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData
+import com.atsuishio.superbwarfare.data.vehicle.VehicleMountDefinition
 import com.atsuishio.superbwarfare.data.vehicle_skin.VehicleSkin
 import com.atsuishio.superbwarfare.data.vehicle_skin.VehicleSkinData
 import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource
@@ -25,6 +26,9 @@ object CustomData {
 
     @JvmField
     val LAUNCHABLE_ENTITY = DataLoader.createData("sbw/launchable", ProjectileInfo::class.java)
+
+    @JvmField
+    val VEHICLE_MOUNTS = DataLoader.createData("sbw/vehicle_mounts", VehicleMountDefinition::class.java, true)
 
     @JvmField
     val VEHICLE_DATA = DataLoader.createData(

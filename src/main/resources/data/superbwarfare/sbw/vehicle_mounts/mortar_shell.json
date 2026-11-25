@@ -1,0 +1,19 @@
+{
+  "Ingredient": {
+    "Item": "superbwarfare:mortar_shell"
+  },
+  "Capacity": 1,
+  "Action": {
+    "Type": "Detonate",
+    "ImpactSpeed": 0.45,
+    "OnDestroyed": true,
+    "Damage": 60,
+    "ExplosionDamage": 100,
+    "ExplosionRadius": 8
+  },
+  "Display": {
+    "Entity": "superbwarfare:mortar_shell",
+    "Offset": [0, -0.24, 0],
+    "Scale": 0.75
+  }
+}

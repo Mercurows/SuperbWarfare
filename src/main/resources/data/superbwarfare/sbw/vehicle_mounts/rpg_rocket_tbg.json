@@ -1,0 +1,19 @@
+{
+  "Ingredient": {
+    "Item": "superbwarfare:rpg_rocket_tbg"
+  },
+  "Capacity": 1,
+  "Action": {
+    "Type": "Detonate",
+    "ImpactSpeed": 0.45,
+    "OnDestroyed": true,
+    "Damage": 250,
+    "ExplosionDamage": 150,
+    "ExplosionRadius": 11
+  },
+  "Display": {
+    "Entity": "superbwarfare:rpg_rocket_tbg",
+    "Offset": [0, -0.18, -0.39],
+    "Scale": 0.25
+  }
+}

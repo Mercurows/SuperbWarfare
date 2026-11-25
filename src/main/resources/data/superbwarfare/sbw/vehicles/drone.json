@@ -24,6 +24,26 @@
   "CollisionLevel": {"Level": 0},
   "Mass": 0.1,
   "RotateOffsetHeight": 0.1,
+  "VehicleContainerType": "Empty",
+  "MountSlots": [
+    {
+      "Id": "payload",
+      "Capacity": 20,
+      "ControlSeat": 0,
+      "Offset": [0, -0.11, 0],
+      "Definitions": [
+        "superbwarfare:rgo_grenade",
+        "superbwarfare:grenade_40mm",
+        "superbwarfare:medical_kit",
+        "superbwarfare:blu_43_mine",
+        "superbwarfare:mortar_shell",
+        "superbwarfare:c4_bomb",
+        "superbwarfare:rpg_rocket_standard",
+        "superbwarfare:rpg_rocket_tbg",
+        "superbwarfare:tm_62"
+      ]
+    }
+  ],
   "Seats": [
     {
       "HidePassenger": true,

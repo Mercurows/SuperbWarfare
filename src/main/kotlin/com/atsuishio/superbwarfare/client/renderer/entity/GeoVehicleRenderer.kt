@@ -24,8 +24,10 @@ import com.atsuishio.superbwarfare.script.VehicleScriptManager
 import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
 import com.atsuishio.superbwarfare.tools.SpritePixelHelper
 import com.atsuishio.superbwarfare.tools.localPlayer
+import com.atsuishio.superbwarfare.tools.mc
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BoneState
+import com.google.common.cache.CacheBuilder
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
 import com.maydaymemory.mae.blend.EulerAdditiveBlender
@@ -42,7 +44,9 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.joml.Matrix3f
@@ -70,6 +74,7 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     var hideFlare = false
 
     private var seatsCache: MutableList<SeatInfo>? = null
+    private val mountRenderEntities = CacheBuilder.newBuilder().maximumSize(32).weakValues().build<ResourceLocation, Entity>()
 
     override fun getTextureLocation(entity: T): ResourceLocation {
         val (_, namespace, id) = entity.type.descriptionId.split(".")
@@ -126,6 +131,7 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             texture
         }
 
+        val basePose = poseStack.last()
         poseStack.pushPose()
 
         this.rotateVehicleAxis(entity, poseStack, yaw, partialTick)
@@ -318,7 +324,79 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
         this.renderCustomPart(entity, instance, poseStack, yaw, partialTick, buffer, packedLight)
 
+        if (!isLOD && !entity.entityData.get(VehicleEntity.MOUNT_STATE).isEmpty && VehicleResource.compute(entity).renderMounts) {
+            renderMounts(entity, instance, partialTick, basePose, poseStack, buffer, packedLight)
+        }
         poseStack.popPose()
+    }
+
+    open fun renderMounts(
+        entity: T,
+        instance: VehicleModelInstance,
+        partialTick: Float,
+        basePose: PoseStack.Pose,
+        poseStack: PoseStack,
+        buffer: MultiBufferSource,
+        packedLight: Int,
+    ) {
+        val mounts = entity.mounts
+        for (slot in mounts.slots()) {
+            val installed = mounts.getInstalled(slot.id) ?: continue
+            val definition = mounts.getDefinition(installed.definitionId)
+            val display = definition?.display
+            val bones = instance.getMountBones(slot.bone, mounts.capacity(slot, definition, installed.stack) > 1)
+            val offset = display?.offset ?: Vec3.ZERO
+            val rotation = display?.rotation ?: Vec3.ZERO
+            val scale = display?.scale ?: 0.4f
+            val proxy = display?.entity?.let { getMountRenderEntity(entity, it) }
+            val renderer = proxy?.let { entityRenderDispatcher.getRenderer(it) }
+
+            repeat(minOf(installed.stack.count, maxOf(1, bones.size))) { index ->
+                poseStack.pushPose()
+                try {
+                    val bone = bones.getOrNull(index)
+                    if (bone != null) {
+                        val transform = bone.getGlobalTransform(instance)
+                        poseStack.mulPoseMatrix(transform)
+                        poseStack.last().normal().mul(transform.normal(Matrix3f()))
+                        val pivot = bone.definition()
+                        poseStack.translate(pivot.pivotX(), pivot.pivotY(), pivot.pivotZ())
+                        poseStack.translate(offset.x, offset.y, offset.z)
+                    } else {
+                        poseStack.last().pose().set(basePose.pose())
+                        poseStack.last().normal().set(basePose.normal())
+                        val position = mounts.worldPosition(slot, offset, partialTick).subtract(entity.getPosition(partialTick))
+                        poseStack.translate(position.x, position.y, position.z)
+                        poseStack.mulPose(Quaternionf(entity.getRotationFromString(slot.transform, partialTick)))
+                    }
+                    poseStack.mulPose(Axis.XP.rotationDegrees(rotation.x.toFloat()))
+                    poseStack.mulPose(Axis.YP.rotationDegrees(rotation.y.toFloat()))
+                    poseStack.mulPose(Axis.ZP.rotationDegrees(rotation.z.toFloat()))
+                    poseStack.scale(scale, scale, scale)
+
+                    if (proxy != null && renderer != null) {
+                        renderer.render(proxy, 0f, partialTick, poseStack, buffer, packedLight)
+                    } else {
+                        mc.itemRenderer.renderStatic(installed.stack, ItemDisplayContext.FIXED, packedLight,
+                            OverlayTexture.NO_OVERLAY, poseStack, buffer, entity.level(), entity.id)
+                    }
+                } finally {
+                    poseStack.popPose()
+                }
+            }
+        }
+    }
+
+    open fun getMountRenderEntity(vehicle: T, id: ResourceLocation): Entity? {
+        val level = vehicle.level()
+        mountRenderEntities.getIfPresent(id)?.takeIf { it.level() === level }?.let { return it }
+
+        val proxy = EntityType.byString(id.toString()).orElse(null)?.create(level) ?: return null
+        // Like the vehicle's weapon dummies, show the model before its launch effects begin.
+        proxy.tickCount = 2
+        if (proxy is FastThrowableProjectile) proxy.syncedTick = proxy.tickCount
+        mountRenderEntities.put(id, proxy)
+        return proxy
     }
 
     open fun renderEmissive(

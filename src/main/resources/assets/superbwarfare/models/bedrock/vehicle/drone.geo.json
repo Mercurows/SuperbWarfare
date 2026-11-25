@@ -349,6 +349,41 @@
 					]
 				},
 				{
+					"name": "mount_pos",
+					"parent": "body",
+					"pivot": [0, 1.25, 0]
+				},
+				{
+					"name": "mount_pos1",
+					"parent": "body",
+					"pivot": [-1.45, 1.8, -3.45]
+				},
+				{
+					"name": "mount_pos2",
+					"parent": "body",
+					"pivot": [1.45, 1.8, -3.45]
+				},
+				{
+					"name": "mount_pos3",
+					"parent": "body",
+					"pivot": [-1.45, 1.8, 0]
+				},
+				{
+					"name": "mount_pos4",
+					"parent": "body",
+					"pivot": [1.45, 1.8, 0]
+				},
+				{
+					"name": "mount_pos5",
+					"parent": "body",
+					"pivot": [-1.45, 1.8, 3.45]
+				},
+				{
+					"name": "mount_pos6",
+					"parent": "body",
+					"pivot": [1.45, 1.8, 3.45]
+				},
+				{
 					"name": "wingFL",
 					"parent": "0",
 					"pivot": [4.87422, 3, -2.96641],

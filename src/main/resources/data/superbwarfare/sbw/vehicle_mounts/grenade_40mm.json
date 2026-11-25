@@ -1,0 +1,20 @@
+{
+  "Ingredient": {
+    "Item": "superbwarfare:grenade_40mm"
+  },
+  "Capacity": 4,
+  "Action": {
+    "Type": "ReleaseEntity",
+    "Entity": "superbwarfare:gun_grenade",
+    "Offset": [0, -0.12, 0],
+    "OnDestroyed": true,
+    "Damage": 20,
+    "ExplosionDamage": 50,
+    "ExplosionRadius": 5
+  },
+  "Display": {
+    "Entity": "superbwarfare:gun_grenade",
+    "Offset": [0, -0.19, 0],
+    "Scale": 0.6
+  }
+}

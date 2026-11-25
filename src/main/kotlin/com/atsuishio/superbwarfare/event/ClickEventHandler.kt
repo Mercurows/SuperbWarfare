@@ -620,8 +620,11 @@ object ClickEventHandler {
         val vehicle = player.vehicle
 
         if (vehicle is VehicleEntity && vehicle.banHand(player)) {
-            if (vehicle.hasWeapon(vehicle.getSeatIndex(player))) {
+            val seat = vehicle.getSeatIndex(player)
+            if (vehicle.hasWeapon(seat)) {
                 ClientEventHandler.holdFireVehicle = true
+            } else if (vehicle is RCEntity && vehicle.mounts.canControl(seat)) {
+                sendPacketToServer(VehicleMountActionMessage)
             }
             return
         }
