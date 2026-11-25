@@ -218,10 +218,10 @@ object DisplayConfig {
     }
 
     @JvmField
-    val FLASHBANG_DARK_MODE = buildClientConfig {
-        comment("Replace flashbang whiteout with blackout, with the same duration and fade")
-        comment("防光敏性癫痫：将闪光弹的闪白替换为黑色，保持相同的持续时间和渐退效果")
-        define("flashbang_dark_mode", false)
+    val ANTI_FLASH_MODE = buildClientConfig {
+        comment("Anti-Flash Mode: Disable intense flashing effects that may trigger photosensitive seizures")
+        comment("防闪光模式：关闭可能导致光敏性癫痫的强烈闪光效果")
+        define("anti_flash_mode", false)
     }
 
     @JvmField

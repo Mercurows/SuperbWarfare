@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.event
 
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.api.event.ClientGunFireEvent
 import com.atsuishio.superbwarfare.api.event.ClientVehicleFireEvent
 import com.atsuishio.superbwarfare.capability.living.RadiationCapability
@@ -992,6 +993,8 @@ object ClientEventHandler {
         }
     }
 
+    private val HANDSOME_GOGGLES_EFFECT = loc("shaders/post/handsome_goggles.json")
+
     @JvmStatic
     var handsomeGogglesActive: Boolean = false
 
@@ -1003,10 +1006,9 @@ object ClientEventHandler {
     fun handleHandsomeGoggles(player: Player) {
         val wearing = isWearingHandsomeGoggles(player)
         val isFirstPerson = mc.options.cameraType == CameraType.FIRST_PERSON
-        val shouldBeActive = wearing && isFirstPerson
+        val shouldBeActive = wearing && isFirstPerson && !DisplayConfig.ANTI_FLASH_MODE.get()
 
         if (shouldBeActive && !handsomeGogglesActive) {
-            handsomeGogglesActive = false  // reset so turnOn actually loads
             turnOnHandsomeGoggles()
         } else if (!shouldBeActive && handsomeGogglesActive) {
             turnOffHandsomeGoggles()
@@ -1015,14 +1017,17 @@ object ClientEventHandler {
 
     @JvmStatic
     fun turnOnHandsomeGoggles() {
+        if (DisplayConfig.ANTI_FLASH_MODE.get()) return
         handsomeGogglesActive = true
-        mc.gameRenderer.loadEffect(com.atsuishio.superbwarfare.Mod.loc("shaders/post/handsome_goggles.json"))
+        mc.gameRenderer.loadEffect(HANDSOME_GOGGLES_EFFECT)
     }
 
     @JvmStatic
     fun turnOffHandsomeGoggles() {
         handsomeGogglesActive = false
-        mc.gameRenderer.shutdownEffect()
+        if (mc.gameRenderer.currentEffect()?.name == HANDSOME_GOGGLES_EFFECT.toString()) {
+            mc.gameRenderer.shutdownEffect()
+        }
     }
 
     fun isBarrelSpinTriggered(stack: ItemStack): Boolean {

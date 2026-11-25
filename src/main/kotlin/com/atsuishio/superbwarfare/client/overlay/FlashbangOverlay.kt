@@ -171,7 +171,7 @@ object FlashbangOverlay {
         val alpha = (effect.alpha(frameTime) * 255).toInt().coerceIn(0, 255)
         val ghostAlpha = effect.afterimageAlpha(frameTime)
         if (alpha == 0 && (afterimage == null || ghostAlpha <= 0f)) return
-        val rgb = if (DisplayConfig.FLASHBANG_DARK_MODE.get()) 0 else 0xFFFFFF
+        val rgb = if (DisplayConfig.ANTI_FLASH_MODE.get()) 0 else 0xFFFFFF
         // Finish queued HUD/item draws first. guiOverlay explicitly disables depth testing,
         // unlike the default gui fill, so raised item icons cannot poke through the mask.
         graphics.flush()

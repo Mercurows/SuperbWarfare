@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.lighting
 
+import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.AttachmentLightState
 import com.atsuishio.superbwarfare.data.attachment.FlashlightInfo
@@ -11,6 +12,7 @@ import com.atsuishio.superbwarfare.network.message.send.SetAttachmentLightModeMe
 import com.atsuishio.superbwarfare.network.message.send.ToggleFlashlightMessage
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
+import net.minecraft.Util
 import net.minecraft.client.Minecraft
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
@@ -30,6 +32,9 @@ object FlashlightHandler {
     private const val MAX_DISTANCE = 128.0
     private const val WALL_CLEARANCE = 0.15
     private const val MIN_FROM_EYE = 0.05
+    private const val ANTI_FLASH_FADE_MILLIS = 200f
+    private const val ANTI_FLASH_STROBE_SCALE = 0.25f
+    private const val ANTI_FLASH_STROBE_MAX_INTENSITY = 0.5f
 
     data class Emitter(val key: String, val showEffects: Boolean)
 
@@ -44,9 +49,33 @@ object FlashlightHandler {
     private val flashStartedAt = mutableMapOf<String, Double>()
     private val modeStartedAt = mutableMapOf<String, Double>()
 
+    private class BrightnessTransition(val gun: Any, val info: FlashlightInfo, now: Long) {
+        private var start = 0f
+        private var target = 0f
+        private var startedAt = now
+        var seenFrame = 0L
+
+        fun intensity(nextTarget: Float, now: Long): Float {
+            val progress = ((now - startedAt) / ANTI_FLASH_FADE_MILLIS).coerceIn(0f, 1f)
+            val fraction = progress * progress * (3f - 2f * progress)
+            val current = start + (target - start) * fraction
+            if (target != nextTarget) {
+                start = current
+                target = nextTarget
+                startedAt = now
+            }
+            return current
+        }
+    }
+
+    private val brightnessTransitions = mutableMapOf<String, BrightnessTransition>()
+    private var brightnessFrame = 0L
+
     private const val TICKS_PER_SECOND = 20.0
 
     private fun key(uuid: String, slot: AttachmentType): String = "$uuid|${slot.name}"
+
+    private fun FlashlightMode.emitsLight(): Boolean = this == FlashlightMode.ON || this == FlashlightMode.STROBE
 
     private fun flashBoost(info: FlashlightInfo, start: Double, now: Double): Float {
         val duration = info.safeFlashTime * TICKS_PER_SECOND
@@ -67,6 +96,45 @@ object FlashlightHandler {
         val fall = ((duty + edge - phase) / edge).coerceIn(0f, 1f)
         val pulse = minOf(rise, fall)
         return pulse * pulse * (3f - 2f * pulse)
+    }
+
+    private fun regularIntensity(key: String, mode: FlashlightMode, info: FlashlightInfo, now: Double): Float {
+        val previous = lastModes.put(key, mode) ?: mode
+        if (previous != mode || key !in modeStartedAt) modeStartedAt[key] = now
+        if (!mode.emitsLight()) {
+            flashStartedAt.remove(key)
+            return 0f
+        }
+        if (!previous.emitsLight()) flashStartedAt[key] = now
+
+        val flashStart = flashStartedAt[key]
+        val boost = if (flashStart == null) 1f else {
+            val value = flashBoost(info, flashStart, now)
+            if (value <= 1.0001f) flashStartedAt.remove(key)
+            value
+        }
+        val strobe = if (mode == FlashlightMode.STROBE) {
+            strobeFactor(info, now - (modeStartedAt[key] ?: now))
+        } else 1f
+        return if (strobe > 0.001f) info.safeIntensity * boost * strobe else 0f
+    }
+
+    private fun antiFlashIntensity(
+        key: String, gun: Any, mode: FlashlightMode, info: FlashlightInfo, now: Long,
+    ): Float {
+        val target = when (mode) {
+            FlashlightMode.ON -> info.safeIntensity
+            FlashlightMode.STROBE -> minOf(info.safeIntensity * ANTI_FLASH_STROBE_SCALE, ANTI_FLASH_STROBE_MAX_INTENSITY)
+            else -> 0f
+        }
+        val previous = brightnessTransitions[key]?.takeIf { it.gun == gun && it.info == info }
+        val transition = previous ?: if (target > 0f) {
+            BrightnessTransition(gun, info, now).also { brightnessTransitions[key] = it }
+        } else return 0f
+        transition.seenFrame = brightnessFrame
+        val intensity = transition.intensity(target, now)
+        if (target == 0f && intensity == 0f) brightnessTransitions.remove(key)
+        return intensity
     }
 
     private fun time(): Double {
@@ -139,11 +207,13 @@ object FlashlightHandler {
     ) {
         val gun = gunOf(stack) ?: return
         val mode = AttachmentLightState.modeOf(gun, slot)
-        if (mode != FlashlightMode.ON && mode != FlashlightMode.STROBE) return
+        val key = key(holder.stringUUID, slot)
+        val gunIdentity = gun.uuid ?: stack
+        if (!mode.emitsLight() && brightnessTransitions[key]?.gun != gunIdentity) return
         val dir = direction.normalize()
         if (dir.lengthSqr() < 1e-6) return
         val samples = if (firstPerson) handSamples else worldSamples
-        samples[key(holder.stringUUID, slot)] = Sample(gun.uuid ?: stack, origin, dir)
+        samples[key] = Sample(gunIdentity, origin, dir)
     }
 
     fun beginFrame() {
@@ -162,6 +232,7 @@ object FlashlightHandler {
         lastModes.clear()
         flashStartedAt.clear()
         modeStartedAt.clear()
+        brightnessTransitions.clear()
     }
 
     private fun colorVec(rgb: Int): Vec3 = Vec3(
@@ -204,6 +275,16 @@ object FlashlightHandler {
         val level = mc.level ?: return emptyList()
         val camera = mc.gameRenderer.mainCamera.position
         val now = time()
+        val antiFlash = DisplayConfig.ANTI_FLASH_MODE.get()
+        val fadeTime = if (antiFlash) Util.getMillis() else 0L
+        if (antiFlash) {
+            brightnessFrame++
+            lastModes.clear()
+            flashStartedAt.clear()
+            modeStartedAt.clear()
+        } else {
+            brightnessTransitions.clear()
+        }
         val lights = ArrayList<GunMuzzleLightHandler.Light>(MAX_LIGHTS)
 
         for (player in level.players()) {
@@ -219,9 +300,7 @@ object FlashlightHandler {
             // 多手电联动增益：同一把枪上每多开一个手电（ON/STROBE），所有手电射程 +50%。
             // 只算"开着"的手电，激光档/关闭档不参与计数。
             val modes = emitters.associateWith { AttachmentLightState.modeOf(gun, it.slot.type) }
-            val activeCount = modes.values.count {
-                it == FlashlightMode.ON || it == FlashlightMode.STROBE
-            }
+            val activeCount = modes.values.count { it.emitsLight() }
             val rangeMultiplier = 1f + 0.5f * (activeCount - 1).coerceAtLeast(0)
 
             for ((emitter, mode) in modes) {
@@ -231,27 +310,9 @@ object FlashlightHandler {
                 val info = emitter.info
                 if (info.safeIntensity <= 0f) continue
 
-                val lightOn = mode == FlashlightMode.ON || mode == FlashlightMode.STROBE
-                val previous = lastModes.put(k, mode) ?: mode
-                val previousLightOn = previous == FlashlightMode.ON || previous == FlashlightMode.STROBE
-                if (previous != mode || k !in modeStartedAt) modeStartedAt[k] = now
-                if (lightOn && !previousLightOn) flashStartedAt[k] = now
-                if (!lightOn) {
-                    flashStartedAt.remove(k)
-                    continue
-                }
-
-                val flashStart = flashStartedAt[k]
-                val boost = if (flashStart == null) 1f else {
-                    val value = flashBoost(info, flashStart, now)
-                    if (value <= 1.0001f) flashStartedAt.remove(k)
-                    value
-                }
-                val strobe = if (mode == FlashlightMode.STROBE) {
-                    strobeFactor(info, now - (modeStartedAt[k] ?: now))
-                } else 1f
-
-                if (strobe <= 0.001f) continue
+                val intensity = if (antiFlash) antiFlashIntensity(k, gunIdentity, mode, info, fadeTime)
+                else regularIntensity(k, mode, info, now)
+                if (intensity <= 0f) continue
 
                 val sample = if (firstPerson) handSamples[k] ?: previousHandSamples[k] else worldSamples[k]
                 val mount = sample?.takeIf { it.gun == gunIdentity }
@@ -263,7 +324,7 @@ object FlashlightHandler {
                     player,
                     0.0,
                     1.0,
-                    info.safeIntensity * boost * strobe,
+                    intensity,
                     info.safeRange * rangeMultiplier,
                     origin,
                     mount?.direction ?: look.normalize(),
@@ -276,6 +337,7 @@ object FlashlightHandler {
             }
         }
 
+        brightnessTransitions.values.removeIf { it.seenFrame != brightnessFrame }
         return lights.sortedBy { it.position.distanceToSqr(camera) }.take(MAX_LIGHTS)
     }
 }

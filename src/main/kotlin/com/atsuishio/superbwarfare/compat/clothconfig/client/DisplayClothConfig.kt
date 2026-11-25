@@ -12,6 +12,18 @@ object DisplayClothConfig {
         category.addEntry(
             entryBuilder
                 .startBooleanToggle(
+                    Component.translatable("config.superbwarfare.client.display.anti_flash_mode"),
+                    DisplayConfig.ANTI_FLASH_MODE.get()
+                )
+                .setDefaultValue(DisplayConfig.ANTI_FLASH_MODE.default)
+                .setSaveConsumer { DisplayConfig.ANTI_FLASH_MODE.set(it) }
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.anti_flash_mode.des"))
+                .build()
+        )
+
+        category.addEntry(
+            entryBuilder
+                .startBooleanToggle(
                     Component.translatable("config.superbwarfare.client.display.enable_special_projectile_effects"),
                     DisplayConfig.ENABLE_SPECIAL_PROJECTILE_EFFECTS.get()
                 )

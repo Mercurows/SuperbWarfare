@@ -121,6 +121,7 @@ object GunMuzzleLightRenderer {
         val camera = mc.gameRenderer.mainCamera.position
         val lightTime = (mc.level?.gameTime ?: 0L).toDouble() + mc.frameTime
         val strengthScale = DisplayConfig.MUZZLE_LIGHT_STRENGTH.get().toFloat()
+        val showFlashlightGlare = !DisplayConfig.ANTI_FLASH_MODE.get()
         val draws = lights.mapNotNull { light ->
             val strength = light.intensity(lightTime) * strengthScale
             if (strength <= 0f) return@mapNotNull null
@@ -223,11 +224,12 @@ object GunMuzzleLightRenderer {
                     val beamEnd = light.position.add(light.direction.scale(minOf(FLASHLIGHT_BEAM_LENGTH, light.radius.toDouble())))
                     val beamHit = clipFlashlight(light, beamEnd)
                     val beamLength = light.position.distanceTo(beamHit.location).toFloat()
-                    val lensVisible = point.lengthSqr() < light.radius * light.radius &&
-                        clipFlashlight(light, camera).type == HitResult.Type.MISS
-                    custom.safeGetUniform("FlashlightEffect").set(
-                        beamLength, smoothFlashlightVisibility(emitter.key, lensVisible, now)
-                    )
+                    val glareVisibility = if (showFlashlightGlare) {
+                        val lensVisible = point.lengthSqr() < light.radius * light.radius &&
+                            clipFlashlight(light, camera).type == HitResult.Type.MISS
+                        smoothFlashlightVisibility(emitter.key, lensVisible, now)
+                    } else 0f
+                    custom.safeGetUniform("FlashlightEffect").set(beamLength, glareVisibility)
                     // 重合像素只保留各通道的最大亮度。
                     effects.bindWrite(false)
                     draw(custom, FLASHLIGHT_EFFECTS_PASS, GL14.GL_MAX)
