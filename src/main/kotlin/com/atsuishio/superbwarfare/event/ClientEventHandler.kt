@@ -616,6 +616,7 @@ object ClientEventHandler {
 
     @JvmField
     var lastCameraType: CameraType? = null
+    var hasRemoteBinding = false
 
     @JvmField
     var cameraPitch: Float = 0f
@@ -734,6 +735,7 @@ object ClientEventHandler {
 
     @JvmField
     var keysCache: Short = 0
+    private var movementVehicle: VehicleEntity? = null
 
     /** 自动盘旋双击夺回操控权：上次按下前进键的tick */
     @JvmField
@@ -875,6 +877,8 @@ object ClientEventHandler {
 
     @SubscribeEvent
     fun clearGravityLensing(event: ClientPlayerNetworkEvent.LoggingOut) {
+        hasRemoteBinding = false
+        movementVehicle = null
         FlashbangOverlay.clear()
         MuzzleFlashRenderer.clear()
         resetLocalShotState()
@@ -1135,9 +1139,10 @@ object ClientEventHandler {
     fun handleControlVehicle(player: Player, stack: ItemStack) {
         var keys: Short = 0
         val vehicle = player.vehicle
+        val drivenVehicle = (vehicle as? VehicleEntity)?.takeIf { it.firstPassenger === player }
 
         // 正在游戏内控制载具
-        if (!notInGame && (vehicle is VehicleEntity && vehicle.firstPassenger == player)) {
+        if (!notInGame && drivenVehicle != null) {
             if (ModKeyMappings.MOVE_LEFT.isDown) {
                 keys = keys or 0b000000001
             }
@@ -1167,7 +1172,7 @@ object ClientEventHandler {
             }
         }
 
-        if (keys != keysCache) {
+        if (keys != keysCache || drivenVehicle !== movementVehicle) {
             // 盘旋模式下阻止操控包发往服务端，但检测双击前进键夺回操控权
             val blockLoiter = vehicle is VehicleEntity
                     && vehicle.loiterActive
@@ -1197,6 +1202,7 @@ object ClientEventHandler {
                 }
             }
             keysCache = keys
+            movementVehicle = drivenVehicle
         }
 
         if (vehicle is VehicleEntity && vehicle.allowEjection(vehicle.getSeatIndex(player)) && ModKeyMappings.DISMOUNT.isDown()) {

@@ -1,7 +1,9 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
+import com.atsuishio.superbwarfare.entity.vehicle.base.RCEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.remote.RemoteControl
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
@@ -23,6 +25,10 @@ data class PlayerStopRidingMessage(val ejection: Boolean) : ServerPacketPayload(
     override fun PayloadContext.handler() {
         val player = sender()
         val vehicle = player.vehicle as? VehicleEntity ?: return
+        if (vehicle is RCEntity) {
+            RemoteControl.endSession(player)
+            return
+        }
 
         if (ejection) {
             val vec = vehicle.getEjectionMovement(player, vehicle.getTagSeatIndex(player))

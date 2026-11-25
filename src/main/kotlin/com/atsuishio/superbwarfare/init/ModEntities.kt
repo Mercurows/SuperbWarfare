@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.entity.projectile.*
 import com.atsuishio.superbwarfare.entity.vehicle.*
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.remote.RCOperatorBodyEntity
 import net.minecraft.world.Difficulty
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.monster.Monster
@@ -393,6 +394,13 @@ object ModEntities {
     val AH_6 = register("ah_6", vehicle().sized(2.25f, 2.175f))
 
     @JvmField
+    val DRONE = register("drone", vehicle(::DroneEntity).sized(0.63f, 0.25f))
+
+    @JvmField
+    val RC_OPERATOR_BODY = register("rc_operator_body", misc(::RCOperatorBodyEntity)
+        .sized(0.6f, 1.8f).setTrackingRange(32).noSave().noSummon())
+
+    @JvmField
     val MI_28 = register("mi_28", vehicle().sized(3.375f, 3.375f))
 
     @JvmField
@@ -514,6 +522,7 @@ object ModEntities {
     fun registerAttributes(event: EntityAttributeCreationEvent) {
         event.put(TARGET.get(), TargetEntity.createAttributes().build())
         event.put(DPS_GENERATOR.get(), DPSGeneratorEntity.createAttributes().build())
+        event.put(RC_OPERATOR_BODY.get(), LivingEntity.createLivingAttributes().build())
         event.put(SENPAI.get(), SenpaiEntity.createAttributes().build())
         event.put(CREEPING_SENPAI.get(), CreepingSenpaiEntity.createAttributes().build())
         event.put(STEEL_COIL.get(), SteelCoilEntity.createAttributes().build())

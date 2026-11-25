@@ -106,7 +106,7 @@ object VehicleEngineUtils {
             }
         }
 
-        val passenger0 = getFirstPassenger()
+        val passenger0 = getActiveDriver()
 
         if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
             forwardInputDown = false
@@ -319,7 +319,7 @@ object VehicleEngineUtils {
             }
         }
 
-        val passenger0 = getFirstPassenger()
+        val passenger0 = getActiveDriver()
 
         if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
             forwardInputDown = false
@@ -496,7 +496,7 @@ object VehicleEngineUtils {
 
         }
 
-        val passenger0 = getFirstPassenger()
+        val passenger0 = getActiveDriver()
 
         if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
             forwardInputDown = false
@@ -627,13 +627,13 @@ object VehicleEngineUtils {
                 ModDamageTypes.causeVehicleStrikeDamage(
                     level().registryAccess(),
                     vehicle,
-                    if (getFirstPassenger() == null) vehicle else getFirstPassenger()
+                    if (getActiveDriver() == null) vehicle else getActiveDriver()
                 ), 6 + (20 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))).toFloat()
             )
             crash = true
         }
 
-        val pilot = getFirstPassenger()
+        val pilot = getActiveDriver()
         val hasPassenger = getPassengers().isNotEmpty()
 
         val diffX: Float
@@ -852,7 +852,7 @@ object VehicleEngineUtils {
                     ModDamageTypes.causeVehicleStrikeDamage(
                         level().registryAccess(),
                         this,
-                        if (getFirstPassenger() == null) this else getFirstPassenger()
+                        if (getActiveDriver() == null) this else getActiveDriver()
                     ), (20 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))).toFloat()
                 )
             }
@@ -1163,13 +1163,13 @@ object VehicleEngineUtils {
                     ModDamageTypes.causeVehicleStrikeDamage(
                         level().registryAccess(),
                         this,
-                        if (getFirstPassenger() == null) this else getFirstPassenger()
+                        if (getActiveDriver() == null) this else getActiveDriver()
                     ), (20 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))).toFloat()
                 )
             }
         }
 
-        val passenger = getFirstPassenger()
+        val passenger = getActiveDriver()
 
         if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
             forwardInputDown = false
@@ -1323,7 +1323,7 @@ object VehicleEngineUtils {
         }
         isSprinting = deltaMovement.horizontalDistance() > 0.15
 
-        val passenger0 = getFirstPassenger()
+        val passenger0 = getActiveDriver()
         var diffY = 0f
 
         if (passenger0 == null) {
@@ -1479,7 +1479,7 @@ object VehicleEngineUtils {
             }
         }
 
-        val passenger0 = getFirstPassenger()
+        val passenger0 = getActiveDriver()
 
         if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
             forwardInputDown = false

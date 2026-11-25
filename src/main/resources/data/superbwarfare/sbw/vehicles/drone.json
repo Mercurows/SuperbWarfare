@@ -1,0 +1,43 @@
+{
+  "MaxHealth": 24,
+  "MaxEnergy": 300000,
+  "Type": "Helicopter",
+  "EngineType": "Helicopter",
+  "EngineInfo": {
+    "EnergyCostRate": 8,
+    "Increment": 2.0,
+    "Decrement": 1.25,
+    "PitchSpeed": 0.65,
+    "YawSpeed": 0.8,
+    "RollSpeed": 0.5,
+    "LiftSpeed": 1.0,
+    "Speed": 0.8,
+    "ClampPitch": 55,
+    "ClampRoll": 55,
+    "EngineSoundVolume": 0.55
+  },
+  "EngineSound": "superbwarfare:drone_engine",
+  "KeepChunkLoaded": false,
+  "CollisionLevel": {"Level": 0},
+  "Mass": 0.1,
+  "RotateOffsetHeight": 0.1,
+  "ThirdPersonCameraPos": [0, 0.35, 1.75],
+  "Seats": [
+    {
+      "HidePassenger": true,
+      "IsEnclosed": false,
+      "BanHand": true,
+      "CanRotateHead": false,
+      "Position": [0, 0, 0],
+      "Sensitivity": [0, 0, 0],
+      "CameraPos": {
+        "Position": [0, 0.17, 0.27],
+        "UseFixedCameraPos": true
+      }
+    }
+  ],
+  "DestroyInfo": {
+    "NoWreck": true,
+    "ExplodePassengers": false
+  }
+}

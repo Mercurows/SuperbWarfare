@@ -19,6 +19,7 @@ import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.RCEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModKeyMappings
@@ -27,6 +28,7 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
 import com.atsuishio.superbwarfare.item.curio.TacticalTerminalItem
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.item.misc.MonitorItem
 import com.atsuishio.superbwarfare.network.message.send.*
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.*
@@ -147,6 +149,7 @@ object ClickEventHandler {
 
         val stack = player.mainHandItem
         val button = event.button
+        if (isUseMouseButton(button) && MonitorItem.isCarrierMonitor(player, stack)) return
 
         val fireKey = ModKeyMappings.FIRE.key
         if (fireKey.type == InputConstants.Type.MOUSE
@@ -804,6 +807,7 @@ object ClickEventHandler {
     }
 
     fun handleWeaponUsePress(player: Player, stack: ItemStack) {
+        if (MonitorItem.isCarrierMonitor(player, stack)) return
         ClientEventHandler.isEditing = false
 
         val vehicle = player.vehicle
@@ -914,7 +918,9 @@ object ClickEventHandler {
     private fun handleDismountPress(player: Player) {
         val vehicle = player.vehicle as? VehicleEntity ?: return
 
-        if ((!vehicle.onGround() || vehicle.deltaMovement.length() >= 0.1) && ClientEventHandler.dismountCountdown <= 0) {
+        if (vehicle !is RCEntity && (!vehicle.onGround() || vehicle.deltaMovement.length() >= 0.1)
+            && ClientEventHandler.dismountCountdown <= 0
+        ) {
             if (vehicle.allowEjection(vehicle.getSeatIndex(player))) {
                 player.displayClientMessage(
                     Component.translatable(

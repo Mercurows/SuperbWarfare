@@ -134,7 +134,7 @@ open class VehicleAssemblingTableVehicleEntity(type: EntityType<*>, level: Level
     }
 
     override fun travel() {
-        val passenger = this.getFirstPassenger()
+        val passenger = getActiveDriver()
 
         power *= 0.95f
         if (passenger == null || isInWater) {

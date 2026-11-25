@@ -36,6 +36,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.VehicleModelEntry
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.Companion.ENV_RATE_RECOMPUTE_INTERVAL
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.Companion.OBB_GROUND_CACHE_TICKS
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier
+import com.atsuishio.superbwarfare.entity.vehicle.remote.RCOperatorBodyEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.*
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.aircraftLoiter
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
@@ -843,6 +844,23 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     // 仅在客户端存在的实体顺序获取，用于在客户端正确同步实体座位顺序
     open var entityIndexOverride: Function<Entity, Int>? = null
 
+    private var pendingSeat: Pair<Entity, Int>? = null
+
+    open fun boardSeat(passenger: Entity, index: Int): Boolean {
+        if (level().isClientSide || pendingSeat != null || index !in 0 until maxPassengers || getNthEntity(index) != null ||
+            passenger.isPassenger || !canAddPassenger(passenger)
+        ) return false
+        pendingSeat = passenger to index
+        try {
+            if (!passenger.startRiding(this, true)) return false
+            if (getNthEntity(index) === passenger) return true
+            passenger.stopRiding()
+            return false
+        } finally {
+            pendingSeat = null
+        }
+    }
+
     override fun addPassenger(pPassenger: Entity) {
         check(pPassenger.vehicle === this) { "Use x.startRiding(y), not y.addPassenger(x)" }
         checkSeatsSize()
@@ -850,7 +868,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         var index: Int
 
         val indexOverride = entityIndexOverride
-        if (indexOverride != null && indexOverride.apply(pPassenger) != -1) {
+        val reserved = pendingSeat
+        if (reserved?.first === pPassenger) {
+            index = reserved.second
+        } else if (indexOverride != null && indexOverride.apply(pPassenger) != -1) {
             index = indexOverride.apply(pPassenger)
         } else {
             index = 0
@@ -861,7 +882,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 index++
             }
         }
-        if (index >= this.maxPassengers || index < 0) return
+        if (index >= this.maxPassengers || index < 0 || orderedPassengers[index] != null) return
 
         orderedPassengers[index] = pPassenger
 
@@ -884,9 +905,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         checkSeatsSize()
 
         val index = getSeatIndex(pPassenger)
-        if (index == -1) return
-
-        orderedPassengers[index] = null
+        if (index == -1) {
+            if (!this.passengers.contains(pPassenger)) return
+        } else {
+            orderedPassengers[index] = null
+        }
         this.passengers =
             ImmutableList.copyOf(orderedPassengers.stream().filter { obj: Entity? -> Objects.nonNull(obj) }
                 .toList())
@@ -925,6 +948,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
         return orderedPassengers.firstOrNull()
     }
+
+    open fun getActiveDriver(): Entity? = firstPassenger?.takeUnless { it is RCOperatorBodyEntity }
 
     /**
      * 获取第index个乘客
@@ -2046,7 +2071,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 if (player.level() is ServerLevel) {
                     return if (player.startRiding(this)) InteractionResult.CONSUME else InteractionResult.PASS
                 }
-            } else if (this.getFirstPassenger() !is Player) {
+            } else if (this.getFirstPassenger() !is Player && this.getFirstPassenger() !is RCOperatorBodyEntity) {
                 if (player is FakePlayer) return InteractionResult.PASS
                 this.getFirstPassenger()!!.stopRiding()
                 VehicleVecUtils.setDriverAngle(this, player)
@@ -2638,9 +2663,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             }
         }
 
-        if (this.maxPassengers > 0 && getFirstPassenger() != null) {
-            lastDriverUUID = getFirstPassenger()!!.getStringUUID()
-        }
+        getActiveDriver()?.let { lastDriverUUID = it.stringUUID }
 
         // 如果没锁车，下车10秒后清空上一个驾驶员UUID
         if (getPassengers().isEmpty()) {
@@ -3887,7 +3910,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open fun passengerPos(passenger: Entity, callback: MoveFunction, vec3: Vec3, string: String?) {
         val worldPosition = transformPosition(getTransformFromString(string), vec3.x, vec3.y, vec3.z)
-        val yOffset = VehicleConfig.getPassengerYOffset(passenger.type)
+        val passengerType = if (passenger is RCOperatorBodyEntity) EntityType.PLAYER else passenger.type
+        val yOffset = VehicleConfig.getPassengerYOffset(passengerType)
         passenger.setPos(worldPosition.x, worldPosition.y + yOffset, worldPosition.z)
         callback.accept(passenger, worldPosition.x, worldPosition.y + yOffset, worldPosition.z)
         copyEntityData(passenger)

@@ -29,6 +29,8 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.MINI_BOMB.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.SMOKE_GUN_GRENADE.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.TARGET.get(), ::TargetRenderer)
+            registerEntityRenderer(ModEntities.RC_OPERATOR_BODY.get(), ::RCOperatorBodyRenderer)
+            registerEntityRenderer(ModEntities.DRONE.get(), ::BasicVehicleRenderer)
             registerEntityRenderer(ModEntities.DPS_GENERATOR.get(), ::DPSGeneratorRenderer)
             registerEntityRenderer(ModEntities.RPG_ROCKET_TBG.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.RPG_ROCKET_STANDARD.get(), ::BasicProjectileRenderer)

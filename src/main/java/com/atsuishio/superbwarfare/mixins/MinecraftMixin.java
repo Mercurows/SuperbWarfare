@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.mixins;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
+import com.atsuishio.superbwarfare.item.misc.MonitorItem;
 import com.atsuishio.superbwarfare.network.message.send.ChangeVehicleSeatMessage;
 import com.atsuishio.superbwarfare.network.message.send.SwitchVehicleWeaponMessage;
 import com.atsuishio.superbwarfare.tools.MinecraftUtil;
@@ -63,7 +64,8 @@ public class MinecraftMixin {
 
         var seatIndex = vehicle.getSeatIndex(player);
 
-        if (vehicle.banHand(player)) {
+        boolean selectsMonitor = MonitorItem.isCarrierMonitor(player, player.getInventory().getItem(index));
+        if (vehicle.banHand(player) && !selectsMonitor) {
             ci.cancel();
             options.keyHotbarSlots[index].consumeClick();
 
