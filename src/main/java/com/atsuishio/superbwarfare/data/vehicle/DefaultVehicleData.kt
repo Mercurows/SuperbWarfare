@@ -88,6 +88,10 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     @SerialName("KeepChunkLoaded")
     var keepChunkLoaded: Boolean = true
 
+    /** 关闭全局快捷放置时，装有此类载具的集装箱仍直接部署实体。 */
+    @SerialName("ForceQuickPlacement")
+    var forceQuickPlacement: Boolean = false
+
     @SerialName("MouseSensitivity")
     var mouseSensitivity: Double = 0.4
 

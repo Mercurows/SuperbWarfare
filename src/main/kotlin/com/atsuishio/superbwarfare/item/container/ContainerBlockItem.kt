@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
 import com.atsuishio.superbwarfare.client.renderer.item.ContainerBlockItemRenderer
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
+import com.atsuishio.superbwarfare.data.vehicle.VehicleData
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModBlocks
@@ -66,19 +67,18 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
         context: BlockPlaceContext,
         state: BlockState
     ): Boolean {
-        if (!VehicleConfig.PLACE_VEHICLES_DIRECTLY.get()) {
+        val tag = getBlockEntityData(context.itemInHand)
+        val entityType = tag?.getString("EntityType")?.takeIf { it.isNotEmpty() }
+            ?.let { EntityType.byString(it).getOrNull() }
+        val forceQuickPlacement = entityType?.let { VehicleData.getDefault(it).forceQuickPlacement } == true
+        if (!forceQuickPlacement && !VehicleConfig.PLACE_VEHICLES_DIRECTLY.get()) {
             return super.placeBlock(context, state)
         }
 
         // TODO 打开空间检测，优化这部分代码
-
-        val tag = getBlockEntityData(context.itemInHand)
-        if (!(tag?.contains("EntityType") ?: false)) return false
-
-        val type = tag.getString("EntityType")
-        val entityType = EntityType.byString(type).getOrNull() ?: return false
-
+        if (tag == null || entityType == null) return false
         val level = context.level
+        if (level.isClientSide) return true
         val entity = entityType.create(level) ?: return false
 
         entity.load(tag.getCompound("Entity"))
@@ -94,9 +94,7 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
         if (entity is VehicleEntity) {
             entity.serverYaw = direction.toYRot()
         }
-        level.addFreshEntity(entity)
-
-        return true
+        return level.addFreshEntity(entity)
     }
 
     override fun place(pContext: BlockPlaceContext): InteractionResult {
@@ -172,6 +170,7 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
             event.add(ModEntities.YX_100)
             event.add(ModEntities.PLZ_05)
             event.add(ModEntities.FH_77BW)
+            event.add(ModEntities.DRONE)
             event.add(ModEntities.AH_6)
             event.add(ModEntities.MI_28)
             event.add(ModEntities.TOM_6)

@@ -17,11 +17,13 @@
     "EngineSoundVolume": 0.55
   },
   "EngineSound": "superbwarfare:drone_engine",
+  "AllowFreeCam": true,
+  "ForceQuickPlacement": true,
+  "ContainerIcon": "superbwarfare:textures/item/drone.png",
   "KeepChunkLoaded": false,
   "CollisionLevel": {"Level": 0},
   "Mass": 0.1,
   "RotateOffsetHeight": 0.1,
-  "ThirdPersonCameraPos": [0, 0.35, 1.75],
   "Seats": [
     {
       "HidePassenger": true,
@@ -32,7 +34,9 @@
       "Sensitivity": [0, 0, 0],
       "CameraPos": {
         "Position": [0, 0.17, 0.27],
-        "UseFixedCameraPos": true
+        "UseFixedCameraPos": true,
+        "UseAircraftCamera": true,
+        "AircraftCameraPos": [0, 0.6, -2.5]
       }
     }
   ],
