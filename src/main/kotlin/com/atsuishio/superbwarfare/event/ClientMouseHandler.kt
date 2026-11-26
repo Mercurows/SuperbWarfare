@@ -140,38 +140,16 @@ object ClientMouseHandler {
                 return
             }
 
-            var i = 0.0
-            if (vehicle.roll < 0) {
-                i = 1.0
-            } else if (vehicle.roll > 0) {
-                i = -1.0
-            }
-
-            if (Mth.abs(vehicle.roll) > 90) {
-                i *= (1 - (Mth.abs(vehicle.roll) - 90) / 90)
-            }
-
             if (player != vehicle.firstPassenger || vehicle.getSeatIndex(player) != 0) return
 
             if (notInGame) {
                 sendPacketToServer(MouseMoveMessage(0.0, 0.0))
+            } else if (ClientEventHandler.isFreeCam(player) || ClientEventHandler.isNacelleCam(player)) {
+                sendPacketToServer(MouseMoveMessage(0.0, 0.0))
             } else {
-                if (!(ClientEventHandler.isFreeCam(player) || ClientEventHandler.isNacelleCam(player))) {
-                    if (mc.options.cameraType == CameraType.FIRST_PERSON) {
-                        if (vehicle.computed().engineType != EngineType.TOM6) {
-                            sendPacketToServer(
-                                MouseMoveMessage(
-                                    (1 - abs(vehicle.roll) / 90) * lerpSpeedX + (abs(vehicle.roll) / 90) * lerpSpeedY * i,
-                                    (1 - abs(vehicle.roll) / 90) * lerpSpeedY + (abs(vehicle.roll) / 90) * lerpSpeedX * if (vehicle.roll < 0) -1.0 else 1.0
-                                )
-                            )
-                        }
-                    } else {
-                        sendPacketToServer(MouseMoveMessage(lerpSpeedX, lerpSpeedY))
-                    }
-                } else {
-                    sendPacketToServer(MouseMoveMessage(0.0, 0.0))
-                }
+                // 三轴全部本体局部操控：鼠标 X/Y 直接对应本体 yaw/pitch，
+                // 不再按 roll 做欧拉万向混合（既然引擎侧也是局部轴）。
+                sendPacketToServer(MouseMoveMessage(lerpSpeedX, lerpSpeedY))
             }
 
         }

@@ -636,7 +636,14 @@ object VehicleMotionUtils {
         val heightAboveGround = (vehicle.y + collisionInfo.position.y - collisionInfo.size.y) - groundY
         if (heightAboveGround > maxHalfExtent) {
             if (vehicle.isInFluidType) {
-                vehicle.xRot *= 0.9f; vehicle.setZRot(vehicle.roll * 0.9f)
+                if (vehicle.usesQuaternionBody()) {
+                    if (!vehicle.level().isClientSide) {
+                        vehicle.rotateBodyPitch(vehicle.xRot * (0.9f - 1f) * Mth.DEG_TO_RAD)
+                        vehicle.rotateBodyLocalZ(vehicle.roll * (0.9f - 1f) * Mth.DEG_TO_RAD)
+                    }
+                } else {
+                    vehicle.xRot *= 0.9f; vehicle.setZRot(vehicle.roll * 0.9f)
+                }
             }
             return
         }
@@ -899,8 +906,15 @@ object VehicleMotionUtils {
                 updateTerrainCompact(vehicle, p, heightY, supportedPos)
             }
         } else if (vehicle.isInFluidType) {
-            vehicle.xRot *= 0.9f
-            vehicle.setZRot(vehicle.roll * 0.9f)
+            if (vehicle.usesQuaternionBody()) {
+                if (!vehicle.level().isClientSide) {
+                    vehicle.rotateBodyPitch(vehicle.xRot * (0.9f - 1f) * Mth.DEG_TO_RAD)
+                    vehicle.rotateBodyLocalZ(vehicle.roll * (0.9f - 1f) * Mth.DEG_TO_RAD)
+                }
+            } else {
+                vehicle.xRot *= 0.9f
+                vehicle.setZRot(vehicle.roll * 0.9f)
+            }
         }
     }
 
@@ -958,8 +972,19 @@ object VehicleMotionUtils {
         val targetXRot = (-localDirection.z * targetTilt).toFloat()
         val targetZRot = (localDirection.x * targetTilt).toFloat()
 
-        entity.xRot = lerpAngle(entity.xRot, -targetXRot, tiltSmoothingFactor)
-        entity.setZRot(lerpAngle(entity.roll, -targetZRot, tiltSmoothingFactor))
+        if (entity.usesQuaternionBody()) {
+            if (!entity.level().isClientSide) {
+                entity.syncEulerFromBody()
+                val newPitch = lerpAngle(entity.xRot, -targetXRot, tiltSmoothingFactor)
+                entity.rotateBodyPitch((newPitch - entity.xRot) * Mth.DEG_TO_RAD)
+                entity.syncEulerFromBody()
+                val newRoll = lerpAngle(entity.roll, -targetZRot, tiltSmoothingFactor)
+                entity.rotateBodyLocalZ((newRoll - entity.roll) * Mth.DEG_TO_RAD)
+            }
+        } else {
+            entity.xRot = lerpAngle(entity.xRot, -targetXRot, tiltSmoothingFactor)
+            entity.setZRot(lerpAngle(entity.roll, -targetZRot, tiltSmoothingFactor))
+        }
     }
 
     /**
@@ -1032,8 +1057,19 @@ object VehicleMotionUtils {
         val targetRoll = -Mth.clamp((Mth.atan2(slopeX, 1.0) * Mth.RAD_TO_DEG).toFloat(), -45f, 45f)
 
         val smoothingFactor = 0.1f
-        entity.xRot = lerpAngle(entity.xRot, targetXRot, smoothingFactor)
-        entity.setZRot(lerpAngle(entity.roll, targetRoll, smoothingFactor))
+        if (entity.usesQuaternionBody()) {
+            if (!entity.level().isClientSide) {
+                entity.syncEulerFromBody()
+                val newPitch = lerpAngle(entity.xRot, targetXRot, smoothingFactor)
+                entity.rotateBodyPitch((newPitch - entity.xRot) * Mth.DEG_TO_RAD)
+                entity.syncEulerFromBody()
+                val newRoll = lerpAngle(entity.roll, targetRoll, smoothingFactor)
+                entity.rotateBodyLocalZ((newRoll - entity.roll) * Mth.DEG_TO_RAD)
+            }
+        } else {
+            entity.xRot = lerpAngle(entity.xRot, targetXRot, smoothingFactor)
+            entity.setZRot(lerpAngle(entity.roll, targetRoll, smoothingFactor))
+        }
     }
 
     /**

@@ -5127,6 +5127,11 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "driver_camera",
+					"parent": "root",
+					"pivot": [0, 40.4, -19.8]
 				}
 			]
 		}

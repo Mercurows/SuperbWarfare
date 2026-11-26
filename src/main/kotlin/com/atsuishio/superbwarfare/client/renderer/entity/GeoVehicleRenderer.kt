@@ -52,11 +52,14 @@ import net.minecraft.world.phys.Vec3
 import org.joml.Matrix3f
 import org.joml.Matrix4f
 import org.joml.Quaternionf
+import org.joml.Vector3f
 
 open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     EntityRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
 
     var pitch = 0f
+    private val CAMERA_TO_MODEL_180 = Quaternionf().rotationY(Math.PI.toFloat())
+
     var yaw = 0f
     var roll = 0f
     var leftWheelRot = 0f
@@ -819,6 +822,25 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
     open fun rotateVehicleAxis(entity: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
         val root = Vec3(0.0, entity.rotateOffsetHeight, 0.0)
+        if (entity.usesQuaternionBody()) {
+            // 四元数载具（直升机/固定翼）：模型旋转 = 数据四元数 * Ry(180°)
+            // （模型朝 -Z、数据朝 +Z）。这里不经过欧拉分解，因此不会在 ±90° 附近丢失姿态。
+            val q = Quaternionf(entity.getBodyRotation(partialTicks))
+                .mul(CAMERA_TO_MODEL_180)
+            // fakePitch/fakeRoll 在模型局部轴上叠加（与旧欧拉顺序一致）
+            val fakePitch = Mth.lerp(partialTicks, entity.fakePitchO, entity.fakePitch)
+            val fakeRoll = Mth.lerp(partialTicks, entity.fakeRollO, entity.fakeRoll)
+            // 与旧版模型欧拉顺序一致：Ry(180-yaw)Rx(-(p+fp))Rz(-(r+fr))
+            // = q_model * Rz(r) * Rx(-fp) * Rz(-(r+fr))
+            val rollDeg = entity.getRoll(partialTicks)
+            q.rotateZ(rollDeg * Mth.DEG_TO_RAD)
+                .rotateX(-fakePitch * Mth.DEG_TO_RAD)
+                .rotateZ(-(rollDeg + fakeRoll) * Mth.DEG_TO_RAD)
+            poseStack.translate(root.x, root.y, root.z)
+            poseStack.mulPose(q)
+            poseStack.translate(-root.x, -root.y, -root.z)
+            return
+        }
         poseStack.rotateAround(
             Axis.YP.rotationDegrees(-entityYaw + 180),
             root.x.toFloat(),

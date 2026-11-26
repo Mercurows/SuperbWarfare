@@ -39,7 +39,8 @@ object VehicleVecUtils {
     @JvmStatic
     fun getUpVec(q: Quaternionf): Vec3 {
         val dir = Vector3f()
-        q.positiveY(dir)
+        // 注意：JOML 的 positiveX/Y/Z 是逆旋转（R^T·e），必须用 transformPositiveX/Y/Z
+        q.transformPositiveY(dir)
         return Vec3(dir.x.toDouble(), dir.y.toDouble(), dir.z.toDouble())
     }
 
@@ -49,7 +50,8 @@ object VehicleVecUtils {
     @JvmStatic
     fun getFrontVec(q: Quaternionf): Vec3 {
         val dir = Vector3f()
-        q.positiveZ(dir)
+        // JOML positiveZ 为逆旋转；transformPositiveZ 才是 R·e_z
+        q.transformPositiveZ(dir)
         return Vec3(dir.x.toDouble(), dir.y.toDouble(), dir.z.toDouble())
     }
 
@@ -59,27 +61,64 @@ object VehicleVecUtils {
     @JvmStatic
     fun getRightVec(q: Quaternionf): Vec3 {
         val dir = Vector3f()
-        q.positiveX(dir)
+        q.transformPositiveX(dir)
         dir.negate()
         return Vec3(dir.x.toDouble(), dir.y.toDouble(), dir.z.toDouble())
     }
 
+    /**
+     * 欧拉角 -> 四元数。约定与载具变换一致：
+     * `R = Ry(-yaw) * Rx(pitch) * Rz(roll)`。
+     */
     @JvmStatic
     fun eulerToQuaternion(yaw: Float, pitch: Float, roll: Float): Quaternionf {
-        val cy = Math.cos(yaw * 0.5 * Mth.DEG_TO_RAD)
-        val sy = Math.sin(yaw * 0.5 * Mth.DEG_TO_RAD)
-        val cp = Math.cos(pitch * 0.5 * Mth.DEG_TO_RAD)
-        val sp = Math.sin(pitch * 0.5 * Mth.DEG_TO_RAD)
-        val cr = Math.cos(roll * 0.5 * Mth.DEG_TO_RAD)
-        val sr = Math.sin(roll * 0.5 * Mth.DEG_TO_RAD)
+        val d = Mth.DEG_TO_RAD
+        return Quaternionf().rotationY(-yaw * d).rotateX(pitch * d).rotateZ(roll * d)
+    }
 
-        val q = Quaternionf()
-        q.w = (cy * cp * cr + sy * sp * sr).toFloat()
-        q.x = (cy * cp * sr - sy * sp * cr).toFloat()
-        q.y = (sy * cp * sr + cy * sp * cr).toFloat()
-        q.z = (sy * cp * cr - cy * sp * sr).toFloat()
+    /**
+     * 四元数 -> 欧拉角（YXZ，与 [eulerToQuaternion] 互逆）。
+     * 返回 (pitch, yaw, roll) 微度；x = pitch，y = -yaw，z = roll。
+     */
+    @JvmStatic
+    fun quaternionToEulerYXZ(q: Quaternionf, out: Vector3f = Vector3f()): Vector3f {
+        q.getEulerAnglesYXZ(out)
+        return out
+    }
 
-        return q
+    /**
+     * 从四元数精确反解欧拉角（pitch，yaw，roll）微度：
+     * yaw/pitch 由前方向定义（pitch ∈ [-90,90]），roll 由 residual Rz 定义，
+     * 对任意姿态都精确（包括机头竖直）。
+     */
+    @JvmStatic
+    fun quatEulerDegrees(q: Quaternionf, out: Vector3f = Vector3f()): Vector3f {
+        val f = getFrontVec(q)
+        val h = Math.sqrt(f.x * f.x + f.z * f.z)
+        val yaw = if (h > 1.0E-5) Mth.wrapDegrees((Math.atan2(-f.x, f.z) * Mth.RAD_TO_DEG).toFloat()) else 0f
+        val pitch = (Math.atan2(-f.y, h) * Mth.RAD_TO_DEG).toFloat()
+        val yawRad = yaw * Mth.DEG_TO_RAD
+        val pitchRad = pitch * Mth.DEG_TO_RAD
+        val residual = Quaternionf().rotationX(-pitchRad)
+            .mul(Quaternionf().rotationY(yawRad))
+            .mul(q)
+        val xAxis = residual.transform(Vector3f(1f, 0f, 0f))
+        val roll = Mth.wrapDegrees((Math.atan2(xAxis.y, xAxis.x) * Mth.RAD_TO_DEG).toFloat())
+        return out.set(pitch, yaw, roll)
+    }
+
+    /**
+     * 最短弧四元数插值（自动处理 q/-q 半球）
+     */
+    @JvmStatic
+    fun slerpQuaternion(a: Quaternionf, b: Quaternionf, t: Float): Quaternionf {
+        val dot = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w
+        val target = if (dot < 0f) {
+            Quaternionf(-b.x, -b.y, -b.z, -b.w)
+        } else {
+            Quaternionf(b)
+        }
+        return Quaternionf(a).slerp(target, t).normalize()
     }
 
     @JvmStatic
@@ -573,9 +612,13 @@ object VehicleVecUtils {
             ),
             Mth.lerp(partialTicks.toDouble(), vehicle.zo, vehicle.z)
         )
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.yRot)))
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, vehicle.xRotO, vehicle.xRot)))
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, vehicle.prevRoll, vehicle.roll)))
+        if (vehicle.usesQuaternionBody()) {
+            transform.rotate(vehicle.getBodyRotation(partialTicks))
+        } else {
+            transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.yRot)))
+            transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, vehicle.xRotO, vehicle.xRot)))
+            transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, vehicle.prevRoll, vehicle.roll)))
+        }
         return transform
     }
 
@@ -587,7 +630,12 @@ object VehicleVecUtils {
             Mth.lerp(partialTicks.toDouble(), vehicle.yo, vehicle.y),
             Mth.lerp(partialTicks.toDouble(), vehicle.zo, vehicle.z)
         )
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.yRot)))
+        if (vehicle.usesQuaternionBody()) {
+            // flat 只用水平 yaw：用派生的连续 yaw，避免 forward 近垂直时水平分量极小导致 yaw 跳变
+            transform.rotate(Axis.YP.rotationDegrees(-vehicle.getYaw(partialTicks)))
+        } else {
+            transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.yRot)))
+        }
         return transform
     }
 
@@ -603,24 +651,41 @@ object VehicleVecUtils {
             ),
             Mth.lerp(partialTicks.toDouble(), vehicle.zo, vehicle.z)
         )
-        transform.rotate(
-            Axis.YP.rotationDegrees(
-                (-Mth.lerp(
-                    partialTicks,
-                    vehicle.yRotO,
-                    vehicle.yRot
-                ) + ClientMouseHandler.freeCameraYaw).toFloat()
+        if (vehicle.usesQuaternionBody()) {
+            // 保持旧观感：第三人称/freecam 不包含 body roll，且 freeYaw 按世界 yaw 叠加
+            // 旧式：R = Ry(-yaw + freeYaw) * Rx(pitch + freePitch)
+            val yaw = vehicle.getYaw(partialTicks)
+            val pitch = vehicle.getPitch(partialTicks)
+            transform.rotate(
+                Axis.YP.rotationDegrees(
+                    (-yaw + ClientMouseHandler.freeCameraYaw).toFloat()
+                )
             )
-        )
-        transform.rotate(
-            Axis.XP.rotationDegrees(
-                (Mth.lerp(
-                    partialTicks,
-                    vehicle.xRotO,
-                    vehicle.xRot
-                ) + ClientMouseHandler.freeCameraPitch).toFloat()
+            transform.rotate(
+                Axis.XP.rotationDegrees(
+                    (pitch + ClientMouseHandler.freeCameraPitch).toFloat()
+                )
             )
-        )
+        } else {
+            transform.rotate(
+                Axis.YP.rotationDegrees(
+                    (-Mth.lerp(
+                        partialTicks,
+                        vehicle.yRotO,
+                        vehicle.yRot
+                    ) + ClientMouseHandler.freeCameraYaw).toFloat()
+                )
+            )
+            transform.rotate(
+                Axis.XP.rotationDegrees(
+                    (Mth.lerp(
+                        partialTicks,
+                        vehicle.xRotO,
+                        vehicle.xRot
+                    ) + ClientMouseHandler.freeCameraPitch).toFloat()
+                )
+            )
+        }
         return transform
     }
 

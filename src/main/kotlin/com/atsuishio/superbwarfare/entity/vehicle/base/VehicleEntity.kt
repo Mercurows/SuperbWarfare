@@ -367,6 +367,15 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open var roll = 0f
     open var prevRoll = 0f
+
+    // 载具本体四元数朝向（SU(2)）。仅直升机/固定翼（含 TOM6）使用它作为权威状态，
+    // xRot/yRot/roll 在每 tick 末从四元数派生，用于 HUD/旧逻辑兼容。
+    private val bodyQuat = Quaternionf()
+    private val prevBodyQuat = Quaternionf()
+    private var bodyQuatInitialized = false
+    private var quatPrevPitch = 0f
+    private var quatPrevYaw = 0f
+    private var quatPrevRoll = 0f
     open var repairCoolDown = maxRepairCoolDown()
     open var hurtWarnCoolDown = 0
 
@@ -1028,8 +1037,153 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open fun getYaw(tickDelta: Float) = Mth.lerp(tickDelta, yRotO, yRot)
     open fun getPitch(tickDelta: Float) = Mth.lerp(tickDelta, xRotO, xRot)
 
+    override fun getViewXRot(partialTicks: Float): Float =
+        if (usesQuaternionBody()) getPitch(partialTicks) else super.getViewXRot(partialTicks)
+
+    override fun getViewYRot(partialTicks: Float): Float =
+        if (usesQuaternionBody()) getYaw(partialTicks) else super.getViewYRot(partialTicks)
+
     open fun setZRot(rot: Float) {
         roll = rot
+    }
+
+    /** 当前载具是否使用四元数作为本体朝向的权威表示（直升机/固定翼） */
+    open fun usesQuaternionBody(): Boolean {
+        val type = computed().engineType
+        return type == EngineType.HELICOPTER || type == EngineType.AIRCRAFT || type == EngineType.TOM6
+    }
+
+    /** 是否为本地玩家驾驶的四元数载具（客户端运行与服务端相同的本体积分以保证操控跟手） */
+    open fun isLocalPilot(): Boolean =
+        level().isClientSide && getActiveDriver() === net.minecraft.client.Minecraft.getInstance().player
+
+    /** 获取插值后的本体朝向四元数 */
+    open fun getBodyRotation(partialTicks: Float): Quaternionf =
+        if (usesQuaternionBody()) {
+            VehicleVecUtils.slerpQuaternion(prevBodyQuat, bodyQuat, partialTicks)
+        } else {
+            VehicleVecUtils.eulerToQuaternion(
+                Mth.lerp(partialTicks, yRotO, yRot),
+                Mth.lerp(partialTicks, xRotO, xRot),
+                Mth.lerp(partialTicks, prevRoll, roll)
+            )
+        }
+
+    /** 获取当前帧不插值的本体朝向四元数 */
+    open fun getCurrentBodyRotation(): Quaternionf = Quaternionf(bodyQuat)
+
+    /** 直接设置本体朝向（出生包/BVR/放置使用）：同时刷新 prev 与派生欧拉角 */
+    open fun setBodyRotationDirect(rotation: Quaternionf) {
+        bodyQuat.set(rotation).normalize()
+        prevBodyQuat.set(bodyQuat)
+        bodyQuatInitialized = true
+        syncEulerFromBody()
+    }
+
+    open fun rotateBodyLocalX(angleRad: Float) {
+        bodyQuat.rotateX(angleRad)
+        syncEulerFromBody()
+    }
+
+    /**
+     * 按旧欧拉语义增加俯仰角（等价于 `xRot += angle`，但不会在 ±90° 锁死）。
+     * 旧语义：R = Ry(-yaw)Rx(pitch)Rz(roll)，xRot 增量对应
+     * `R * Rz(-roll) * Rx(Δ) * Rz(roll)`（即绕 body 轴 (cos roll, -sin roll, 0)）。
+     */
+    open fun rotateBodyPitch(angleRad: Float) {
+        syncEulerFromBody()
+        val rollRad = roll * Mth.DEG_TO_RAD
+        bodyQuat.rotateZ(-rollRad).rotateX(angleRad).rotateZ(rollRad)
+        syncEulerFromBody()
+    }
+
+    open fun rotateBodyLocalY(angleRad: Float) {
+        bodyQuat.rotateY(angleRad)
+        syncEulerFromBody()
+    }
+
+    open fun rotateBodyLocalZ(angleRad: Float) {
+        bodyQuat.rotateZ(angleRad)
+        syncEulerFromBody()
+    }
+
+    /** 绕世界 Y 轴旋转（旧 yRot 行为） */
+    open fun rotateBodyWorldY(angleRad: Float) {
+        bodyQuat.premul(Quaternionf().rotationY(angleRad))
+        syncEulerFromBody()
+    }
+
+    /**
+     * 从四元数完整派生欧拉角 xRot/yRot/roll（供 HUD、旧代码使用）。
+     * 注意：不能用普通 YXZ 分解在 ±90° 附近会丢失 roll；这里用
+     * “前方向定 yaw/pitch（pitch ∈ [-90,90]）+ 残余 Rz 定 roll”的方式，对
+     * 任意姿态都是精确的（即使机头竖直）。
+     */
+    open fun syncEulerFromBody() {
+        val f = VehicleVecUtils.getFrontVec(bodyQuat)
+        val h = Math.sqrt(f.x * f.x + f.z * f.z)
+        val yawF = if (h > 1.0E-5) Mth.wrapDegrees((Math.atan2(-f.x, f.z) * Mth.RAD_TO_DEG).toFloat()) else yRot
+        val pitchF = (Math.atan2(-f.y, h) * Mth.RAD_TO_DEG).toFloat()
+        val yawRad = yawF * Mth.DEG_TO_RAD
+        val pitchRad = pitchF * Mth.DEG_TO_RAD
+        val residual = Quaternionf().rotationX(-pitchRad)
+            .mul(Quaternionf().rotationY(yawRad))
+            .mul(bodyQuat)
+        val xAxis = residual.transform(Vector3f(1f, 0f, 0f))
+        val rollF = Mth.wrapDegrees((Math.atan2(xAxis.y, xAxis.x) * Mth.RAD_TO_DEG).toFloat())
+
+        // YXZ 欧拉表示有两个等价支（pitch 折叠）。选择与上一 tick 最近的一支，
+        // 使 xRot 在真实俯仰越过 ±90° 时保持连续（旧欧拉语义），避免俯仰折叠导致控制反向。
+        val candidates = arrayOf(
+            floatArrayOf(pitchF, yawF, rollF),
+            floatArrayOf(180f - pitchF, yawF - 180f, rollF - 180f),
+            floatArrayOf(-180f - pitchF, yawF - 180f, rollF - 180f)
+        )
+        var best = candidates[0]
+        var bestCost = Float.MAX_VALUE
+        for (candidate in candidates) {
+            val dp = Mth.wrapDegrees(candidate[0] - xRot)
+            val dy = Mth.wrapDegrees(candidate[1] - yRot)
+            val dr = Mth.wrapDegrees(candidate[2] - roll)
+            val cost = dp * dp + dy * dy + dr * dr
+            if (cost < bestCost) {
+                bestCost = cost
+                best = candidate
+            }
+        }
+        xRot = Mth.wrapDegrees(best[0])
+        yRot = Mth.wrapDegrees(best[1])
+        roll = Mth.wrapDegrees(best[2])
+        // 保持插值基准与当前值走最短弧：跨 ±180° 那一 tick 不会出现 360° 错位
+        xRotO = xRot + Mth.wrapDegrees(xRotO - xRot)
+        yRotO = yRot + Mth.wrapDegrees(yRotO - yRot)
+        prevRoll = roll + Mth.wrapDegrees(prevRoll - roll)
+    }
+
+    open fun clampBodyPitch(maxDeg: Float) {
+        if (maxDeg <= 0f || maxDeg >= 90f) return
+        syncEulerFromBody()
+        if (Mth.abs(xRot) > maxDeg) {
+            rotateBodyPitch((Math.signum(xRot) * maxDeg - xRot) * Mth.DEG_TO_RAD)
+        }
+    }
+
+    /** 将连续俯仰角限制到 [minDeg, maxDeg]（保留旧 TOM6 等非对称限位语义） */
+    open fun clampBodyPitchRange(minDeg: Float, maxDeg: Float) {
+        syncEulerFromBody()
+        val target = xRot.coerceIn(minDeg, maxDeg)
+        if (target != xRot) {
+            rotateBodyPitch((target - xRot) * Mth.DEG_TO_RAD)
+        }
+    }
+
+    /** 限制滚转角（仅适用于 < 180° 的数据） */
+    open fun clampBodyRoll(maxDeg: Float) {
+        if (maxDeg <= 0f || maxDeg >= 180f) return
+        syncEulerFromBody()
+        if (Mth.abs(roll) > maxDeg) {
+            rotateBodyLocalZ((Math.signum(roll) * maxDeg - roll) * Mth.DEG_TO_RAD)
+        }
     }
 
     open fun turretTurnSound(diffX: Float, diffY: Float, pitch: Float) {
@@ -1101,6 +1255,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             define(CANNON_RECOIL_FORCE, 0f)
             define(POWER, 0f)
             define(YAW_WHILE_SHOOT, 0f)
+            define(BODY_QX, 0f)
+            define(BODY_QY, 0f)
+            define(BODY_QZ, 0f)
+            define(BODY_QW, 1f)
             define(SERVER_YAW, yRot)
             define(SERVER_PITCH, xRot)
             define(DECOY_COUNT, 0)
@@ -1659,6 +1817,14 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         buffer.writeBoolean(gearUp)
         buffer.writeBoolean(hoverMode)
         buffer.writeBoolean(loiterActive)
+
+        if (usesQuaternionBody()) {
+            val q = if (bodyQuatInitialized) bodyQuat else VehicleVecUtils.eulerToQuaternion(yRot, xRot, roll)
+            buffer.writeFloat(q.x)
+            buffer.writeFloat(q.y)
+            buffer.writeFloat(q.z)
+            buffer.writeFloat(q.w)
+        }
     }
 
     /**
@@ -1678,6 +1844,16 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         gearUp = additionalData.readBoolean()
         hoverMode = additionalData.readBoolean()
         loiterActive = additionalData.readBoolean()
+
+        if (usesQuaternionBody()) {
+            val q = Quaternionf(
+                additionalData.readFloat(),
+                additionalData.readFloat(),
+                additionalData.readFloat(),
+                additionalData.readFloat()
+            ).normalize()
+            setBodyRotationDirect(q)
+        }
 
         // Sync interpolation baseline frames
         turretYRotO = turretYRot
@@ -1712,6 +1888,20 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             compound.getFloat("Health")
         } else {
             this.getMaxHealth()
+        }
+
+        if (compound.contains("BodyQX")) {
+            bodyQuat.set(
+                compound.getFloat("BodyQX"),
+                compound.getFloat("BodyQY"),
+                compound.getFloat("BodyQZ"),
+                compound.getFloat("BodyQW")
+            )
+            if (bodyQuat.lengthSquared() < 1.0E-6f) bodyQuat.identity()
+            bodyQuat.normalize()
+            prevBodyQuat.set(bodyQuat)
+            bodyQuatInitialized = true
+            syncEulerFromBody()
         }
 
         turretHealth = if (compound.contains("TurretHealth")) {
@@ -1849,6 +2039,12 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         val mountState = entityData.get(MOUNT_STATE)
         if (!mountState.isEmpty) compound.put("MountState", mountState.copy())
         compound.putFloat("Health", health)
+        if (usesQuaternionBody()) {
+            compound.putFloat("BodyQX", bodyQuat.x)
+            compound.putFloat("BodyQY", bodyQuat.y)
+            compound.putFloat("BodyQZ", bodyQuat.z)
+            compound.putFloat("BodyQW", bodyQuat.w)
+        }
 
         val overrideString = override
         if (!overrideString.isBlank()) {
@@ -1988,6 +2184,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         // Rotation
         tag.putFloat("Yaw", yRot)
         tag.putFloat("Pitch", xRot)
+        if (usesQuaternionBody()) {
+            val q = getCurrentBodyRotation()
+            tag.putFloat("BodyQX", q.x)
+            tag.putFloat("BodyQY", q.y)
+            tag.putFloat("BodyQZ", q.z)
+            tag.putFloat("BodyQW", q.w)
+        }
 
         // Turrets
         tag.putFloat("TurretYRot", turretYRot)
@@ -2429,6 +2632,58 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         // inside baseTick() to avoid redundant DefaultVehicleData lookups.
         val computed = computed()
 
+        if (usesQuaternionBody()) {
+            if (this.level().isClientSide) {
+                quatPrevPitch = xRot
+                quatPrevYaw = yRot
+                quatPrevRoll = roll
+                prevBodyQuat.set(bodyQuat)
+                val serverQ = Quaternionf(
+                    entityData.get(BODY_QX),
+                    entityData.get(BODY_QY),
+                    entityData.get(BODY_QZ),
+                    entityData.get(BODY_QW)
+                )
+                if (isLocalPilot()) {
+                    // 本地飞行员：保留本地预测姿态，每 tick 往服务端姿态软校正（与旧版 10% 插值类似）
+                    if (!bodyQuatInitialized) {
+                        bodyQuat.set(serverQ)
+                        if (bodyQuat.lengthSquared() < 1.0E-6f) {
+                            bodyQuat.set(VehicleVecUtils.eulerToQuaternion(yRot, xRot, roll))
+                        }
+                        prevBodyQuat.set(bodyQuat)
+                        bodyQuatInitialized = true
+                    } else if (serverQ.lengthSquared() > 1.0E-6f) {
+                        bodyQuat.slerp(serverQ.normalize(), 0.05f)
+                    }
+                } else {
+                    bodyQuat.set(serverQ)
+                    if (bodyQuat.lengthSquared() < 1.0E-6f) {
+                        bodyQuat.set(VehicleVecUtils.eulerToQuaternion(yRot, xRot, roll))
+                        prevBodyQuat.set(bodyQuat)
+                    }
+                    if (!bodyQuatInitialized) {
+                        if (bodyQuat.x * bodyQuat.x + bodyQuat.y * bodyQuat.y + bodyQuat.z * bodyQuat.z < 1.0E-6f
+                            && (Mth.abs(yRot) + Mth.abs(xRot) + Mth.abs(roll)) > 1.0E-4f
+                        ) {
+                            bodyQuat.set(VehicleVecUtils.eulerToQuaternion(yRot, xRot, roll))
+                            prevBodyQuat.set(bodyQuat)
+                        }
+                        bodyQuatInitialized = true
+                    }
+                }
+                bodyQuat.normalize()
+                syncEulerFromBody()
+            } else {
+                prevBodyQuat.set(bodyQuat)
+                if (!bodyQuatInitialized) {
+                    bodyQuat.set(VehicleVecUtils.eulerToQuaternion(yRot, xRot, roll))
+                    prevBodyQuat.set(bodyQuat)
+                    bodyQuatInitialized = true
+                }
+            }
+        }
+
         if (this.level().isClientSide) {
             if (prevMotion == null) {
                 prevMotion = this.deltaMovement
@@ -2559,6 +2814,14 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         absoluteSpeedO = absoluteSpeed
 
         super.baseTick()
+
+        if (usesQuaternionBody() && level().isClientSide) {
+            // 四元数载具的客户端已在 tick 开头用服务端姿态更新了 xRot/roll，
+            // 这里恢复上一 tick 的值作为插值基准，避免 HUD/相机 20Hz 抖动。
+            xRotO = quatPrevPitch
+            yRotO = quatPrevYaw
+            prevRoll = quatPrevRoll
+        }
 
         if (laserScale > 0) {
             laserScale = Math.max(laserScale - 0.1f, 0f)
@@ -3026,6 +3289,19 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
                 fakePitch -= pitchAngle * computed.inertiaRotateRate
                 fakeRoll -= rollAngle * computed.inertiaRotateRate
+            }
+        }
+
+        if (usesQuaternionBody()) {
+            if (!this.level().isClientSide) {
+                bodyQuat.normalize()
+                syncEulerFromBody()
+                entityData.set(BODY_QX, bodyQuat.x)
+                entityData.set(BODY_QY, bodyQuat.y)
+                entityData.set(BODY_QZ, bodyQuat.z)
+                entityData.set(BODY_QW, bodyQuat.w)
+            } else {
+                syncEulerFromBody()
             }
         }
 
@@ -4611,11 +4887,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         val interpolatedY = y + (yO - y) / interpolationSteps.toDouble()
         val interpolatedZ = z + (zO - z) / interpolationSteps.toDouble()
 
-        val diffY = Mth.wrapDegrees(serverYaw - this.yRot)
-        val diffX = Mth.wrapDegrees(serverPitch - this.xRot)
+        if (!usesQuaternionBody()) {
+            val diffY = Mth.wrapDegrees(serverYaw - this.yRot)
+            val diffX = Mth.wrapDegrees(serverPitch - this.xRot)
 
-        this.yRot += 0.1f * diffY
-        this.xRot += 0.1f * diffX
+            this.yRot += 0.1f * diffY
+            this.xRot += 0.1f * diffX
+        }
 
         setPos(interpolatedX, interpolatedY, interpolatedZ)
 
@@ -5747,6 +6025,23 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         @JvmField
         val MOUSE_SPEED_Y: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
+
+        /** 载具本体四元数（仅直升机/固定翼同步） */
+        @JvmField
+        val BODY_QX: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
+        val BODY_QY: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
+        val BODY_QZ: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
+        val BODY_QW: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
 
         @JvmField

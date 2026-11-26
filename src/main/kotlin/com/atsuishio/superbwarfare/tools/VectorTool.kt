@@ -126,18 +126,21 @@ object VectorTool {
     // 合并三个旋转（Yaw -> Pitch -> Roll）
     @JvmStatic
     fun combineRotations(partialTicks: Float, entity: VehicleEntity): Quaterniond {
-        // 1. 获取三个独立的旋转四元数
+        // 四元数载具直接返回本体四元数（避免 ±90° 附近欧拉分解丢失姿态）
+        if (entity.usesQuaternionBody()) {
+            return Quaterniond(entity.getBodyRotation(partialTicks))
+        }
+        // 1. 获取载具的三个旋转四元数
         val yawRot = Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entity.yRotO, entity.yRot))
         val pitchRot = Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.xRot))
         val rollRot = Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.prevRoll, entity.roll))
 
-        // 2. 按照正确顺序合并：先Yaw，再Pitch，最后Roll
-        return Quaterniond(yawRot)  // 初始化为Yaw旋转
-            .mul(Quaterniond(pitchRot))     // 应用Pitch旋转
-            .mul(Quaterniond(rollRot))      // 应用Roll旋转
+        // 2. 按正确顺序合并：Yaw、然后Pitch、然后Roll
+        return Quaterniond(yawRot)
+            .mul(Quaterniond(pitchRot))
+            .mul(Quaterniond(rollRot))
     }
 
-    // 仅水平旋转
     @JvmStatic
     fun combineRotationsYaw(partialTicks: Float, entity: VehicleEntity) =
         Quaterniond(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entity.yRotO, entity.yRot)))

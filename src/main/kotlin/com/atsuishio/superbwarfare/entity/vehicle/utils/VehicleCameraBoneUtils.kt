@@ -13,6 +13,8 @@ import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import org.joml.Matrix4d
+import org.joml.Quaterniond
+import org.joml.Quaternionf
 import org.joml.Matrix4f
 import org.joml.Vector3d
 import org.joml.Vector3f
@@ -193,27 +195,40 @@ object VehicleCameraBoneUtils {
 
         val root = vehicle.rotateOffsetHeight
         transform.translate(0.0, root, 0.0)
-        transform.rotateY(
-            Math.toRadians((-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.yRot) + 180.0f).toDouble())
-        )
-        transform.rotateX(
-            Math.toRadians(
-                -Mth.lerp(
-                    partialTicks,
-                    vehicle.xRotO + vehicle.fakePitchO,
-                    vehicle.xRot + vehicle.fakePitch
-                ).toDouble()
+        if (vehicle.usesQuaternionBody()) {
+            // 四元数载具：模型旋转 = bodyQuat * Ry(π)，再叠加 fakePitch/fakeRoll（模型局部）
+            val q = Quaternionf(vehicle.getBodyRotation(partialTicks))
+                .mul(Quaternionf().rotationY(Math.PI.toFloat()))
+            val fakePitch = Mth.lerp(partialTicks, vehicle.fakePitchO, vehicle.fakePitch)
+            val fakeRoll = Mth.lerp(partialTicks, vehicle.fakeRollO, vehicle.fakeRoll)
+            val rollDeg = vehicle.getRoll(partialTicks)
+            q.rotateZ(rollDeg * Mth.DEG_TO_RAD)
+                .rotateX(-fakePitch * Mth.DEG_TO_RAD)
+                .rotateZ(-(rollDeg + fakeRoll) * Mth.DEG_TO_RAD)
+            transform.rotate(Quaterniond(q.x.toDouble(), q.y.toDouble(), q.z.toDouble(), q.w.toDouble()))
+        } else {
+            transform.rotateY(
+                Math.toRadians((-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.yRot) + 180.0f).toDouble())
             )
-        )
-        transform.rotateZ(
-            Math.toRadians(
-                -Mth.lerp(
-                    partialTicks,
-                    vehicle.prevRoll + vehicle.fakeRollO,
-                    vehicle.roll + vehicle.fakeRoll
-                ).toDouble()
+            transform.rotateX(
+                Math.toRadians(
+                    -Mth.lerp(
+                        partialTicks,
+                        vehicle.xRotO + vehicle.fakePitchO,
+                        vehicle.xRot + vehicle.fakePitch
+                    ).toDouble()
+                )
             )
-        )
+            transform.rotateZ(
+                Math.toRadians(
+                    -Mth.lerp(
+                        partialTicks,
+                        vehicle.prevRoll + vehicle.fakeRollO,
+                        vehicle.roll + vehicle.fakeRoll
+                    ).toDouble()
+                )
+            )
+        }
         transform.translate(0.0, -root, 0.0)
 
         val scale = getRenderScale(vehicle).toDouble()

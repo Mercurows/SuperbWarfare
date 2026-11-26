@@ -605,8 +605,9 @@ object VehicleEngineUtils {
         if (onGround()) {
             deltaMovement = deltaMovement.multiply(0.85, 1.0, 0.85)
         } else {
-            if (!sympatheticDetonated) {
-                setZRot(roll * (if (backInputDown) 0.9f else 0.99f))
+            if (!sympatheticDetonated && (!level().isClientSide || isLocalPilot())) {
+                val rollFactor = if (backInputDown) 0.9f else 0.99f
+                rotateBodyLocalZ(roll * (rollFactor - 1f) * Mth.DEG_TO_RAD)
             }
             val f = Mth.clamp(
                 0.93499f - 0.01 * deltaMovement.lengthSqr() + (0.07 * speed) + 0.001f * Mth.abs(
@@ -648,10 +649,12 @@ object VehicleEngineUtils {
                 upInputDown = false
                 downInputDown = false
 
-                if (!isWreck) {
-                    roll *= 0.99f
-                    xRot -= 0.5f * deltaMovement.dot(getViewVector(1f)).toFloat()
-                    roll -= 0.5f * deltaMovement.dot(getRightVec(1f)).toFloat()
+                if (!isWreck && (!level().isClientSide || isLocalPilot())) {
+                    rotateBodyLocalZ(roll * (0.99f - 1f) * Mth.DEG_TO_RAD)
+                    syncEulerFromBody()
+                    rotateBodyPitch(-0.5f * deltaMovement.dot(getViewVector(1f)).toFloat() * Mth.DEG_TO_RAD)
+                    rotateBodyLocalZ(-0.5f * deltaMovement.dot(getRightVec(1f)).toFloat() * Mth.DEG_TO_RAD)
+                    syncEulerFromBody()
                 }
 
                 if (!hasPassenger && engineStartOver) {
@@ -659,11 +662,16 @@ object VehicleEngineUtils {
                 }
             } else {
                 if (hoverMode) {
-                    roll *= 0.97f
-                    roll -= 0.5f * deltaMovement.dot(getRightVec(1f)).toFloat()
-
-                    xRot *= 0.97f
-                    xRot -= 0.5f * deltaMovement.dot(getViewVector(1f)).toFloat()
+                    if ((!level().isClientSide || isLocalPilot())) {
+                        rotateBodyLocalZ(roll * (0.97f - 1f) * Mth.DEG_TO_RAD)
+                        syncEulerFromBody()
+                        rotateBodyLocalZ(-0.5f * deltaMovement.dot(getRightVec(1f)).toFloat() * Mth.DEG_TO_RAD)
+                        syncEulerFromBody()
+                        rotateBodyPitch(xRot * (0.97f - 1f) * Mth.DEG_TO_RAD)
+                        syncEulerFromBody()
+                        rotateBodyPitch(-0.5f * deltaMovement.dot(getViewVector(1f)).toFloat() * Mth.DEG_TO_RAD)
+                        syncEulerFromBody()
+                    }
 
                     rollSpeed *= 0.05f
                     yawSpeed *= 0.5f
@@ -681,19 +689,31 @@ object VehicleEngineUtils {
                 } else {
                     holdTick = 0
                 }
-                xRot += (if (onGround()) 0f else 1.5f) * pitchSpeed * mouseMoveSpeedY * synchedPropellerRot
-                setZRot(roll - rollSpeed * (deltaRot + (if (onGround()) 0f else 0.25f) * mouseMoveSpeedX * synchedPropellerRot))
-
-                yRot += yawSpeed * Mth.clamp(
-                    (if (onGround()) 0.1f else 2f) * mouseMoveSpeedX * synchedPropellerRot + (if (subEngineDamaged) 25 else 0) * synchedPropellerRot,
-                    -10f,
-                    10f
-                )
+                if ((!level().isClientSide || isLocalPilot())) {
+                    rotateBodyLocalX(
+                        (if (onGround()) 0f else 1.5f) * pitchSpeed * mouseMoveSpeedY * synchedPropellerRot * Mth.DEG_TO_RAD
+                    )
+                    rotateBodyLocalZ(
+                        -rollSpeed * (deltaRot + (if (onGround()) 0f else 0.25f) * mouseMoveSpeedX * synchedPropellerRot) * Mth.DEG_TO_RAD
+                    )
+                    rotateBodyLocalY(
+                        -yawSpeed * Mth.clamp(
+                            (if (onGround()) 0.1f else 2f) * mouseMoveSpeedX * synchedPropellerRot + (if (subEngineDamaged) 25 else 0) * synchedPropellerRot,
+                            -10f,
+                            10f
+                        ) * Mth.DEG_TO_RAD
+                    )
+                    syncEulerFromBody()
+                }
 
                 if (onGround()) {
                     hoverMode = false
-                    setZRot(roll * 0.98f)
-                    xRot *= 0.98f
+                    if ((!level().isClientSide || isLocalPilot())) {
+                        rotateBodyLocalZ(roll * (0.98f - 1f) * Mth.DEG_TO_RAD)
+                        syncEulerFromBody()
+                        rotateBodyPitch(xRot * (0.98f - 1f) * Mth.DEG_TO_RAD)
+                        syncEulerFromBody()
+                    }
                 }
             }
 
@@ -764,9 +784,12 @@ object VehicleEngineUtils {
             diffX = -15 - xRot
             diffZ = -35 - roll
 
-            xRot += diffX * 0.2f * synchedPropellerRot
-            yRot += destroyRot
-            setZRot(roll + diffZ * 0.75f * synchedPropellerRot)
+            if ((!level().isClientSide || isLocalPilot())) {
+                rotateBodyPitch(diffX * 0.2f * synchedPropellerRot * Mth.DEG_TO_RAD)
+                rotateBodyWorldY(-destroyRot * Mth.DEG_TO_RAD)
+                rotateBodyLocalZ(diffZ * 0.75f * synchedPropellerRot * Mth.DEG_TO_RAD)
+                syncEulerFromBody()
+            }
             deltaMovement = deltaMovement.add(getViewVector(1f).scale(-0.006f * destroyRot.toDouble()))
         }
 
@@ -883,7 +906,10 @@ object VehicleEngineUtils {
                     deltaMovement = deltaMovement.multiply(0.94, 1.0, 0.94)
                 } else {
                     power *= 0.995f
-                    xRot = Mth.clamp(xRot + 0.1f, -89f, 89f)
+                    if ((!level().isClientSide || isLocalPilot())) {
+                        rotateBodyPitch(0.1f * Mth.DEG_TO_RAD)
+                        clampBodyPitch(89f)
+                    }
                 }
             }
 
@@ -945,49 +971,36 @@ object VehicleEngineUtils {
                 downInputDown = false
             }
 
-            val rotSpeed = 0.3f + 3.2f * Mth.abs(calculateY(roll))
-
-            var addY = Mth.clamp(Math.max(0.24f * speed.toFloat(), 0f) * mouseMoveSpeedX, -rotSpeed, rotSpeed)
+            var addY = Mth.clamp(Math.max(0.24f * speed.toFloat(), 0f) * mouseMoveSpeedX, -0.6f, 0.6f)
             if (onGround()) {
                 addY = Mth.clamp(Mth.clamp(0.6f * speed.toFloat(), 0f, 0.75f) * mouseMoveSpeedX, -1f, 1f)
             }
 
-            val addX = Mth.clamp(Mth.clamp(dotViewVector - 0.24, 0.1, 0.2).toFloat() * mouseMoveSpeedY, -3.5f, 3.5f)
+            val addX = Mth.clamp(Mth.clamp(dotViewVector - 0.24, 0.1, 0.2).toFloat() * mouseMoveSpeedY * 0.75f, -3.5f, 3.5f)
             val addZ =
                 deltaRot - (if (onGround() || Mth.abs(roll) > 60) 0f else 0.02f * (60 - Mth.abs(roll)) / 60) * mouseMoveSpeedX * dotViewVector.toFloat()
 
-            yRot += yawSpeed * addY
-            if (!onGround()) {
-                xRot = Mth.clamp(xRot + pitchSpeed * addX, -clampPitch, clampPitch)
+            if ((!level().isClientSide || isLocalPilot())) {
+                rotateBodyLocalY(-yawSpeed * addY * Mth.DEG_TO_RAD)
+                if (!onGround()) {
+                    rotateBodyLocalX(pitchSpeed * addX * Mth.DEG_TO_RAD)
+                    clampBodyPitch(clampPitch)
 
-                if (tickCount > 5) {
-                    updateRotation(this)
+                    if (tickCount > 5) {
+                        updateRotation(this)
+                    }
+
+                    rotateBodyLocalZ(-rollSpeed * addZ * Mth.DEG_TO_RAD)
+                    clampBodyRoll(clampRoll)
                 }
-
-                setZRot(Mth.clamp(roll - rollSpeed * addZ, -clampRoll, clampRoll))
+                syncEulerFromBody()
             }
 
-            // 自动回正
-            if (!onGround()) {
-                val xSpeed = 1 - Mth.clamp((Mth.abs(xRot) - 60) / 90, 0f, 1f)
-                val zSpeed = Mth.clamp(Mth.abs(roll) / 90, 0f, 1f)
-
-                if (roll > 0) {
-                    setZRot(roll - Math.min(zSpeed, roll))
-                } else if (roll < 0) {
-                    setZRot(roll + Math.min(zSpeed, -roll))
-                }
-
-                roll *= xSpeed
-            }
-
-            if (Mth.abs(xRot) < 20 && Mth.abs(mouseMoveSpeedY) < 0.001) {
-                xRot += if (deltaMovement.y() < 0) {
-                    0.2f * deltaMovement.y.toFloat()
-                } else {
-                    0.2f * deltaMovement.y.toFloat()
-                }
-                xRot *= 0.98f
+            if (Mth.abs(xRot) < 20 && Mth.abs(mouseMoveSpeedY) < 0.001 && (!level().isClientSide || isLocalPilot())) {
+                rotateBodyPitch(0.2f * deltaMovement.y.toFloat() * Mth.DEG_TO_RAD)
+                syncEulerFromBody()
+                rotateBodyPitch(xRot * (0.98f - 1f) * Mth.DEG_TO_RAD)
+                syncEulerFromBody()
             }
 
             propellerRot += 30 * power
@@ -1062,9 +1075,12 @@ object VehicleEngineUtils {
                 }
             }
 
-            val diffX: Float = 90 - xRot
-            xRot += diffX * 0.001f * destroyRot
-            setZRot(roll - destroyRot)
+            if ((!level().isClientSide || isLocalPilot())) {
+                val diffX: Float = 90 - xRot
+                rotateBodyPitch(diffX * 0.001f * destroyRot * Mth.DEG_TO_RAD)
+                rotateBodyLocalZ(-destroyRot * Mth.DEG_TO_RAD)
+                syncEulerFromBody()
+            }
             deltaMovement = deltaMovement.add(0.0, -0.03, 0.0)
             deltaMovement = deltaMovement.add(0.0, -destroyRot * 0.005, 0.0)
         }
@@ -1123,14 +1139,18 @@ object VehicleEngineUtils {
     }
 
     private fun updateRotation(entity: VehicleEntity) {
+        // 四元数版：先将机头收敛到速度方向（世界 yaw），再收敛俯仰（局部 X）。
+        if (entity.level().isClientSide && !entity.isLocalPilot()) return
         val d0 = entity.deltaMovement.add(0.0, -0.06, 0.0)
+        entity.syncEulerFromBody()
         if (Mth.abs(entity.xRot) < 60) {
             val diffY = Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(d0) - entity.yRot).toFloat()
-            entity.yRot += 0.002f * diffY
+            entity.rotateBodyWorldY(-0.002f * diffY * Mth.DEG_TO_RAD)
         }
+        entity.syncEulerFromBody()
         if (Mth.abs(entity.xRot) < 90) {
             val diffX = Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(d0) - entity.xRot).toFloat()
-            entity.xRot += 0.01f * diffX
+            entity.rotateBodyPitch(0.01f * diffX * Mth.DEG_TO_RAD)
         }
     }
 
@@ -1189,8 +1209,9 @@ object VehicleEngineUtils {
             power *= 0.95f
             if (onGround()) {
                 deltaMovement = deltaMovement.multiply(0.94, 1.0, 0.94)
-            } else {
-                xRot = Mth.clamp(xRot + 0.1f, -89f, 89f)
+            } else if ((!level().isClientSide || isLocalPilot())) {
+                rotateBodyPitch(0.1f * Mth.DEG_TO_RAD)
+                clampBodyPitch(89f)
             }
         } else if (passenger is Player) {
 
@@ -1228,17 +1249,18 @@ object VehicleEngineUtils {
             val addZ = deltaRot - (if (onGround()) 0f else 0.01f) * diffY * deltaMovement
                 .length().toFloat()
 
-            val i = xRot / 90
-
-            val yRotSync = addY * (1 - Mth.abs(i)) + addZ * i
-
-            yRot += yRotSync * yawSpeed
-            xRot = Mth.clamp(
-                xRot + addX * pitchSpeed,
-                (if (onGround()) -12 else -120).toFloat(),
-                (if (onGround()) 3 else 120).toFloat()
-            )
-            setZRot(roll - addZ * (1 - Mth.abs(i)) * rollSpeed)
+            if ((!level().isClientSide || isLocalPilot())) {
+                // 四元数版：三轴各自积分，不再用 xRot/90 混合 yaw/roll（那是 SO(3) 锁死源头）。
+                rotateBodyLocalY(-addY * yawSpeed * Mth.DEG_TO_RAD)
+                rotateBodyLocalX(addX * pitchSpeed * Mth.DEG_TO_RAD)
+                if (onGround()) {
+                    clampBodyPitchRange(-12f, 3f)
+                } else {
+                    clampBodyPitchRange(-120f, 120f)
+                }
+                rotateBodyLocalZ(-addZ * rollSpeed * Mth.DEG_TO_RAD)
+                syncEulerFromBody()
+            }
 
             if (!forwardInputDown && !backInputDown) {
                 power *= 0.995f
@@ -1256,16 +1278,18 @@ object VehicleEngineUtils {
 
         consumeEnergy(energyCost)
 
-        // 自动回正
-        if (!onGround()) {
+        // 自动回正（四元数版）
+        if (!onGround() && (!level().isClientSide || isLocalPilot())) {
+            syncEulerFromBody()
             val xSpeed = 1 + 20 * Mth.abs(xRot / 180)
             val speed = Mth.clamp(Mth.abs(roll) / (90 / xSpeed), 0f, 1f)
 
-            if (roll > 0) {
-                setZRot(roll - Math.min(speed, roll))
-            } else if (roll < 0) {
-                setZRot(roll + Math.min(speed, -roll))
+            val towardZero = when {
+                roll > 0 -> -Math.min(speed, roll)
+                roll < 0 -> Math.min(speed, -roll)
+                else -> 0f
             }
+            rotateBodyLocalZ(towardZero * Mth.DEG_TO_RAD)
         }
 
         deltaRot *= 0.85f
@@ -1698,8 +1722,12 @@ object VehicleEngineUtils {
         val targetZRot = (localDirection.x * targetTilt).toFloat()
 
         // 平滑过渡到目标姿态
-        xRot = lerpAngle(xRot, -targetXRot, tiltSmoothingFactor)
-        setZRot(lerpAngle(roll, -targetZRot, tiltSmoothingFactor))
+        if ((!level().isClientSide || isLocalPilot())) {
+            syncEulerFromBody()
+            rotateBodyPitch((lerpAngle(xRot, -targetXRot, tiltSmoothingFactor) - xRot) * Mth.DEG_TO_RAD)
+            syncEulerFromBody()
+            rotateBodyLocalZ((lerpAngle(roll, -targetZRot, tiltSmoothingFactor) - roll) * Mth.DEG_TO_RAD)
+        }
     }
 
     // 角度线性插值方法
@@ -1779,7 +1807,10 @@ object VehicleEngineUtils {
 
         val altError = altitude - y
         val targetPitch = Mth.clamp(altError.toFloat() * -0.15f, -10f, 10f)
-        xRot = Mth.lerp(0.01f, xRot, targetPitch)
+        if ((!level().isClientSide || isLocalPilot())) {
+            syncEulerFromBody()
+            rotateBodyPitch((Mth.lerp(0.01f, xRot, targetPitch) - xRot) * Mth.DEG_TO_RAD)
+        }
         mouseMoveSpeedY = Mth.clamp(altError.toFloat() * -0.02f, -1f, 1f)
 
         // ========== 6. 油门控制（高度自适应防失速） ==========

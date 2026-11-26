@@ -62,12 +62,9 @@
       "CanRotateHead": false,
       "Sensitivity": [0, 0, 0],
       "Pose": "Pilot",
-      "CameraPos": {
-        "Transform": "Vehicle",
-        "Position": [0, 2.563, 1.4],
-        "UseFixedCameraPos": true,
-        "UseAircraftCamera": true,
-        "AircraftCameraPos": [0, 3.5, -10.5]
+      "CameraBone": {
+        "Bone": "driver_camera",
+        "Direction": "driver_camera"
       },
       "DismountInfo": {
         "Transform": "Vehicle",
