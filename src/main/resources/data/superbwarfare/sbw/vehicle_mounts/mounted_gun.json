@@ -1,0 +1,15 @@
+{
+  "Ingredient": {
+    "Tag": "superbwarfare:vehicle_mountable_guns"
+  },
+  "Capacity": 1,
+  "Action": {
+    "Type": "Gun",
+    "Offset": [0, -0.06, 0.44]
+  },
+  "Display": {
+    "Offset": [0, -0.08, 0],
+    "Rotation": [0, 90, 0],
+    "Scale": 1.0
+  }
+}

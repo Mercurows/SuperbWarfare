@@ -14,17 +14,18 @@ import net.minecraftforge.registries.ForgeRegistries
 @Serializable
 open class VehicleMountSlot @JvmOverloads constructor(
     @SerialName("Id") val id: String,
-    @SerialName("Definitions") val definitions: List<SerializedResourceLocation>,
+    @SerialName("Definitions") val definitions: List<SerializedResourceLocation> = emptyList(),
     @SerialName("Capacity") val capacity: Int = 1,
     @SerialName("ControlSeat") val controlSeat: Int = 0,
     @SerialName("Transform") val transform: String = "Default",
     @SerialName("Offset") val offset: SerializedVec3 = Vec3.ZERO,
     @SerialName("Bone") val bone: String = "mount_pos",
+    @SerialName("BuiltInDefinition") val builtInDefinition: SerializedResourceLocation? = null,
 )
 
 @Serializable
 open class VehicleMountDefinition(
-    @SerialName("Ingredient") val ingredient: Ingredient,
+    @SerialName("Ingredient") val ingredient: Ingredient = Ingredient(),
     @SerialName("Action") val action: Action,
     @SerialName("Capacity") val capacity: Int = 64,
     @SerialName("Display") val display: Display = Display(),
@@ -57,6 +58,7 @@ open class VehicleMountDefinition(
         @Serializable
         enum class Type {
             @SerialName("DropItem") DROP_ITEM,
+            @SerialName("Gun") GUN,
             @SerialName("ReleaseEntity") RELEASE_ENTITY,
             @SerialName("LaunchEntity") LAUNCH_ENTITY,
             @SerialName("Detonate") DETONATE,

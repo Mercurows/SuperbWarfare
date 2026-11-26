@@ -1257,6 +1257,8 @@
   "tips.superbwarfare.press_s_to_landing": "Hold S to assist helicopter landing",
   "tips.superbwarfare.input_missile_target": "Press [%1$s] to Input Target Position",
   "tips.superbwarfare.vehicle.locked": "This vehicle is locked",
+  "tips.superbwarfare.vehicle.mounted_gun_ammo": "%1$s  %2$s / %3$s",
+  "tips.superbwarfare.vehicle.mounted_gun_reloading": "%1$s  %2$s / %3$s  Reloading",
   "tips.superbwarfare.vehicle.lock_vehicle": "Successfully locked vehicle %1$s",
   "tips.superbwarfare.vehicle.unlock_vehicle": "Successfully unlocked vehicle %1$s",
   "tips.superbwarfare.vehicle.lock_fail": "This is not your vehicle",

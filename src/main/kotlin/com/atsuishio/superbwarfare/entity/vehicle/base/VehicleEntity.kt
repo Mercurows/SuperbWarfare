@@ -735,7 +735,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             ServerSyncedEntityHandler.unregister(this)
             if (reason == RemovalReason.KILLED) mounts.dropAll()
         }
-        if (!this.level().isClientSide && reason != RemovalReason.DISCARDED && reason != RemovalReason.UNLOADED_WITH_PLAYER) {
+        if (!this.level().isClientSide && shouldDropInventoryOnRemoval(reason)) {
             for (i in 0 until inventory.slots) {
                 val stack = inventory.getStackInSlot(i)
                 if (!stack.isEmpty) {
@@ -747,6 +747,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         vehicleDataStrong = null  // Release strong ref, allow GC
         super.remove(reason)
     }
+
+    open fun shouldDropInventoryOnRemoval(reason: RemovalReason): Boolean =
+        reason != RemovalReason.DISCARDED && reason != RemovalReason.UNLOADED_WITH_PLAYER
 
     open fun clearTowingInfo() {
         if (!this.level().isClientSide) {
@@ -1863,6 +1866,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
+        if (!entityData.get(MOUNT_STATE).isEmpty) mounts.resetGuns()
         entityData.set(MOUNT_STATE, compound.getCompound("MountState").copy())
         VehicleData.from(this).update()
         override = compound.getString("Override")
@@ -2627,6 +2631,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     override fun baseTick() {
+        if (!level().isClientSide && !entityData.get(MOUNT_STATE).isEmpty) mounts.tickGuns()
         // Cache computed vehicle data for this tick.
         // All downstream reads must use this local variable — never call computed() directly
         // inside baseTick() to avoid redundant DefaultVehicleData lookups.

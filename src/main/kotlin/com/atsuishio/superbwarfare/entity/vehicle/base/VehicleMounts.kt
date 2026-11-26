@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base
 
 import com.atsuishio.superbwarfare.data.CustomData
+import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.ProjectileInfo
 import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool
 import com.atsuishio.superbwarfare.data.launchable.ShootData
@@ -11,6 +12,7 @@ import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties
 import com.atsuishio.superbwarfare.entity.vehicle.remote.RCOperatorBodyEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.transformPosition
 import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.DamageHandler
 import net.minecraft.nbt.CompoundTag
@@ -25,6 +27,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.registries.ForgeRegistries
+import java.util.*
 import kotlin.math.abs
 
 open class VehicleMounts(protected val vehicle: VehicleEntity) {
@@ -38,14 +41,19 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
 
     private var nextUseTick = Long.MIN_VALUE
     private var releasing = false
+    private val mountedGuns = mutableMapOf<String, VehicleMountedGun>()
+    private var clientGunSnapshot: CompoundTag? = null
+    private var clientGunSeat = -1
+    private var clientGunData: GunData? = null
 
     open fun slots(): List<VehicleMountSlot> = vehicle.computed().mountSlots
-        .filter { it.id.isNotBlank() && it.capacity > 0 }.distinctBy { it.id }
+        .filter { it.id.isNotBlank() && (it.capacity > 0 || it.builtInDefinition != null) }.distinctBy { it.id }
 
     open fun getInstalled(slotId: String): Installed? {
         val tag = vehicle.entityData.get(VehicleEntity.MOUNT_STATE).getCompound(slotId)
         val definitionId = ResourceLocation.tryParse(tag.getString("DefinitionId")) ?: return null
-        val stack = ItemStack.of(tag.getCompound("Stack"))
+        // ItemStack.of keeps the nested item tag, so decode a copy of the synced snapshot.
+        val stack = ItemStack.of(tag.getCompound("Stack").copy())
         return if (stack.isEmpty) null else Installed(definitionId, stack)
     }
 
@@ -55,6 +63,14 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
 
     open fun setInstalled(slotId: String, installed: Installed?) {
         if (vehicle.level() !is ServerLevel) return
+        mountedGuns.remove(slotId)?.stop()
+        if (installed != null && getDefinition(installed.definitionId)?.action?.type == Type.GUN && GunItem.isHeldWeapon(installed.stack)) {
+            mountedGuns[slotId] = VehicleMountedGun(installed)
+        }
+        syncInstalled(slotId, installed)
+    }
+
+    protected open fun syncInstalled(slotId: String, installed: Installed?) {
         val state = vehicle.entityData.get(VehicleEntity.MOUNT_STATE).copy()
         if (installed == null || installed.stack.isEmpty) {
             state.remove(slotId)
@@ -77,17 +93,21 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
         if (releasing || vehicle.isWreck || vehicle.health <= 0 || vehicle.isRemoved || source.isEmpty ||
             getInstalled(slotId) != null) return null
         val slot = slots().firstOrNull { it.id == slotId } ?: return null
+        if (slot.builtInDefinition != null) return null
         for (definitionId in slot.definitions) {
             val definition = getDefinition(definitionId) ?: continue
             if (!definition.ingredient.matches(source)) continue
             val count = minOf(capacity(slot, definition, source), source.count)
-            if (count > 0) return Installed(definitionId, source.copyWithCount(count))
+            if (count <= 0) continue
+            val stack = source.copyWithCount(count)
+            if (definition.action.type != Type.GUN || supportsGun(stack)) return Installed(definitionId, stack)
         }
         return null
     }
 
     open fun capacity(slot: VehicleMountSlot, definition: VehicleMountDefinition?, stack: ItemStack): Int {
-        val actionLimit = if (definition?.action?.type == Type.DETONATE) 1 else 64
+        val type = definition?.action?.type
+        val actionLimit = if (type == Type.DETONATE || type == Type.GUN) 1 else 64
         return minOf(slot.capacity, definition?.capacity ?: 64, stack.maxStackSize, actionLimit)
     }
 
@@ -101,19 +121,108 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
 
     open fun uninstall(slotId: String): ItemStack {
         if (vehicle.level() !is ServerLevel || releasing || vehicle.isRemoved) return ItemStack.EMPTY
-        val installed = getInstalled(slotId) ?: return ItemStack.EMPTY
+        val gun = mountedGuns.remove(slotId)?.also { it.stop() }
+        val installed = gun?.installed ?: getInstalled(slotId) ?: return ItemStack.EMPTY
         setInstalled(slotId, null)
         return installed.stack
     }
 
     protected open fun activeMounts(): List<Active> = slots().mapNotNull { slot ->
+        if (slot.builtInDefinition != null) return@mapNotNull null
         val installed = getInstalled(slot.id) ?: return@mapNotNull null
         val definition = getDefinition(installed.definitionId) ?: return@mapNotNull null
         if (installed.definitionId !in slot.definitions || !definition.ingredient.matches(installed.stack)) return@mapNotNull null
         Active(slot, installed, definition)
     }
 
-    open fun canControl(seat: Int): Boolean = seat >= 0 && activeMounts().any { it.slot.controlSeat == seat }
+    protected open fun builtInAction(slot: VehicleMountSlot): VehicleMountDefinition.Action? =
+        slot.builtInDefinition?.let(::getDefinition)?.action?.takeIf { it.type == Type.DROP_ITEM }
+
+    open fun canControl(seat: Int): Boolean = seat >= 0 && (
+        activeMounts().any { it.slot.controlSeat == seat } ||
+            vehicle.hasContainer() && slots().any { it.controlSeat == seat && builtInAction(it) != null }
+        )
+
+    protected open fun supportsGun(stack: ItemStack): Boolean {
+        if (!GunItem.isHeldWeapon(stack)) return false
+        val data = GunData.from(stack)
+        return !data.meleeOnly() && !data.item.useSpecialFireProcedure(data)
+    }
+
+    open fun mountedGunData(player: Player): GunData? {
+        if (vehicle.level().isClientSide) {
+            if (player.vehicle !== vehicle || vehicle.isWreck || vehicle.health <= 0) return null
+            val snapshot = vehicle.entityData.get(VehicleEntity.MOUNT_STATE)
+            val seat = vehicle.getSeatIndex(player)
+            if (snapshot !== clientGunSnapshot || seat != clientGunSeat) {
+                clientGunSnapshot = snapshot
+                clientGunSeat = seat
+                clientGunData = gunMount(player)?.installed?.stack?.let(GunData::from)
+            }
+            return clientGunData
+        }
+        val mount = gunMount(player) ?: return null
+        return gunRuntime(mount).data
+    }
+
+    @JvmOverloads
+    open fun gunTrigger(player: Player, gunId: UUID, pressed: Boolean, renew: Boolean = false) {
+        if (vehicle.level() !is ServerLevel) return
+        val mount = gunMount(player) ?: return
+        val gun = gunRuntime(mount)
+        if (gun.data.uuid == gunId) gun.trigger(player, pressed, renew)
+    }
+
+    open fun reloadGun(player: Player): Boolean {
+        if (vehicle.level() !is ServerLevel) return false
+        val mount = gunMount(player) ?: return false
+        val gun = gunRuntime(mount)
+        gun.reload(player)
+        syncInstalled(mount.slot.id, gun.installed)
+        return true
+    }
+
+    open fun tickGuns() {
+        if (vehicle.level() !is ServerLevel || vehicle.isWreck || vehicle.health <= 0 || vehicle.isRemoved ||
+            vehicle.entityData.get(VehicleEntity.MOUNT_STATE).isEmpty) return
+        val mounts = activeMounts().filter { it.definition.action.type == Type.GUN && GunItem.isHeldWeapon(it.installed.stack) }
+        val activeIds = mounts.mapTo(hashSetOf()) { it.slot.id }
+        for (id in mountedGuns.keys.filter { it !in activeIds }) {
+            mountedGuns.remove(id)?.let {
+                it.stop()
+                syncInstalled(id, it.installed)
+            }
+        }
+        for (mount in mounts) {
+            val gun = gunRuntime(mount)
+            val seat = mount.slot.controlSeat
+            val operator = (vehicle.getNthEntity(seat) as? Player)?.takeUnless { vehicle.hasWeapon(seat) }
+            gun.tick(vehicle, mount.slot, worldPosition(mount.slot, mount.definition.action.offset), operator)
+            if (mountedGuns[mount.slot.id] === gun && !vehicle.isRemoved) syncInstalled(mount.slot.id, gun.installed)
+        }
+    }
+
+    open fun stopGuns() {
+        if (vehicle.level() !is ServerLevel) return
+        for ((id, gun) in mountedGuns) {
+            gun.stop()
+            syncInstalled(id, gun.installed)
+        }
+    }
+
+    open fun resetGuns() {
+        mountedGuns.clear()
+    }
+
+    protected open fun gunRuntime(mount: Active): VehicleMountedGun =
+        mountedGuns.getOrPut(mount.slot.id) { VehicleMountedGun(mount.installed) }
+
+    protected open fun gunMount(player: Player): Active? {
+        if (vehicle.isWreck || vehicle.health <= 0 || vehicle.isRemoved || player.vehicle !== vehicle || !player.isAlive || player.isSpectator) return null
+        val seat = vehicle.getSeatIndex(player)
+        if (seat < 0 || vehicle.hasWeapon(seat)) return null
+        return activeMounts().firstOrNull { it.slot.controlSeat == seat && it.definition.action.type == Type.GUN && GunItem.isHeldWeapon(it.installed.stack) }
+    }
 
     open fun use(player: Player, slotId: String? = null) {
         val level = vehicle.level() as? ServerLevel ?: return
@@ -121,13 +230,57 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
             player.vehicle !== vehicle) return
         val seat = vehicle.getSeatIndex(player)
         if (seat < 0 || level.gameTime < nextUseTick) return
-        val mount = activeMounts().firstOrNull { it.slot.controlSeat == seat && (slotId == null || it.slot.id == slotId) } ?: return
-        nextUseTick = level.gameTime + 4
-        if (mount.definition.action.type == Type.DETONATE) {
-            detonate(mount, player)
-        } else {
-            releaseOne(mount, player)
+        val mount = activeMounts().firstOrNull { it.slot.controlSeat == seat && (slotId == null || it.slot.id == slotId) }
+        if (mount == null) {
+            if (!vehicle.hasContainer()) return
+            for (slot in slots()) {
+                if (slot.controlSeat != seat || slotId != null && slot.id != slotId) continue
+                val action = builtInAction(slot) ?: continue
+                nextUseTick = level.gameTime + 4
+                dropCargo(slot, action)
+                return
+            }
+            return
         }
+        nextUseTick = level.gameTime + 4
+        when (mount.definition.action.type) {
+            Type.DETONATE -> detonate(mount, player)
+            Type.DROP_ITEM -> dropCargo(mount.slot, mount.definition.action)
+            Type.GUN -> Unit
+            else -> releaseOne(mount, player)
+        }
+    }
+
+    open fun dropCargo(slot: VehicleMountSlot, action: VehicleMountDefinition.Action): Boolean {
+        val level = vehicle.level() as? ServerLevel ?: return false
+        if (releasing) return false
+        val point = worldPosition(slot, action.offset)
+        val motion = vehicle.deltaMovement.scale(action.inheritMotion)
+        var dropped = false
+        releasing = true
+        try {
+            for (index in 0 until minOf(vehicle.getContainerSize(), vehicle.inventory.slots)) {
+                val stack = vehicle.inventory.getStackInSlot(index)
+                if (stack.isEmpty) continue
+                val entity = ItemEntity(level, point.x, point.y, point.z, stack.copy())
+                entity.setDefaultPickUpDelay()
+                entity.deltaMovement = motion
+                vehicle.inventory.setStackInSlot(index, ItemStack.EMPTY)
+                var spawned = false
+                try {
+                    spawned = level.addFreshEntity(entity)
+                    dropped = dropped || spawned
+                } finally {
+                    if (!spawned) {
+                        if (vehicle.isRemoved) vehicle.spawnAtLocation(stack, 0.5f)
+                        else vehicle.inventory.setStackInSlot(index, stack)
+                    }
+                }
+            }
+        } finally {
+            releasing = false
+        }
+        return dropped
     }
 
     open fun consume(mount: Active) {
@@ -155,15 +308,11 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
         val level = vehicle.level() as? ServerLevel ?: return false
         val action = mount.definition.action
         val point = worldPosition(mount.slot, action.offset)
-        val entity = if (action.type == Type.DROP_ITEM) {
-            ItemEntity(level, point.x, point.y, point.z, mount.installed.stack.copyWithCount(1)).also { it.setDefaultPickUpDelay() }
-        } else {
-            val type = action.entity?.let { ForgeRegistries.ENTITY_TYPES.getValue(it) } ?: return false
-            type.create(level) ?: return false
-        }
+        val type = action.entity?.let { ForgeRegistries.ENTITY_TYPES.getValue(it) } ?: return false
+        val entity = type.create(level) ?: return false
         if (action.type == Type.LAUNCH_ENTITY && entity !is Projectile) return false
 
-        if (action.entity != null && action.type != Type.DROP_ITEM) {
+        if (action.entity != null) {
             val projectile = ProjectileInfo(action.data).apply { itemId = action.entity.toString() }
             val shootData = ShootData(operator?.uuid, (action.damage ?: 0f).toDouble(),
                 (action.explosionDamage ?: 0f).toDouble(), (action.explosionRadius ?: 0f).toDouble(), 0.0)
@@ -239,6 +388,11 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
         for (mount in activeMounts()) {
             val action = mount.definition.action
             if (!action.onDestroyed) continue
+            if (action.type == Type.GUN) continue
+            if (action.type == Type.DROP_ITEM) {
+                dropCargo(mount.slot, action)
+                continue
+            }
             if (action.type == Type.DETONATE) {
                 if (operator != null) {
                     detonations += action to worldPosition(mount.slot, action.offset)
@@ -250,6 +404,10 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
                     if (!releaseOne(Active(mount.slot, installed, mount.definition), operator)) break
                 }
             }
+        }
+        for (slot in slots()) {
+            val action = builtInAction(slot) ?: continue
+            if (action.onDestroyed) dropCargo(slot, action)
         }
         dropAll()
         return { detonations.forEach { (action, point) -> explode(action, point, attacker) } }
@@ -264,6 +422,8 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
 
     open fun dropAll() {
         if (vehicle.level() !is ServerLevel) return
+        stopGuns()
+        mountedGuns.clear()
         val state = vehicle.entityData.get(VehicleEntity.MOUNT_STATE)
         if (state.isEmpty) return
         val stacks = state.allKeys.mapNotNull { getInstalled(it)?.stack }

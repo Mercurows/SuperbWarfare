@@ -72,6 +72,8 @@ object ClickEventHandler {
     private var lightKeyDown = false
     private var lightPressTicks = 0
     private var lightLongFired = false
+    private var mountedTrigger: VehicleMountActionMessage? = null
+    private var mountedTriggerPulse = 0
 
     private fun isUseMouseButton(button: Int): Boolean =
         (ModKeyMappings.HOLD_ZOOM.key.type == InputConstants.Type.MOUSE
@@ -321,6 +323,17 @@ object ClickEventHandler {
 
         val mc = Minecraft.getInstance()
         val inactive = notInGame || mc.screen != null
+        mountedTrigger?.let { trigger ->
+            val player = localPlayer
+            if (inactive || !mc.isWindowActive || player == null || player.vehicle?.id != trigger.vehicleId ||
+                player.hasEffect(ModMobEffects.SHOCK.get())
+            ) {
+                releaseMountedTrigger()
+            } else if (++mountedTriggerPulse >= 4) {
+                mountedTriggerPulse = 0
+                sendPacketToServer(trigger.copy(renew = true))
+            }
+        }
         val down = if (inactive) false else ModKeyMappings.TOGGLE_LIGHT.isDown
 
         if (down) {
@@ -426,6 +439,7 @@ object ClickEventHandler {
                 handleConfigScreen(player)
             }
             if (key == ModKeyMappings.RELOAD.key.value) {
+                releaseMountedTrigger()
                 ClientEventHandler.burstFireAmount = 0
                 ClientEventHandler.isEditing = false
                 ClientEventHandler.seekingTime = 0
@@ -436,10 +450,12 @@ object ClickEventHandler {
                 sendPacketToServer(ReloadMessage)
             }
             if (key == ModKeyMappings.FIRE_MODE.key.value || key == ModKeyMappings.CHANGE_FIRE_MODE_BACKWARD.key.value) {
+                releaseMountedTrigger()
                 sendPacketToServer(FireModeMessage(false))
                 ClientEventHandler.burstFireAmount = 0
             }
             if (key == ModKeyMappings.CHANGE_FIRE_MODE_FORWARD.key.value) {
+                releaseMountedTrigger()
                 sendPacketToServer(FireModeMessage(true))
                 ClientEventHandler.burstFireAmount = 0
             }
@@ -624,7 +640,12 @@ object ClickEventHandler {
             if (vehicle.hasWeapon(seat)) {
                 ClientEventHandler.holdFireVehicle = true
             } else if (vehicle is RCEntity && vehicle.mounts.canControl(seat)) {
-                sendPacketToServer(VehicleMountActionMessage)
+                val trigger = VehicleMountActionMessage(vehicle.id, true, vehicle.mounts.mountedGunData(player)?.uuid)
+                if (trigger.gunId != null) {
+                    mountedTrigger = trigger
+                    mountedTriggerPulse = 0
+                }
+                sendPacketToServer(trigger)
             }
             return
         }
@@ -746,6 +767,7 @@ object ClickEventHandler {
     fun handleWeaponFireRelease() {
         val player = localPlayer ?: return
         if (player.isSpectator) return
+        releaseMountedTrigger()
 
         val stack = player.mainHandItem
         val data = if (GunItem.isHeldWeapon(stack)) GunData.from(stack) else null
@@ -807,6 +829,12 @@ object ClickEventHandler {
                 ClientEventHandler.stopWeaponSeekSound(Minecraft.getInstance().player)
             }
         }
+    }
+
+    private fun releaseMountedTrigger() {
+        val trigger = mountedTrigger ?: return
+        mountedTrigger = null
+        if (localPlayer != null) sendPacketToServer(trigger.copy(pressed = false))
     }
 
     fun handleWeaponUsePress(player: Player, stack: ItemStack) {

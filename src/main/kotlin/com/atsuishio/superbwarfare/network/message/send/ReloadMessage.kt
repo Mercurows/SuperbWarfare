@@ -2,6 +2,7 @@
 
 import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
+import com.atsuishio.superbwarfare.entity.vehicle.base.RCEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.GunEventHandler.tryStartReload
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -19,6 +20,7 @@ object ReloadMessage : ServerPacketPayload() {
             vehicle.modifyGunData(vehicle.getSeatIndex(player)) { data -> tryStartReload(vehicle.ammoSupplier, data) }
             return
         }
+        if (vehicle is RCEntity && vehicle.mounts.reloadGun(player)) return
 
         val stack = ActiveGun.stackOf(player)
         if (stack.item !is GunItem) return

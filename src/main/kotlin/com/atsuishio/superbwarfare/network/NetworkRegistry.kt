@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network
 
 import com.atsuishio.superbwarfare.network.message.receive.CapabilitySyncMessage
 import com.atsuishio.superbwarfare.network.message.receive.GunMuzzleFxMessage
+import com.atsuishio.superbwarfare.network.message.receive.MountedGunSoundMessage
 import com.atsuishio.superbwarfare.serialization.ByteBufDecoder
 import com.atsuishio.superbwarfare.serialization.ByteBufEncoder
 import kotlinx.serialization.serializer
@@ -47,8 +48,9 @@ internal inline fun <reified T : ClientPacketPayload> playToClient() {
 fun initializeNetwork() {
     registerByteBufPayloads()
     registerGeneratedPayloads()
-    // Append the visual notification after the existing packet IDs.
+    // Append packets to preserve the existing packet IDs.
     playToClient<GunMuzzleFxMessage>()
+    playToClient<MountedGunSoundMessage>()
 }
 
 /**

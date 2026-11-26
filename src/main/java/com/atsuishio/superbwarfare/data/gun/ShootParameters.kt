@@ -18,6 +18,8 @@ import java.util.*
  * @param zoom           是否开镜
  * @param targetEntityUUID           已锁定实体UUID
  * @param targetPos           已锁定位置
+ * @param power          射击力度，用于蓄力类型
+ * @param mounted        是否属于挂载武器
  */
 @JvmRecord
 data class ShootParameters @JvmOverloads constructor(
@@ -31,5 +33,6 @@ data class ShootParameters @JvmOverloads constructor(
     @JvmField val zoom: Boolean,
     @JvmField val targetEntityUUID: UUID?,
     @JvmField val targetPos: Vec3?,
-    @JvmField val power: Double = 1.0
+    @JvmField val power: Double = 1.0,
+    @JvmField val mounted: Boolean = false,
 )

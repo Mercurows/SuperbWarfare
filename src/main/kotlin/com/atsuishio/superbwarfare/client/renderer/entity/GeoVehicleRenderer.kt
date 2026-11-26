@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.data.vehicle_skin.VehicleSkin
 import com.atsuishio.superbwarfare.entity.projectile.FastThrowableProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.VehicleModelEntry
+import com.atsuishio.superbwarfare.entity.vehicle.base.RCEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
@@ -52,7 +53,6 @@ import net.minecraft.world.phys.Vec3
 import org.joml.Matrix3f
 import org.joml.Matrix4f
 import org.joml.Quaternionf
-import org.joml.Vector3f
 
 open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     EntityRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
@@ -327,10 +327,18 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
         this.renderCustomPart(entity, instance, poseStack, yaw, partialTick, buffer, packedLight)
 
-        if (!isLOD && !entity.entityData.get(VehicleEntity.MOUNT_STATE).isEmpty && VehicleResource.compute(entity).renderMounts) {
+        if (!isLOD && shouldRenderMounts(entity)) {
             renderMounts(entity, instance, partialTick, basePose, poseStack, buffer, packedLight)
         }
         poseStack.popPose()
+    }
+
+    open fun shouldRenderMounts(entity: T): Boolean {
+        if (entity is RCEntity && localPlayer?.vehicle === entity &&
+            (mc.options.cameraType.isFirstPerson || ClientEventHandler.zoomVehicle)
+        ) return false
+
+        return !entity.entityData.get(VehicleEntity.MOUNT_STATE).isEmpty && VehicleResource.compute(entity).renderMounts
     }
 
     open fun renderMounts(

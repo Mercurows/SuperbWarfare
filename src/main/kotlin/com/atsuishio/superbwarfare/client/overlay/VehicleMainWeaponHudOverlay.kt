@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.overlay.weapon.*
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.entity.vehicle.base.RCEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
@@ -97,6 +98,18 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
             return
         }
 
+        // TODO 用AUI重置无人机HUD
+        if (vehicle is RCEntity) {
+            vehicle.mounts.mountedGunData(player)?.let { gun ->
+                val ammo = if (gun.hasInfiniteBackupAmmo(player)) "∞" else gun.countBackupAmmo(player).toString()
+                val status = Component.translatable(
+                    if (gun.reloading()) "tips.superbwarfare.vehicle.mounted_gun_reloading" else "tips.superbwarfare.vehicle.mounted_gun_ammo",
+                    gun.stack.hoverName, gun.currentAvailableAmmo(player), ammo,
+                )
+                val x = guiGraphics.guiWidth() - mc.font.width(status) - 12
+                guiGraphics.drawString(mc.font, status, x, guiGraphics.guiHeight() - 36, 0xFFFFFF)
+            }
+        }
 
         val type: String = vehicle.computed().hudType
         if (type == EMPTY) {

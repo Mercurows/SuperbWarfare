@@ -11,6 +11,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.common.util.FakePlayer
@@ -36,6 +37,12 @@ open class RCEntity(type: EntityType<*>, level: Level) : VehicleEntity(type, lev
 
         val result = interactMount(player, hand)
         if (result != InteractionResult.PASS) return result
+
+        if (!locked && hand == InteractionHand.MAIN_HAND && stack.isEmpty && hasMenu() &&
+            isAvailableForRemoteControl() && !player.isSpectator && player.vehicle !== this) {
+            if (!level().isClientSide) openMenu(player)
+            return InteractionResult.sidedSuccess(level().isClientSide)
+        }
 
         // Retain the normal service and retrieval interactions without creating a physical rider.
         return if (player.isShiftKeyDown || locked) super.interact(player, hand) else InteractionResult.PASS
@@ -64,6 +71,11 @@ open class RCEntity(type: EntityType<*>, level: Level) : VehicleEntity(type, lev
     override fun canAddPassenger(pPassenger: Entity): Boolean =
         super.canAddPassenger(pPassenger) && (level().isClientSide || RemoteControl.isMounting(pPassenger, this))
 
+    override fun removePassenger(pPassenger: Entity) {
+        super.removePassenger(pPassenger)
+        if (!entityData.get(MOUNT_STATE).isEmpty) mounts.stopGuns()
+    }
+
     override fun changeSeat(entity: Entity, index: Int): Boolean = false
 
     override fun hidePassenger(index: Int): Boolean = index == 0 || super.hidePassenger(index)
@@ -80,6 +92,7 @@ open class RCEntity(type: EntityType<*>, level: Level) : VehicleEntity(type, lev
         if (!level().isClientSide) {
             RemoteControl.endSession(this)
             clearRemoteBinding()
+            dropDestroyedInventory()
         }
         super.beforeVehicleDestruction()
     }
@@ -88,8 +101,21 @@ open class RCEntity(type: EntityType<*>, level: Level) : VehicleEntity(type, lev
         if (!level().isClientSide) {
             RemoteControl.endSession(this)
             if (reason.shouldDestroy()) clearRemoteBinding()
+            if (reason == RemovalReason.KILLED) dropDestroyedInventory()
         }
         super.remove(reason)
+    }
+
+    override fun shouldDropInventoryOnRemoval(reason: RemovalReason): Boolean = false
+
+    open fun dropDestroyedInventory() {
+        if (level() !is ServerLevel) return
+        for (index in 0 until inventory.slots) {
+            val stack = inventory.getStackInSlot(index)
+            if (stack.isEmpty) continue
+            inventory.setStackInSlot(index, ItemStack.EMPTY)
+            spawnAtLocation(stack, 0.5f)
+        }
     }
 
     override fun onRemovedFromWorld() {

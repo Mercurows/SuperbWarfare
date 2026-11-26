@@ -3,6 +3,7 @@
 import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.entity.vehicle.base.RCEntity
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
@@ -18,8 +19,9 @@ data class FireModeMessage(val forward: Boolean) : ServerPacketPayload() {
         val player = sender()
         val stack = ActiveGun.stackOf(player)
 
-        if (stack.item !is GunItem) return
-        val data = from(stack)
+        val vehicle = player.vehicle as? RCEntity
+        val data = if (vehicle != null) vehicle.mounts.mountedGunData(player) ?: return
+        else if (stack.item is GunItem) from(stack) else return
         if (data.reloading()) return
 
         val selectedFireMode = data.selectedFireMode.get()
