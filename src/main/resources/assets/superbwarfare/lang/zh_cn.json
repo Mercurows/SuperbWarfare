@@ -1231,6 +1231,8 @@
   "tips.superbwarfare.monitor.needs_binding": "手持遥控器右键遥控载具进行绑定",
   "tips.superbwarfare.monitor.link_lost": "已绑定的载具被移除，遥控绑定已清除",
   "tips.superbwarfare.monitor.controlling": "正在遥控 %s",
+  "tips.superbwarfare.monitor.connecting": "正在加载已绑定的载具……",
+  "tips.superbwarfare.monitor.connection_busy": "正在连接的载具过多，请稍后重试",
   "tips.superbwarfare.monitor.unavailable": "当前维度中找不到已绑定的载具",
   "tips.superbwarfare.monitor.denied": "当前无法遥控该载具",
   "tips.superbwarfare.no_cloth_config": "您尚未安装 Cloth Config API，无法打开配置界面",

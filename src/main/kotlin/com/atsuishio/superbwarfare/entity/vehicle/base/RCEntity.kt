@@ -30,6 +30,12 @@ open class RCEntity(type: EntityType<*>, level: Level) : VehicleEntity(type, lev
         isAvailableForRemoteControl() && maxPassengers > 0 && passengers.isEmpty() &&
                 RemoteBindingData.get(player.server).getVehicle(player.uuid) == uuid
 
+    override fun onAddedToWorld() {
+        super.onAddedToWorld()
+        val level = level() as? ServerLevel ?: return
+        RemoteBindingData.get(level.server).recordVehicleLocation(this)
+    }
+
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
         val stack = player.getItemInHand(hand)
         val monitor = stack.item as? MonitorItem

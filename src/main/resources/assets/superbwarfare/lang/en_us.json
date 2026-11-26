@@ -1231,6 +1231,8 @@
   "tips.superbwarfare.monitor.needs_binding": "Use the monitor on a remote-controlled vehicle to link it",
   "tips.superbwarfare.monitor.link_lost": "The linked vehicle was removed. The monitor is unlinked",
   "tips.superbwarfare.monitor.controlling": "Controlling %s",
+  "tips.superbwarfare.monitor.connecting": "Loading the linked vehicle…",
+  "tips.superbwarfare.monitor.connection_busy": "Too many vehicles are connecting. Try again shortly",
   "tips.superbwarfare.monitor.unavailable": "The linked vehicle is unavailable in this dimension",
   "tips.superbwarfare.monitor.denied": "Cannot control this vehicle from here",
   "tips.superbwarfare.no_cloth_config": "You have not installed Cloth Config API, cannot open the config interface",

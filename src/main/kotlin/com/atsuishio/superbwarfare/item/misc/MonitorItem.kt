@@ -26,10 +26,13 @@ open class MonitorItem : Item(Properties().stacksTo(1)) {
     open fun bindTo(vehicle: RCEntity, player: Player): InteractionResult {
         if (player.isSpectator || player.distanceToSqr(vehicle) > 36.0) return InteractionResult.FAIL
         if (player is ServerPlayer) {
-            if (!vehicle.canBindRemoteControl(player) || !RemoteBindingData.get(player.server).bind(player, vehicle.uuid)) {
+            val bindings = RemoteBindingData.get(player.server)
+            if (!vehicle.canBindRemoteControl(player) || !bindings.bind(player, vehicle.uuid)) {
                 player.displayClientMessage(Component.translatable("tips.superbwarfare.monitor.denied"), true)
                 return InteractionResult.FAIL
             }
+            bindings.recordVehicleLocation(vehicle)
+            RemoteControl.cancelConnection(player)
             player.displayClientMessage(Component.translatable("tips.superbwarfare.monitor.linked"), true)
         }
         return InteractionResult.sidedSuccess(player.level().isClientSide)
@@ -39,25 +42,14 @@ open class MonitorItem : Item(Properties().stacksTo(1)) {
         val stack = player.getItemInHand(hand)
         if (player is ServerPlayer) {
             if (RemoteControl.endSession(player)) return InteractionResultHolder.consume(stack)
-            val bindings = RemoteBindingData.get(player.server)
             if (player.isShiftKeyDown && !player.isPassenger) {
-                if (bindings.unbind(player)) {
+                if (RemoteBindingData.get(player.server).unbind(player)) {
+                    RemoteControl.cancelConnection(player)
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.monitor.unlinked"), true)
                 }
                 return InteractionResultHolder.consume(stack)
             }
-            val vehicleId = bindings.getVehicle(player.uuid)
-            if (vehicleId == null) {
-                player.displayClientMessage(Component.translatable("tips.superbwarfare.monitor.needs_binding"), true)
-                return InteractionResultHolder.consume(stack)
-            }
-            val target = player.serverLevel().getEntity(vehicleId) as? RCEntity
-
-            if (target == null) {
-                player.displayClientMessage(Component.translatable("tips.superbwarfare.monitor.unavailable"), true)
-            } else if (!RemoteControl.startSession(player, target)) {
-                player.displayClientMessage(Component.translatable("tips.superbwarfare.monitor.denied"), true)
-            }
+            RemoteControl.connect(player, hand)
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide)
     }
