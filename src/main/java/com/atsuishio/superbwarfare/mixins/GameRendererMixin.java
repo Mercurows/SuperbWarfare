@@ -89,7 +89,8 @@ public class GameRendererMixin {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player != null && minecraft.player == entity
                 && entity.getVehicle() instanceof VehicleEntity boneVehicle
-                && VehicleBoneCamera.shouldNailCamera(boneVehicle, minecraft.player)) {
+                && (VehicleBoneCamera.shouldNailCamera(boneVehicle, minecraft.player)
+                    || VehicleBoneCamera.shouldNailThirdPersonCamera(boneVehicle, minecraft.player))) {
             return;
         }
 

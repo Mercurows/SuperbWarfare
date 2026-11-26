@@ -54,6 +54,36 @@ object VehicleCameraBoneUtils {
         return bonePositionToWorld(vehicle, partialTicks, anchor)
     }
 
+    /** 第三人称位置骨骼名（如 ju_87 驾驶员的 driver_3p_camera） */
+    @JvmStatic
+    fun getThirdPersonBone(seat: SeatInfo?): String? {
+        val data = seat?.cameraBone ?: return null
+        return data.thirdPersonBone?.takeIf { it.isNotBlank() }
+    }
+
+    /**
+     * 计算第三人称骨骼在载具逻辑（数据）坐标系中的偏移（相对 rotateOffsetHeight 枢轴）。
+     * 与旧 CameraPos.AircraftCameraPos 同一坐标系，供 getClientVehicleTransform + 旧式环视/滚轮公式复现 UseAircraftCamera。
+     */
+    @JvmStatic
+    fun getThirdPersonBoneOffset(vehicle: VehicleEntity, partialTicks: Float, seatIndex: Int): Vec3? {
+        val seat = vehicle.computed().seats().getOrNull(seatIndex) ?: return null
+        val boneName = getThirdPersonBone(seat) ?: return null
+        val instance = getMainModelInstance(vehicle) ?: return null
+        applyVehicleBonePose(vehicle, instance, partialTicks)
+        val anchor = resolveBoneAnchor(instance, listOf(boneName)) ?: run {
+            warnMissingBone(vehicle, boneName)
+            return null
+        }
+        val modelPosition = anchor.transform.transformPosition(Vector3f(anchor.pivot))
+        val scale = getRenderScale(vehicle).toDouble()
+        // 模型坐标 -> 数据坐标：data = C * model，C = Ry(180°) => (-x, y, -z)；再扣除 rotateOffsetHeight 枢轴
+        val dataX = -(modelPosition.x * scale)
+        val dataY = modelPosition.y * scale - vehicle.rotateOffsetHeight
+        val dataZ = -(modelPosition.z * scale)
+        return Vec3(dataX, dataY, dataZ)
+    }
+
     @JvmStatic
     fun getCameraDirection(vehicle: VehicleEntity, partialTicks: Float, zoom: Boolean, seatIndex: Int): Vec3? {
         val cameraBone = getCameraBone(vehicle, seatIndex) ?: return null
@@ -237,7 +267,7 @@ object VehicleCameraBoneUtils {
         return transform
     }
 
-    private fun getRenderScale(vehicle: VehicleEntity): Float {
+    internal fun getRenderScale(vehicle: VehicleEntity): Float {
         val renderer = mc.entityRenderDispatcher.getRenderer(vehicle)
         return if (renderer is GeoVehicleRenderer<*>) renderer.renderScale() else 1f
     }

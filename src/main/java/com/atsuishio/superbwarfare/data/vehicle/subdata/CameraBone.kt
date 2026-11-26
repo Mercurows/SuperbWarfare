@@ -19,6 +19,10 @@ class CameraBone {
     @SerialName("ZoomDirection")
     var zoomDirection: String? = null
 
+    /** 第三人称（非推镜）位置骨骼：用于复刻旧 UseAircraftCamera 的环视/滚轮拉远，roll 保持水平 */
+    @SerialName("ThirdPersonBone")
+    var thirdPersonBone: String? = null
+
     companion object {
         const val DIRECTION_BONE = "Bone"
     }

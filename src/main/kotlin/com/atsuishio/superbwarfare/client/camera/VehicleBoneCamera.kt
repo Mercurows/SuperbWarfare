@@ -5,6 +5,8 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.CameraBone
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleCameraBoneUtils
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.event.ClientMouseHandler
+import com.atsuishio.superbwarfare.tools.getMaxZoom
 import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
@@ -23,6 +25,7 @@ import org.joml.Matrix3f
 import org.joml.Matrix4d
 import org.joml.Quaternionf
 import org.joml.Vector3f
+import org.joml.Vector4d
 import org.joml.Vector3d
 
 @OnlyIn(Dist.CLIENT)
@@ -67,6 +70,100 @@ object VehicleBoneCamera {
         if (seatIndex < 0) return false
         if (VehicleCameraBoneUtils.getCameraBone(vehicle, seatIndex) == null) return false
         return ClientEventHandler.zoomVehicle || mc.options.cameraType == CameraType.FIRST_PERSON
+    }
+
+    /** 第三人称骨骼相机：位置绑定 3p 骨骼、旋转包含 body roll，保留自由视角 */
+    @JvmStatic
+    fun shouldNailThirdPersonCamera(vehicle: VehicleEntity?, player: Player?): Boolean {
+        if (vehicle == null || player == null) return false
+        if (ClientEventHandler.zoomVehicle) return false
+        if (mc.options.cameraType == CameraType.FIRST_PERSON) return false
+        val seatIndex = vehicle.getSeatIndex(player)
+        if (seatIndex < 0) return false
+        val seat = vehicle.computed().seats().getOrNull(seatIndex) ?: return false
+        if (VehicleCameraBoneUtils.getCameraBone(seat) == null) return false
+        return VehicleCameraBoneUtils.getThirdPersonBone(seat) != null
+    }
+
+    /**
+     * 第三人称骨骼相机：
+     * - 位置直接绑定到 ThirdPersonBone 的世界位置（含 body roll）；
+     * - 基础朝向 = 载具本体朝向（含 roll）；
+     * - 自由视角 = 在本体局部轴上叠加 freeYaw/freePitch（保留旧方向感）；
+     * - 滚轮距离沿本体后方/上方平移（与旧 UseAircraftCamera 的 z-/y+ 方向一致，但随 body roll 旋转）。
+     */
+    @JvmStatic
+    fun resolveThirdPerson(vehicle: VehicleEntity, seatIndex: Int, partialTicks: Float): RigidView? {
+        val seat = vehicle.computed().seats().getOrNull(seatIndex) ?: return null
+        val boneName = VehicleCameraBoneUtils.getThirdPersonBone(seat) ?: return null
+        val instance = VehicleCameraBoneUtils.getMainModelInstance(vehicle) ?: return null
+        val renderer = mc.entityRenderDispatcher.getRenderer(vehicle) as? GeoVehicleRenderer<*> ?: return null
+        val entityYaw = Mth.lerp(partialTicks, vehicle.yRotO, vehicle.yRot)
+
+        renderer.poseModelForCamera(vehicle, instance, partialTicks, entityYaw)
+
+        val anchor = VehicleCameraBoneUtils.resolveBoneAnchor(instance, listOf(boneName)) ?: return null
+        val modelToWorld = renderer.buildCameraModelTransform(vehicle, partialTicks, entityYaw)
+        val modelToWorldRotation = Quaternionf().setFromUnnormalized(Matrix3f(modelToWorld))
+        val boneModelPosition = anchor.transform.transformPosition(Vector3f(anchor.pivot))
+        val offset = modelToWorld.transformPosition(boneModelPosition)
+        var position = Vec3(
+            Mth.lerp(partialTicks.toDouble(), vehicle.xo, vehicle.x) + offset.x,
+            Mth.lerp(partialTicks.toDouble(), vehicle.yo, vehicle.y) + offset.y,
+            Mth.lerp(partialTicks.toDouble(), vehicle.zo, vehicle.z) + offset.z
+        )
+
+        // 基础朝向：骨骼（当前为 root 子骨骼）的世界旋转。Camera 框架 forward=+Z 下需乘 Ry(180°) 对齐模型 -Z。
+        val baseOrientation = Quaternionf(modelToWorldRotation)
+            .mul(Quaternionf().setFromUnnormalized(Matrix3f(anchor.transform)))
+            .mul(CAMERA_TO_MODEL)
+
+        // 自由视角：与旧 UseAircraftCamera 一致的“世界 Y yaw + 相机局部 pitch”；roll=0 时严格等价 (yaw-freeYaw, pitch+freePitch)
+        val qFree = Quaternionf()
+            .rotationY(ClientMouseHandler.freeCameraYaw.toFloat() * Mth.DEG_TO_RAD)
+            .mul(baseOrientation)
+            .rotateX(ClientMouseHandler.freeCameraPitch.toFloat() * Mth.DEG_TO_RAD)
+
+        // 滚轮拉远/拉近：沿本体后方（-forward）与上方（+up）0.1 倍
+        val distance = ClientMouseHandler.custom3pDistanceLerp
+        if (distance != 0.0) {
+            val forward = Quaternionf(baseOrientation).transform(Vector3f(0f, 0f, 1f))
+            val up = Quaternionf(baseOrientation).transform(Vector3f(0f, 1f, 0f))
+            position = position.add(
+                -forward.x * distance + up.x * 0.1 * distance,
+                -forward.y * distance + up.y * 0.1 * distance,
+                -forward.z * distance + up.z * 0.1 * distance
+            )
+        }
+
+        // 自由视角环视：保持相机到载具 root（载具位置 + rotateOffsetHeight）的远离，
+        // 用“自由视观旋转相对基础姿态的差异”去旋转该偏移，而不是固定骨骼位置原地转头。
+        if (ClientMouseHandler.freeCameraYaw == 0.0 && ClientMouseHandler.freeCameraPitch == 0.0) {
+            return RigidView(position, baseOrientation)
+        }
+        val rotationDelta = Quaternionf(qFree)
+            .mul(Quaternionf(baseOrientation).conjugate())
+            .normalize()
+        val root = Vec3(
+            Mth.lerp(partialTicks.toDouble(), vehicle.xo, vehicle.x),
+            Mth.lerp(partialTicks.toDouble(), vehicle.yo, vehicle.y) + vehicle.rotateOffsetHeight,
+            Mth.lerp(partialTicks.toDouble(), vehicle.zo, vehicle.z)
+        )
+        val rootOffset = Vector3f(
+            (position.x - root.x).toFloat(),
+            (position.y - root.y).toFloat(),
+            (position.z - root.z).toFloat()
+        )
+        rotationDelta.transform(rootOffset)
+        position = Vec3(root.x + rootOffset.x, root.y + rootOffset.y, root.z + rootOffset.z)
+
+        // 保留旧 UseAircraftCamera 的遮挡裁剪：从载具枢轴向目标相机位置做连线检测
+        position = getMaxZoom(
+            vehicle.getClientVehicleTransform(partialTicks),
+            Vector4d(position.x, position.y, position.z, 1.0)
+        )
+
+        return RigidView(position, qFree)
     }
 
     @JvmStatic

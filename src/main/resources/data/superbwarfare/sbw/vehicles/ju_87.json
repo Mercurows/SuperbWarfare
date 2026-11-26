@@ -64,7 +64,8 @@
       "Pose": "Pilot",
       "CameraBone": {
         "Bone": "driver_camera",
-        "Direction": "driver_camera"
+        "Direction": "driver_camera",
+        "ThirdPersonBone": "driver_3p_camera"
       },
       "DismountInfo": {
         "Transform": "Vehicle",

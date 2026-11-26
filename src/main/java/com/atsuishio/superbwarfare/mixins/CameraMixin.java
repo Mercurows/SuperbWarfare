@@ -65,6 +65,18 @@ public abstract class CameraMixin {
                 boolean zoom = ClientEventHandler.zoomVehicle;
                 boolean firstPerson = mc.options.getCameraType() == CameraType.FIRST_PERSON;
 
+                if (VehicleBoneCamera.shouldNailThirdPersonCamera(vehicle, player)) {
+                    VehicleBoneCamera.RigidView view =
+                            VehicleBoneCamera.resolveThirdPerson(vehicle, vehicle.getSeatIndex(player), partialTicks);
+                    if (view != null) {
+                        setPosition(view.getPosition().x, view.getPosition().y, view.getPosition().z);
+                        applyRigidOrientation(view.getOrientation());
+                        VehicleBoneCamera.markActive(view.getOrientation());
+                        info.cancel();
+                        return;
+                    }
+                }
+
                 if (VehicleBoneCamera.shouldNailCamera(vehicle, player)) {
                     VehicleBoneCamera.RigidView view =
                             VehicleBoneCamera.resolve(vehicle, vehicle.getSeatIndex(player), partialTicks, zoom);
@@ -120,6 +132,7 @@ public abstract class CameraMixin {
         }
 
         if (!thirdPerson || !(entity.getVehicle() instanceof VehicleEntity vehicle)) return;
+        if (VehicleBoneCamera.shouldNailThirdPersonCamera(vehicle, Minecraft.getInstance().player)) return;
 
         var cameraPosition = vehicle.getThirdPersonCameraPosition();
         move(-getMaxZoom(cameraPosition.x()), cameraPosition.y(), cameraPosition.z());

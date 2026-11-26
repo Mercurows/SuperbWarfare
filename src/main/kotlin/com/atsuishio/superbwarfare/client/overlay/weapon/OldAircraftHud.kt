@@ -232,7 +232,6 @@ object OldAircraftHud {
                 }
 
                 poseStack.pushPose()
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), xCross, yCross, 0f)
                 poseStack.pushPose()
                 poseStack.translate(xCross, yCross, 0f)
                 poseStack.scale(0.75f, 0.75f, 1f)

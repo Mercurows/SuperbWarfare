@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleCameraBoneUtils
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -315,7 +316,10 @@ object ClientMouseHandler {
         if (player.vehicle is VehicleEntity) {
             val vehicle = player.vehicle as VehicleEntity
             val index = vehicle.getSeatIndex(player)
-            if (ClientEventHandler.isFreeCam(player) && vehicle.useAircraftCamera(index)) {
+            val seat = vehicle.computed().seats().getOrNull(index)
+            if (ClientEventHandler.isFreeCam(player) &&
+                (vehicle.useAircraftCamera(index) || VehicleCameraBoneUtils.getThirdPersonBone(seat) != null)
+            ) {
                 return 0.0
             }
         }
