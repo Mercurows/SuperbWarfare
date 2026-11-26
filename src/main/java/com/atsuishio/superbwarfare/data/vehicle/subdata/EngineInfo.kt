@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.data.vehicle.subdata
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.airShipEngine
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.aircraftEngine
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.droneEngine
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.helicopterEngine
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.shipEngine
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.tomEngine
@@ -178,6 +179,42 @@ abstract class EngineInfo {
 
         override fun work(vehicle: VehicleEntity) {
             vehicle.helicopterEngine(this)
+        }
+    }
+
+    @Serializable
+    class Drone : EngineInfo() {
+        @SerialName("PitchSpeed")
+        var pitchSpeed: Float = 1f
+
+        @SerialName("YawSpeed")
+        var yawSpeed: Float = 1f
+
+        @SerialName("RollSpeed")
+        var rollSpeed: Float = 1f
+
+        @SerialName("LiftSpeed")
+        var liftSpeed: Float = 1f
+
+        @SerialName("Speed")
+        var speed: Float = 1f
+
+        @SerialName("ClampPitch")
+        var clampPitch: Float = 30f
+
+        @SerialName("ClampRoll")
+        var clampRoll: Float = 30f
+
+        @SerialName("EngineStartSound")
+        var engineStartSound: SerializedSoundEvent = SoundEvents.EMPTY
+
+        init {
+            increment = 1f
+            decrement = 1f
+        }
+
+        override fun work(vehicle: VehicleEntity) {
+            vehicle.droneEngine(this)
         }
     }
 

@@ -20,6 +20,9 @@ enum class EngineType {
     @SerialName("Helicopter")
     HELICOPTER,
 
+    @SerialName("Drone")
+    DRONE,
+
     @SerialName("Ship")
     SHIP,
 

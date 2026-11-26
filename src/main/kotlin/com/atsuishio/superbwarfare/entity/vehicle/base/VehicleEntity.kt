@@ -483,6 +483,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var holdTick = 0
     open var holdPowerTick = 0
 
+    open var holdPitchTick = 0
+    open var deltaPitch = 0f
+
     open var liftSpeed = 0f
     open var destroyRot = 0f
     open var liftOffset by LIFT_OFFSET
@@ -1050,10 +1053,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         roll = rot
     }
 
-    /** 当前载具是否使用四元数作为本体朝向的权威表示（直升机/固定翼） */
+    /** 当前载具是否使用四元数作为本体朝向的权威表示（直升机/无人机/固定翼） */
     open fun usesQuaternionBody(): Boolean {
         val type = computed().engineType
-        return type == EngineType.HELICOPTER || type == EngineType.AIRCRAFT || type == EngineType.TOM6
+        return type == EngineType.HELICOPTER || type == EngineType.DRONE || type == EngineType.AIRCRAFT || type == EngineType.TOM6
     }
 
     /** 是否为本地玩家驾驶的四元数载具（客户端运行与服务端相同的本体积分以保证操控跟手） */
@@ -1079,6 +1082,14 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open fun setBodyRotationDirect(rotation: Quaternionf) {
         bodyQuat.set(rotation).normalize()
         prevBodyQuat.set(bodyQuat)
+        bodyQuatInitialized = true
+        syncEulerFromBody()
+    }
+
+    /** 直接用欧拉角设置本体朝向（无人机自定义飞行模型用）：保留上一 tick 朝向用于渲染插值 */
+    open fun setBodyRotationFromEuler(yawDeg: Float, pitchDeg: Float, rollDeg: Float) {
+        prevBodyQuat.set(bodyQuat)
+        bodyQuat.set(VehicleVecUtils.eulerToQuaternion(yawDeg, pitchDeg, rollDeg))
         bodyQuatInitialized = true
         syncEulerFromBody()
     }
@@ -4756,6 +4767,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                     EngineType.WHEEL -> Wheel.serializer()
                     EngineType.TRACK -> Track.serializer()
                     EngineType.HELICOPTER -> Helicopter.serializer()
+                    EngineType.DRONE -> Drone.serializer()
                     EngineType.SHIP -> Ship.serializer()
                     EngineType.AIRCRAFT -> Aircraft.serializer()
                     EngineType.WHEELCHAIR -> WheelChair.serializer()
@@ -4795,7 +4807,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 Mth.abs(1.4f * deltaRot)
             ) * engineSoundVolume
 
-            EngineType.HELICOPTER -> synchedPropellerRot * engineSoundVolume
+            EngineType.HELICOPTER, EngineType.DRONE -> synchedPropellerRot * engineSoundVolume
             EngineType.AIRSHIP -> Mth.clamp(
                 Mth.abs(power) * engineSoundVolume + engineSoundVolume,
                 engineSoundVolume,

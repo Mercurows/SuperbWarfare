@@ -824,6 +824,121 @@ object VehicleEngineUtils {
     }
 
     @JvmStatic
+    fun VehicleEntity.droneEngine(engineInfo: EngineInfo.Drone) {
+        val pitchRate = 0.3f * engineInfo.pitchSpeed
+        val rollRate = 0.3f * engineInfo.rollSpeed
+        val yawRate = 0.5f * engineInfo.yawSpeed
+        val liftFactor = 0.6f * engineInfo.liftSpeed
+        val sprint = if (sprintInputDown) engineInfo.sprintMultiply.toFloat() else 1f
+        val moveFactor = 0.017f * engineInfo.speed * sprint
+        val maxPitch = engineInfo.clampPitch
+        val maxRoll = engineInfo.clampRoll
+        val upStep = 0.01f * engineInfo.increment
+        val downStep = 0.02f * engineInfo.decrement
+        val powered = energy > 0
+        val engineOn = powered && (!onGround() || upInputDown)
+
+        if (!onGround()) {
+            if (engineOn) {
+                if (rightInputDown) {
+                    holdTick++
+                    deltaRot -= rollRate * min(holdTick, 5)
+                } else if (leftInputDown) {
+                    holdTick++
+                    deltaRot += rollRate * min(holdTick, 5)
+                } else {
+                    holdTick = 0
+                }
+
+                if (forwardInputDown) {
+                    holdPitchTick++
+                    deltaPitch -= pitchRate * min(holdPitchTick, 5)
+                } else if (backInputDown) {
+                    holdPitchTick++
+                    deltaPitch += pitchRate * min(holdPitchTick, 5)
+                } else {
+                    holdPitchTick = 0
+                }
+            } else {
+                holdTick = 0
+                holdPitchTick = 0
+                deltaRot = 0f
+                deltaPitch = 0f
+            }
+
+            deltaMovement = deltaMovement.multiply(0.965, 0.7, 0.965)
+        } else {
+            deltaMovement = deltaMovement.multiply(0.8, 1.0, 0.8)
+        }
+
+        if (isInWater && tickCount % 4 == 0) {
+            deltaMovement = deltaMovement.multiply(0.6, 0.6, 0.6)
+            hurt(
+                ModDamageTypes.causeVehicleStrikeDamage(
+                    level().registryAccess(),
+                    vehicle,
+                    getActiveDriver() ?: vehicle
+                ), 26 + (60 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))).toFloat()
+            )
+            crash = true
+        }
+
+        val up = engineOn && upInputDown
+        val down = engineOn && downInputDown
+        if (up) {
+            holdPowerTick++
+            power = min(power + upStep * min(holdPowerTick, 5), 0.2f)
+            deltaMovement = Vec3(deltaMovement.x, 0.05 * holdPowerTick, deltaMovement.z)
+        } else if (down) {
+            holdPowerTick++
+            power = max(power - downStep * min(holdPowerTick, 5), if (onGround()) 0f else 0.06f)
+            deltaMovement = Vec3(deltaMovement.x, -0.05 * holdPowerTick, deltaMovement.z)
+        } else {
+            holdPowerTick = 0
+        }
+
+        if (!engineOn) {
+            power = 0f
+        } else if (!(up || down)) {
+            val hoverPower = ((computed().gravity - deltaMovement.y()) / liftFactor).toFloat().coerceIn(0.02f, 0.2f)
+            power = (power + (hoverPower - power) * 0.1f).coerceIn(0.02f, 0.2f)
+        }
+
+        deltaRot *= 0.7f
+        deltaPitch *= 0.7f
+        val groundedFactor = if (onGround()) 0.7f else 1f
+        val targetPitch = Mth.clamp(xRot * 0.9f * groundedFactor - deltaPitch, -maxPitch, maxPitch)
+        val targetRoll = Mth.clamp(roll * groundedFactor - deltaRot, -maxRoll, maxRoll) * 0.9f
+        val targetYaw = if (engineOn) yRot + yawRate * mouseMoveSpeedX else yRot
+        if (!level().isClientSide || isLocalPilot()) {
+            setBodyRotationFromEuler(targetYaw, targetPitch, targetRoll)
+        }
+
+        if (engineOn) {
+            deltaMovement = deltaMovement.add(0.0, (power * liftFactor).toDouble(), 0.0)
+            val yawRad = Mth.wrapDegrees(targetYaw) * Mth.DEG_TO_RAD
+            val strafe = deltaRot * moveFactor
+            val forward = -deltaPitch * moveFactor
+            deltaMovement = deltaMovement.add(
+                (Mth.cos(-yawRad) * strafe + Mth.sin(-yawRad) * forward).toDouble(),
+                0.0,
+                (Mth.sin(yawRad) * strafe + Mth.cos(yawRad) * forward).toDouble()
+            )
+
+            if (engineInfo.energyCostRate > 0.0) {
+                consumeEnergy((engineInfo.energyCostRate * Mth.abs(power) * 20).toInt())
+            }
+        } else if (!onGround()) {
+            if (deltaMovement.y < -0.06) {
+                deltaMovement = Vec3(deltaMovement.x, -0.06, deltaMovement.z)
+            }
+        }
+
+        synchedPropellerRot = if (engineOn) (power / 0.2f).coerceIn(0f, 1f) else 0f
+        propellerRot += 30 * synchedPropellerRot
+    }
+
+    @JvmStatic
     fun VehicleEntity.aircraftEngine(engineInfo: EngineInfo.Aircraft) {
         var powerAdd = engineInfo.increment
         val powerReduce = engineInfo.decrement
