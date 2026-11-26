@@ -1,28 +1,26 @@
 {
-  "MaxHealth": 24,
-  "MaxEnergy": 300000,
+  "MaxHealth": 5,
+  "MaxEnergy": 24000,
   "Type": "Helicopter",
   "EngineType": "Helicopter",
   "EngineInfo": {
-    "EnergyCostRate": 8,
-    "Increment": 2.0,
-    "Decrement": 1.25,
-    "PitchSpeed": 0.65,
-    "YawSpeed": 0.8,
-    "RollSpeed": 0.5,
-    "LiftSpeed": 1.0,
-    "Speed": 0.8,
-    "ClampPitch": 55,
-    "ClampRoll": 55,
+    "EnergyCostRate": 1,
+    "Increment": 16,
+    "Decrement": 16,
+    "PitchSpeed": 4,
+    "YawSpeed": 2,
+    "RollSpeed": 2,
+    "LiftSpeed": 1.5,
+    "Speed": 1.4,
     "EngineSoundVolume": 0.55
   },
   "EngineSound": "superbwarfare:drone_engine",
   "AllowFreeCam": true,
   "ForceQuickPlacement": true,
-  "ContainerIcon": "superbwarfare:textures/item/drone.png",
-  "KeepChunkLoaded": false,
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/rc.png",
+  "KeepChunkLoaded": true,
   "CollisionLevel": {"Level": 0},
-  "Mass": 0.1,
+  "Mass": 0.0005,
   "RotateOffsetHeight": 0.1,
   "VehicleContainerType": "Empty",
   "MountSlots": [
@@ -52,11 +50,11 @@
       "CanRotateHead": false,
       "Position": [0, 0, 0],
       "Sensitivity": [0, 0, 0],
-      "CameraPos": {
-        "Position": [0, 0.17, 0.27],
-        "UseFixedCameraPos": true,
-        "UseAircraftCamera": true,
-        "AircraftCameraPos": [0, 0.6, -2.5]
+      "CameraBone": {
+        "Bone": "driver_camera",
+        "Direction": "driver_camera",
+        "ZoomBone": "driver_zoom_camera",
+        "ZoomDirection": "driver_zoom_camera"
       }
     }
   ],
