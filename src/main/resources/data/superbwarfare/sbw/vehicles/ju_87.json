@@ -174,15 +174,17 @@
       "ExplosionRadius": 24,
       "AddShooterDeltaMovement": true,
       "Velocity": 0.98,
+      "CameraBone": {
+        "ZoomBone": "driver_boom_camera",
+        "ZoomDirection": "Bomb"
+      },
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.75, 1.5],
         "ShootDirectionForHud": "Bomb",
         "Positions": [[0, 0.75, 1.5]],
         "BoundUpWithAmmoAmount": true,
-        "Directions": ["DeltaMovement"],
-        "ViewPosition": [0, 0.75, 1.5],
-        "ViewDirection": "Bomb"
+        "Directions": ["DeltaMovement"]
       },
       "ProjectileDummyInfo": {
         "Offset": [0, -0.21, 0],
@@ -216,15 +218,17 @@
       "ExplosionRadius": 10,
       "AddShooterDeltaMovement": true,
       "Velocity": 0.98,
+      "CameraBone": {
+        "ZoomBone": "driver_boom_camera",
+        "ZoomDirection": "Bomb"
+      },
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.13, 1.55],
         "ShootDirectionForHud": "Bomb",
         "Positions": [[-4, 0.13, 1.55], [-3.7, 0.13, 1.55], [3.7, 0.13, 1.55], [4, 0.13, 1.55]],
         "BoundUpWithAmmoAmount": true,
-        "Directions": ["DeltaMovement"],
-        "ViewPosition": [0, 0.13, 1.55],
-        "ViewDirection": "Bomb"
+        "Directions": ["DeltaMovement"]
       },
       "ProjectileDummyInfo": {
         "Offset": [0, -0.17, 0.08],

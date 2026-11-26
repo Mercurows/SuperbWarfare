@@ -638,8 +638,7 @@ object VehicleMotionUtils {
             if (vehicle.isInFluidType) {
                 if (vehicle.usesQuaternionBody()) {
                     if (!vehicle.level().isClientSide) {
-                        vehicle.rotateBodyPitch(vehicle.xRot * (0.9f - 1f) * Mth.DEG_TO_RAD)
-                        vehicle.rotateBodyLocalZ(vehicle.roll * (0.9f - 1f) * Mth.DEG_TO_RAD)
+                        vehicle.levelBodyToward(0f, 0f, 0.1f)
                     }
                 } else {
                     vehicle.xRot *= 0.9f; vehicle.setZRot(vehicle.roll * 0.9f)
@@ -908,8 +907,7 @@ object VehicleMotionUtils {
         } else if (vehicle.isInFluidType) {
             if (vehicle.usesQuaternionBody()) {
                 if (!vehicle.level().isClientSide) {
-                    vehicle.rotateBodyPitch(vehicle.xRot * (0.9f - 1f) * Mth.DEG_TO_RAD)
-                    vehicle.rotateBodyLocalZ(vehicle.roll * (0.9f - 1f) * Mth.DEG_TO_RAD)
+                    vehicle.levelBodyToward(0f, 0f, 0.1f)
                 }
             } else {
                 vehicle.xRot *= 0.9f
@@ -962,7 +960,14 @@ object VehicleMotionUtils {
         val targetTilt =
             Math.min(heightY * 9 * entity.data().compute().terrainCompatRotateRate * horizontalDistance, 45.0).toFloat()
 
-        val yawRad = Math.toRadians(-entity.yRot)
+        // 四元数载具的 entity.yRot 是连续分支：|xRot|>90 时物理机头方位角与 yRot 相差 180°，
+        // 坡面 localDirection 会反向。用物理 forward 的水平方位角替代。
+        val physicalYaw = if (entity.usesQuaternionBody()) {
+            val f = VehicleVecUtils.getFrontVec(entity.getBodyRotation(1f))
+            val h = Math.sqrt(f.x * f.x + f.z * f.z)
+            if (h > 1.0E-5) Math.toDegrees(Math.atan2(-f.x, f.z)) else entity.yRot.toDouble()
+        } else entity.yRot.toDouble()
+        val yawRad = Math.toRadians(-physicalYaw)
         val localDirection = Vec3(
             horizontalDirection.x * Math.cos(yawRad) - horizontalDirection.z * Math.sin(yawRad),
             0.0,
@@ -974,12 +979,8 @@ object VehicleMotionUtils {
 
         if (entity.usesQuaternionBody()) {
             if (!entity.level().isClientSide) {
-                entity.syncEulerFromBody()
-                val newPitch = lerpAngle(entity.xRot, -targetXRot, tiltSmoothingFactor)
-                entity.rotateBodyPitch((newPitch - entity.xRot) * Mth.DEG_TO_RAD)
-                entity.syncEulerFromBody()
-                val newRoll = lerpAngle(entity.roll, -targetZRot, tiltSmoothingFactor)
-                entity.rotateBodyLocalZ((newRoll - entity.roll) * Mth.DEG_TO_RAD)
+                // 四元数落地恢复：保持当前航向，目标俯仰/滚转为坡面值，最短弧 slerp
+                entity.levelBodyToward(-targetXRot, -targetZRot, tiltSmoothingFactor)
             }
         } else {
             entity.xRot = lerpAngle(entity.xRot, -targetXRot, tiltSmoothingFactor)
@@ -1059,12 +1060,7 @@ object VehicleMotionUtils {
         val smoothingFactor = 0.1f
         if (entity.usesQuaternionBody()) {
             if (!entity.level().isClientSide) {
-                entity.syncEulerFromBody()
-                val newPitch = lerpAngle(entity.xRot, targetXRot, smoothingFactor)
-                entity.rotateBodyPitch((newPitch - entity.xRot) * Mth.DEG_TO_RAD)
-                entity.syncEulerFromBody()
-                val newRoll = lerpAngle(entity.roll, targetRoll, smoothingFactor)
-                entity.rotateBodyLocalZ((newRoll - entity.roll) * Mth.DEG_TO_RAD)
+                entity.levelBodyToward(targetXRot, targetRoll, smoothingFactor)
             }
         } else {
             entity.xRot = lerpAngle(entity.xRot, targetXRot, smoothingFactor)

@@ -1122,6 +1122,65 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
      * “前方向定 yaw/pitch（pitch ∈ [-90,90]）+ 残余 Rz 定 roll”的方式，对
      * 任意姿态都是精确的（即使机头竖直）。
      */
+    /**
+     * 保持物理航向，把 canonical pitch/roll 朝目标修正（用于地形贴合/落地恢复）。
+     * 两步世界轴旋转：① 绕 u×up 修 pitch（不改变前方水平方位角）；② 绕当前前方轴修 roll。
+     * targetPitchDeg/targetRollDeg 为等价 Euler 目标（pitch 正=低头，roll 正=右滚）。
+     */
+    open fun levelBodyToward(targetPitchDeg: Float, targetRollDeg: Float, factor: Float) {
+        if (factor <= 0f) return
+        var f = VehicleVecUtils.getFrontVec(bodyQuat)
+        var h = Math.sqrt((f.x * f.x + f.z * f.z).toDouble())
+        if (h <= 0.05) {
+            val target = VehicleVecUtils.eulerToQuaternion(yRot, targetPitchDeg, targetRollDeg)
+            bodyQuat.slerp(target, factor.coerceIn(0f, 1f))
+            bodyQuat.normalize()
+            syncEulerFromBody()
+            return
+        }
+        var yawF = (Math.atan2(-f.x, f.z) * Mth.RAD_TO_DEG).toFloat()
+        var pitchF = (Math.atan2(-f.y, h) * Mth.RAD_TO_DEG).toFloat()
+        var residual = Quaternionf().rotationX(-pitchF * Mth.DEG_TO_RAD)
+            .mul(Quaternionf().rotationY(yawF * Mth.DEG_TO_RAD)).mul(bodyQuat)
+        var xa = residual.transform(Vector3f(1f, 0f, 0f))
+        var rollF = (Math.atan2(xa.y, xa.x) * Mth.RAD_TO_DEG).toFloat()
+        // ① pitch：axis = u×up，+角度使 canonical pitchF 减小
+        val u = Vector3f(-Math.sin(yawF * Mth.DEG_TO_RAD), 0f, Math.cos(yawF * Mth.DEG_TO_RAD))
+        val axisPitch = Vector3f(u).cross(0f, 1f, 0f).normalize()
+        bodyQuat.premul(Quaternionf().rotationAxis(
+            (pitchF - targetPitchDeg) * factor * Mth.DEG_TO_RAD, axisPitch
+        ))
+        // ② roll：绕当前前方轴，+角度使 canonical rollF 增大；pitch 修正后重算 canonical
+        f = VehicleVecUtils.getFrontVec(bodyQuat)
+        h = Math.sqrt((f.x * f.x + f.z * f.z).toDouble())
+        if (h <= 1e-6) {
+            bodyQuat.normalize()
+            syncEulerFromBody()
+            return
+        }
+        yawF = (Math.atan2(-f.x, f.z) * Mth.RAD_TO_DEG).toFloat()
+        pitchF = (Math.atan2(-f.y, h) * Mth.RAD_TO_DEG).toFloat()
+        val residual2 = Quaternionf().rotationX(-pitchF * Mth.DEG_TO_RAD)
+            .mul(Quaternionf().rotationY(yawF * Mth.DEG_TO_RAD)).mul(bodyQuat)
+        xa = residual2.transform(Vector3f(1f, 0f, 0f))
+        rollF = (Math.atan2(xa.y, xa.x) * Mth.RAD_TO_DEG).toFloat()
+        val fwd = VehicleVecUtils.getFrontVec(bodyQuat).normalize()
+        bodyQuat.premul(Quaternionf().rotationAxis(
+            (targetRollDeg - rollF) * factor * Mth.DEG_TO_RAD,
+            Vector3f(fwd.x.toFloat(), fwd.y.toFloat(), fwd.z.toFloat())
+        ))
+        bodyQuat.normalize()
+        syncEulerFromBody()
+    }
+
+    /** 将本体朝向以最短弧 slerp 到目标朝向（用于地形贴合/落地恢复，避免欧拉分量修正带来的 yaw 漂移） */
+    open fun slerpBodyToward(target: Quaternionf, factor: Float) {
+        if (factor <= 0f) return
+        bodyQuat.slerp(target, factor.coerceIn(0f, 1f))
+        bodyQuat.normalize()
+        syncEulerFromBody()
+    }
+
     open fun syncEulerFromBody() {
         val f = VehicleVecUtils.getFrontVec(bodyQuat)
         val h = Math.sqrt(f.x * f.x + f.z * f.z)
@@ -3685,6 +3744,18 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         val invHull = Matrix4d(hullRot).invert()
         val hullUp = hullRot.transformDirection(Vector3d(0.0, 1.0, 0.0))
 
+        // 飞行器（直升机/固定翼）的直接炮塔控制：用当前相机的屏幕轴作为输入轴，
+        // 避免体轴在倒飞/大滚转时导致鼠标横向变成俯仰、纵向失效。
+        var inputUp = hullUp
+        val useCameraFrame = vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER
+        if (useCameraFrame) {
+            val camera = mc.gameRenderer.mainCamera
+            val camUp = camera.upVector
+            if (camUp.lengthSquared() > 1.0E-8f) {
+                inputUp = Vector3d(camUp.x.toDouble(), camUp.y.toDouble(), camUp.z.toDouble()).normalize()
+            }
+        }
+
         if (!directAimInitialized) {
             val barrelVec = getBarrelVector(1f)
             if (barrelVec.lengthSqr() > 1e-6) {
@@ -3693,8 +3764,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 directAimDir.set(0.0, 0.0, 1.0)
             }
 
-            val dotRef = directAimDir.dot(hullUp)
-            directAimUp.set(hullUp).sub(directAimDir.x * dotRef, directAimDir.y * dotRef, directAimDir.z * dotRef)
+            val dotRef = directAimDir.dot(inputUp)
+            directAimUp.set(inputUp).sub(directAimDir.x * dotRef, directAimDir.y * dotRef, directAimDir.z * dotRef)
             if (directAimUp.lengthSquared() < 1.0E-8) {
 
                 val localRight = Vector3d(
@@ -3715,10 +3786,23 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             directAimInitialized = true
         }
 
+        if (useCameraFrame) {
+            // 相机屏幕轴作为本 tick 的自由上方向；目标接近竖直时保留旧参考，避免退化
+            val screenDot = directAimDir.dot(inputUp)
+            val projectedUp = Vector3d(
+                inputUp.x - directAimDir.x * screenDot,
+                inputUp.y - directAimDir.y * screenDot,
+                inputUp.z - directAimDir.z * screenDot
+            )
+            if (projectedUp.lengthSquared() > 1.0E-8) {
+                directAimUp.set(projectedUp).normalize()
+            }
+        }
+
         if (inputYaw != 0f) {
             val yawRad = -Math.toRadians(inputYaw.toDouble())
-            directAimDir.rotateAxis(yawRad, hullUp.x, hullUp.y, hullUp.z)
-            directAimUp.rotateAxis(yawRad, hullUp.x, hullUp.y, hullUp.z)
+            directAimDir.rotateAxis(yawRad, inputUp.x, inputUp.y, inputUp.z)
+            directAimUp.rotateAxis(yawRad, inputUp.x, inputUp.y, inputUp.z)
         }
 
         if (inputPitch != 0f) {
@@ -3730,14 +3814,30 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             val maxPitch = -turretMinPitch - customTurretMinPitch
             val deltaPitch = inputPitch.coerceIn(minPitch - currentLocalPitch, maxPitch - currentLocalPitch)
             if (deltaPitch != 0f) {
-                val pitchAxis = Vector3d(directAimUp).cross(directAimDir)
+                // 飞行器直接炮塔：使用当前相机屏幕上方作为俯仰轴参考，避免 body roll 变化后使用陈旧 aimUp
+                val upForPitch = if (useCameraFrame) inputUp else directAimUp
+                val pitchAxis = Vector3d(upForPitch).cross(directAimDir)
                 if (pitchAxis.lengthSquared() < 1.0E-8) {
-                    pitchAxis.set(
-                        Math.cos(Math.toRadians(turretYRot.toDouble())),
-                        0.0,
-                        -Math.sin(Math.toRadians(turretYRot.toDouble()))
-                    )
-                    hullRot.transformDirection(pitchAxis, pitchAxis)
+                    if (useCameraFrame) {
+                        // 机头正对屏幕上/下或 aim 与屏幕 up 平行时，用当前相机左轴作为屏幕水平轴
+                        val camLeft = mc.gameRenderer.mainCamera.leftVector
+                        pitchAxis.set(camLeft.x.toDouble(), camLeft.y.toDouble(), camLeft.z.toDouble())
+                        if (pitchAxis.lengthSquared() < 1.0E-8) {
+                            pitchAxis.set(
+                                Math.cos(Math.toRadians(turretYRot.toDouble())),
+                                0.0,
+                                -Math.sin(Math.toRadians(turretYRot.toDouble()))
+                            )
+                            hullRot.transformDirection(pitchAxis, pitchAxis)
+                        }
+                    } else {
+                        pitchAxis.set(
+                            Math.cos(Math.toRadians(turretYRot.toDouble())),
+                            0.0,
+                            -Math.sin(Math.toRadians(turretYRot.toDouble()))
+                        )
+                        hullRot.transformDirection(pitchAxis, pitchAxis)
+                    }
                 }
                 if (pitchAxis.lengthSquared() > 1.0E-8) {
                     pitchAxis.normalize()

@@ -55,7 +55,8 @@
         "Bone": "driver_camera",
         "Direction": "driver_camera",
         "ZoomBone": "driver_zoom_camera",
-        "ZoomDirection": "driver_zoom_camera"
+        "ZoomDirection": "driver_zoom_camera",
+        "ThirdPersonBone": "driver_3p_camera"
       }
     }
   ],

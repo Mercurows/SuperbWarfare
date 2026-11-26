@@ -80,9 +80,8 @@ object VehicleBoneCamera {
         if (mc.options.cameraType == CameraType.FIRST_PERSON) return false
         val seatIndex = vehicle.getSeatIndex(player)
         if (seatIndex < 0) return false
-        val seat = vehicle.computed().seats().getOrNull(seatIndex) ?: return false
-        if (VehicleCameraBoneUtils.getCameraBone(seat) == null) return false
-        return VehicleCameraBoneUtils.getThirdPersonBone(seat) != null
+        if (VehicleCameraBoneUtils.getCameraBone(vehicle, seatIndex) == null) return false
+        return VehicleCameraBoneUtils.getThirdPersonBone(vehicle, seatIndex) != null
     }
 
     /**
@@ -94,8 +93,7 @@ object VehicleBoneCamera {
      */
     @JvmStatic
     fun resolveThirdPerson(vehicle: VehicleEntity, seatIndex: Int, partialTicks: Float): RigidView? {
-        val seat = vehicle.computed().seats().getOrNull(seatIndex) ?: return null
-        val boneName = VehicleCameraBoneUtils.getThirdPersonBone(seat) ?: return null
+        val boneName = VehicleCameraBoneUtils.getThirdPersonBone(vehicle, seatIndex) ?: return null
         val instance = VehicleCameraBoneUtils.getMainModelInstance(vehicle) ?: return null
         val renderer = mc.entityRenderDispatcher.getRenderer(vehicle) as? GeoVehicleRenderer<*> ?: return null
         val entityYaw = Mth.lerp(partialTicks, vehicle.yRotO, vehicle.yRot)
@@ -212,7 +210,19 @@ object VehicleBoneCamera {
             lookRotation(forward, upHint)
         }
 
-        return RigidView(position, orientation)
+        // 主驾飞行员第一人称/瞄准也保留自由视角（基于骨骼基础朝向；第三人称由 resolveThirdPerson 处理）。
+        // 仅 ThirdPersonBone 存在的驾驶员座位启用，避免影响炮手/旧骨骼座位。
+        var finalOrientation = orientation
+        if (cameraBone.thirdPersonBone != null &&
+            (ClientMouseHandler.freeCameraYaw != 0.0 || ClientMouseHandler.freeCameraPitch != 0.0)
+        ) {
+            finalOrientation = Quaternionf()
+                .rotationY(ClientMouseHandler.freeCameraYaw.toFloat() * Mth.DEG_TO_RAD)
+                .mul(orientation)
+                .rotateX(ClientMouseHandler.freeCameraPitch.toFloat() * Mth.DEG_TO_RAD)
+        }
+
+        return RigidView(position, finalOrientation)
     }
 
     @JvmStatic

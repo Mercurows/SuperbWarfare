@@ -633,6 +633,11 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "driver_3p_camera",
+					"parent": "root",
+					"pivot": [0, 8, 16]
 				}
 			]
 		}

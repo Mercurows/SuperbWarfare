@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.data.gun.melee.MeleeAction
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeHitbox
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeSweep
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
+import com.atsuishio.superbwarfare.data.vehicle.subdata.CameraBone
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
 import kotlinx.serialization.SerialName
@@ -125,6 +126,10 @@ data class DefaultGunData(
     val projectileBone: SingleOrList<String> = SingleOrList(),
     @SerialName("ShootPos")
     val shootPos: ShootPos = ShootPos(),
+
+    /** 武器自带相机骨骼：当前武器被选中时覆盖所在座位的 CameraBone（如投弹睞准镜） */
+    @SerialName("CameraBone")
+    val cameraBone: CameraBone? = null,
     @SerialName("SeekWeaponInfo")
     val seekWeaponInfo: SeekWeaponInfo? = null,
     @SerialName("ProjectileDummyInfo")

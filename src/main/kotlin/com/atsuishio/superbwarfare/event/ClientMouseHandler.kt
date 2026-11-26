@@ -198,7 +198,12 @@ object ClientMouseHandler {
         var yawDeg = dx * h
         var pitchDeg = dy * h * invert
 
-        if (mc.options.cameraType == CameraType.FIRST_PERSON) {
+        // 飞行器用相机屏幕轴（VehicleEntity.applyDirectTurretInput），不再做此欧拉混合；
+        // 其它载具保留原有车体 roll 补偿，避免坡面/侧倾时回归。
+        if (mc.options.cameraType == CameraType.FIRST_PERSON &&
+            vehicle.vehicleType != VehicleType.AIRPLANE &&
+            vehicle.vehicleType != VehicleType.HELICOPTER
+        ) {
             val roll = vehicle.roll
             val absRoll = abs(roll)
             if (absRoll > 1f) {
@@ -316,9 +321,9 @@ object ClientMouseHandler {
         if (player.vehicle is VehicleEntity) {
             val vehicle = player.vehicle as VehicleEntity
             val index = vehicle.getSeatIndex(player)
-            val seat = vehicle.computed().seats().getOrNull(index)
             if (ClientEventHandler.isFreeCam(player) &&
-                (vehicle.useAircraftCamera(index) || VehicleCameraBoneUtils.getThirdPersonBone(seat) != null)
+                (vehicle.useAircraftCamera(index) ||
+                    VehicleCameraBoneUtils.getThirdPersonBone(vehicle, index) != null)
             ) {
                 return 0.0
             }

@@ -16,6 +16,21 @@
 					"pivot": [0, 0, 0]
 				},
 				{
+					"name": "driver_camera",
+					"parent": "root",
+					"pivot": [0, 40.4, -19.8]
+				},
+				{
+					"name": "driver_boom_camera",
+					"parent": "root",
+					"pivot": [0, 15.4, -43.8]
+				},
+				{
+					"name": "driver_3p_camera",
+					"parent": "root",
+					"pivot": [0, 74.4, 161.2]
+				},
+				{
 					"name": "dummy_0_1_1",
 					"parent": "root",
 					"pivot": [-0.00202, 12.04208, -20.78909],
@@ -5127,16 +5142,6 @@
 							}
 						}
 					]
-				},
-				{
-					"name": "driver_camera",
-					"parent": "root",
-					"pivot": [0, 40.4, -19.8]
-				},
-				{
-					"name": "driver_3p_camera",
-					"parent": "root",
-					"pivot": [0, 74.4, 161.2]
 				}
 			]
 		}

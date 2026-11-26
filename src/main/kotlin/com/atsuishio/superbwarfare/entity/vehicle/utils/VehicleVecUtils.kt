@@ -458,7 +458,7 @@ object VehicleVecUtils {
         val index = vehicle.getSeatIndex(entity)
         val seat = vehicle.computed().seats().getOrNull(index) ?: return entityEyePos(entity, partialTicks)
 
-        if (VehicleCameraBoneUtils.getCameraBone(seat) != null) {
+        if (VehicleCameraBoneUtils.getCameraBone(vehicle, index) != null) {
             VehicleCameraBoneUtils.getCameraPosition(vehicle, partialTicks, false, index)?.let { return it }
         }
 
@@ -491,7 +491,7 @@ object VehicleVecUtils {
         val index = vehicle.getSeatIndex(entity)
         val seat = vehicle.computed().seats().getOrNull(index) ?: return entity.getViewVector(partialTicks)
 
-        if (VehicleCameraBoneUtils.getCameraBone(seat) != null) {
+        if (VehicleCameraBoneUtils.getCameraBone(vehicle, index) != null) {
             VehicleCameraBoneUtils.getCameraDirection(vehicle, partialTicks, ClientEventHandler.zoomVehicle, index)
                 ?.let { return it }
         }
@@ -542,7 +542,7 @@ object VehicleVecUtils {
         val index = vehicle.getSeatIndex(entity)
         val seat = vehicle.computed().seats().getOrNull(index) ?: return entityEyePos(entity, partialTicks)
 
-        if (VehicleCameraBoneUtils.getCameraBone(seat) != null) {
+        if (VehicleCameraBoneUtils.getCameraBone(vehicle, index) != null) {
             VehicleCameraBoneUtils.getCameraPosition(vehicle, partialTicks, true, index)?.let { return it }
         }
 
@@ -572,7 +572,7 @@ object VehicleVecUtils {
         val index = vehicle.getSeatIndex(entity)
         val seat = vehicle.computed().seats().getOrNull(index) ?: return entity.getViewVector(partialTicks)
 
-        if (VehicleCameraBoneUtils.getCameraBone(seat) != null) {
+        if (VehicleCameraBoneUtils.getCameraBone(vehicle, index) != null) {
             VehicleCameraBoneUtils.getCameraDirection(vehicle, partialTicks, true, index)?.let { return it }
         }
 

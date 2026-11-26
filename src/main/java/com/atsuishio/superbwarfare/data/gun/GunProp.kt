@@ -493,6 +493,9 @@ class GunProp<T, R>(
         val SHOOT_POS = complexProp(DefaultGunData::shootPos) { it }
 
         @JvmField
+        val CAMERA_BONE = plainProp(DefaultGunData::cameraBone)
+
+        @JvmField
         val SEEK_WEAPON_INFO = plainProp(DefaultGunData::seekWeaponInfo)
 
         @JvmField

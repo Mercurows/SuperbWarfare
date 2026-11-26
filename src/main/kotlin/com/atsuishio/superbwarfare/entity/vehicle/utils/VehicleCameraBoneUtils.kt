@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.model.entity.VehicleModelInstance
 import com.atsuishio.superbwarfare.client.renderer.entity.GeoVehicleRenderer
 import com.atsuishio.superbwarfare.compat.valkyrienskies.ValkyrienSkiesCompat
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.CameraBone
 import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -33,9 +34,49 @@ object VehicleCameraBoneUtils {
         return if (data.bone.isBlank()) null else data
     }
 
+    /**
+     * 当前选中武器自带的 CameraBone（如投弹睞准镜）。
+     * 武器未配置时返回 null。
+     */
+    @JvmStatic
+    fun getWeaponCameraBone(vehicle: VehicleEntity, seatIndex: Int): CameraBone? {
+        return vehicle.getGunData(seatIndex)?.get(GunProp.CAMERA_BONE)
+    }
+
+    /**
+     * 将武器 CameraBone 覆盖到座位 CameraBone 上：
+     * - Bone / Direction / ZoomBone / ZoomDirection / ThirdPersonBone 逐项非空则覆盖，否则继承座位；
+     * - 因为武器常只配 ZoomBone/ZoomDirection，这样可在保留座位基础跟踪的同时覆盖瞄准鏅。
+     */
+    @JvmStatic
+    fun mergeCameraBone(base: CameraBone?, override: CameraBone?): CameraBone? {
+        if (override == null) return base
+        if (base == null) return override
+        val merged = CameraBone()
+        merged.bone = override.bone.ifBlank { base.bone }
+        merged.direction = if (override.direction.isNotBlank() && override.direction != CameraBone.DIRECTION_BONE) {
+            override.direction
+        } else {
+            base.direction
+        }
+        merged.zoomBone = override.zoomBone?.takeIf { it.isNotBlank() } ?: base.zoomBone
+        merged.zoomDirection = override.zoomDirection?.takeIf { it.isNotBlank() } ?: base.zoomDirection
+        merged.thirdPersonBone = override.thirdPersonBone?.takeIf { it.isNotBlank() } ?: base.thirdPersonBone
+        return merged
+    }
+
     @JvmStatic
     fun getCameraBone(vehicle: VehicleEntity, seatIndex: Int): CameraBone? {
-        return getCameraBone(vehicle.computed().seats().getOrNull(seatIndex))
+        val seat = vehicle.computed().seats().getOrNull(seatIndex)
+        val merged = mergeCameraBone(seat?.cameraBone, getWeaponCameraBone(vehicle, seatIndex))
+            ?: return null
+        return if (merged.bone.isBlank()) null else merged
+    }
+
+    /** 当前生效的第三人称骨骼（座位与当前武器 CameraBone 合并后） */
+    @JvmStatic
+    fun getThirdPersonBone(vehicle: VehicleEntity, seatIndex: Int): String? {
+        return getCameraBone(vehicle, seatIndex)?.thirdPersonBone?.takeIf { it.isNotBlank() }
     }
 
     @JvmStatic
@@ -68,7 +109,7 @@ object VehicleCameraBoneUtils {
     @JvmStatic
     fun getThirdPersonBoneOffset(vehicle: VehicleEntity, partialTicks: Float, seatIndex: Int): Vec3? {
         val seat = vehicle.computed().seats().getOrNull(seatIndex) ?: return null
-        val boneName = getThirdPersonBone(seat) ?: return null
+        val boneName = getThirdPersonBone(vehicle, seatIndex) ?: return null
         val instance = getMainModelInstance(vehicle) ?: return null
         applyVehicleBonePose(vehicle, instance, partialTicks)
         val anchor = resolveBoneAnchor(instance, listOf(boneName)) ?: run {

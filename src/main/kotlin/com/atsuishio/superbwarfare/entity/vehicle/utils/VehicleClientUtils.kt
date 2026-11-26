@@ -46,7 +46,8 @@ object VehicleClientUtils {
         val gunData = vehicle.getGunData(player)
         if (seat != null) {
             // 新第三人称：使用骨骼位置，但旋转仍按旧 UseAircraftCamera（yaw/pitch + 自由视角，不带 roll）
-            if (!isFirstPerson && !zoom && VehicleCameraBoneUtils.getThirdPersonBone(seat) != null &&
+            if (!isFirstPerson && !zoom &&
+                VehicleCameraBoneUtils.getThirdPersonBone(vehicle, index) != null &&
                 VehicleCameraBoneUtils.getThirdPersonBoneOffset(vehicle, partialTicks, index) != null
             ) {
                 return Vec2(
@@ -56,7 +57,7 @@ object VehicleClientUtils {
             }
             // 骨骼视角（新系统）：由 VehicleBoneCamera 在更底层直接接管 Camera 的位置与四元数朝向，
             // 这里不再返回任何欧拉角/手写相机数据，避免旧链路参与
-            if (VehicleCameraBoneUtils.getCameraBone(seat) != null) return null
+            if (VehicleCameraBoneUtils.getCameraBone(vehicle, index) != null) return null
 
             val data = seat.cameraPos
             if (data != null) {
@@ -128,7 +129,7 @@ object VehicleClientUtils {
         val index = vehicle.getSeatIndex(player)
         val seat = vehicle.computed().seats().getOrNull(index)
         if (seat != null) {
-            if (!isFirstPerson && !zoom && VehicleCameraBoneUtils.getThirdPersonBone(seat) != null) {
+            if (!isFirstPerson && !zoom && VehicleCameraBoneUtils.getThirdPersonBone(vehicle, index) != null) {
                 val offset = VehicleCameraBoneUtils.getThirdPersonBoneOffset(vehicle, partialTicks, index) ?: return null
                 val transform = vehicle.getClientVehicleTransform(partialTicks)
                 val maxCameraPosition = transformPosition(
@@ -140,7 +141,7 @@ object VehicleClientUtils {
                 return maxCameraPosition.maxZoom(transform)
             }
             // 骨骼视角（新系统）：由 VehicleBoneCamera 底层接管，这里直接交给原版/旧链路
-            if (VehicleCameraBoneUtils.getCameraBone(seat) != null) return null
+            if (VehicleCameraBoneUtils.getCameraBone(vehicle, index) != null) return null
 
             val data = seat.cameraPos
             val gunData = vehicle.getGunData(player)
