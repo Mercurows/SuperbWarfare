@@ -56,7 +56,6 @@
       "Sensitivity": [0, 0, 0],
       "CameraBone": {
         "HasFirstPersonFreeCamera": false,
-        "HasThirdPersonFreeCamera": false,
         "Bone": "driver_camera",
         "Direction": "driver_camera",
         "ZoomBone": "driver_zoom_camera",

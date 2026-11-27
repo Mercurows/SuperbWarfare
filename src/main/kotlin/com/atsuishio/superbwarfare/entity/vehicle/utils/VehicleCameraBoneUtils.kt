@@ -73,6 +73,26 @@ object VehicleCameraBoneUtils {
         return if (merged.bone.isBlank()) null else merged
     }
 
+    /**
+     * 当前座位在第一人称（含载具瞄准）视角下是否允许自由视角。
+     * 由座位 CameraBone 的 HasFirstPersonFreeCamera 决定，未配置时保持旧行为（允许）。
+     */
+    @JvmStatic
+    fun hasFirstPersonFreeCamera(vehicle: VehicleEntity, seatIndex: Int): Boolean {
+        val seat = vehicle.computed().seats().getOrNull(seatIndex) ?: return true
+        return seat.cameraBone?.hasFirstPersonFreeCamera ?: true
+    }
+
+    /**
+     * 当前座位在第三人称视角下是否允许自由视角。
+     * 由座位 CameraBone 的 HasThirdPersonFreeCamera 决定，未配置时保持旧行为（允许）。
+     */
+    @JvmStatic
+    fun hasThirdPersonFreeCamera(vehicle: VehicleEntity, seatIndex: Int): Boolean {
+        val seat = vehicle.computed().seats().getOrNull(seatIndex) ?: return true
+        return seat.cameraBone?.hasThirdPersonFreeCamera ?: true
+    }
+
     /** 当前生效的第三人称骨骼（座位与当前武器 CameraBone 合并后） */
     @JvmStatic
     fun getThirdPersonBone(vehicle: VehicleEntity, seatIndex: Int): String? {

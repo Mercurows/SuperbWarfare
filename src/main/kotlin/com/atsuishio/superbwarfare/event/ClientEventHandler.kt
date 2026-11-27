@@ -29,6 +29,7 @@ import com.atsuishio.superbwarfare.data.attachment.SubWeaponInfo
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleCameraBoneUtils
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.LungeMine
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
@@ -833,7 +834,27 @@ object ClientEventHandler {
     @JvmStatic
     fun isFreeCam(player: Player): Boolean {
         val vehicle = player.vehicle
-        return vehicle is VehicleEntity && vehicle.allowFreeCam() && ModKeyMappings.FREE_CAMERA.isDown
+        if (vehicle !is VehicleEntity || !vehicle.allowFreeCam() || !ModKeyMappings.FREE_CAMERA.isDown) return false
+        val seatIndex = vehicle.getSeatIndex(player)
+        if (seatIndex < 0) return true
+        // 第一人称（含载具瞄准）与第三人称的自由视角能力分别由座位 CameraBone 的开关控制
+        return if (mc.options.cameraType == CameraType.FIRST_PERSON || zoomVehicle) {
+            VehicleCameraBoneUtils.hasFirstPersonFreeCamera(vehicle, seatIndex)
+        } else {
+            VehicleCameraBoneUtils.hasThirdPersonFreeCamera(vehicle, seatIndex)
+        }
+    }
+
+    /**
+     * 是否允许按自由视角键调整相机距离：
+     * - 配置了自由视角的载具（AllowFreeCam）遵循座位 CameraBone 的视角开关；
+     * - 未配置自由视角的载具保留旧的“按 C + 滚轮调整第三人称距离”行为。
+     */
+    @JvmStatic
+    fun canAdjustCameraDistance(player: Player): Boolean {
+        val vehicle = player.vehicle as? VehicleEntity ?: return false
+        if (!ModKeyMappings.FREE_CAMERA.isDown) return false
+        return if (!vehicle.allowFreeCam()) true else isFreeCam(player)
     }
 
     @JvmStatic
@@ -2703,7 +2724,7 @@ object ClientEventHandler {
 
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity && (vehicle.banHand(player) ||
-                    (!zoom && mc.options.cameraType == CameraType.FIRST_PERSON && ModKeyMappings.FREE_CAMERA.isDown()))
+                    (!zoom && mc.options.cameraType == CameraType.FIRST_PERSON && isFreeCam(player)))
         ) {
             event.isCanceled = true
         }

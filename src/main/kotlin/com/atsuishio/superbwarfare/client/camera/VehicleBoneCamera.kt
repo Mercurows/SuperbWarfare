@@ -117,10 +117,16 @@ object VehicleBoneCamera {
             .mul(CAMERA_TO_MODEL)
 
         // 自由视角：与旧 UseAircraftCamera 一致的“世界 Y yaw + 相机局部 pitch”；roll=0 时严格等价 (yaw-freeYaw, pitch+freePitch)
-        val qFree = Quaternionf()
-            .rotationY(ClientMouseHandler.freeCameraYaw.toFloat() * Mth.DEG_TO_RAD)
-            .mul(baseOrientation)
-            .rotateX(ClientMouseHandler.freeCameraPitch.toFloat() * Mth.DEG_TO_RAD)
+        // 座位 CameraBone 的 HasThirdPersonFreeCamera 关闭时，第三人称相机固定跟随本体朝向
+        val allowFree = VehicleCameraBoneUtils.hasThirdPersonFreeCamera(vehicle, seatIndex)
+        val qFree = if (allowFree) {
+            Quaternionf()
+                .rotationY(ClientMouseHandler.freeCameraYaw.toFloat() * Mth.DEG_TO_RAD)
+                .mul(baseOrientation)
+                .rotateX(ClientMouseHandler.freeCameraPitch.toFloat() * Mth.DEG_TO_RAD)
+        } else {
+            Quaternionf(baseOrientation)
+        }
 
         // 滚轮拉远/拉近：沿本体后方（-forward）与上方（+up）0.1 倍
         val distance = ClientMouseHandler.custom3pDistanceLerp
@@ -136,7 +142,7 @@ object VehicleBoneCamera {
 
         // 自由视角环视：保持相机到载具 root（载具位置 + rotateOffsetHeight）的远离，
         // 用“自由视观旋转相对基础姿态的差异”去旋转该偏移，而不是固定骨骼位置原地转头。
-        if (ClientMouseHandler.freeCameraYaw == 0.0 && ClientMouseHandler.freeCameraPitch == 0.0) {
+        if (!allowFree || (ClientMouseHandler.freeCameraYaw == 0.0 && ClientMouseHandler.freeCameraPitch == 0.0)) {
             return RigidView(position, baseOrientation)
         }
         val rotationDelta = Quaternionf(qFree)
@@ -214,6 +220,7 @@ object VehicleBoneCamera {
         // 仅 ThirdPersonBone 存在的驾驶员座位启用，避免影响炮手/旧骨骼座位。
         var finalOrientation = orientation
         if (cameraBone.thirdPersonBone != null &&
+            VehicleCameraBoneUtils.hasFirstPersonFreeCamera(vehicle, seatIndex) &&
             (ClientMouseHandler.freeCameraYaw != 0.0 || ClientMouseHandler.freeCameraPitch != 0.0)
         ) {
             finalOrientation = Quaternionf()

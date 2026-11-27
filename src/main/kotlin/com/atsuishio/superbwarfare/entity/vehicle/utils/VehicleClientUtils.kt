@@ -50,9 +50,10 @@ object VehicleClientUtils {
                 VehicleCameraBoneUtils.getThirdPersonBone(vehicle, index) != null &&
                 VehicleCameraBoneUtils.getThirdPersonBoneOffset(vehicle, partialTicks, index) != null
             ) {
+                val allowFree = VehicleCameraBoneUtils.hasThirdPersonFreeCamera(vehicle, index)
                 return Vec2(
-                    (vehicle.getYaw(partialTicks) - ClientMouseHandler.freeCameraYaw).toFloat(),
-                    (vehicle.getPitch(partialTicks) + ClientMouseHandler.freeCameraPitch).toFloat()
+                    (vehicle.getYaw(partialTicks) - if (allowFree) ClientMouseHandler.freeCameraYaw else 0.0).toFloat(),
+                    (vehicle.getPitch(partialTicks) + if (allowFree) ClientMouseHandler.freeCameraPitch else 0.0).toFloat()
                 )
             }
             // 骨骼视角（新系统）：由 VehicleBoneCamera 在更底层直接接管 Camera 的位置与四元数朝向，
@@ -73,6 +74,11 @@ object VehicleClientUtils {
                     )
                 }
                 if (vehicle.useAircraftCamera(index)) {
+                    val allowFree = if (isFirstPerson || zoom) {
+                        VehicleCameraBoneUtils.hasFirstPersonFreeCamera(vehicle, index)
+                    } else {
+                        VehicleCameraBoneUtils.hasThirdPersonFreeCamera(vehicle, index)
+                    }
                     return if (ClientEventHandler.isNacelleCam(player)) {
                         Vec2(
                             (vehicle.getYaw(partialTicks) - ClientMouseHandler.nacelleCameraYaw).toFloat(),
@@ -80,8 +86,8 @@ object VehicleClientUtils {
                         )
                     } else {
                         Vec2(
-                            (vehicle.getYaw(partialTicks) - ClientMouseHandler.freeCameraYaw).toFloat(),
-                            (vehicle.getPitch(partialTicks) + ClientMouseHandler.freeCameraPitch).toFloat()
+                            (vehicle.getYaw(partialTicks) - if (allowFree) ClientMouseHandler.freeCameraYaw else 0.0).toFloat(),
+                            (vehicle.getPitch(partialTicks) + if (allowFree) ClientMouseHandler.freeCameraPitch else 0.0).toFloat()
                         )
                     }
                 }
