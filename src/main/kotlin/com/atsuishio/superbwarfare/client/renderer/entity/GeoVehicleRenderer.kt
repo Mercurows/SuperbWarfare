@@ -121,7 +121,7 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         }
 
         texture = if (entity.isWreck) {
-            if ((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER || entity.vehicleType == VehicleType.AIRSHIP)) {
+            if ((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER || entity.vehicleType == VehicleType.AIRSHIP || entity.vehicleType == VehicleType.RC)) {
                 if (entity.sympatheticDetonated) {
                     TextureBrightnessHandler.getBrightenedTexture(texture, 0.3f)
                 } else {

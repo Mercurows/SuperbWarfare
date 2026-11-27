@@ -1,7 +1,7 @@
 {
   "MaxHealth": 5,
   "MaxEnergy": 24000,
-  "Type": "Helicopter",
+  "Type": "RC",
   "EngineType": "Drone",
   "EngineInfo": {
     "EnergyCostRate": 1,
@@ -19,6 +19,7 @@
   "EngineSound": "superbwarfare:drone_engine",
   "AllowFreeCam": true,
   "ForceQuickPlacement": true,
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/drone_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/rc.png",
   "KeepChunkLoaded": true,
   "CollisionLevel": {"Level": 0},
@@ -54,6 +55,8 @@
       "Position": [0, 0, 0],
       "Sensitivity": [0, 0, 0],
       "CameraBone": {
+        "HasFirstPersonFreeCamera": false,
+        "HasThirdPersonFreeCamera": false,
         "Bone": "driver_camera",
         "Direction": "driver_camera",
         "ZoomBone": "driver_zoom_camera",

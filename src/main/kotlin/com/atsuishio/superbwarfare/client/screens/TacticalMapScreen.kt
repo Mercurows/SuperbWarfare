@@ -96,6 +96,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         private val ICON_BOAT = loc("textures/overlay/tactical_map/vehicle/boat.png")
         private val ICON_DEFENSE = loc("textures/overlay/tactical_map/vehicle/defense.png")
         private val ICON_AIRSHIP = loc("textures/overlay/tactical_map/vehicle/airship.png")
+private val ICON_RC = loc("textures/overlay/tactical_map/vehicle/rc.png")
         private val ICON_MINE = loc("textures/overlay/tactical_map/vehicle/mine.png")
         private val ICON_MISSILE = loc("textures/overlay/tactical_map/vehicle/missile.png")
         private val ICON_MAID = loc("textures/overlay/tactical_map/vehicle/maid.png")
@@ -1466,6 +1467,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
                 VehicleType.BOAT -> ICON_BOAT
                 VehicleType.DEFENSE -> ICON_DEFENSE
                 VehicleType.AIRSHIP -> ICON_AIRSHIP
+                VehicleType.RC -> ICON_RC
                 else -> TEAMMATE_MARKER
             }
         } else if (entity.type.`is`(ModTags.EntityTypes.MINE)) {

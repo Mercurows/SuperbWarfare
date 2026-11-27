@@ -43,6 +43,7 @@ object IFFOverlay : CommonOverlay("iff") {
     val FRIENDLY_MISSILE = loc("textures/overlay/teammate/friendly_missile.png")
     val FRIENDLY_MAID = loc("textures/overlay/teammate/friendly_maid.png")
     val FRIENDLY_AIRSHIP = loc("textures/overlay/teammate/friendly_airship.png")
+    val FRIENDLY_RC = loc("textures/overlay/teammate/friendly_rc.png")
 
     override fun shouldRender() = super.shouldRender() && DisplayConfig.IFF_HUD.get()
 
@@ -261,6 +262,7 @@ object IFFOverlay : CommonOverlay("iff") {
                 VehicleType.BOAT -> FRIENDLY_BOAT
                 VehicleType.DEFENSE -> FRIENDLY_DEFENSE
                 VehicleType.AIRSHIP -> FRIENDLY_AIRSHIP
+                VehicleType.RC -> FRIENDLY_RC
                 else -> FRIENDLY_INDICATOR
             }
         } else if (entity.type.`is`(ModTags.EntityTypes.MINE)) {

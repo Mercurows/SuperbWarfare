@@ -1,0 +1,9 @@
+{
+  "RenderMounts": true,
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/fpv_drone.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/fpv_drone.png"
+    }
+  ]
+}

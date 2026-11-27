@@ -360,6 +360,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
             if (!flag && pos.canBeSeen() &&
                 !((entity.vehicleType == VehicleType.AIRPLANE
                         || entity.vehicleType == VehicleType.HELICOPTER
+                        || entity.vehicleType == VehicleType.RC
                         || data.get(GunProp.CROSSHAIR) == "@AirBomb")
                         && player === entity.getFirstPassenger())
             ) {

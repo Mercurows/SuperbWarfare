@@ -39,5 +39,8 @@ enum class VehicleType {
     SPECIAL,
 
     @SerialName("AirShip")
-    AIRSHIP
+    AIRSHIP,
+
+    @SerialName("RC")
+    RC
 }

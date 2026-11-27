@@ -31,7 +31,7 @@ open class WireGuideMissileEntity(type: EntityType<out WireGuideMissileEntity>, 
 
             if (launcherVehicleUUID == vehicle.uuid) {
                 val lookVec =
-                    if ((vehicle.vehicleType == VehicleType.AIRPLANE || vehicle.vehicleType == VehicleType.HELICOPTER)
+                    if ((vehicle.vehicleType == VehicleType.AIRPLANE || vehicle.vehicleType == VehicleType.HELICOPTER || vehicle.vehicleType == VehicleType.RC)
                         && owner == vehicle.getFirstPassenger()
                     ) {
                         vehicle.getViewVector(1f).scale(1.6)

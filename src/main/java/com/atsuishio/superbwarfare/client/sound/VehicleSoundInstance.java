@@ -86,7 +86,7 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
 
         @Override
         protected float getPitch(VehicleEntity mobileVehicle) {
-            if (mobileVehicle.getVehicleType() == VehicleType.HELICOPTER) return 1;
+            if (mobileVehicle.getVehicleType() == VehicleType.HELICOPTER || mobileVehicle.getVehicleType() == VehicleType.RC) return 1;
             float power = mobileVehicle.getPower();
             float pitch;
             if (power < 0.5) {

@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.airShipEngine
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.aircraftEngine
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.droneEngine
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.fpvDroneEngine
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.helicopterEngine
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.shipEngine
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.tomEngine
@@ -179,6 +180,43 @@ abstract class EngineInfo {
 
         override fun work(vehicle: VehicleEntity) {
             vehicle.helicopterEngine(this)
+        }
+    }
+
+    /**
+     * FPV 无人机引擎：从 [Helicopter] 复制而来，之后可以独立演化。
+     * 使用 [com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.fpvDroneEngine]，
+     * 与直升机的唯一区别是没有任何悬停功能。
+     */
+    @Serializable
+    class FpvDrone : EngineInfo() {
+        @SerialName("PitchSpeed")
+        var pitchSpeed: Float = 1f
+
+        @SerialName("YawSpeed")
+        var yawSpeed: Float = 1f
+
+        @SerialName("RollSpeed")
+        var rollSpeed: Float = 1f
+
+        @SerialName("LiftSpeed")
+        var liftSpeed: Float = 1f
+
+        @SerialName("Speed")
+        var speed: Float = 1f
+
+        @SerialName("ClampPitch")
+        var clampPitch: Float = 514f
+
+        @SerialName("ClampRoll")
+        var clampRoll: Float = 514f
+
+        // 引擎启动音效
+        @SerialName("EngineStartSound")
+        var engineStartSound: SerializedSoundEvent = SoundEvents.EMPTY
+
+        override fun work(vehicle: VehicleEntity) {
+            vehicle.fpvDroneEngine(this)
         }
     }
 

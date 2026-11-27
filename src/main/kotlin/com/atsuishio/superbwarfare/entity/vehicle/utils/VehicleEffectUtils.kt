@@ -148,7 +148,7 @@ object VehicleEffectUtils {
             vehicle.mainEngineHealth = 0f
             vehicle.subEngineHealth = 0f
         }
-        if ((vehicle.vehicleType == VehicleType.HELICOPTER || vehicle.vehicleType == VehicleType.AIRPLANE || vehicle.vehicleType == VehicleType.AIRSHIP) && vehicle.health < 0.05 * vehicle.getMaxHealth()) {
+        if ((vehicle.vehicleType == VehicleType.HELICOPTER || vehicle.vehicleType == VehicleType.AIRPLANE || vehicle.vehicleType == VehicleType.AIRSHIP || vehicle.vehicleType == VehicleType.RC) && vehicle.health < 0.05 * vehicle.getMaxHealth()) {
             vehicle.mainEngineHealth = 0f
             vehicle.subEngineHealth = 0f
         }

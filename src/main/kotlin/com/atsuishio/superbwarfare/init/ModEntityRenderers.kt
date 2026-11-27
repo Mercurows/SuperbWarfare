@@ -31,6 +31,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.TARGET.get(), ::TargetRenderer)
             registerEntityRenderer(ModEntities.RC_OPERATOR_BODY.get(), ::RCOperatorBodyRenderer)
             registerEntityRenderer(ModEntities.DRONE.get(), ::DroneRenderer)
+            registerEntityRenderer(ModEntities.FPV_DRONE.get(), ::FpvDroneRenderer)
             registerEntityRenderer(ModEntities.DPS_GENERATOR.get(), ::DPSGeneratorRenderer)
             registerEntityRenderer(ModEntities.RPG_ROCKET_TBG.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.RPG_ROCKET_STANDARD.get(), ::BasicProjectileRenderer)

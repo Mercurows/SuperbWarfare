@@ -23,6 +23,9 @@ enum class EngineType {
     @SerialName("Drone")
     DRONE,
 
+
+    @SerialName("FpvDrone")
+    FPV_DRONE,
     @SerialName("Ship")
     SHIP,
 

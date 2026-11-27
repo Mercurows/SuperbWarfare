@@ -397,6 +397,9 @@ object ModEntities {
     val DRONE = register("drone", vehicle(::DroneEntity).sized(0.63f, 0.25f))
 
     @JvmField
+    val FPV_DRONE = register("fpv_drone", vehicle(::FpvDroneEntity).sized(0.63f, 0.25f))
+
+    @JvmField
     val RC_OPERATOR_BODY = register("rc_operator_body", misc(::RCOperatorBodyEntity)
         .sized(0.6f, 1.8f).setTrackingRange(32).noSave().noSummon())
 

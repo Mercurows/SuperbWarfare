@@ -106,7 +106,7 @@ object ClientMouseHandler {
         }
 
         val vehicle = player.vehicle
-        if (vehicle is VehicleEntity && (vehicle.vehicleType == VehicleType.AIRPLANE || vehicle.vehicleType == VehicleType.HELICOPTER)) {
+        if (vehicle is VehicleEntity && (vehicle.vehicleType == VehicleType.AIRPLANE || vehicle.vehicleType == VehicleType.HELICOPTER || vehicle.vehicleType == VehicleType.RC)) {
             val y = if (ControlConfig.INVERT_AIRCRAFT_CONTROL.get()) -1 else 1
             val sensitivity = vehicle.mouseSensitivity
 
@@ -202,7 +202,8 @@ object ClientMouseHandler {
         // 其它载具保留原有车体 roll 补偿，避免坡面/侧倾时回归。
         if (mc.options.cameraType == CameraType.FIRST_PERSON &&
             vehicle.vehicleType != VehicleType.AIRPLANE &&
-            vehicle.vehicleType != VehicleType.HELICOPTER
+            vehicle.vehicleType != VehicleType.HELICOPTER &&
+            vehicle.vehicleType != VehicleType.RC
         ) {
             val roll = vehicle.roll
             val absRoll = abs(roll)
@@ -299,7 +300,7 @@ object ClientMouseHandler {
         val player = localPlayer ?: return 1
         val vehicle = player.vehicle as? VehicleEntity ?: return 1
 
-        if ((vehicle.vehicleType == VehicleType.AIRPLANE || vehicle.vehicleType == VehicleType.HELICOPTER)
+        if ((vehicle.vehicleType == VehicleType.AIRPLANE || vehicle.vehicleType == VehicleType.HELICOPTER || vehicle.vehicleType == VehicleType.RC)
             && vehicle.firstPassenger == player
         ) {
             return if (ControlConfig.INVERT_AIRCRAFT_CONTROL.get()) -1 else 1

@@ -824,6 +824,161 @@ object VehicleEngineUtils {
     }
 
     @JvmStatic
+    fun VehicleEntity.fpvDroneEngine(engineInfo: EngineInfo.FpvDrone) {
+        val energyCost = engineInfo.energyCostRate.toInt()
+        val powerAdd = engineInfo.increment
+        val powerReduce = engineInfo.decrement
+        var pitchSpeed = engineInfo.pitchSpeed
+        var yawSpeed = engineInfo.yawSpeed
+        var rollSpeed = engineInfo.rollSpeed
+        val lift = engineInfo.liftSpeed
+        val speed = engineInfo.speed
+
+        if (onGround()) {
+            if (!isWreck && (!level().isClientSide || isLocalPilot())) {
+                levelBodyToward(0f, 0f, 0.1f)
+            }
+            deltaMovement = deltaMovement.multiply(0.85, 1.0, 0.85)
+        } else {
+            val f = Mth.clamp(1.0 - (0.01 / speed) * (deltaMovement.lengthSqr() * deltaMovement.length()), 0.01, 1.0).toFloat()
+            deltaMovement = deltaMovement.multiply(f.toDouble(), f.toDouble(), f.toDouble())
+        }
+
+        if (isInFluidType && tickCount % 4 == 0 && VehicleVecUtils.getSubmergedHeight(this) > 0.5 * bbHeight) {
+            deltaMovement = deltaMovement.multiply(0.6, 0.6, 0.6)
+            hurt(
+                ModDamageTypes.causeVehicleStrikeDamage(
+                    level().registryAccess(),
+                    vehicle,
+                    if (getActiveDriver() == null) vehicle else getActiveDriver()
+                ), 6 + (20 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))).toFloat()
+            )
+        }
+
+        val pilot = getActiveDriver()
+
+        if (pilot == null) {
+            leftInputDown = false
+            rightInputDown = false
+            forwardInputDown = false
+            backInputDown = false
+            upInputDown = false
+            downInputDown = false
+            holdPowerTick = 0
+
+            if (!isWreck) {
+                deltaMovement = deltaMovement.multiply(0.95, 0.95, 0.95)
+                if (!level().isClientSide || isLocalPilot()) {
+                    rotateBodyLocalZ(roll * (0.99f - 1f) * Mth.DEG_TO_RAD)
+                    syncEulerFromBody()
+                    rotateBodyPitch(-0.5f * deltaMovement.dot(getViewVector(1f)).toFloat() * Mth.DEG_TO_RAD)
+                    rotateBodyLocalZ(-0.5f * deltaMovement.dot(getRightVec(1f)).toFloat() * Mth.DEG_TO_RAD)
+                    syncEulerFromBody()
+                }
+                if (!onGround() && energy > energyCost && engineStartOver) {
+                    val hoverSynched = ((computed().gravity - deltaMovement.y()) / (lift * 0.5)).toFloat().coerceIn(0.01f, 0.18f)
+                    power = Mth.lerp(0.5f, power, hoverSynched)
+                    synchedPropellerRot = power
+                }
+            }
+        } else {
+            if (rightInputDown) {
+                holdTick++
+                deltaRot -= 0.2f * Math.min(holdTick, 10)
+            } else if (leftInputDown) {
+                holdTick++
+                deltaRot += 0.2f * Math.min(holdTick, 10)
+            } else {
+                holdTick = 0
+            }
+            if ((!level().isClientSide || isLocalPilot())) {
+                rotateBodyLocalX(
+                    (if (onGround()) 0f else 1f) * pitchSpeed * mouseMoveSpeedY * Mth.DEG_TO_RAD
+                )
+                rotateBodyLocalZ(
+                    (if (onGround()) 0f else 1f) * -rollSpeed * deltaRot * Mth.DEG_TO_RAD
+                )
+                rotateBodyLocalY(
+                    (if (onGround()) 0.02f else 1f)* -yawSpeed * mouseMoveSpeedX * Mth.DEG_TO_RAD
+                )
+                syncEulerFromBody()
+            }
+
+            if (onGround()) {
+                if ((!level().isClientSide || isLocalPilot())) {
+                    rotateBodyLocalZ(roll * (0.98f - 1f) * Mth.DEG_TO_RAD)
+                    syncEulerFromBody()
+                    rotateBodyPitch(xRot * (0.98f - 1f) * Mth.DEG_TO_RAD)
+                    syncEulerFromBody()
+                }
+            }
+        }
+
+        if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
+            power *= 0.995f
+            forwardInputDown = false
+            backInputDown = false
+            engineStart = false
+            engineStartOver = false
+        } else {
+            val up = forwardInputDown
+            val down = downInputDown
+
+            if (!engineStart && up) {
+                engineStart = true
+                level().playSound(null, this, engineInfo.engineStartSound, soundSource, 3f, 1f)
+            }
+
+            if (up && engineStartOver) {
+                holdPowerTick++
+                power = Math.min(power + 0.01f * powerAdd * Math.min(holdPowerTick, 10), 0.18f)
+            }
+
+            if (engineStartOver) {
+                if (down || backInputDown) {
+                    holdPowerTick++
+                    power = Math.max(power - 0.01f * powerReduce * Math.min(holdPowerTick, 10), if (onGround()) 0f else 0.05f)
+                }
+            }
+
+            if (engineStart && !engineStartOver) {
+                power = Math.min(power + 0.1f * powerAdd, 0.045f)
+            }
+
+            if (!(up || down || backInputDown) && engineStartOver) {
+                val hoverSynched = ((computed().gravity - deltaMovement.y()) / (lift * 1)).toFloat().coerceIn(0.01f, 0.18f)
+                power = Mth.lerp(0.002f, power, hoverSynched)
+                holdPowerTick = 0
+            }
+        }
+
+        deltaRot *= 0.9f
+        synchedPropellerRot = Mth.lerp(0.75f, synchedPropellerRot, power)
+        propellerRot += 30 * synchedPropellerRot
+        synchedPropellerRot *= 0.9995f
+
+        if (engineStart) {
+            consumeEnergy(
+                (energyCost * 8.3333f * Mth.abs(power)).toInt()
+            )
+        }
+
+        deltaMovement = deltaMovement.add(
+            getUpVec(1f).scale((synchedPropellerRot * lift * 0.5f).toDouble())
+        )
+
+        if (power > 0.04f) {
+            engineStart = true
+            engineStartOver = true
+        }
+
+        if (power < 0.0001f) {
+            engineStart = false
+            engineStartOver = false
+        }
+    }
+
+    @JvmStatic
     fun VehicleEntity.droneEngine(engineInfo: EngineInfo.Drone) {
         val pitchRate = 0.3f * engineInfo.pitchSpeed
         val rollRate = 0.3f * engineInfo.rollSpeed

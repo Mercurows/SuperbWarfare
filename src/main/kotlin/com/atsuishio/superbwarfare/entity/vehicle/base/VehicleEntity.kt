@@ -1056,7 +1056,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     /** 当前载具是否使用四元数作为本体朝向的权威表示（直升机/无人机/固定翼） */
     open fun usesQuaternionBody(): Boolean {
         val type = computed().engineType
-        return type == EngineType.HELICOPTER || type == EngineType.DRONE || type == EngineType.AIRCRAFT || type == EngineType.TOM6
+        return type == EngineType.HELICOPTER || type == EngineType.DRONE || type == EngineType.AIRCRAFT || type == EngineType.TOM6 || type == EngineType.FPV_DRONE
     }
 
     /** 是否为本地玩家驾驶的四元数载具（客户端运行与服务端相同的本体积分以保证操控跟手） */
@@ -2572,7 +2572,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             engineInfo is Ship -> 1
             vehicleType == VehicleType.AIRPLANE ||
                     vehicleType == VehicleType.HELICOPTER ||
-                    vehicleType == VehicleType.AIRSHIP -> 20
+                    vehicleType == VehicleType.AIRSHIP ||
+                    vehicleType == VehicleType.RC -> 20
 
             else -> 4
         }
@@ -2957,7 +2958,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
 
         if (isWreck) {
-            if ((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRSHIP) && (onGround() || isInFluidType) && !sympatheticDetonated) {
+            if ((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRSHIP || vehicleType == VehicleType.RC) && (onGround() || isInFluidType) && !sympatheticDetonated) {
                 sympatheticDetonated = true
                 val destroyInfo = computed.destroyInfo
                 if (destroyInfo.explodePassengers) {
@@ -2982,7 +2983,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 this.generateWreckageLoot()
             }
 
-            if (vehicleType != VehicleType.AIRPLANE && vehicleType != VehicleType.HELICOPTER && vehicleType != VehicleType.AIRSHIP) {
+            if (vehicleType != VehicleType.AIRPLANE && vehicleType != VehicleType.HELICOPTER && vehicleType != VehicleType.AIRSHIP && vehicleType != VehicleType.RC) {
                 ejectPassengers()
             }
         }
@@ -3290,7 +3291,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         val terrainCompat = computed.terrainCompat
         if (terrainCompat.isNotEmpty()) {
-            if (!((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRSHIP) && isWreck)) {
+            if (!((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRSHIP || vehicleType == VehicleType.RC) && isWreck)) {
                 this.terrainCompact(terrainCompat)
             }
         }
@@ -3758,7 +3759,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         // 飞行器（直升机/固定翼）的直接炮塔控制：用当前相机的屏幕轴作为输入轴，
         // 避免体轴在倒飞/大滚转时导致鼠标横向变成俯仰、纵向失效。
         var inputUp = hullUp
-        val useCameraFrame = vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER
+        val useCameraFrame = vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.RC
         if (useCameraFrame) {
             val camera = mc.gameRenderer.mainCamera
             val camUp = camera.upVector
@@ -4768,6 +4769,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                     EngineType.TRACK -> Track.serializer()
                     EngineType.HELICOPTER -> Helicopter.serializer()
                     EngineType.DRONE -> Drone.serializer()
+                    EngineType.FPV_DRONE -> FpvDrone.serializer()
                     EngineType.SHIP -> Ship.serializer()
                     EngineType.AIRCRAFT -> Aircraft.serializer()
                     EngineType.WHEELCHAIR -> WheelChair.serializer()
@@ -4807,7 +4809,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 Mth.abs(1.4f * deltaRot)
             ) * engineSoundVolume
 
-            EngineType.HELICOPTER, EngineType.DRONE -> synchedPropellerRot * engineSoundVolume
+            EngineType.HELICOPTER, EngineType.DRONE, EngineType.FPV_DRONE -> synchedPropellerRot * engineSoundVolume
             EngineType.AIRSHIP -> Mth.clamp(
                 Mth.abs(power) * engineSoundVolume + engineSoundVolume,
                 engineSoundVolume,
