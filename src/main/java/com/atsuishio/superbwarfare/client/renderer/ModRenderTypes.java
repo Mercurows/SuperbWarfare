@@ -45,10 +45,10 @@ public class ModRenderTypes extends RenderType {
                     .createCompositeState(false));
 
     public static final Function<ResourceLocation, RenderType> SWORD_WAVE = Util.memoize(texture ->
-            create("sword_wave", DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, true,
+            create("sword_wave", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 256, false, true,
                     CompositeState.builder()
-                            .setShaderState(POSITION_COLOR_TEX_SHADER)
-                            .setTextureState(new TextureStateShard(texture, false, false))
+                            .setShaderState(RENDERTYPE_BEACON_BEAM_SHADER)
+                            .setTextureState(new TextureStateShard(texture, true, false))
                             .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                             .setCullState(NO_CULL)
                             .setWriteMaskState(COLOR_WRITE)

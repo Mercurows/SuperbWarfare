@@ -5,14 +5,21 @@ import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
 import com.atsuishio.superbwarfare.entity.projectile.SwordWaveEntity
 import com.atsuishio.superbwarfare.tools.mc
+import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.BufferBuilder
 import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.blaze3d.vertex.VertexConsumer
+import com.mojang.blaze3d.vertex.VertexSorting
+import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
+import org.joml.Matrix4f
 import kotlin.math.abs
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 open class SwordWaveRenderer(context: EntityRendererProvider.Context) : EntityRenderer<SwordWaveEntity>(context) {
@@ -23,6 +30,29 @@ open class SwordWaveRenderer(context: EntityRendererProvider.Context) : EntityRe
         poseStack: PoseStack,
         buffers: MultiBufferSource,
         packedLight: Int,
+    ) {
+        if (ShaderCompat.isRenderingShadowPass()) return
+
+        if (ShaderCompat.isShaderPackActive()) {
+            if (postCompositeWaves.isEmpty()) {
+                worldProjection.set(RenderSystem.getProjectionMatrix())
+                worldModelView.set(RenderSystem.getModelViewMatrix())
+            }
+            val pose = PoseStack().last()
+            pose.pose().set(poseStack.last().pose())
+            pose.normal().set(poseStack.last().normal())
+            postCompositeWaves.add(WaveDraw(this, entity, partialTick, pose))
+        } else {
+            renderWave(entity, partialTick, poseStack.last(), buffers)
+        }
+        super.render(entity, yaw, partialTick, poseStack, buffers, packedLight)
+    }
+
+    fun renderWave(
+        entity: SwordWaveEntity,
+        partialTick: Float,
+        pose: PoseStack.Pose,
+        buffers: MultiBufferSource
     ) {
         val forward = if (entity.deltaMovement.lengthSqr() > 1e-6) entity.deltaMovement.normalize()
         else Vec3.directionFromRotation(entity.xRot, entity.yRot)
@@ -40,37 +70,31 @@ open class SwordWaveRenderer(context: EntityRendererProvider.Context) : EntityRe
         val textureRight = forward.scale(-1.0)
         val normal = textureRight.cross(rolledUp)
 
-        val matrix = poseStack.last().pose()
         val buffer = buffers.getBuffer(ModRenderTypes.SWORD_WAVE.apply(getTextureLocation(entity)))
         val color = entity.rgb
         fun vertex(x: Double, y: Double, u: Float, v: Float) {
             val position = textureRight.scale(x).add(rolledUp.scale(y))
-            buffer.vertex(matrix, position.x.toFloat(), position.y.toFloat(), position.z.toFloat())
-                .color((color ushr 16) and 255, (color ushr 8) and 255, color and 255, 225)
-                .uv(u, v).endVertex()
+            buffer.waveVertex(pose, position, normal, color, 225, u, v)
         }
 
         vertex(-HALF_SIZE, -HALF_SIZE, 0f, 1f)
         vertex(HALF_SIZE, -HALF_SIZE, 1f, 1f)
         vertex(HALF_SIZE, HALF_SIZE, 1f, 0f)
         vertex(-HALF_SIZE, HALF_SIZE, 0f, 0f)
-        renderLaunchEdge(entity, partialTick, poseStack, buffers, forward, rolledUp, normal)
-        super.render(entity, yaw, partialTick, poseStack, buffers, packedLight)
+        renderLaunchEdge(entity, partialTick, pose, buffers, forward, rolledUp, normal)
     }
 
     private fun renderLaunchEdge(
         entity: SwordWaveEntity,
         partialTick: Float,
-        poseStack: PoseStack,
+        pose: PoseStack.Pose,
         buffers: MultiBufferSource,
         forward: Vec3,
         span: Vec3,
         normal: Vec3,
     ) {
         val viewer = mc.player ?: return
-        if (!mc.options.cameraType.isFirstPerson || mc.cameraEntity !== viewer || entity.launchOwnerId != viewer.id ||
-            ShaderCompat.isRenderingShadowPass()
-        ) return
+        if (!mc.options.cameraType.isFirstPerson || mc.cameraEntity !== viewer || entity.launchOwnerId != viewer.id) return
 
         val t = partialTick.toDouble()
         val toCamera = mc.gameRenderer.mainCamera.position.subtract(
@@ -88,19 +112,14 @@ open class SwordWaveRenderer(context: EntityRendererProvider.Context) : EntityRe
         if (alpha <= 0.01f) return
 
         // The extra ribbon lies in the plane across the flight axis and shares the crescent's roll.
-        val matrix = poseStack.last().pose()
-        val buffer = buffers.getBuffer(ModRenderTypes.BLADE_TRAIL)
+        val buffer = buffers.getBuffer(ModRenderTypes.SWORD_WAVE.apply(EDGE_TEXTURE))
         val color = entity.rgb
-        val red = ((color ushr 16) and 255) / 255f
-        val green = ((color ushr 8) and 255) / 255f
-        val blue = (color and 255) / 255f
         val edgeCenter = forward.scale(HALF_SIZE * (1.0 - 2.0 * LAUNCH_EDGE_U))
         fun vertex(slice: EdgeSlice, side: Int) {
             val position = span.scale(slice.height).add(normal.scale(slice.halfWidth * side))
                 .scale(SIZE_SCALE).add(edgeCenter)
-            val opacity = if (side == 0) alpha * slice.opacity else 0f
-            buffer.vertex(matrix, position.x.toFloat(), position.y.toFloat(), position.z.toFloat())
-                .color(red, green, blue, opacity).endVertex()
+            val opacity = if (side == 0) (255 * alpha * slice.opacity).roundToInt() else 0
+            buffer.waveVertex(pose, position, forward, color, opacity, 0.5f, 0.5f)
         }
 
         for (index in 1 until EDGE_SLICES.size) {
@@ -117,20 +136,81 @@ open class SwordWaveRenderer(context: EntityRendererProvider.Context) : EntityRe
         }
     }
 
+    private fun VertexConsumer.waveVertex(
+        pose: PoseStack.Pose,
+        position: Vec3,
+        normal: Vec3,
+        color: Int,
+        alpha: Int,
+        u: Float,
+        v: Float,
+    ) {
+        vertex(pose.pose(), position.x.toFloat(), position.y.toFloat(), position.z.toFloat())
+            .color((color ushr 16) and 255, (color ushr 8) and 255, color and 255, alpha)
+            .uv(u, v).uv2(LightTexture.FULL_BRIGHT)
+            .normal(pose.normal(), normal.x.toFloat(), normal.y.toFloat(), normal.z.toFloat())
+            .endVertex()
+    }
+
     override fun getTextureLocation(entity: SwordWaveEntity) = TEXTURE
 
     private data class EdgeSlice(val height: Double, val halfWidth: Double, val opacity: Float)
+
+    private data class WaveDraw(
+        val renderer: SwordWaveRenderer, val entity: SwordWaveEntity, val partialTick: Float, val pose: PoseStack.Pose,
+    )
 
     companion object {
         private const val SIZE_SCALE = 1.4
         private const val HALF_SIZE = 0.64 * SIZE_SCALE
         private const val LAUNCH_EDGE_U = 0.08 // Bright portion of the crescent near its leading edge.
         private val TEXTURE = loc("textures/entity/sword_wave.png")
+        private val EDGE_TEXTURE = loc("textures/entity/white.png")
         private val EDGE_SLICES = arrayOf(
             EdgeSlice(-0.55, 0.02, 0f),
             EdgeSlice(-0.30, 0.075, 1f),
             EdgeSlice(0.30, 0.075, 1f),
             EdgeSlice(0.55, 0.02, 0f),
         )
+
+        private val postCompositeWaves = ArrayList<WaveDraw>()
+        private val worldProjection = Matrix4f()
+        private val worldModelView = Matrix4f()
+        private val postCompositeBuffers = MultiBufferSource.immediate(BufferBuilder(256))
+
+        @JvmStatic
+        fun beginFrame() {
+            postCompositeWaves.clear()
+        }
+
+        /** Iris has restored the main target with scene depth. Blend over its finished colour. */
+        @JvmStatic
+        fun renderAfterComposite() {
+            if (postCompositeWaves.isEmpty()) return
+            val previousProjection = RenderSystem.getProjectionMatrix()
+            val previousSorting = RenderSystem.getVertexSorting()
+            val previousShader = RenderSystem.getShader()
+            val previousTexture = RenderSystem.getShaderTexture(0)
+            val modelView = RenderSystem.getModelViewStack()
+            val camera = mc.gameRenderer.mainCamera.position
+            modelView.pushPose()
+            try {
+                modelView.last().pose().set(worldModelView)
+                RenderSystem.applyModelViewMatrix()
+                RenderSystem.setProjectionMatrix(worldProjection, VertexSorting.DISTANCE_TO_ORIGIN)
+                postCompositeWaves.sortByDescending { it.entity.distanceToSqr(camera) }
+                for ((renderer, entity, partialTick, pose) in postCompositeWaves) {
+                    renderer.renderWave(entity, partialTick, pose, postCompositeBuffers)
+                }
+                postCompositeBuffers.endBatch()
+            } finally {
+                beginFrame()
+                modelView.popPose()
+                RenderSystem.applyModelViewMatrix()
+                RenderSystem.setProjectionMatrix(previousProjection, previousSorting)
+                RenderSystem.setShader { previousShader }
+                RenderSystem.setShaderTexture(0, previousTexture)
+            }
+        }
     }
 }

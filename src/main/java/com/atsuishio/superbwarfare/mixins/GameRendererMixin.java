@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.mixins;
 import com.atsuishio.superbwarfare.client.camera.VehicleBoneCamera;
 import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightRenderer;
 import com.atsuishio.superbwarfare.client.overlay.FlashbangOverlay;
+import com.atsuishio.superbwarfare.client.renderer.projectile.SwordWaveRenderer;
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensPostProcessor;
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer;
 import com.atsuishio.superbwarfare.client.renderer.special.NuclearExplosionRenderer;
@@ -42,6 +43,7 @@ public class GameRendererMixin {
 
     @Inject(method = "renderLevel", at = @At("HEAD"))
     private void superbWarfare$beginScopeFrame(float partialTicks, long finishTime, PoseStack poseStack, CallbackInfo ci) {
+        SwordWaveRenderer.beginFrame();
         GunMuzzleLightRenderer.beginFrame();
         ScopeLensPostProcessor.beginFrame();
         ScopeThermalRenderer.beginFrame();
@@ -51,6 +53,7 @@ public class GameRendererMixin {
     // Iris has completed its composite at this point; its final colour-space conversion is later.
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V", ordinal = 2))
     private void superbWarfare$renderScopeLenses(float partialTicks, long finishTime, PoseStack poseStack, CallbackInfo ci) {
+        SwordWaveRenderer.renderAfterComposite();
         NuclearExplosionRenderer.render(partialTicks);
         ScopeThermalRenderer.captureWorldDepth();
         if (ShaderCompat.isShaderPackActive()) ScopeThermalRenderer.renderFullScreen();
