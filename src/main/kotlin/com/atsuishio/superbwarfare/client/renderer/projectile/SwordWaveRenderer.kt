@@ -12,6 +12,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.blaze3d.vertex.VertexSorting
 import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
@@ -70,17 +71,22 @@ open class SwordWaveRenderer(context: EntityRendererProvider.Context) : EntityRe
         val textureRight = forward.scale(-1.0)
         val normal = textureRight.cross(rolledUp)
 
-        val buffer = buffers.getBuffer(ModRenderTypes.SWORD_WAVE.apply(getTextureLocation(entity)))
-        val color = entity.rgb
-        fun vertex(x: Double, y: Double, u: Float, v: Float) {
-            val position = textureRight.scale(x).add(rolledUp.scale(y))
-            buffer.waveVertex(pose, position, normal, color, 225, u, v)
+        val horizontalExtent = textureRight.scale(HALF_SIZE)
+        val verticalExtent = rolledUp.scale(HALF_SIZE)
+        val bottomLeft = horizontalExtent.add(verticalExtent).scale(-1.0)
+        val bottomRight = horizontalExtent.subtract(verticalExtent)
+        val topRight = bottomLeft.scale(-1.0)
+        val topLeft = bottomRight.scale(-1.0)
+        fun layer(type: RenderType, color: Int, alpha: Int) {
+            val buffer = buffers.getBuffer(type)
+            buffer.waveVertex(pose, bottomLeft, normal, color, alpha, 0f, 1f)
+            buffer.waveVertex(pose, bottomRight, normal, color, alpha, 1f, 1f)
+            buffer.waveVertex(pose, topRight, normal, color, alpha, 1f, 0f)
+            buffer.waveVertex(pose, topLeft, normal, color, alpha, 0f, 0f)
         }
 
-        vertex(-HALF_SIZE, -HALF_SIZE, 0f, 1f)
-        vertex(HALF_SIZE, -HALF_SIZE, 1f, 1f)
-        vertex(HALF_SIZE, HALF_SIZE, 1f, 0f)
-        vertex(-HALF_SIZE, HALF_SIZE, 0f, 0f)
+        layer(ModRenderTypes.SWORD_WAVE.apply(INNER_TEXTURE), entity.rgb, 225)
+        layer(ModRenderTypes.SWORD_WAVE_RIM.apply(getTextureLocation(entity)), 0xFFFFFF, 255)
         renderLaunchEdge(entity, partialTick, pose, buffers, forward, rolledUp, normal)
     }
 
@@ -152,7 +158,7 @@ open class SwordWaveRenderer(context: EntityRendererProvider.Context) : EntityRe
             .endVertex()
     }
 
-    override fun getTextureLocation(entity: SwordWaveEntity) = TEXTURE
+    override fun getTextureLocation(entity: SwordWaveEntity) = OUTER_TEXTURE
 
     private data class EdgeSlice(val height: Double, val halfWidth: Double, val opacity: Float)
 
@@ -164,7 +170,8 @@ open class SwordWaveRenderer(context: EntityRendererProvider.Context) : EntityRe
         private const val SIZE_SCALE = 1.4
         private const val HALF_SIZE = 0.64 * SIZE_SCALE
         private const val LAUNCH_EDGE_U = 0.08 // Bright portion of the crescent near its leading edge.
-        private val TEXTURE = loc("textures/entity/sword_wave.png")
+        private val OUTER_TEXTURE = loc("textures/entity/sword_wave_outer.png")
+        private val INNER_TEXTURE = loc("textures/entity/sword_wave_inner.png")
         private val EDGE_TEXTURE = loc("textures/entity/white.png")
         private val EDGE_SLICES = arrayOf(
             EdgeSlice(-0.55, 0.02, 0f),

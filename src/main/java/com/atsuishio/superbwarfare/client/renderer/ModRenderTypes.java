@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -12,7 +13,9 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.event.RegisterShadersEvent;
 
+import java.io.IOException;
 import java.util.function.Function;
 
 public class ModRenderTypes extends RenderType {
@@ -46,15 +49,39 @@ public class ModRenderTypes extends RenderType {
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false));
 
+    private static ShaderInstance swordWaveRimShader;
+    private static final ShaderStateShard SWORD_WAVE_RIM_SHADER = new ShaderStateShard(() -> swordWaveRimShader);
+    private static final TransparencyStateShard SWORD_WAVE_RIM_TRANSPARENCY = new TransparencyStateShard("sword_wave_rim", () -> {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE,
+                GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
+    }, () -> {
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+    });
+
     public static final Function<ResourceLocation, RenderType> SWORD_WAVE = Util.memoize(texture ->
-            create("sword_wave", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 256, false, true,
-                    CompositeState.builder()
-                            .setShaderState(RENDERTYPE_BEACON_BEAM_SHADER)
-                            .setTextureState(new TextureStateShard(texture, true, false))
-                            .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                            .setCullState(NO_CULL)
-                            .setWriteMaskState(COLOR_WRITE)
-                            .createCompositeState(false)));
+            swordWave("sword_wave", texture, RENDERTYPE_BEACON_BEAM_SHADER, TRANSLUCENT_TRANSPARENCY));
+
+    public static final Function<ResourceLocation, RenderType> SWORD_WAVE_RIM = Util.memoize(texture ->
+            swordWave("sword_wave_rim", texture, SWORD_WAVE_RIM_SHADER, SWORD_WAVE_RIM_TRANSPARENCY));
+
+    public static void registerSwordWaveShader(RegisterShadersEvent event) throws IOException {
+        event.registerShader(new ShaderInstance(event.getResourceProvider(),
+                Mod.loc("sword_wave_rim"), DefaultVertexFormat.BLOCK), shader -> swordWaveRimShader = shader);
+    }
+
+    private static RenderType swordWave(String name, ResourceLocation texture, ShaderStateShard shader,
+                                       TransparencyStateShard transparency) {
+        return create(name, DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 256, false, true,
+                CompositeState.builder()
+                        .setShaderState(shader)
+                        .setTextureState(new TextureStateShard(texture, true, false))
+                        .setTransparencyState(transparency)
+                        .setCullState(NO_CULL)
+                        .setWriteMaskState(COLOR_WRITE)
+                        .createCompositeState(false));
+    }
 
     public static final Function<ResourceLocation, RenderType> EXPLOSION_SMOKE = Util.memoize(texture ->
             explosionParticle("explosion_smoke", new TextureStateShard(texture, false, false)));

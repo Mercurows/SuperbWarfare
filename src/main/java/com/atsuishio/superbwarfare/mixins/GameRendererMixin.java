@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.mixins;
 import com.atsuishio.superbwarfare.client.camera.VehicleBoneCamera;
 import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightRenderer;
 import com.atsuishio.superbwarfare.client.overlay.FlashbangOverlay;
+import com.atsuishio.superbwarfare.client.renderer.gun.BladeTrailRenderer;
 import com.atsuishio.superbwarfare.client.renderer.projectile.SwordWaveRenderer;
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensPostProcessor;
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer;
@@ -45,6 +46,7 @@ public class GameRendererMixin {
     @Inject(method = "renderLevel", at = @At("HEAD"))
     private void superbWarfare$beginScopeFrame(float partialTicks, long finishTime, PoseStack poseStack, CallbackInfo ci) {
         SwordWaveRenderer.beginFrame();
+        BladeTrailRenderer.beginFrame();
         ExplosionParticleRenderer.beginFrame();
         GunMuzzleLightRenderer.beginFrame();
         ScopeLensPostProcessor.beginFrame();
@@ -61,6 +63,7 @@ public class GameRendererMixin {
         ScopeThermalRenderer.captureWorldDepth();
         if (ShaderCompat.isShaderPackActive()) ScopeThermalRenderer.renderFullScreen();
         ScopeLensPostProcessor.render();
+        BladeTrailRenderer.renderAfterComposite();
     }
 
     // Vanilla renders hands after the world; Iris renders them before its composite.

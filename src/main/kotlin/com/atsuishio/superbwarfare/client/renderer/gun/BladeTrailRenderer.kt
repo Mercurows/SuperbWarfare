@@ -3,16 +3,21 @@ package com.atsuishio.superbwarfare.client.renderer.gun
 import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
+import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.pojo.BladeTrailInfo
 import com.atsuishio.superbwarfare.tools.localPlayer
+import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.BufferBuilder
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.world.item.ItemStack
 import org.joml.Matrix4f
 import org.joml.Vector3f
+import org.lwjgl.opengl.GL11
+import org.lwjgl.system.MemoryStack
 import kotlin.math.max
 import kotlin.math.min
 
@@ -60,6 +65,19 @@ object BladeTrailRenderer {
     private var activeConfig: BladeTrailInfo? = null
     private var previous: Sample? = null
     private val samples = ArrayDeque<Sample>()
+    private data class HandView(
+        val projection: Matrix4f, val modelView: Matrix4f, val depthNear: Double, val depthFar: Double, val time: Long,
+    )
+
+    private val postCompositeBuffers = MultiBufferSource.immediate(BufferBuilder(2048))
+    private var pendingView: HandView? = null
+    private var sampledThisFrame = false
+
+    @JvmStatic
+    fun beginFrame() {
+        pendingView = null
+        sampledThisFrame = false
+    }
 
     fun render(
         config: BladeTrailInfo?,
@@ -85,6 +103,9 @@ object BladeTrailRenderer {
             return
         }
 
+        val defer = ShaderCompat.isShaderPackActive()
+        if (defer && sampledThisFrame) return
+        sampledThisFrame = defer
         val now = System.nanoTime()
         while (samples.firstOrNull()?.let { now - it.time >= LIFETIME_NS } == true) {
             samples.removeFirst()
@@ -112,6 +133,51 @@ object BladeTrailRenderer {
         }
 
         if (samples.size < 2) return
+        if (defer) {
+            // Oculus compresses hand depth through its projection. Replay the same hand view.
+            MemoryStack.stackPush().use { memory ->
+                val depthRange = memory.mallocDouble(2)
+                GL11.glGetDoublev(GL11.GL_DEPTH_RANGE, depthRange)
+                pendingView = HandView(
+                    Matrix4f(RenderSystem.getProjectionMatrix()), Matrix4f(RenderSystem.getModelViewMatrix()),
+                    depthRange[0], depthRange[1], now,
+                )
+            }
+        } else {
+            drawTrail(buffers, now)
+        }
+    }
+
+    @JvmStatic
+    fun renderAfterComposite() {
+        val view = pendingView ?: return
+        pendingView = null
+        val projection = RenderSystem.getProjectionMatrix()
+        val sorting = RenderSystem.getVertexSorting()
+        val shader = RenderSystem.getShader()
+        val modelView = RenderSystem.getModelViewStack()
+        MemoryStack.stackPush().use { memory ->
+            val depthRange = memory.mallocDouble(2)
+            GL11.glGetDoublev(GL11.GL_DEPTH_RANGE, depthRange)
+            modelView.pushPose()
+            try {
+                modelView.last().pose().set(view.modelView)
+                RenderSystem.applyModelViewMatrix()
+                RenderSystem.setProjectionMatrix(view.projection, sorting)
+                GL11.glDepthRange(view.depthNear, view.depthFar)
+                drawTrail(postCompositeBuffers, view.time)
+                postCompositeBuffers.endBatch(ModRenderTypes.BLADE_TRAIL)
+            } finally {
+                GL11.glDepthRange(depthRange[0], depthRange[1])
+                modelView.popPose()
+                RenderSystem.applyModelViewMatrix()
+                RenderSystem.setProjectionMatrix(projection, sorting)
+                RenderSystem.setShader { shader }
+            }
+        }
+    }
+
+    private fun drawTrail(buffers: MultiBufferSource, now: Long) {
         val vertices = buffers.getBuffer(ModRenderTypes.BLADE_TRAIL)
         var older = samples.first()
         for (index in 1 until samples.size) {

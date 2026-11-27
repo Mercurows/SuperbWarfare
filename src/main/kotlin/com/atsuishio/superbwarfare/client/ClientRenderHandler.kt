@@ -15,6 +15,7 @@ import com.atsuishio.superbwarfare.client.lighting.GunMuzzleLightRenderer
 import com.atsuishio.superbwarfare.client.model.curio.ParachuteModel
 import com.atsuishio.superbwarfare.client.model.curio.ThermalImagingGogglesModel
 import com.atsuishio.superbwarfare.client.overlay.*
+import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.block.*
 import com.atsuishio.superbwarfare.client.renderer.curio.ParachuteRenderer
 import com.atsuishio.superbwarfare.client.renderer.curio.ThermalImagingGogglesRenderer
@@ -64,6 +65,7 @@ object ClientRenderHandler {
         ReforgingGravityBallRenderer.registerLensingShader(event)
         GunMuzzleLightRenderer.onRegisterShaders(event)
         NuclearExplosionRenderer.registerShader(event)
+        ModRenderTypes.registerSwordWaveShader(event)
     }
 
     /** [bulletRenderOffset] 的采样时刻（`System.nanoTime()`），超过 [OFFSET_TTL] 就当它过期 */
