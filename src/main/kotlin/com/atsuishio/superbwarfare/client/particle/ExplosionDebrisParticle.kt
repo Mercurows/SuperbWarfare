@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.particle
 
+import com.atsuishio.superbwarfare.client.renderer.special.ExplosionParticleRenderer
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.particle.*
 import net.minecraft.world.phys.Vec3
@@ -125,17 +126,19 @@ open class ExplosionDebrisParticle protected constructor(
             val startPos = Vec3(xo, yo + bbHeight / 2, zo)
             val pos = startPos.add(velocity.normalize().scale(-i))
             val offset = 2 * (random.nextFloat() - 0.5f)
-            level.addParticle(
-                CustomFlareOption(
-                    this.targetR,
-                    this.targetG,
-                    this.targetB,
-                    this.life,
-                    this.fade,
-                    this.animationSpeed,
-                    this.sizeAdd,
-                    size = this.size
-                ), pos.x + offset * 0.05, pos.y + offset * 0.05, pos.z + offset * 0.05, 0.0, 0.0, 0.0
+            val smoke = CustomFlareOption(
+                this.targetR,
+                this.targetG,
+                this.targetB,
+                this.life,
+                this.fade,
+                this.animationSpeed,
+                this.sizeAdd,
+                size = this.size,
+            )
+            ExplosionParticleRenderer.spawn(
+                level, smoke, pos.x + offset * 0.05, pos.y + offset * 0.05, pos.z + offset * 0.05,
+                0.0, 0.0, 0.0, force = smoke.type.overrideLimiter,
             )
             i += size * 3
         }

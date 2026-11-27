@@ -1,0 +1,9 @@
+{
+  "sources": [
+    {
+      "type": "single",
+      "resource": "superbwarfare:particle/muzzle/smoke",
+      "sprite": "superbwarfare:nuclear_smoke_flipbook"
+    }
+  ]
+}

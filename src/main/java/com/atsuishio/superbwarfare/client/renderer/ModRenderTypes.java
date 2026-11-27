@@ -5,10 +5,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Function;
@@ -53,6 +55,29 @@ public class ModRenderTypes extends RenderType {
                             .setCullState(NO_CULL)
                             .setWriteMaskState(COLOR_WRITE)
                             .createCompositeState(false)));
+
+    public static final Function<ResourceLocation, RenderType> EXPLOSION_SMOKE = Util.memoize(texture ->
+            explosionParticle("explosion_smoke", new TextureStateShard(texture, false, false)));
+
+    public static final RenderType EXPLOSION_FLASH = explosionParticle("explosion_flash", new EmptyTextureStateShard(
+            () -> {
+                var atlas = TextureAtlas.LOCATION_PARTICLES;
+                Minecraft.getInstance().getTextureManager().getTexture(atlas).setBlurMipmap(true, false);
+                RenderSystem.setShaderTexture(0, atlas);
+            },
+            () -> Minecraft.getInstance().getTextureManager().getTexture(TextureAtlas.LOCATION_PARTICLES).restoreLastBlurMipmap()));
+
+    private static RenderType explosionParticle(String name, EmptyTextureStateShard texture) {
+        return create(name, DefaultVertexFormat.PARTICLE, VertexFormat.Mode.QUADS, 256, false, false,
+                CompositeState.builder()
+                        .setShaderState(new ShaderStateShard(ModParticleRenderTypes::softShader))
+                        .setTextureState(texture)
+                        .setLightmapState(LIGHTMAP)
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .setCullState(NO_CULL)
+                        .setWriteMaskState(COLOR_WRITE)
+                        .createCompositeState(false));
+    }
 
     public ModRenderTypes(String pName, VertexFormat pFormat, VertexFormat.Mode pMode, int pBufferSize, boolean pAffectsCrumbling, boolean pSortOnUpload, Runnable pSetupState, Runnable pClearState) {
         super(pName, pFormat, pMode, pBufferSize, pAffectsCrumbling, pSortOnUpload, pSetupState, pClearState);

@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.Camera
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.particle.TextureSheetParticle
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import kotlin.math.pow
 
 /** Reuses the existing four-frame muzzle smoke texture and soft-alpha render pipeline. */
@@ -15,6 +16,7 @@ class NuclearSmokeParticle(
     size: Float, life: Int, dust: Boolean
 ) : TextureSheetParticle(level, x, y, z) {
     private var frame = 0
+    private var flipbookSprite: TextureAtlasSprite? = null
     private val spin = (random.nextFloat() - 0.5f) * 0.014f
     private val baseSize = size
     private val opacity = if (dust) 0.24f else 0.19f
@@ -36,10 +38,24 @@ class NuclearSmokeParticle(
     }
 
     override fun getRenderType() = SMOKE_RENDER_TYPE
-    override fun getU0() = frame / 4f
-    override fun getU1() = (frame + 1) / 4f
-    override fun getV0() = 0f
-    override fun getV1() = 1f
+    override fun getU0() = flipbookSprite?.getU(frame * 4.0) ?: (frame / 4f)
+    override fun getU1() = flipbookSprite?.getU((frame + 1) * 4.0) ?: ((frame + 1) / 4f)
+    override fun getV0() = flipbookSprite?.v0 ?: 0f
+    override fun getV1() = flipbookSprite?.v1 ?: 1f
+
+    internal fun renderInAtlas(
+        buffer: VertexConsumer,
+        camera: Camera,
+        partialTicks: Float,
+        sprite: TextureAtlasSprite
+    ) {
+        flipbookSprite = sprite
+        try {
+            render(buffer, camera, partialTicks)
+        } finally {
+            flipbookSprite = null
+        }
+    }
 
     override fun getQuadSize(partialTicks: Float): Float {
         val progress = ((age + partialTicks) / lifetime).coerceIn(0f, 1f)
@@ -70,6 +86,8 @@ class NuclearSmokeParticle(
     }
 
     companion object {
-        private val SMOKE_RENDER_TYPE = ModParticleRenderTypes.softTranslucent(loc("textures/particle/muzzle/smoke.png"))
+        internal val TEXTURE = loc("textures/particle/muzzle/smoke.png")
+        internal val FLIPBOOK_SPRITE = loc("nuclear_smoke_flipbook")
+        private val SMOKE_RENDER_TYPE = ModParticleRenderTypes.softTranslucent(TEXTURE)
     }
 }
