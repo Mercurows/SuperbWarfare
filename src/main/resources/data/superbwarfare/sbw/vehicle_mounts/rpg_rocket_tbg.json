@@ -5,15 +5,16 @@
   "Capacity": 1,
   "Action": {
     "Type": "Detonate",
-    "ImpactSpeed": 0.45,
+    "ImpactSpeed": 0.25,
     "OnDestroyed": true,
     "Damage": 250,
+    "DamageType": "superbwarfare:projectile_hit",
     "ExplosionDamage": 150,
     "ExplosionRadius": 11
   },
   "Display": {
     "Entity": "superbwarfare:rpg_rocket_tbg",
-    "Offset": [0, -0.18, -0.39],
-    "Scale": 0.25
+    "Offset": [0, -0.05, -1.75],
+    "Scale": 1.0
   }
 }

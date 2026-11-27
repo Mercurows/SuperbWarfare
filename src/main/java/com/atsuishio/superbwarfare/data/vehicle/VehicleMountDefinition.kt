@@ -48,6 +48,8 @@ open class VehicleMountDefinition(
         @SerialName("Data") val data: JsonObject? = null,
         @SerialName("Offset") val offset: SerializedVec3 = Vec3.ZERO,
         @SerialName("Damage") val damage: Float? = null,
+        // 撞击命中时使用的伤害类型 id；为空/解析失败时回退到自定义爆炸伤害
+        @SerialName("DamageType") val damageType: SerializedResourceLocation? = null,
         @SerialName("ExplosionDamage") val explosionDamage: Float? = null,
         @SerialName("ExplosionRadius") val explosionRadius: Float? = null,
         @SerialName("Speed") val speed: Float = 2f,

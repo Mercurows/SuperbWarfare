@@ -344,22 +344,63 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
         if (releasing || vehicle.isWreck || vehicle.health <= 0 || vehicle.isRemoved || !operator.isAlive) return
         val mount = activeMounts().firstOrNull {
             val action = it.definition.action
-            it.slot.controlSeat == vehicle.getSeatIndex(operator) && action.type == Type.DETONATE &&
-                action.impactSpeed?.let { speed -> speed > 0 && motion.lengthSqr() >= speed * speed } == true
+            if (it.slot.controlSeat != vehicle.getSeatIndex(operator) || action.type != Type.DETONATE) return@firstOrNull false
+            val impactSpeed = action.impactSpeed?.takeIf { speed -> speed > 0 } ?: return@firstOrNull false
+            // 目标载具的 OBB 推挤会在本 tick 截断运动量，因此同时参考上一 tick 的速度
+            motion.lengthSqr() >= impactSpeed * impactSpeed || vehicle.lastTickSpeed >= impactSpeed
         } ?: return
         val speed = mount.definition.action.impactSpeed ?: return
-        val stop = vehicle.position()
-        val hit = if (origin.distanceToSqr(stop) > 1e-6) {
-            val start = origin.add(0.0, vehicle.bbHeight * 0.5, 0.0)
-            val travel = stop.subtract(origin)
-            ProjectileUtil.getEntityHitResult(level, vehicle, start, start.add(travel),
-                vehicle.boundingBox.move(travel.reverse()).expandTowards(travel).inflate(0.3)) {
-                (it is LivingEntity || it is VehicleEntity) && it !is RCOperatorBodyEntity && it.isPickable &&
-                    !it.isSpectator && !vehicle.hasPassenger(it) && !it.isPassengerOfSameVehicle(vehicle)
-            }?.entity
-        } else null
+        val hit = findImpactTarget(origin, motion)
         if (hit != null || vehicle.horizontalCollision && motion.horizontalDistance() >= speed ||
-            vehicle.verticalCollision && abs(motion.y) >= speed) detonate(mount, operator, hit)
+            vehicle.verticalCollision && abs(motion.y) >= speed
+        ) {
+            detonate(mount, operator, hit)
+        }
+    }
+
+    /**
+     * 撞击命中目标：优先本 tick 的扫掠射线；射线漏判时（目标为 OBB 载具、被推挤截速等）
+     * 退回按接触距离找最近目标，保证 kamikaze 直伤不会因为射线判定失败而丢失。
+     */
+    private fun findImpactTarget(origin: Vec3, motion: Vec3): Entity? {
+        val level = vehicle.level() as? ServerLevel ?: return null
+        val stop = vehicle.position()
+        val travel = stop.subtract(origin)
+        if (travel.lengthSqr() > 1.0E-4) {
+            val start = origin.add(0.0, vehicle.bbHeight * 0.5, 0.0)
+            val rayHit = ProjectileUtil.getEntityHitResult(
+                level, vehicle, start, start.add(travel),
+                vehicle.boundingBox.move(travel.reverse()).expandTowards(travel).inflate(0.6)
+            ) { isValidImpactTarget(it) }?.entity
+            if (rayHit != null) return rayHit
+        }
+        return nearbyImpactTarget(maxOf(0.4, motion.length() * 0.5 + 0.4), motion)
+    }
+
+    /** 接触范围内最近的可命中目标（排除自身乘客/替身/不可选中实体） */
+    private fun nearbyImpactTarget(reach: Double, motion: Vec3? = null): Entity? {
+        val level = vehicle.level() as? ServerLevel ?: return null
+        val moveDir = motion?.takeIf { it.lengthSqr() > 1.0E-8 }?.normalize()
+        val origin = vehicle.position()
+        return level.getEntities(vehicle, vehicle.boundingBox.inflate(reach)) { isValidImpactTarget(it) }
+            .filter { target ->
+                if (moveDir == null) return@filter true
+                val to = target.boundingBox.center.subtract(origin)
+                to.lengthSqr() < 1.0E-8 || to.normalize().dot(moveDir) > -0.2
+            }
+            .minByOrNull { it.distanceToSqr(vehicle) }
+    }
+
+    private fun isValidImpactTarget(entity: Entity): Boolean =
+        (entity is LivingEntity || entity is VehicleEntity) &&
+            entity !is RCOperatorBodyEntity && entity.isPickable && !entity.isSpectator && entity.isAlive &&
+            !vehicle.hasPassenger(entity) && !entity.isPassengerOfSameVehicle(vehicle)
+
+    /** 最近一次伤害来源里的载具（例如撞击时把无人机碾碎的目标载具），用于殉爆直伤兜底 */
+    private fun lastAttackerImpactTarget(): Entity? {
+        val source = vehicle.lastDamageSource ?: return null
+        return listOfNotNull(source.directEntity, source.entity)
+            .firstOrNull { it is VehicleEntity && it !== vehicle && isValidImpactTarget(it) && it.distanceToSqr(vehicle) <= 64.0 }
     }
 
     open fun detonate(mount: Active, operator: Player, hit: Entity? = null) {
@@ -369,11 +410,18 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
         vehicle.health = 0f
         vehicle.isWreck = true
         vehicle.destroy()
-        val damage = action.damage ?: 0f
-        if (hit != null && damage > 0) {
-            DamageHandler.doDamage(hit, ModDamageTypes.causeCustomExplosionDamage(vehicle.level().registryAccess(), vehicle, operator), damage)
-        }
+        applyDirectHit(action, hit, operator)
         explode(action, point, operator)
+    }
+
+    /** 结算挂载物的撞击直伤（伤害类型按挂载定义配置，缺省回退自定义爆炸伤害） */
+    private fun applyDirectHit(action: VehicleMountDefinition.Action, hit: Entity?, operator: Entity?) {
+        val damage = action.damage ?: 0f
+        if (hit == null || damage <= 0f || hit.isRemoved) return
+        val source = action.damageType?.let {
+            ModDamageTypes.causeDamageType(vehicle.level().registryAccess(), it.toString(), vehicle, operator)
+        } ?: ModDamageTypes.causeCustomExplosionDamage(vehicle.level().registryAccess(), vehicle, operator)
+        DamageHandler.doDamage(hit, source, damage)
     }
 
     open fun beforeDestroy(): () -> Unit {
@@ -384,7 +432,7 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
         }
         val operator = vehicle.firstPassenger as? Player
         val attacker = vehicle.lastAttacker ?: operator
-        val detonations = mutableListOf<Pair<VehicleMountDefinition.Action, Vec3>>()
+        val detonations = mutableListOf<Triple<VehicleMountDefinition.Action, Vec3, Entity?>>()
         for (mount in activeMounts()) {
             val action = mount.definition.action
             if (!action.onDestroyed) continue
@@ -395,7 +443,10 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
             }
             if (action.type == Type.DETONATE) {
                 if (operator != null) {
-                    detonations += action to worldPosition(mount.slot, action.offset)
+                    val point = worldPosition(mount.slot, action.offset)
+                    // 无人机被撞毁/碾碎时往往来不及走 onImpact，殉爆时也要把直伤结算给贴身目标
+                    val hit = lastAttackerImpactTarget() ?: nearbyImpactTarget(maxOf(0.6, vehicle.deltaMovement.length() * 0.5 + 0.4), vehicle.deltaMovement)
+                    detonations += Triple(action, point, hit)
                     consume(mount)
                 }
             } else {
@@ -410,7 +461,12 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
             if (action.onDestroyed) dropCargo(slot, action)
         }
         dropAll()
-        return { detonations.forEach { (action, point) -> explode(action, point, attacker) } }
+        return {
+            detonations.forEach { (action, point, hit) ->
+                applyDirectHit(action, hit, operator ?: attacker)
+                explode(action, point, attacker)
+            }
+        }
     }
 
     open fun explode(action: VehicleMountDefinition.Action, point: Vec3, attacker: Entity?) {

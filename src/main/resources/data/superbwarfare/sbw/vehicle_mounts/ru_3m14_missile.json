@@ -1,0 +1,20 @@
+{
+  "Ingredient": {
+    "Item": "superbwarfare:extra_large_anti_ground_missile"
+  },
+  "Capacity": 1,
+  "Action": {
+    "Type": "Detonate",
+    "ImpactSpeed": 0.25,
+    "OnDestroyed": true,
+    "Damage": 5000,
+    "DamageType": "superbwarfare:projectile_hit",
+    "ExplosionDamage": 1500,
+    "ExplosionRadius": 31
+  },
+  "Display": {
+    "Entity": "superbwarfare:ru_3m14_missile",
+    "Offset": [0, -0.5, -3.3125],
+    "Scale": 1.0
+  }
+}

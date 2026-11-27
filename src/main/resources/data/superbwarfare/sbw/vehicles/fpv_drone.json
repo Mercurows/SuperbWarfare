@@ -31,15 +31,9 @@
       "ControlSeat": 0,
       "Offset": [0, -0.11, 0],
       "Definitions": [
-        "superbwarfare:rgo_grenade",
-        "superbwarfare:grenade_40mm",
-        "superbwarfare:medical_kit",
-        "superbwarfare:blu_43_mine",
-        "superbwarfare:mortar_shell",
-        "superbwarfare:c4_bomb",
+        "superbwarfare:ru_3m14_missile",
         "superbwarfare:rpg_rocket_standard",
         "superbwarfare:rpg_rocket_tbg",
-        "superbwarfare:tm_62",
         "superbwarfare:mounted_gun"
       ]
     }

@@ -2,11 +2,17 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.model.entity.VehicleModelInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
 
 class FpvDroneRenderer(manager: EntityRendererProvider.Context) : BasicVehicleRenderer(manager) {
+
+    override fun shouldRenderMounts(entity: VehicleEntity): Boolean {
+        if (entity.entityData.get(VehicleEntity.MOUNT_STATE).isEmpty) return false
+        return VehicleResource.compute(entity).renderMounts
+    }
     override fun transformCustomModelPart(
         entity: VehicleEntity,
         instance: VehicleModelInstance,

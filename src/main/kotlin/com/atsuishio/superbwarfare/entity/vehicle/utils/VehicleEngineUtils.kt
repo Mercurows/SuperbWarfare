@@ -840,7 +840,7 @@ object VehicleEngineUtils {
             }
             deltaMovement = deltaMovement.multiply(0.85, 1.0, 0.85)
         } else {
-            val f = Mth.clamp(1.0 - (0.01 / speed) * (deltaMovement.lengthSqr() * deltaMovement.length()), 0.01, 1.0).toFloat()
+            val f = Mth.clamp(0.98 - (0.01 / speed) * (deltaMovement.lengthSqr() * deltaMovement.length()), 0.01, 0.98).toFloat()
             deltaMovement = deltaMovement.multiply(f.toDouble(), f.toDouble(), f.toDouble())
         }
 
@@ -893,13 +893,13 @@ object VehicleEngineUtils {
             }
             if ((!level().isClientSide || isLocalPilot())) {
                 rotateBodyLocalX(
-                    (if (onGround()) 0f else 1f) * pitchSpeed * mouseMoveSpeedY * Mth.DEG_TO_RAD
+                    (if (onGround()) 0f else 0.75f) * pitchSpeed * mouseMoveSpeedY * Mth.DEG_TO_RAD
                 )
                 rotateBodyLocalZ(
-                    (if (onGround()) 0f else 1f) * -rollSpeed * deltaRot * Mth.DEG_TO_RAD
+                    (if (onGround()) 0f else 0.75f) * -rollSpeed * deltaRot * Mth.DEG_TO_RAD
                 )
                 rotateBodyLocalY(
-                    (if (onGround()) 0.02f else 1f)* -yawSpeed * mouseMoveSpeedX * Mth.DEG_TO_RAD
+                    (if (onGround()) 0.02f else 0.75f)* -yawSpeed * mouseMoveSpeedX * Mth.DEG_TO_RAD
                 )
                 syncEulerFromBody()
             }
