@@ -2411,16 +2411,18 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         val lastDriver = if (this is OwnableEntity) this.owner else this.lastDriver
         val entity = source.entity
-        if (entity != null && lastDriver != null
+        val isVehicleStrike = source.`is`(ModDamageTypes.VEHICLE_STRIKE)
+        val isSelfCollision = isVehicleStrike && source.directEntity === this
+        if (!isSelfCollision && entity != null && lastDriver != null
             && SeekTool.IS_FRIENDLY.test(lastDriver, entity)
             && lastDriver.team != null
             && entity.team != null
             && entity.team === lastDriver.team
             && !entity.team!!.isAllowFriendlyFire
-            || (entity === lastDriver
-                    && !source.`is`(ModDamageTypes.VEHICLE_STRIKE)
-                    && !source.`is`(ModDamageTypes.CUSTOM_EXPLOSION))
         ) {
+            return false
+        }
+        if (entity === lastDriver && !isVehicleStrike && !source.`is`(ModDamageTypes.CUSTOM_EXPLOSION)) {
             return false
         }
 
@@ -2434,7 +2436,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             computedAmount = this.getDamageModifier().compute(this, source, amount)
         }
 
-        this.crash = source.`is`(ModDamageTypes.VEHICLE_STRIKE)
+        this.crash = isVehicleStrike
 
         if (entity != null) {
             lastAttackerUUID = entity.getStringUUID()
