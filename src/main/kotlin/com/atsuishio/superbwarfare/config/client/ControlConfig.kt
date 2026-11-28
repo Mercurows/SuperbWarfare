@@ -17,6 +17,13 @@ object ControlConfig {
     val MOUSE_SENSITIVITY = buildClientConfig {
         comment("Sensitivity of mouse")
         comment("鼠标灵敏度")
-        defineInRange("mouse_sensitivity", 100, 10, 200).also { pop() }
+        defineInRange("mouse_sensitivity", 100, 10, 200)
+    }
+
+    @JvmField
+    val SEPARATE_VEHICLE_PERSPECTIVE = buildClientConfig {
+        comment("Remember separate camera perspectives on foot and in Superb Warfare vehicles")
+        comment("分别记忆步行和乘坐本模组载具时的视角")
+        define("separate_vehicle_perspective", true).also { pop() }
     }
 }

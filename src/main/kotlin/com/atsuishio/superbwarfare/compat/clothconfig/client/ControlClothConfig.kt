@@ -33,5 +33,17 @@ object ControlClothConfig {
                 .setSaveConsumer { ControlConfig.MOUSE_SENSITIVITY.set(it) }
                 .setTooltip(Component.translatable("config.superbwarfare.client.control.mouse_sensitivity.des")).build()
         )
+
+        category.addEntry(
+            entryBuilder
+                .startBooleanToggle(
+                    Component.translatable("config.superbwarfare.client.control.separate_vehicle_perspective"),
+                    ControlConfig.SEPARATE_VEHICLE_PERSPECTIVE.get()
+                )
+                .setDefaultValue(true)
+                .setSaveConsumer { ControlConfig.SEPARATE_VEHICLE_PERSPECTIVE.set(it) }
+                .setTooltip(Component.translatable("config.superbwarfare.client.control.separate_vehicle_perspective.des"))
+                .build()
+        )
     }
 }

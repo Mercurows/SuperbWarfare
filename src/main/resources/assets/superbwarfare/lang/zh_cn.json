@@ -1605,6 +1605,8 @@
   "config.superbwarfare.client.control.invert_aircraft_control.des": "开启飞行器鼠标反转",
   "config.superbwarfare.client.control.mouse_sensitivity": "鼠标灵敏度",
   "config.superbwarfare.client.control.mouse_sensitivity.des": "调整持枪时的鼠标灵敏度",
+  "config.superbwarfare.client.control.separate_vehicle_perspective": "独立载具视角",
+  "config.superbwarfare.client.control.separate_vehicle_perspective.des": "分别记忆步行和乘坐本模组载具时的视角；关闭后，上下车共用当前视角",
 
   "config.superbwarfare.common.gameplay": "游戏内容配置",
   "config.superbwarfare.common.gameplay.respawn_reload": "重生换弹",

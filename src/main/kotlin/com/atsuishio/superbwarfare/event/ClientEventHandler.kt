@@ -22,6 +22,7 @@ import com.atsuishio.superbwarfare.client.renderer.projectile.ReforgingGravityBa
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeLensPostProcessor
 import com.atsuishio.superbwarfare.client.renderer.special.NuclearExplosionRenderer
 import com.atsuishio.superbwarfare.client.shader.RadiationShaderHandler
+import com.atsuishio.superbwarfare.config.client.ControlConfig
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
@@ -615,8 +616,11 @@ object ClientEventHandler {
     @JvmField
     var aimVillagerCountdown: Int = 0
 
+    private var playerPerspective: CameraType? = null
+    private var vehiclePerspective: CameraType? = null
+    private var usingVehiclePerspective = false
+
     @JvmField
-    var lastCameraType: CameraType? = null
     var hasRemoteBinding = false
 
     @JvmField
@@ -898,6 +902,7 @@ object ClientEventHandler {
 
     @SubscribeEvent
     fun clearGravityLensing(event: ClientPlayerNetworkEvent.LoggingOut) {
+        if (usingVehiclePerspective) updateCameraPerspective(false)
         hasRemoteBinding = false
         movementVehicle = null
         FlashbangOverlay.clear()
@@ -929,6 +934,38 @@ object ClientEventHandler {
         meleeLevel = event.newPlayer.level()
     }
 
+    internal fun syncVehiclePerspective() {
+        val player = localPlayer ?: return
+        updateCameraPerspective(player.vehicle is VehicleEntity)
+    }
+
+    private fun updateCameraPerspective(inVehicle: Boolean) {
+        if (!ControlConfig.SEPARATE_VEHICLE_PERSPECTIVE.get()) {
+            playerPerspective = null
+            vehiclePerspective = null
+            usingVehiclePerspective = false
+            return
+        }
+        if (inVehicle == usingVehiclePerspective) return
+
+        val current = options.cameraType
+        val restored = if (inVehicle) {
+            playerPerspective = current
+            vehiclePerspective
+        } else {
+            vehiclePerspective = current
+            playerPerspective
+        }
+        usingVehiclePerspective = inVehicle
+        if (restored == null || restored == current) return
+
+        options.cameraType = restored
+        if (current.isFirstPerson != restored.isFirstPerson) {
+            mc.gameRenderer.checkEntityPostEffect(if (restored.isFirstPerson) mc.cameraEntity else null)
+        }
+        mc.levelRenderer.needsUpdate()
+    }
+
     @SubscribeEvent
     fun handleClientTick(event: TickEvent.ClientTickEvent) {
         if (event.phase == TickEvent.Phase.END) {
@@ -941,6 +978,7 @@ object ClientEventHandler {
             RadiationShaderHandler.setDosage(0f)
             return
         }
+        updateCameraPerspective(player.vehicle is VehicleEntity)
         if (event.phase == TickEvent.Phase.START) return
         syncMeleePlayer(player)
 

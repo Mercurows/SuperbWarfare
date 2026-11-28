@@ -1605,6 +1605,8 @@
   "config.superbwarfare.client.control.invert_aircraft_control.des": "Set TRUE to invert aircraft control",
   "config.superbwarfare.client.control.mouse_sensitivity": "Mouse Sensitivity",
   "config.superbwarfare.client.control.mouse_sensitivity.des": "Adjust mouse sensitivity while holding a gun",
+  "config.superbwarfare.client.control.separate_vehicle_perspective": "Separate Vehicle Perspective",
+  "config.superbwarfare.client.control.separate_vehicle_perspective.des": "Remember separate camera perspectives on foot and in Superb Warfare vehicles. Turn this off to share one perspective.",
 
   "config.superbwarfare.common.gameplay": "Gameplay Config",
   "config.superbwarfare.common.gameplay.respawn_reload": "Respawn Reload",
