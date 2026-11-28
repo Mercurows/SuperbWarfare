@@ -1,0 +1,9 @@
+{
+  "Script": "sbwloadertest:scripts/vehicles/tom_7.js",
+  "Models": [
+    {
+      "Model": "sbwloadertest:models/bedrock/vehicle/tom_7.geo.json",
+      "Texture": "sbwloadertest:textures/bedrock/vehicle/tom_7.png"
+    }
+  ]
+}

@@ -12,6 +12,10 @@ object ModEntityRenderers {
     @SubscribeEvent
     fun registerEntityRenderers(event: EntityRenderersEvent.RegisterRenderers) {
         with(event) {
+            TestLoader.registeredVehicles.forEach { type ->
+                registerEntityRenderer(type, ::BasicVehicleRenderer)
+            }
+
             registerEntityRenderer(ModEntities.REFORGING_LASER.get(), ::ReforgingLaserRenderer)
             registerEntityRenderer(ModEntities.HIGH_ENERGY_LASER.get(), ::HighEnergyLaserRenderer)
             registerEntityRenderer(ModEntities.REFORGING_GRAVITY_BALL.get(), ::ReforgingGravityBallRenderer)
@@ -66,7 +70,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.SMOKE_DECOY.get(), ::SmokeDecoyEntityRenderer)
             registerEntityRenderer(ModEntities.LAV_150.get(), ::BasicVehicleRenderer)
             registerEntityRenderer(ModEntities.SMALL_CANNON_SHELL.get(), ::SmallCannonShellEntityRenderer)
-            registerEntityRenderer(ModEntities.TOM_6.get(), ::Tom6Renderer)
+            registerEntityRenderer(ModEntities.TOM_6.get(), ::BasicVehicleRenderer)
             registerEntityRenderer(ModEntities.MELON_BOMB.get(), ::MelonBombEntityRenderer)
             registerEntityRenderer(ModEntities.BMP_2.get(), ::Bmp2Renderer)
             registerEntityRenderer(ModEntities.WIRE_GUIDE_MISSILE.get(), ::BasicProjectileRenderer)

@@ -1,4 +1,5 @@
 {
+  "Script": "superbwarfare:scripts/vehicles/tom_6.js",
   "Models": [
     {
       "Model": "superbwarfare:models/bedrock/vehicle/tom_6.geo.json",

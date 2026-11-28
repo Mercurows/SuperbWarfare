@@ -1,5 +1,11 @@
 {
   "item.sbwloadertest.test": "Test Item",
   "item.sbwloadertest.ak_74": "AK-74",
-  "item.sbwloadertest.charm_loader_senpai": "Loader Test Senpai Charm"
+  "item.sbwloadertest.charm_loader_senpai": "Loader Test Senpai Charm",
+  "entity.sbwloadertest.tom_7": "Tom-7",
+  "sbwloadertest.entry.vehicle.tom_7": "Tom-7",
+  "info.sbwloadertest.tom_7": "The Tom-7 is a 'fixed-wing aircraft' from the cartoon Tom and Jerry. It seats one pilot and carries a single devastating Watermelon Bomb.",
+  "sbwloadertest.page.vehicle.tom_7.1": "$(thing)Tom-7$() is extremely simple plane with weak armor protection. It can carry a $(thing)Melon$() as weapon.",
+  "sbwloadertest.page.vehicle.tom_7.2": "$(l)Basic Attributes: $()$(p)Durability - 40$(br)Max Passengers - 1$(br)Max Energy - 100,000FE$(br)Energy Cost - 16FE/tick",
+  "sbwloadertest.page.vehicle.tom_7.3": "$(l)Weapon Attributes: $()$(p)Position 1: $(p)(1) Melon Bomb$(br)Explosion Damage - 500$(br)Explosion Radius - 10m$(br)Ammo - $(item)Melon$()"
 }

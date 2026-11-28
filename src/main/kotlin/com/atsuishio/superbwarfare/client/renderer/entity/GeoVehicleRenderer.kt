@@ -326,6 +326,9 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         }
 
         this.renderCustomPart(entity, instance, poseStack, yaw, partialTick, buffer, packedLight)
+        VehicleResource.getDefault(entity).getScript()?.let { script ->
+            VehicleScriptManager.invokeRender(script, entity, instance, poseStack, yaw, partialTick, buffer, packedLight, this)
+        }
 
         if (!isLOD && shouldRenderMounts(entity)) {
             renderMounts(entity, instance, partialTick, basePose, poseStack, buffer, packedLight)

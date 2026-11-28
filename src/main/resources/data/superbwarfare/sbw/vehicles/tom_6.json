@@ -13,6 +13,10 @@
       "AircraftCameraPos": [-0.5, 2.2, -5]
     }
   },
+  "HandLoadedPayload": {
+    "Weapon": "MelonBomb",
+    "ReleaseOffset": [0, 0.3, 0]
+  },
   "Weapons": {
     "MelonBomb": {
       "Projectile": "superbwarfare:melon_bomb",

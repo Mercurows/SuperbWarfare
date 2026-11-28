@@ -178,6 +178,9 @@ class Mod {
         @JvmStatic
         fun loc(path: String): ResourceLocation = ResourceLocation(MODID, path)
 
+        @JvmStatic
+        fun rl(namespace: String, path: String): ResourceLocation = ResourceLocation(namespace, path)
+
         private val SERVER_QUEUE = ConcurrentLinkedQueue<Task>()
         private val CLIENT_QUEUE = ConcurrentLinkedQueue<Task>()
 

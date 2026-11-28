@@ -31,7 +31,6 @@ import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
-import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity
 import com.atsuishio.superbwarfare.entity.vehicle.VehicleModelEntry
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.Companion.ENV_RATE_RECOMPUTE_INTERVAL
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.Companion.OBB_GROUND_CACHE_TICKS
@@ -41,7 +40,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.*
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.aircraftLoiter
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getYRotFromVector
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleWeaponUtils.releaseHandPayload
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleWeaponUtils.reloadDecoy
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleWeaponUtils.tryLoadHandPayload
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.event.GunEventHandler
@@ -2293,6 +2294,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
+        val payload = computed().handLoadedPayload
+        if (payload != null && tryLoadHandPayload(this, payload, player)) return InteractionResult.SUCCESS
+
         if (player.vehicle === this) return InteractionResult.PASS
 
         val mainStack = player.mainHandItem
@@ -3394,6 +3398,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             this.keepChunkLoaded(this.position())
             this.keepChunkLoaded(position().add(deltaMovement.normalize().scale(16.0)))
         }
+
+        computed.handLoadedPayload?.let { releaseHandPayload(this, it) }
     }
 
     /**
@@ -4810,6 +4816,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             ) * engineSoundVolume
 
             EngineType.HELICOPTER, EngineType.DRONE, EngineType.FPV_DRONE -> synchedPropellerRot * engineSoundVolume
+            EngineType.TOM6 -> deltaMovement.length().toFloat()
             EngineType.AIRSHIP -> Mth.clamp(
                 Mth.abs(power) * engineSoundVolume + engineSoundVolume,
                 engineSoundVolume,
@@ -5246,7 +5253,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open val mouseSensitivity: Double
-        get() = computed().mouseSensitivity
+        get() {
+            val data = computed()
+            if (data.engineType == EngineType.TOM6) {
+                return if (ModKeyMappings.FREE_CAMERA.isDown) 0.3 else 0.0
+            }
+            return data.mouseSensitivity
+        }
 
     open val passengerRenderScale: Float
         get() = computed().passengerRenderScale
@@ -5298,7 +5311,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
      * @return 调整后的灵敏度
      */
     open fun getSensitivity(original: Double, zoom: Boolean, seatIndex: Int, isOnGround: Boolean): Double {
-        val seat = computed().seats()[seatIndex]
+        val data = computed()
+        if (data.engineType == EngineType.TOM6) {
+            return if (ModKeyMappings.FREE_CAMERA.isDown) 0.0 else 0.6
+        }
+        val seat = data.seats()[seatIndex]
         val sensitivity = seat.sensitivity
         return if (zoom) sensitivity.x * original else if (mc.options.cameraType
                 .isFirstPerson
@@ -5387,7 +5404,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open fun useAircraftCamera(seatIndex: Int): Boolean {
-        val seat = computed().seats().getOrNull(seatIndex)
+        val data = computed()
+        if (data.engineType == EngineType.TOM6) {
+            return ModKeyMappings.FREE_CAMERA.isDown && !ClientEventHandler.zoom
+        }
+        val seat = data.seats().getOrNull(seatIndex)
         if (seat != null) {
             val data = seat.cameraPos
             return data?.useAircraftCamera ?: false
@@ -5684,7 +5705,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         if (verticalCollision) {
             if (this.vehicleType == VehicleType.AIRPLANE
-                && ((synchedGearRot > 0.15 && this !is Tom6Entity) || Mth.abs(this.roll) > 20 || Mth.abs(xRot) > 30)
+                && ((synchedGearRot > 0.15 && computed().engineType != EngineType.TOM6) ||
+                        Mth.abs(this.roll) > 20 || Mth.abs(xRot) > 30)
             ) {
                 this.hurt(
                     ModDamageTypes.causeVehicleStrikeDamage(
@@ -5811,7 +5833,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open fun hasSmokeDecoy() = computed().smokeDecoy
 
-    open fun engineRunning() = if (vehicleType == VehicleType.AIRSHIP) health > 0 else Math.abs(power) > 0
+    open fun engineRunning(): Boolean = when {
+        computed().engineType == EngineType.TOM6 -> firstPassenger != null && deltaMovement.lengthSqr() > 0
+        vehicleType == VehicleType.AIRSHIP -> health > 0
+        else -> Math.abs(power) > 0
+    }
 
     /**
      * 撬棍shift+右键收回载具时返还的物品

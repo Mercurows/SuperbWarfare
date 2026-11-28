@@ -1,0 +1,20 @@
+{
+  "name": "sbwloadertest.entry.vehicle.tom_7",
+  "icon": "superbwarfare:container",
+  "category": "superbwarfare:vehicle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "sbwloadertest.page.vehicle.tom_7.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "sbwloadertest.page.vehicle.tom_7.2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "sbwloadertest.page.vehicle.tom_7.3"
+    }
+  ],
+  "sortnum": 20303
+}

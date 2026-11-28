@@ -74,6 +74,9 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     @SerialName("MountSlots")
     var mountSlots: List<VehicleMountSlot> = emptyList()
 
+    @SerialName("HandLoadedPayload")
+    var handLoadedPayload: HandLoadedPayload? = null
+
     @SerialName("Radar")
     var radar: SingleOrList<RadarInfo>? = SingleOrList()
     fun seats(): MutableList<SeatInfo> {

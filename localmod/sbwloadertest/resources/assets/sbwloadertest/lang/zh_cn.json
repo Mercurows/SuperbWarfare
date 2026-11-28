@@ -1,5 +1,11 @@
 {
   "item.sbwloadertest.test": "测试物品",
   "item.sbwloadertest.ak_74": "AK-74",
-  "item.sbwloadertest.charm_loader_senpai": "Loader 测试先辈吊坠"
+  "item.sbwloadertest.charm_loader_senpai": "Loader 测试先辈吊坠",
+  "entity.sbwloadertest.tom_7": "Tom-7",
+  "sbwloadertest.entry.vehicle.tom_7": "Tom-7",
+  "info.sbwloadertest.tom_7": "Tom-7是一款出自动画片《猫和老鼠》的“固定翼飞行器”，能乘坐1人，并携带一枚毁灭性的西瓜炸弹",
+  "sbwloadertest.page.vehicle.tom_7.1": "$(thing)Tom-7$()是一款极致简化的单兵固定翼飞机，几乎没有装甲防护。可手动安装一枚$(thing)西瓜$()用作武备。",
+  "sbwloadertest.page.vehicle.tom_7.2": "$(l)基础属性：$()$(p)耐久值 - 40$(br)最大乘员数 - 1$(br)最大能量 - 100,000FE$(br)能耗 - 16FE/tick",
+  "sbwloadertest.page.vehicle.tom_7.3": "$(l)武器属性：$()$(p)1号位：$(p)(1) 西瓜航弹$(br)爆炸伤害 - 500$(br)爆炸半径 - 10m$(br)弹药 - $(item)西瓜$()"
 }

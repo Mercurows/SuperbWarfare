@@ -61,28 +61,31 @@ class ContainerItemDecorator : IItemDecorator {
         private val ICON_CACHE = hashMapOf<String, ResourceLocation>()
 
         /**
-         * 缓存已检查过的车辆自定义图标路径，null表示已检查且未找到
+         * 按完整载具 ID 缓存找到的自定义图标路径
          */
-        private val CUSTOM_ICON_CACHE = hashMapOf<String, ResourceLocation>()
+        private val CUSTOM_ICON_CACHE = hashMapOf<ResourceLocation, ResourceLocation>()
 
         /**
          * 根据ItemStack获取自定义载具图标纹理路径
-         * 检查 textures/vehicle_icon/container/<vehicleId>.png 是否存在
+         * 优先在载具自己的命名空间中查找图标
          */
         fun getCustomIcon(stack: ItemStack): ResourceLocation? {
             val tag = BlockItem.getBlockEntityData(stack) ?: return null
             if (!tag.contains("EntityType")) return null
             val entityType = tag.getString("EntityType")
             val id = ResourceLocation.tryParse(entityType) ?: return null
-            val vehicleId = id.path
+            CUSTOM_ICON_CACHE[id]?.let { return it }
 
-            val cached = CUSTOM_ICON_CACHE[vehicleId]
-            if (cached !== null || CUSTOM_ICON_CACHE.containsKey(vehicleId)) return cached
-
-            val texturePath = Mod.loc("textures/vehicle_icon/container/$vehicleId.png")
-            val resource = Minecraft.getInstance().resourceManager.getResource(texturePath)
-            val result = if (resource.isPresent) texturePath else return null
-            CUSTOM_ICON_CACHE[vehicleId] = result
+            val path = "textures/vehicle_icon/container/${id.path}.png"
+            val manager = Minecraft.getInstance().resourceManager
+            val texture = Mod.rl(id.namespace, path)
+            val legacyTexture = Mod.loc(path)
+            val result = when {
+                manager.getResource(texture).isPresent -> texture
+                texture != legacyTexture && manager.getResource(legacyTexture).isPresent -> legacyTexture
+                else -> return null
+            }
+            CUSTOM_ICON_CACHE[id] = result
             return result
         }
     }

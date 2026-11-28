@@ -188,7 +188,7 @@ javafml 也可以零代码 —— 这是两个分支之间唯一一处"协议级
 
 ## 三、`registry.json` 字段
 
-解析由 `LoaderTest.kt` 里的 `LoaderInfo` / `ItemRegisterInfo`（`@Serializable`，kotlinx.serialization）
+解析由 `LoaderTest.kt` 里的 `LoaderInfo`、`ItemRegisterInfo` 和 `VehicleRegisterInfo`（kotlinx.serialization）
 负责，字段名就是 `@SerialName` 的值，**PascalCase**。`Items`、`Guns`、`Attachments` 都是**对象**而非数组：
 **物品 id 就是 key**，value 里不再重复写 id；不同分组不能声明同一个路径。
 
@@ -206,6 +206,9 @@ javafml 也可以零代码 —— 这是两个分支之间唯一一处"协议级
       "Rarity": "superb",
       "ItemTabs": ["superbwarfare:attachment"]
     }
+  },
+  "Vehicles": {
+    "tom_7": { "Width": 1.05, "Height": 1.0, "CreativeContainer": true }
   }
 }
 ```
@@ -224,6 +227,16 @@ javafml 也可以零代码 —— 这是两个分支之间唯一一处"协议级
 `ItemTabs` 可以指向本体、原版或其它 mod 已注册的创造页，例如 `superbwarfare:attachment`、
 `superbwarfare:guns`、`superbwarfare:item`、`minecraft:ingredients`。不写或写空数组时，
 物品仍会注册，但 loader 不把它加入任何分类页。这里只引用已有页签，不负责新建页签。
+
+### 载具代注册
+
+`Vehicles` 的键是实体路径，命名空间取声明方的 mod ID。`Width` 和 `Height` 是必填的正数。
+加载器为每项声明注册通用载具实体和渲染器。飞行、载弹和渲染由载具的数据与资源决定。
+`CreativeContainer` 默认关闭，设为 `true` 时会把对应载具箱加入创造模式的载具箱列表。
+
+示例 `sbwloadertest:tom_7` 在 `data/sbwloadertest/sbw/vehicles/tom_7.json` 中定义载具属性，
+在 `assets/sbwloadertest/sbw/vehicles/tom_7.json` 中关联模型、贴图和渲染脚本。启动后可用
+`/summon sbwloadertest:tom_7` 生成。改动 `Vehicles` 的注册声明后需要重启游戏或服务端。
 
 ### 配件数据与跨 mod 枪械适配
 

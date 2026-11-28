@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle.utils
 
+import com.atsuishio.superbwarfare.data.gun.ShootParameters
+import com.atsuishio.superbwarfare.data.vehicle.subdata.HandLoadedPayload
 import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -11,6 +13,9 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.sounds.SoundEvents
+import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
@@ -323,5 +328,39 @@ object VehicleWeaponUtils {
         if (entity == null) {
             vehicle.gunYRot += vehicle.turretYRotLock
         }
+    }
+
+    @JvmStatic
+    fun tryLoadHandPayload(vehicle: VehicleEntity, payload: HandLoadedPayload, player: Player): Boolean {
+        val gun = vehicle.getGunData(payload.weapon) ?: return false
+        if (gun.hasEnoughAmmoToShoot(vehicle) || !gun.selectedAmmoConsumer().isAmmoItem(player.mainHandItem)) return false
+
+        val level = vehicle.level()
+        if (level is ServerLevel) {
+            vehicle.modifyGunData(payload.weapon) { it.reloadAmmo(player) }
+            level.playSound(player, vehicle.onPos, SoundEvents.WOOD_PLACE, SoundSource.PLAYERS, 1f, 1f)
+        }
+        return true
+    }
+
+    @JvmStatic
+    fun releaseHandPayload(vehicle: VehicleEntity, payload: HandLoadedPayload) {
+        if (!vehicle.upInputDown || vehicle.onGround()) return
+        val level = vehicle.level() as? ServerLevel ?: return
+        val passenger = vehicle.firstPassenger as? Player ?: return
+        if (vehicle.getGunData(payload.weapon)?.hasEnoughAmmoToShoot(vehicle) != true) return
+
+        val offset = payload.releaseOffset
+        val position = vehicle.transformPosition(vehicle.getVehicleTransform(1f), offset.x, offset.y, offset.z)
+        vehicle.modifyGunData(payload.weapon) { gun ->
+            gun.shoot(
+                ShootParameters(
+                    vehicle, passenger, level, Vec3(position.x, position.y, position.z), vehicle.deltaMovement,
+                    gun, 0.0, false, null, null
+                )
+            )
+        }
+        level.playSound(null, vehicle.onPos, SoundEvents.IRON_DOOR_OPEN, SoundSource.PLAYERS, 1f, 1f)
+        vehicle.upInputDown = false
     }
 }
