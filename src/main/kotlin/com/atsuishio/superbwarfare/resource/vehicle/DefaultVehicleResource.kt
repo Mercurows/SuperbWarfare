@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.data.SingleOrList
 import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.resource.SponsorInfo
 import com.atsuishio.superbwarfare.script.ScriptMath
+import com.atsuishio.superbwarfare.script.VehicleRenderProxy
 import com.atsuishio.superbwarfare.script.VehicleScriptManager
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
 import com.atsuishio.superbwarfare.tools.mc
@@ -50,8 +51,17 @@ class DefaultVehicleResource : IDBasedData<DefaultVehicleResource> {
     @SerialName("Models")
     private val models: SingleOrList<VehicleModelPojo> = SingleOrList()
 
+    @JvmField
     @SerialName("RenderMounts")
     val renderMounts: Boolean = true
+
+    @JvmField
+    @SerialName("RenderMountsInFirstPerson")
+    val renderMountsInFirstPerson: Boolean = false
+
+    @JvmField
+    @SerialName("HideForTurretControllerWhileZooming")
+    val hideForTurretControllerWhileZooming: Boolean = false
 
     @SerialName("Script")
     private val script: SerializedResourceLocation? = null
@@ -90,6 +100,7 @@ class DefaultVehicleResource : IDBasedData<DefaultVehicleResource> {
                 scope.parentScope = VehicleScriptManager.SHARED_SCOPE
 
                 ScriptableObject.putProperty(scope, "JsMath", ScriptMath)
+                ScriptableObject.putProperty(scope, "VehicleRender", VehicleRenderProxy)
                 ScriptableObject.putProperty(scope, "Quaterniond", NativeJavaClass(scope, org.joml.Quaterniond::class.java))
                 ScriptableObject.putProperty(scope, "Quaternionf", NativeJavaClass(scope, org.joml.Quaternionf::class.java))
 

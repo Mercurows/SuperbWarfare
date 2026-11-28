@@ -1,4 +1,5 @@
 {
+  "Script": "superbwarfare:scripts/vehicles/kv_16.js",
   "Animation": "superbwarfare:animations/bedrock/vehicle/kv_16.animation.json",
   "Models": [
     {

@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.entity.misc.HighEnergyExplosivesEntity
 import com.atsuishio.superbwarfare.entity.projectile.*
 import com.atsuishio.superbwarfare.entity.vehicle.*
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.RCEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.remote.RCOperatorBodyEntity
 import net.minecraft.world.Difficulty
@@ -394,10 +395,10 @@ object ModEntities {
     val AH_6 = register("ah_6", vehicle().sized(2.25f, 2.175f))
 
     @JvmField
-    val DRONE = register("drone", vehicle(::DroneEntity).sized(0.63f, 0.25f))
+    val DRONE = register("drone", vehicle(::RCEntity).sized(0.63f, 0.25f))
 
     @JvmField
-    val FPV_DRONE = register("fpv_drone", vehicle(::FpvDroneEntity).sized(0.63f, 0.25f))
+    val FPV_DRONE = register("fpv_drone", vehicle(::RCEntity).sized(0.63f, 0.25f))
 
     @JvmField
     val RC_OPERATOR_BODY = register("rc_operator_body", misc(::RCOperatorBodyEntity)

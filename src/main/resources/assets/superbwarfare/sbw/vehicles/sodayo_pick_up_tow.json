@@ -1,4 +1,5 @@
 {
+  "Script": "superbwarfare:scripts/vehicles/sodayo_pick_up.js",
   "Models": [
     {
       "Model": "superbwarfare:models/bedrock/vehicle/sodayo_pick_up_tow.geo.json",

@@ -1,4 +1,5 @@
 {
+  "HideForTurretControllerWhileZooming": true,
   "Animation": "superbwarfare:animations/bedrock/vehicle/bl_132.animation.json",
   "Models": [
     {

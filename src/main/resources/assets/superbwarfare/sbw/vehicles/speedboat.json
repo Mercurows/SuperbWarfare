@@ -1,4 +1,6 @@
 {
+  "Script": "superbwarfare:scripts/vehicles/speedboat.js",
+  "HideForTurretControllerWhileZooming": true,
   "Animation": "superbwarfare:animations/bedrock/vehicle/speedboat.animation.json",
   "Models": [
     {

@@ -1,4 +1,6 @@
 {
+  "Script": "superbwarfare:scripts/vehicles/kirov.js",
+  "HideForTurretControllerWhileZooming": true,
   "Models": [
     {
       "Model": "superbwarfare:models/bedrock/vehicle/kirov.geo.json",

@@ -1,5 +1,7 @@
 {
   "RenderMounts": true,
+  "RenderMountsInFirstPerson": true,
+  "Script": "superbwarfare:scripts/vehicles/fpv_drone.js",
   "Models": [
     {
       "Model": "superbwarfare:models/bedrock/vehicle/fpv_drone.geo.json",

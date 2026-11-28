@@ -1,4 +1,6 @@
 {
+  "Script": "superbwarfare:scripts/vehicles/fh_77bw.js",
+  "HideForTurretControllerWhileZooming": true,
   "Animation": "superbwarfare:animations/bedrock/vehicle/fh_77bw.animation.json",
   "Models": [
     {
