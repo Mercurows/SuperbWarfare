@@ -55,6 +55,8 @@ open class SwordWaveRenderer(context: EntityRendererProvider.Context) : EntityRe
         pose: PoseStack.Pose,
         buffers: MultiBufferSource
     ) {
+        val age = maxOf(entity.tickCount, entity.syncedTick) + partialTick
+        val lifetimeOpacity = Mth.clampedLerp(1f, MIN_LIFETIME_OPACITY, age / entity.getLife().coerceAtLeast(1))
         val forward = if (entity.deltaMovement.lengthSqr() > 1e-6) entity.deltaMovement.normalize()
         else Vec3.directionFromRotation(entity.xRot, entity.yRot)
         val horizontal = forward.cross(Vec3(0.0, 1.0, 0.0))
@@ -85,9 +87,9 @@ open class SwordWaveRenderer(context: EntityRendererProvider.Context) : EntityRe
             buffer.waveVertex(pose, topLeft, normal, color, alpha, 0f, 0f)
         }
 
-        layer(ModRenderTypes.SWORD_WAVE.apply(INNER_TEXTURE), entity.rgb, 225)
-        layer(ModRenderTypes.SWORD_WAVE_RIM.apply(getTextureLocation(entity)), 0xFFFFFF, 255)
-        renderLaunchEdge(entity, partialTick, pose, buffers, forward, rolledUp, normal)
+        layer(ModRenderTypes.SWORD_WAVE.apply(INNER_TEXTURE), entity.rgb, (225 * lifetimeOpacity).roundToInt())
+        layer(ModRenderTypes.SWORD_WAVE_RIM.apply(getTextureLocation(entity)), 0xFFFFFF, (255 * lifetimeOpacity).roundToInt())
+        renderLaunchEdge(entity, partialTick, pose, buffers, forward, rolledUp, normal, lifetimeOpacity)
     }
 
     private fun renderLaunchEdge(
@@ -98,6 +100,7 @@ open class SwordWaveRenderer(context: EntityRendererProvider.Context) : EntityRe
         forward: Vec3,
         span: Vec3,
         normal: Vec3,
+        lifetimeOpacity: Float,
     ) {
         val viewer = mc.player ?: return
         if (!mc.options.cameraType.isFirstPerson || mc.cameraEntity !== viewer || entity.launchOwnerId != viewer.id) return
@@ -114,8 +117,9 @@ open class SwordWaveRenderer(context: EntityRendererProvider.Context) : EntityRe
         val nearFade = ((distance - 0.55) / 0.8).coerceAtMost(1.0)
         val behindFade = ((-forward.dot(view) - 0.75) / 0.25).coerceIn(0.0, 1.0)
         val edgeFade = (1.0 - abs(normal.dot(view)) / 0.28).coerceAtLeast(0.0)
-        val alpha = (0.85 * nearFade * behindFade * edgeFade).toFloat()
-        if (alpha <= 0.01f) return
+        val viewAlpha = (0.85 * nearFade * behindFade * edgeFade).toFloat()
+        if (viewAlpha <= 0.01f) return
+        val alpha = viewAlpha * lifetimeOpacity
 
         // The extra ribbon lies in the plane across the flight axis and shares the crescent's roll.
         val buffer = buffers.getBuffer(ModRenderTypes.SWORD_WAVE.apply(EDGE_TEXTURE))
@@ -169,6 +173,7 @@ open class SwordWaveRenderer(context: EntityRendererProvider.Context) : EntityRe
     companion object {
         private const val SIZE_SCALE = 1.4
         private const val HALF_SIZE = 0.64 * SIZE_SCALE
+        private const val MIN_LIFETIME_OPACITY = 0.2f
         private const val LAUNCH_EDGE_U = 0.08 // Bright portion of the crescent near its leading edge.
         private val OUTER_TEXTURE = loc("textures/entity/sword_wave_outer.png")
         private val INNER_TEXTURE = loc("textures/entity/sword_wave_inner.png")
