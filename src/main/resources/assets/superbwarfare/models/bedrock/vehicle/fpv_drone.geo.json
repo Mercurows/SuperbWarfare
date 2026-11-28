@@ -898,7 +898,7 @@
 					"name": "driver_3p_camera",
 					"parent": "root",
 					"pivot": [0, 10.75, 19],
-					"rotation": [-5, 0, 0]
+					"rotation": [-20, 0, 0]
 				},
 				{
 					"name": "move_wingFL",

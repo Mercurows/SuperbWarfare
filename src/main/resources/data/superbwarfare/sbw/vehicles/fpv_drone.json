@@ -57,5 +57,7 @@
   "DestroyInfo": {
     "NoWreck": true,
     "ExplodePassengers": false
-  }
+  },
+  "HudType": "@FPVDrone",
+  "HUDColor": "0xFFFFFF"
 }

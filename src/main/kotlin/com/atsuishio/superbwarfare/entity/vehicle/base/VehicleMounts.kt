@@ -407,10 +407,12 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
         val action = mount.definition.action
         val point = worldPosition(mount.slot, action.offset)
         consume(mount)
+        // 必须在 destroy() 之前结算直伤：destroy() 会结束 RC 会话并把操控者传送回假人处，
+        // 伤害来源的 attacker 位置一旦变成假人，目标的角度减伤就会永远按正面计算。
+        applyDirectHit(action, hit, operator)
         vehicle.health = 0f
         vehicle.isWreck = true
         vehicle.destroy()
-        applyDirectHit(action, hit, operator)
         explode(action, point, operator)
     }
 
@@ -432,7 +434,7 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
         }
         val operator = vehicle.firstPassenger as? Player
         val attacker = vehicle.lastAttacker ?: operator
-        val detonations = mutableListOf<Triple<VehicleMountDefinition.Action, Vec3, Entity?>>()
+        val detonations = mutableListOf<Pair<VehicleMountDefinition.Action, Vec3>>()
         for (mount in activeMounts()) {
             val action = mount.definition.action
             if (!action.onDestroyed) continue
@@ -444,9 +446,11 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
             if (action.type == Type.DETONATE) {
                 if (operator != null) {
                     val point = worldPosition(mount.slot, action.offset)
-                    // 无人机被撞毁/碾碎时往往来不及走 onImpact，殉爆时也要把直伤结算给贴身目标
+                    // 无人机被撞毁/碾碎时往往来不及走 onImpact，殉爆时也要把直伤结算给贴身目标。
+                    // 这里在 beforeDestroy 内立即结算：destroy() 之后操控者会被传送回假人处，角度减伤会失真。
                     val hit = lastAttackerImpactTarget() ?: nearbyImpactTarget(maxOf(0.6, vehicle.deltaMovement.length() * 0.5 + 0.4), vehicle.deltaMovement)
-                    detonations += Triple(action, point, hit)
+                    applyDirectHit(action, hit, operator)
+                    detonations += action to point
                     consume(mount)
                 }
             } else {
@@ -462,8 +466,7 @@ open class VehicleMounts(protected val vehicle: VehicleEntity) {
         }
         dropAll()
         return {
-            detonations.forEach { (action, point, hit) ->
-                applyDirectHit(action, hit, operator ?: attacker)
+            detonations.forEach { (action, point) ->
                 explode(action, point, attacker)
             }
         }

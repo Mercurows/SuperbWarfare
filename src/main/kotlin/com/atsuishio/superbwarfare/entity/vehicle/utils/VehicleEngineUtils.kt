@@ -893,13 +893,13 @@ object VehicleEngineUtils {
             }
             if ((!level().isClientSide || isLocalPilot())) {
                 rotateBodyLocalX(
-                    (if (onGround()) 0f else 0.75f) * pitchSpeed * mouseMoveSpeedY * Mth.DEG_TO_RAD
+                    (if (onGround()) 0f else 0.85f) * pitchSpeed * mouseMoveSpeedY * Mth.DEG_TO_RAD
                 )
                 rotateBodyLocalZ(
-                    (if (onGround()) 0f else 0.75f) * -rollSpeed * deltaRot * Mth.DEG_TO_RAD
+                    (if (onGround()) 0f else 0.85f) * -rollSpeed * deltaRot * Mth.DEG_TO_RAD
                 )
                 rotateBodyLocalY(
-                    (if (onGround()) 0.02f else 0.75f)* -yawSpeed * mouseMoveSpeedX * Mth.DEG_TO_RAD
+                    (if (onGround()) 0.02f else 0.85f)* -yawSpeed * mouseMoveSpeedX * Mth.DEG_TO_RAD
                 )
                 syncEulerFromBody()
             }
@@ -937,7 +937,7 @@ object VehicleEngineUtils {
             if (engineStartOver) {
                 if (down || backInputDown) {
                     holdPowerTick++
-                    power = Math.max(power - 0.01f * powerReduce * Math.min(holdPowerTick, 10), if (onGround()) 0f else 0.05f)
+                    power = Math.max(power - 0.01f * powerReduce * Math.min(holdPowerTick, 10), if (onGround()) 0f else 0.055f)
                 }
             }
 

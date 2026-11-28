@@ -176,10 +176,10 @@ object AircraftHud {
                 )
 
                 poseStack.pushPose()
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0f)
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(VehicleHudQuat.roll(vehicle, partialTick)), x, y, 0f)
                 RenderHelper.blit(
                     guiGraphics.pose(), BOMB_SCOPE_PITCH, x - 1.5f * i,
-                    y - 1.5f * j - 4 * vehicle.getPitch(partialTick), (3 * i).toFloat(), (3 * j).toFloat(),
+                    y - 1.5f * j - 4 * VehicleHudQuat.pitch(vehicle, partialTick), (3 * i).toFloat(), (3 * j).toFloat(),
                 )
                 renderKillIndicatorDynamic(
                     guiGraphics,
@@ -227,7 +227,7 @@ object AircraftHud {
                 y - 122,
                 256f,
                 16f,
-                128 + (64f / 45 * vehicle.getYaw(partialTick)),
+                128 + (64f / 45 * VehicleHudQuat.yaw(vehicle, partialTick)),
                 0f,
                 512f,
                 16f,
@@ -237,7 +237,7 @@ object AircraftHud {
 
             //滚转指示
             poseStack.pushPose()
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y + 48, 0f)
+            poseStack.rotateAround(Axis.ZP.rotationDegrees(VehicleHudQuat.roll(vehicle, partialTick)), x, y + 48, 0f)
             RenderHelper.blit(poseStack, HELICOPTER_ROLL_IND, x - 4, y + 144, 8f, 8f, 0f, 0f, 8f, 8f, color)
             poseStack.popPose()
 
@@ -393,8 +393,8 @@ object AircraftHud {
             )
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(-vehicle.getRoll(partialTick)), x, y, 0f)
-            val pitch = vehicle.getPitch(partialTick)
+            poseStack.rotateAround(Axis.ZP.rotationDegrees(-VehicleHudQuat.roll(vehicle, partialTick)), x, y, 0f)
+            val pitch = VehicleHudQuat.pitch(vehicle, partialTick)
             RenderHelper.blit(
                 poseStack,
                 HUD_LINE,
@@ -497,7 +497,7 @@ object AircraftHud {
                     i += 3
                 }
 
-                val pitch = vehicle.getPitch(partialTick)
+                val pitch = VehicleHudQuat.pitch(vehicle, partialTick)
                 RenderHelper.blit(
                     poseStack,
                     HUD_LINE_3P,
@@ -527,7 +527,7 @@ object AircraftHud {
                 )
 
                 poseStack.pushPose()
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0f)
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(VehicleHudQuat.roll(vehicle, partialTick)), x, y, 0f)
                 RenderHelper.blit(
                     guiGraphics.pose(), HelicopterHud.CROSSHAIR_3P, x - 34, y - 8.5f, 68f, 17f,
                 )
@@ -543,7 +543,7 @@ object AircraftHud {
                 poseStack.scale(0.75f, 0.75f, 1f)
                 guiGraphics.drawString(
                     Minecraft.getInstance().font,
-                    Component.translatable(format0D(vehicle.getRoll(partialTick).toDouble()) + "°"),
+                    Component.translatable(format0D(VehicleHudQuat.roll(vehicle, partialTick).toDouble()) + "°"),
                     -42,
                     -9,
                     -1,

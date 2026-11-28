@@ -137,6 +137,15 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                 screenWidth,
                 screenHeight
             )
+            FpvDroneHud.ID -> FpvDroneHud.render(
+                vehicle,
+                player,
+                gui,
+                guiGraphics,
+                partialTick,
+                screenWidth,
+                screenHeight
+            )
 
             ArtilleryHud.ID -> ArtilleryHud.render(
                 vehicle,

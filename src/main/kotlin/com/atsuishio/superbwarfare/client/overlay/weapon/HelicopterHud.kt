@@ -296,11 +296,7 @@ object HelicopterHud {
 
                 val diffY = -Mth.lerp(partialTick, vehicle.turretYRotO, vehicle.turretYRot) * 0.3f
                 val diffX = (Mth.wrapDegrees(
-                    -getXRotFromVector(vehicle.getBarrelVector(partialTick)) - Mth.lerp(
-                        partialTick,
-                        vehicle.xRotO,
-                        vehicle.xRot
-                    )
+                    -getXRotFromVector(vehicle.getBarrelVector(partialTick)) - VehicleHudQuat.pitch(vehicle, partialTick)
                 ) * 0.072f).toFloat()
                 RenderHelper.blit(poseStack, HELI_DRIVER_ANGLE, k + diffY, l + diffX, i, j, 0f, 0f, i, j, color)
 
@@ -311,7 +307,7 @@ object HelicopterHud {
                     6f,
                     256f,
                     16f,
-                    128 + (64f / 45 * vehicle.yRot),
+                    128 + (64f / 45 * VehicleHudQuat.yaw(vehicle, partialTick)),
                     0f,
                     512f,
                     16f,
@@ -320,12 +316,12 @@ object HelicopterHud {
 
                 poseStack.pushPose()
                 poseStack.rotateAround(
-                    Axis.ZP.rotationDegrees(-vehicle.getRoll(partialTick)),
+                    Axis.ZP.rotationDegrees(-VehicleHudQuat.roll(vehicle, partialTick)),
                     screenWidth / 2f,
                     screenHeight / 2f,
                     0f
                 )
-                val pitch = vehicle.getPitch(partialTick)
+                val pitch = VehicleHudQuat.pitch(vehicle, partialTick)
                 RenderHelper.blit(
                     poseStack,
                     AircraftHud.HUD_LINE,
@@ -343,7 +339,7 @@ object HelicopterHud {
 
                 poseStack.pushPose()
                 poseStack.rotateAround(
-                    Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)),
+                    Axis.ZP.rotationDegrees(VehicleHudQuat.roll(vehicle, partialTick)),
                     screenWidth / 2f,
                     screenHeight / 2f - 56,
                     0f
@@ -490,7 +486,7 @@ object HelicopterHud {
                     i += 3
                 }
 
-                val pitch = vehicle.getPitch(partialTick)
+                val pitch = VehicleHudQuat.pitch(vehicle, partialTick)
                 RenderHelper.blit(
                     poseStack,
                     AircraftHud.HUD_LINE_3P,
@@ -520,7 +516,7 @@ object HelicopterHud {
                 )
 
                 poseStack.pushPose()
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0f)
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(VehicleHudQuat.roll(vehicle, partialTick)), x, y, 0f)
                 RenderHelper.blit(guiGraphics.pose(), CROSSHAIR_3P, x - 34, y - 8.5f, 68f, 17f)
                 renderKillIndicatorDynamic(
                     guiGraphics,
@@ -534,7 +530,7 @@ object HelicopterHud {
                 poseStack.scale(0.75f, 0.75f, 1f)
                 guiGraphics.drawString(
                     Minecraft.getInstance().font,
-                    Component.translatable(format0D(vehicle.getRoll(partialTick).toDouble()) + "°"),
+                    Component.translatable(format0D(VehicleHudQuat.roll(vehicle, partialTick).toDouble()) + "°"),
                     -42,
                     -9,
                     -1,

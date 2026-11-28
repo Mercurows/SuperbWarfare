@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
+import com.atsuishio.superbwarfare.client.overlay.weapon.VehicleHudQuat
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.math.Axis
 import net.minecraft.client.gui.GuiGraphics
@@ -66,7 +67,7 @@ class CompassHud {
 
         // 绘制旋转表盘——表盘跟随载具方向转动
         poseStack.pushPose()
-        poseStack.rotateAround(Axis.ZP.rotationDegrees(-vehicle.getYaw(partialTick) - 180), centerX, centerY, 0f)
+        poseStack.rotateAround(Axis.ZP.rotationDegrees(-VehicleHudQuat.yaw(vehicle, partialTick) - 180), centerX, centerY, 0f)
         RenderHelper.blit(
             guiGraphics.pose(), baseTexture, actualX, actualY, size, size,
         )
